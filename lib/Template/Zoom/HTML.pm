@@ -1,0 +1,184 @@
+# Template::Zoom::HTML - Zoom HTML template parser
+#
+# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+
+package Template::Zoom::HTML;
+
+use strict;
+use warnings;
+
+use Template::Zoom::Increment;
+use Template::Zoom::List;
+
+# constructor
+
+sub new {
+	my ($class, $self);
+
+	$class = shift;
+
+	$self = {lists => {}, params => {}, query => {}};
+	bless $self;
+}
+
+# lists method - return list of Template::Zoom::List objects for this template
+sub lists {
+	my ($self) = @_;
+
+	return values %{$self->{lists}};
+}
+
+sub parse_template {
+	my ($self, $template, $spec_object) = @_;
+	my ($twig, $xml, $object, $list);
+
+	$object = {specs => {}, lists => {}, params => {}};
+		
+	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->parse_handler($_[1], $spec_object)}});
+	$xml = $twig->safe_parsefile_html($template);
+
+	unless ($xml) {
+		die "Invalid HTML template: $template: $@\n";
+	}
+
+	# examine list on alternates
+	for my $name (keys %{$object->{lists}}) {
+		$list = $object->{lists}->{$name};
+
+		if (@{$list->[1]} > 1) {
+			$list->[2]->{alternate} = @{$list->[1]};
+		}
+	}
+
+	$self->{xml} = $object->{xml} = $xml;
+
+	return $object;
+}
+
+# parse_handler - Callback for HTML elements
+
+sub parse_handler {
+	my ($self, $elt, $spec_object) = @_;
+	my ($gi, @classes, @static_classes, $class, $name, $sob, $elt_text);
+
+	$gi = $elt->gi();
+	$class = $elt->class();
+
+	# don't act on elements without class
+	return unless $class;
+	
+	# weed out "static" classes
+	for my $class (split(/\s+/, $elt->att('class'))) {
+		if ($spec_object->element_by_class($class)) {
+			push @classes, $class;
+		}
+		else {
+			push @static_classes, $class;
+		}
+	}
+	
+	for my $class (@classes) {
+		$sob = $spec_object->element_by_class($class);
+		$name = $sob->{name} || $class;
+		
+		if ($sob->{permission}) {
+			unless (Vend::Tags->acl('check', $sob->{permission})) {
+				# no permission for this document part
+				$elt->cut();
+				return;
+			}
+		}
+		
+		if ($sob->{type} eq 'list') {
+			if (exists $self->{lists}->{$name}) {
+				# record static classes
+				push (@{$self->{lists}->{$name}->[1]}, join(' ', @static_classes));
+				
+				# discard repeated lists
+				$elt->cut();
+				return;
+			}
+			
+			$sob->{elts} = [$elt];
+
+			$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @static_classes)]);
+			$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+			
+			$self->{lists}->{$name}->inputs_add($spec_object->inputs($name));
+			
+			return $self;
+		}
+
+		if (exists $self->{lists}->{$sob->{list}}) {
+			return $self;
+		}
+
+		if ($sob->{type} eq 'param') {
+			push (@{$sob->{elts}}, $elt);
+
+			if ($gi eq 'input') {
+				# replace value attribute instead of text
+				$elt->{zoom_rep_att} = 'value';
+			} elsif ($gi eq 'select') {
+				$elt->{zoom_rep_sub} = \&set_selected;
+			} elsif (! $elt->contains_only_text()) {
+				# contains real elements, so we have to be careful with
+				# set text and apply it only to the first PCDATA element
+				if ($elt_text = $elt->first_child('#PCDATA')) {
+					$elt->{zoom_rep_elt} = $elt_text;
+				}
+			}
+			
+			if ($sob->{sub}) {
+				# determine code reference for named function
+				my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
+
+				if (exists $sob->{scope} && $sob->{scope} eq 'element') {
+					$elt->{zoom_rep_sub} = $subref;
+				} else {
+					$sob->{subref} = $subref;
+				}
+			}
+
+			warn "Param found: $gi -- $sob->{list}\n";
+			
+			$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
+			push(@{$self->{params}->{$sob->{list}}->{array}}, $sob);
+		} elsif ($sob->{type} eq 'increment') {
+			# increments
+			push (@{$sob->{elts}}, $elt);
+
+			# create increment object and record it for increment updates
+			$sob->{increment} = new Template::Zoom::Increment;
+			push(@{$self->{increments}->{$sob->{list}}->{array}}, $sob);
+
+			# record it for increment values
+			$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
+		} elsif ($sob->{type} eq 'value') {
+			push (@{$sob->{elts}}, $elt);
+			$self->{values}->{$name} = $sob;
+		} else {
+			return $self;
+		}
+	}
+	
+	return $self;
+}
+
+1;
+

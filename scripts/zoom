@@ -1,0 +1,84 @@
+#! /usr/bin/perl
+#
+# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+
+use strict;
+use warnings;
+
+use Template::Zoom;
+use Template::Zoom::Config;
+use Template::Zoom::Specification::XML;
+use Template::Zoom::HTML;
+
+my %input;
+
+# get input out of commandline arguments (key=value pairs)
+for (@ARGV) {
+	if (/^(\w+)=(.*)$/) {
+		$input{$1} = $2;
+	}
+}
+
+unless (@ARGV) {
+	die "$0: Commandline arguments missing.\n";
+}
+
+my ($config_file, $config_vars, $spec_file, $template_file);
+
+$config_file = shift;
+
+$config_vars = Template::Zoom::Config::load($config_file);
+
+# parse specification file
+
+my ($xml_spec, $xml_file, $spec);
+
+$xml_file = shift;
+
+$xml_spec = new Template::Zoom::Specification::XML;
+
+unless ($spec = $xml_spec->parse_file($xml_file)) {
+	die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
+}
+
+# parse template
+
+my ($html_file, $html_object, $list_object);
+
+$html_file = shift;
+
+$html_object = new Template::Zoom::HTML;
+
+$html_object->parse_template($html_file, $spec);
+
+use Data::Dumper;
+
+for $list_object ($html_object->lists()) {
+	# seed and check input
+	$list_object->input(\%input);
+}
+
+# process template
+
+my ($zoom);
+
+$zoom = new Template::Zoom ($html_object);
+
+$zoom->database($config_vars->{database});
+				
+print $zoom->process(), "\n";
