@@ -155,8 +155,6 @@ sub parse_handler {
 				}
 			}
 
-			warn "Param found: $gi -- $sob->{list}\n";
-			
 			$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
 			push(@{$self->{params}->{$sob->{list}}->{array}}, $sob);
 		} elsif ($sob->{type} eq 'increment') {

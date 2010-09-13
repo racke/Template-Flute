@@ -53,7 +53,6 @@ sub list_add {
 
 	# loop through inputs for this list
 	for my $input (@{$new_listref->{input}}) {
-		print "Input $input for $list_name\n";
 		$listref->{input}->{$input->{name}} = $input;
 	}
 	
