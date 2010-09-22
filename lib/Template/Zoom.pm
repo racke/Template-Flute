@@ -178,9 +178,9 @@ sub process {
 #				$elt->set_text($rep_str);
 #			}
 #		}
-				
-		return $self->{template}->{xml}->sprint;
 	}
+
+	return $self->{template}->{xml}->sprint;
 }
 
 sub database {
