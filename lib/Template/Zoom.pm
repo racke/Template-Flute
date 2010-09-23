@@ -41,7 +41,7 @@ sub new {
 
 sub process {
 	my ($self, $params) = @_;
-	my ($dbref, $sth, $row);
+	my ($dbref, $sth, $row, $lel, %paste_pos);
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
@@ -61,8 +61,6 @@ sub process {
 		$sth->execute(@$bind);
 
 		# process template
-		my ($lel, %paste_pos);
-		
 		$lel = $list->elt();
 
 		if ($lel->is_last_child()) {			
@@ -78,87 +76,13 @@ sub process {
 		
 		$lel->cut();
 
-		my ($row, $param, $key, $value, $rep_str, $att_name, $att_spec,
-		   $att_tag_name, $att_tag_spec, %att_tags, $att_val);
+		my ($row,);
 		my $row_pos = 0;
 		
 		while ($row = $sth->fetchrow_hashref) {
-			# now fill in params
-			for $param (@{$list->params}) {
-				$key = $param->{name};
-				
-				$rep_str = $row->{$value->{field} || $key};
-
-				if ($value->{increment}) {
-					$rep_str = $value->{increment}->value();
-				}
-				
-				if ($value->{subref}) {
-					$rep_str = $value->{subref}->($row);
-				}
-				
-				if ($value->{filter}) {
-					$rep_str = Vend::Tags->filter({op => $value->{filter}, body => $rep_str});
-				}
-				
-				for my $elt (@{$value->{elts}}) {
-					if ($elt->{zoom_rep_sub}) {
-						# call subroutine to handle this element
-						$elt->{zoom_rep_sub}->($elt, $rep_str);
-					}
-					elsif ($elt->{zoom_rep_att}) {
-						# replace attribute instead of embedded text (e.g. for <input>)
-						$elt->set_att($elt->{zoom_rep_att}, $rep_str);
-					}
-					elsif ($elt->{zoom_rep_elt}) {
-						# use provided text element for replacement
-						$elt->{zoom_rep_elt}->set_text($rep_str);
-					}
-					else {
-						$elt->set_text($rep_str);
-					}
-
-					# replace attributes on request
-					if ($value->{attributes}) {
-						while (($att_name, $att_spec) = each %{$value->{attributes}}) {
-							if (exists ($att_spec->{filter})) {
-								# derive tags from current record
-								if (exists ($att_spec->{filter_tags})) {
-									while (($att_tag_name, $att_tag_spec) = each %{$att_spec->{filter_tags}}) {
-										$att_tags{$att_tag_name} = $row->{$att_tag_spec};
-									}
-								}
-								else {
-									%att_tags = ();
-								}
-								
-								$att_val = Vend::Interpolate::filter_value($att_spec->{filter}, undef, \%att_tags, $att_spec->{filter_args});
-								$elt->set_att($att_name, $att_val);
-							}
-						}
-					}
-				}
-			}
+			$self->replace_record($list, $lel, \%paste_pos, $row);
 			
 			$row_pos++;
-			
-			# now add to the template
-			my $subtree = $lel->copy();
-
-			# alternate classes?
-#			if ($sref->{lists}->{$name}->[2]->{alternate}) {
-#				my $idx = $row_pos % $sref->{lists}->{$name}->[2]->{alternate};
-#				
-#				$subtree->set_att('class', $sref->{lists}->{$name}->[1]->[$idx]);
-#			}
-#::logError("Paste pos: " . ::uneval(\%paste_pos));
-
-			$subtree->paste(%paste_pos);
-
-			# call increment functions
-#			for my $inc (@{$sref->{increments}->{$name}->{array}}) {
-#				$inc->{increment}->increment();
-#			}
 		}
 
 		# replacements for simple values
@@ -180,22 +104,134 @@ sub process {
 #		}
 	}
 
+	for my $form ($self->{template}->forms()) {
+		$lel = $form->elt();
+
+		if ($lel->is_last_child()) {			
+			%paste_pos = (last_child => $lel->parent());
+		}
+		elsif ($lel->next_sibling()) {
+			%paste_pos = (before => $lel->next_sibling());
+		}
+		else {
+			# list is root element in the template
+			%paste_pos = (last_child => $self->{template}->{xml});
+		}
+		
+		$lel->cut();
+		
+		if ($form->input()) {
+			$dbref = $form->query();
+
+			$dbref->{dbh} = $self->{dbh};
+			$dbref->{query_is_sql} = 1;
+
+			# prepare and run database query
+			my ($sql, $bind) = build_select(%$dbref);
+
+			$sth = $dbref->{dbh}->prepare($sql);
+			$sth->execute(@$bind);
+
+			$self->replace_record($form, $lel, \%paste_pos, $sth->fetchrow_hashref());
+		}
+		else {
+			$lel->copy();
+		}
+	}
+			
 	return $self->{template}->{xml}->sprint;
 }
 
-sub database {
-	my ($self, $dbconf) = @_;
+sub replace_record {
+	my ($self, $list, $lel, $paste_pos, $record) = @_;
+	my ($param, $key, $rep_str, $att_name, $att_spec,
+		$att_tag_name, $att_tag_spec, %att_tags, $att_val);
 	
-	Rose::DB->register_db(domain => 'default',
-						  type => 'default',
-						  driver => $dbconf->{dbtype},
-						  database => $dbconf->{dbname},
-						  username => $dbconf->{dbuser},
-						  password => $dbconf->{dbpass},
-						  );
+	# now fill in params
+	for $param (@{$list->params}) {
+		$key = $param->{name};
+				
+		$rep_str = $record->{$param->{field} || $key};
 
-	$self->{rose} = new Rose::DB;
-	$self->{dbh} = $self->{rose}->dbh() or die $self->{rose}->error();
+		if ($param->{increment}) {
+			$rep_str = $param->{increment}->value();
+		}
+				
+		if ($param->{subref}) {
+			$rep_str = $param->{subref}->($record);
+		}
+				
+		if ($param->{filter}) {
+			$rep_str = Vend::Tags->filter({op => $param->{filter}, body => $rep_str});
+		}
+
+		for my $elt (@{$param->{elts}}) {
+			if ($elt->{zoom_rep_sub}) {
+				# call subroutine to handle this element
+				$elt->{zoom_rep_sub}->($elt, $rep_str);
+			} elsif ($elt->{zoom_rep_att}) {
+				# replace attribute instead of embedded text (e.g. for <input>)
+				$elt->set_att($elt->{zoom_rep_att}, $rep_str);
+			} elsif ($elt->{zoom_rep_elt}) {
+				# use provided text element for replacement
+				$elt->{zoom_rep_elt}->set_text($rep_str);
+			} else {
+				$elt->set_text($rep_str);
+			}
+
+			# replace attributes on request
+			if ($param->{attributes}) {
+				while (($att_name, $att_spec) = each %{$param->{attributes}}) {
+					if (exists ($att_spec->{filter})) {
+								# derive tags from current record
+						if (exists ($att_spec->{filter_tags})) {
+							while (($att_tag_name, $att_tag_spec) = each %{$att_spec->{filter_tags}}) {
+								$att_tags{$att_tag_name} = $record->{$att_tag_spec};
+							}
+						} else {
+							%att_tags = ();
+						}
+								
+						$att_val = Vend::Interpolate::filter_value($att_spec->{filter}, undef, \%att_tags, $att_spec->{filter_args});
+						$elt->set_att($att_name, $att_val);
+					}
+				}
+			}
+		}
+	}
+			
+	# now add to the template
+	my $subtree = $lel->copy();
+
+	# alternate classes?
+	#			if ($sref->{lists}->{$name}->[2]->{alternate}) {
+	#				my $idx = $row_pos % $sref->{lists}->{$name}->[2]->{alternate};
+	#				
+	#				$subtree->set_att('class', $sref->{lists}->{$name}->[1]->[$idx]);
+	#			}
+	#::logError("Paste pos: " . ::uneval(\%paste_pos));
+
+	$subtree->paste(%$paste_pos);
+
+	# call increment functions
+	#			for my $inc (@{$sref->{increments}->{$name}->{array}}) {
+	#				$inc->{increment}->increment();
+	#			}
 }
+
+	sub database {
+		my ($self, $dbconf) = @_;
+	
+		Rose::DB->register_db(domain => 'default',
+							  type => 'default',
+							  driver => $dbconf->{dbtype},
+							  database => $dbconf->{dbname},
+							  username => $dbconf->{dbuser},
+							  password => $dbconf->{dbpass},
+							 );
+
+		$self->{rose} = new Rose::DB;
+		$self->{dbh} = $self->{rose}->dbh() or die $self->{rose}->error();
+	}
 
 1;

@@ -58,7 +58,7 @@ unless ($spec = $xml_spec->parse_file($xml_file)) {
 
 # parse template
 
-my ($html_file, $html_object, $list_object);
+my ($html_file, $html_object, $list_object, $form_object);
 
 $html_file = shift;
 
@@ -66,11 +66,14 @@ $html_object = new Template::Zoom::HTML;
 
 $html_object->parse_template($html_file, $spec);
 
-use Data::Dumper;
-
 for $list_object ($html_object->lists()) {
 	# seed and check input
 	$list_object->input(\%input);
+}
+
+for $form_object ($html_object->forms()) {
+	# seed and check input
+	$form_object->input(\%input);
 }
 
 # process template

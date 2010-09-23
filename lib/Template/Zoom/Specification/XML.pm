@@ -52,6 +52,7 @@ sub parse_file {
 	# twig parser object
 	$twig = new XML::Twig (twig_handlers => {specification => sub {$self->spec_handler($_[1])},
 											 list => sub {$self->list_handler($_[1])},
+											 form => sub {$self->form_handler($_[1])},
 											 param => sub {$self->param_handler($_[1])},
 											 input => sub {$self->input_handler($_[1])}});
 	
@@ -79,12 +80,37 @@ sub list_handler {
 	$name = $elt->att('name');
 
 	$list{list} = $elt->atts();
+	
+	# flush elements from stash into list hash
+	$self->stash_flush($elt, \%list);
+
+	# add list to specification object
+	$self->{spec}->list_add(\%list);
+}
+
+sub form_handler {
+	my ($self, $elt) = @_;
+	my ($name, %form);
+	
+	$name = $elt->att('name');
+	
+	$form{form} = $elt->atts();
+
+	# flush elements from stash into form hash
+	$self->stash_flush($elt, \%form);
 		
+	# add form to specification object
+	$self->{spec}->form_add(\%form);
+}
+
+sub stash_flush {
+	my ($self, $elt, $hashref) = @_;
+
 	# examine stash
 	for my $item_elt (@{$self->{stash}}) {
 		# check whether we are really the parent
 		if ($item_elt->parent() eq $elt) {
-			push (@{$list{$item_elt->gi()}}, $item_elt->atts());
+			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
 		}
 		else {
 			warn "Misplace item in stash (" . $item_elt->gi() . "\n";
@@ -94,8 +120,7 @@ sub list_handler {
 	# clear stash
 	$self->{stash} = [];
 
-	# add list to specification object
-	$self->{spec}->list_add(\%list);
+	return;
 }
 
 sub param_handler {

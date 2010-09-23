@@ -24,6 +24,7 @@ use warnings;
 
 use Template::Zoom::Increment;
 use Template::Zoom::List;
+use Template::Zoom::Form;
 
 # constructor
 
@@ -32,7 +33,7 @@ sub new {
 
 	$class = shift;
 
-	$self = {lists => {}, params => {}, query => {}};
+	$self = {lists => {}, forms => {}, params => {}, query => {}};
 	bless $self;
 }
 
@@ -43,11 +44,18 @@ sub lists {
 	return values %{$self->{lists}};
 }
 
+# forms method - return list of Template::Zoom::Form objects for this template
+sub forms {
+	my ($self) = @_;
+
+	return values %{$self->{forms}};
+}
+
 sub parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);
 
-	$object = {specs => {}, lists => {}, params => {}};
+	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
 	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->parse_handler($_[1], $spec_object)}});
 	$xml = $twig->safe_parsefile_html($template);
@@ -74,108 +82,136 @@ sub parse_template {
 
 sub parse_handler {
 	my ($self, $elt, $spec_object) = @_;
-	my ($gi, @classes, @static_classes, $class, $name, $sob, $elt_text);
+	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob);
 
 	$gi = $elt->gi();
-	$class = $elt->class();
-
-	# don't act on elements without class
-	return unless $class;
+	$class_names = $elt->class();
+	$id = $elt->id();
+	
+	# don't act on elements without class or id
+	return unless $class_names || $id;
 	
 	# weed out "static" classes
-	for my $class (split(/\s+/, $elt->att('class'))) {
-		if ($spec_object->element_by_class($class)) {
-			push @classes, $class;
-		}
-		else {
-			push @static_classes, $class;
+	if ($class_names) {
+		for my $class (split(/\s+/, $class_names)) {
+			if ($spec_object->element_by_class($class)) {
+				push @classes, $class;
+			}
+			else {
+				push @static_classes, $class;
+			}
 		}
 	}
 	
+	if ($id) {
+		if ($sob = $spec_object->element_by_id($id)) {
+			$name = $sob->{name} || $id;
+			$self->elt_handler($sob, $elt, $gi, $spec_object, $name);
+			return $self;
+		}
+	}
+
 	for my $class (@classes) {
 		$sob = $spec_object->element_by_class($class);
 		$name = $sob->{name} || $class;
-		
-		if ($sob->{permission}) {
-			unless (Vend::Tags->acl('check', $sob->{permission})) {
-				# no permission for this document part
-				$elt->cut();
-				return;
-			}
-		}
-		
-		if ($sob->{type} eq 'list') {
-			if (exists $self->{lists}->{$name}) {
-				# record static classes
-				push (@{$self->{lists}->{$name}->[1]}, join(' ', @static_classes));
+		$self->elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
+	}
+
+	return $self;
+}
+
+sub elt_handler {
+	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
+	my ($elt_text);
+
+#	if ($sob->{permission}) {
+#		unless (Vend::Tags->acl('check', $sob->{permission})) {
+#			# no permission for this document part
+#			$elt->cut();
+#			return;
+#		}
+#	}
+	
+	if ($sob->{type} eq 'list') {
+		if (exists $self->{lists}->{$name}) {
+			# record static classes
+			push (@{$self->{lists}->{$name}->[1]}, join(' ', @$static_classes));
 				
-				# discard repeated lists
-				$elt->cut();
-				return;
-			}
-			
-			$sob->{elts} = [$elt];
-
-			$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @static_classes)]);
-			$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
-			
-			$self->{lists}->{$name}->inputs_add($spec_object->inputs($name));
-			
-			return $self;
+			# discard repeated lists
+			$elt->cut();
+			return;
 		}
-
-		if (exists $self->{lists}->{$sob->{list}}) {
-			return $self;
-		}
-
-		if ($sob->{type} eq 'param') {
-			push (@{$sob->{elts}}, $elt);
-
-			if ($gi eq 'input') {
-				# replace value attribute instead of text
-				$elt->{zoom_rep_att} = 'value';
-			} elsif ($gi eq 'select') {
-				$elt->{zoom_rep_sub} = \&set_selected;
-			} elsif (! $elt->contains_only_text()) {
-				# contains real elements, so we have to be careful with
-				# set text and apply it only to the first PCDATA element
-				if ($elt_text = $elt->first_child('#PCDATA')) {
-					$elt->{zoom_rep_elt} = $elt_text;
-				}
-			}
 			
-			if ($sob->{sub}) {
-				# determine code reference for named function
-				my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
+		$sob->{elts} = [$elt];
 
-				if (exists $sob->{scope} && $sob->{scope} eq 'element') {
-					$elt->{zoom_rep_sub} = $subref;
-				} else {
-					$sob->{subref} = $subref;
-				}
-			}
+		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)]);
+		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+			
+		$self->{lists}->{$name}->inputs_add($spec_object->inputs($name));
+			
+		return $self;
+	}
 
-			$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
-			push(@{$self->{params}->{$sob->{list}}->{array}}, $sob);
-		} elsif ($sob->{type} eq 'increment') {
-			# increments
-			push (@{$sob->{elts}}, $elt);
+	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
+		return $self;
+	}
 
-			# create increment object and record it for increment updates
-			$sob->{increment} = new Template::Zoom::Increment;
-			push(@{$self->{increments}->{$sob->{list}}->{array}}, $sob);
+	if ($sob->{type} eq 'form') {
+		$sob->{elts} = [$elt];
 
-			# record it for increment values
-			$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
-		} elsif ($sob->{type} eq 'value') {
-			push (@{$sob->{elts}}, $elt);
-			$self->{values}->{$name} = $sob;
-		} else {
-			return $self;
-		}
+		$self->{forms}->{$name} = new Template::Zoom::Form ($sob);
+		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
+			
+		$self->{forms}->{$name}->inputs_add($spec_object->inputs($name));
+			
+		return $self;
 	}
 	
-	return $self;
+	if ($sob->{type} eq 'param') {
+		push (@{$sob->{elts}}, $elt);
+
+		if ($gi eq 'input') {
+			# replace value attribute instead of text
+			$elt->{zoom_rep_att} = 'value';
+		} elsif ($gi eq 'select') {
+			$elt->{zoom_rep_sub} = \&set_selected;
+		} elsif (! $elt->contains_only_text()) {
+			# contains real elements, so we have to be careful with
+			# set text and apply it only to the first PCDATA element
+			if ($elt_text = $elt->first_child('#PCDATA')) {
+				$elt->{zoom_rep_elt} = $elt_text;
+			}
+		}
+			
+		if ($sob->{sub}) {
+			# determine code reference for named function
+			my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
+
+			if (exists $sob->{scope} && $sob->{scope} eq 'element') {
+				$elt->{zoom_rep_sub} = $subref;
+			} else {
+				$sob->{subref} = $subref;
+			}
+		}
+
+		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
+		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
+	} elsif ($sob->{type} eq 'increment') {
+		# increments
+		push (@{$sob->{elts}}, $elt);
+
+		# create increment object and record it for increment updates
+		$sob->{increment} = new Template::Zoom::Increment;
+		push(@{$self->{increments}->{$sob->{list}}->{array}}, $sob);
+
+		# record it for increment values
+		$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
+	} elsif ($sob->{type} eq 'value') {
+		push (@{$sob->{elts}}, $elt);
+		$self->{values}->{$name} = $sob;
+	} else {
+		return $self;
+	}
 }
 
 1;

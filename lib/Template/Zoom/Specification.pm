@@ -35,6 +35,9 @@ sub new {
 
 	# lookup hash for elements by class
 	$self->{classes} = {};
+
+	# lookup hash for elements by id
+	$self->{ids} = {};
 	
 	bless $self;
 }
@@ -44,7 +47,7 @@ sub list_add {
 	my ($listref, $list_name, $class);
 
 	$list_name = $new_listref->{list}->{name};
-	
+
 	$listref = $self->{lists}->{$new_listref->{list}->{name}} = {input => {}};
 
 	$class = $new_listref->{list}->{class} || $list_name;
@@ -59,18 +62,49 @@ sub list_add {
 	# loop through params for this list
 	for my $param (@{$new_listref->{param}}) {
 		$class = $param->{class} || $param->{name};
-
 		$self->{classes}->{$class} = {%{$param}, type => 'param', list => $list_name};	
 	}
 
 	return $listref;
 }
 
-sub inputs {
-	my ($self, $list_name) = @_;
+sub form_add {
+	my ($self, $new_formref) = @_;
+	my ($formref, $form_name, $id, $class);
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{input};
+	$form_name = $new_formref->{form}->{name};
+
+	$formref = $self->{forms}->{$new_formref->{form}->{name}} = {input => {}};
+
+	if ($id = $new_formref->{form}->{id}) {
+		$self->{ids}->{$id} = {%{$new_formref->{form}}, type => 'form'};
+	}
+	else {
+		$class = $new_formref->{form}->{class} || $form_name;
+
+		$self->{classes}->{$class} = {%{$new_formref->{form}}, type => 'form'};
+	}
+	
+	# loop through inputs for this form
+	for my $input (@{$new_formref->{input}}) {
+		$formref->{input}->{$input->{name}} = $input;
+	}
+	
+	# loop through params for this form
+	for my $param (@{$new_formref->{param}}) {
+		$class = $param->{class} || $param->{name};
+
+		$self->{classes}->{$class} = {%{$param}, type => 'param', form => $form_name};	
+	}
+
+	return $formref;
+}
+
+sub inputs {
+	my ($self, $form_name) = @_;
+
+	if (exists $self->{forms}->{$form_name}) {
+		return $self->{forms}->{$form_name}->{input};
 	}
 }
 
@@ -79,6 +113,16 @@ sub element_by_class {
 
 	if (exists $self->{classes}->{$class}) {
 		return $self->{classes}->{$class};
+	}
+
+	return;
+}
+
+sub element_by_id {
+	my ($self, $id) = @_;
+
+	if (exists $self->{ids}->{$id}) {
+		return $self->{ids}->{$id};
 	}
 
 	return;
