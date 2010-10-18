@@ -100,7 +100,15 @@ sub form_add {
 	return $formref;
 }
 
-sub inputs {
+sub list_inputs {
+	my ($self, $list_name) = @_;
+
+	if (exists $self->{lists}->{$list_name}) {
+		return $self->{lists}->{$list_name}->{input};
+	}
+}
+
+sub form_inputs {
 	my ($self, $form_name) = @_;
 
 	if (exists $self->{forms}->{$form_name}) {

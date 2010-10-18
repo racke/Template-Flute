@@ -147,7 +147,7 @@ sub elt_handler {
 		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)]);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
 			
-		$self->{lists}->{$name}->inputs_add($spec_object->inputs($name));
+		$self->{lists}->{$name}->inputs_add($spec_object->list_inputs($name));
 			
 		return $self;
 	}
@@ -162,7 +162,7 @@ sub elt_handler {
 		$self->{forms}->{$name} = new Template::Zoom::Form ($sob);
 		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
 			
-		$self->{forms}->{$name}->inputs_add($spec_object->inputs($name));
+		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
 			
 		return $self;
 	}
