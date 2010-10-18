@@ -101,7 +101,7 @@ sub input {
 
 sub query {
 	my ($self) = @_;
-	my (%query, $found, %cols);
+	my (%query, $found, $name, %cols);
 
 	%query = (tables => [], columns => {}, query => []);
 	
@@ -111,8 +111,15 @@ sub query {
 	}
 
 	for (@{$self->{params}}) {
-		push @{$query{columns}->{$self->{sob}->{table}}}, $_->{name};
-		$cols{$_->{name}} = 1;
+		if (exists $_->{field}) {
+			$name = $_->{field};
+		}
+		else {
+			$name = $_->{name};
+		}
+		
+		push @{$query{columns}->{$self->{sob}->{table}}}, $name;
+		$cols{$name} = 1;
 		$found = 1;
 	}
 
