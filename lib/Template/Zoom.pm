@@ -46,7 +46,7 @@ sub process {
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
 		# check for (required) input
-		unless ($list->input()) {
+		unless ($list->input($params)) {
 			die "Input missing for " . $list->name . "\n";
 		}
 		
