@@ -125,11 +125,18 @@ sub query {
 
 	# qualifier based on the input
 	for (values %{$self->{inputs}}) {
-		push @{$query{query}}, $_->{name} => $_->{value};
+		if (exists $_->{field}) {
+			$name = $_->{field};
+		}
+		else {
+			$name = $_->{name};
+		}
+			
+		push @{$query{query}}, $name => $_->{value};
 
 		# qualifiers need to be present in column specification
-		unless (exists $cols{$_->{name}}) {
-			push @{$query{columns}->{$self->{sob}->{table}}}, $_->{name};
+		unless (exists $cols{$name}) {
+			push @{$query{columns}->{$self->{sob}->{table}}}, $name;
 		}
 	}
 	
