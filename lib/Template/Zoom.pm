@@ -30,12 +30,12 @@ use Template::Zoom::Query;
 # Constructor
 
 sub new {
-	my ($class, $template) = @_;
+	my ($class, $template, $dbh) = @_;
 	my ($self);
 
 	$class = shift;
 
-	$self = {template => $template};
+	$self = {template => $template, dbh => $dbh};
 	bless $self;
 }
 
