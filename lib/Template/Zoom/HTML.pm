@@ -170,7 +170,10 @@ sub elt_handler {
 	if ($sob->{type} eq 'param') {
 		push (@{$sob->{elts}}, $elt);
 
-		if ($gi eq 'input') {
+		if ($sob->{target}) {
+			$elt->{zoom_rep_att} = $sob->{target};
+		}
+		elsif ($gi eq 'input') {
 			# replace value attribute instead of text
 			$elt->{zoom_rep_att} = 'value';
 		} elsif ($gi eq 'select') {
