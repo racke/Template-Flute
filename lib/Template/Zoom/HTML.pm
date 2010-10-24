@@ -174,8 +174,13 @@ sub elt_handler {
 			$elt->{zoom_rep_att} = $sob->{target};
 		}
 		elsif ($gi eq 'input') {
-			# replace value attribute instead of text
-			$elt->{zoom_rep_att} = 'value';
+			if ($elt->att('type') eq 'checkbox') {
+				$elt->{zoom_rep_sub} = \&set_checked;
+			}
+			else {
+				# replace value attribute instead of text
+				$elt->{zoom_rep_att} = 'value';
+			}
 		} elsif ($gi eq 'select') {
 			$elt->{zoom_rep_sub} = \&set_selected;
 		} elsif (! $elt->contains_only_text()) {
@@ -214,6 +219,44 @@ sub elt_handler {
 		$self->{values}->{$name} = $sob;
 	} else {
 		return $self;
+	}
+}
+
+# set_checked - Set checked value in a checkbox/radio button
+sub set_checked {
+	my ($elt, $value) = @_;
+
+	if ($value) {
+		$elt->set_att('checked', 'checked');
+	}
+	else {
+		$elt->del_att('checked', 'checked');
+	}
+	
+	$elt->set_att('value', 1);
+}
+
+# set_selected - Set selected value in a dropdown menu
+
+sub set_selected {
+	my ($elt, $value) = @_;
+	my (@children, $eltval);
+
+	@children = $elt->children('option');
+
+	for my $node (@children) {
+		$eltval = $node->att('value');
+
+		unless (length($eltval)) {
+			$eltval = $node->text();
+		}
+		
+		if ($eltval eq $value) {
+			$node->set_att('selected', 'selected');
+		}
+		else {
+			$node->del_att('selected', '');
+		}
 	}
 }
 
