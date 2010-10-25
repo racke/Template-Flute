@@ -23,9 +23,9 @@ use strict;
 use warnings;
 
 use Rose::DB;
-use Rose::DB::Object::QueryBuilder qw(build_select);
 
 use Template::Zoom::Query;
+use Template::Zoom::Database::Rose;
 
 # Constructor
 
@@ -41,7 +41,10 @@ sub new {
 
 sub process {
 	my ($self, $params) = @_;
-	my ($dbref, $sth, $row, $lel, %paste_pos);
+	my ($dbobj, $dbiter, $sth, $row, $lel, %paste_pos);
+
+	# create database object
+	$dbobj = new Template::Zoom::Database::Rose (dbh => $self->{dbh});
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
@@ -49,16 +52,8 @@ sub process {
 		unless ($list->input($params)) {
 			die "Input missing for " . $list->name . "\n";
 		}
-		
-		$dbref = $list->query();
-		$dbref->{dbh} = $self->{dbh};
-		$dbref->{query_is_sql} = 1;
 
-		# prepare and run database query
-		my ($sql, $bind) = build_select(%$dbref);
-
-		$sth = $dbref->{dbh}->prepare($sql);
-		$sth->execute(@$bind);
+		$dbiter = $dbobj->build($list->query());
 
 		# process template
 		$lel = $list->elt();
@@ -79,7 +74,7 @@ sub process {
 		my ($row,);
 		my $row_pos = 0;
 		
-		while ($row = $sth->fetchrow_hashref) {
+		while ($row = $dbiter->next()) {
 			$self->replace_record($list, $lel, \%paste_pos, $row);
 			
 			$row_pos++;
@@ -121,18 +116,9 @@ sub process {
 		$lel->cut();
 		
 		if ($form->input()) {
-			$dbref = $form->query();
+			$dbiter = $dbobj->build($form->query());
 
-			$dbref->{dbh} = $self->{dbh};
-			$dbref->{query_is_sql} = 1;
-
-			# prepare and run database query
-			my ($sql, $bind) = build_select(%$dbref);
-
-			$sth = $dbref->{dbh}->prepare($sql);
-			$sth->execute(@$bind);
-
-			$self->replace_record($form, $lel, \%paste_pos, $sth->fetchrow_hashref());
+			$self->replace_record($form, $lel, \%paste_pos, $dbiter->next());
 		}
 		else {
 			$lel->copy();
