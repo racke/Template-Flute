@@ -139,6 +139,10 @@ sub query {
 			push @{$query{columns}->{$self->{sob}->{table}}}, $name;
 		}
 	}
+
+	if ($self->{sob}->{sort}) {
+		$query{sort_by} = $self->{sob}->{sort};
+	}
 	
 	if ($found) {
 		return \%query;
