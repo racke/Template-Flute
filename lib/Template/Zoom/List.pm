@@ -55,6 +55,20 @@ sub name {
 	return $self->{sob}->{name};
 }
 
+# iterator method - returns iterator for the list
+sub iterator {
+	my ($self) = @_;
+
+	return $self->{iterator};
+}
+
+# set_iterator method - sets iterator for the list
+sub set_iterator {
+	my ($self, $iterator) = @_;
+	
+	$self->{iterator} = $iterator;
+}
+
 # elt (element) method - returns corresponding template element of the list
 sub elt {
 	my ($self) = @_;

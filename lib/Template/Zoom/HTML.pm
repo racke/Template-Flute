@@ -133,6 +133,8 @@ sub elt_handler {
 #	}
 	
 	if ($sob->{type} eq 'list') {
+		my $iter;
+		
 		if (exists $self->{lists}->{$name}) {
 			# record static classes
 			push (@{$self->{lists}->{$name}->[1]}, join(' ', @$static_classes));
@@ -148,7 +150,17 @@ sub elt_handler {
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
 			
 		$self->{lists}->{$name}->inputs_add($spec_object->list_inputs($name));
-			
+		$self->{lists}->{$name}->paging_add($spec_object->list_paging($name));
+
+		if (exists $sob->{iterator}) {
+			if ($iter = $spec_object->iterator($sob->{iterator})) {
+				$self->{lists}->{$name}->set_iterator($iter);
+			}
+			else {
+				die "$0: Iterator $sob->{iterator} not found.\n";
+			}
+				
+		}
 		return $self;
 	}
 

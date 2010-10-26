@@ -41,10 +41,12 @@ sub new {
 
 sub process {
 	my ($self, $params) = @_;
-	my ($dbobj, $dbiter, $sth, $row, $lel, %paste_pos);
+	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos);
 
-	# create database object
-	$dbobj = new Template::Zoom::Database::Rose (dbh => $self->{dbh});
+	if ($self->{dbh}) {
+		# create database object
+		$dbobj = new Template::Zoom::Database::Rose (dbh => $self->{dbh});
+	};
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
@@ -53,8 +55,15 @@ sub process {
 			die "Input missing for " . $list->name . "\n";
 		}
 
-		$dbiter = $dbobj->build($list->query());
-
+		unless ($iter = $list->iterator()) {
+			if ($dbobj) {
+				$dbobj->build($list->query());
+			}
+			else {
+				die "$0: List " . $list->name . " without iterator and database object.\n";
+			}
+		}
+		
 		# process template
 		$lel = $list->elt();
 
@@ -74,7 +83,7 @@ sub process {
 		my ($row,);
 		my $row_pos = 0;
 		
-		while ($row = $dbiter->next()) {
+		while ($row = $iter->next()) {
 			$self->replace_record($list, $lel, \%paste_pos, $row);
 			
 			$row_pos++;
@@ -116,9 +125,9 @@ sub process {
 		$lel->cut();
 		
 		if ($form->input()) {
-			$dbiter = $dbobj->build($form->query());
+			$iter = $dbobj->build($form->query());
 
-			$self->replace_record($form, $lel, \%paste_pos, $dbiter->next());
+			$self->replace_record($form, $lel, \%paste_pos, $iter->next());
 		}
 		else {
 			$lel->copy();

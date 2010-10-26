@@ -22,6 +22,8 @@ package Template::Zoom::Specification;
 use strict;
 use warnings;
 
+use Template::Zoom::Iterator;
+
 # Constructor
 
 sub new {
@@ -54,6 +56,8 @@ sub list_add {
 
 	$self->{classes}->{$class} = {%{$new_listref->{list}}, type => 'list'};
 
+	$listref->{iterator} = $new_listref->{list}->{iterator};
+	
 	# loop through inputs for this list
 	for my $input (@{$new_listref->{input}}) {
 		$listref->{input}->{$input->{name}} = $input;
@@ -100,6 +104,14 @@ sub form_add {
 	return $formref;
 }
 
+sub list_iterator {
+	my ($self, $list_name) = @_;
+
+	if (exists $self->{lists}->{$list_name}) {
+		return $self->{lists}->{$list_name}->{iterator};
+	}
+}
+
 sub list_inputs {
 	my ($self, $list_name) = @_;
 
@@ -114,6 +126,27 @@ sub form_inputs {
 	if (exists $self->{forms}->{$form_name}) {
 		return $self->{forms}->{$form_name}->{input};
 	}
+}
+
+sub iterator {
+	my ($self, $name) = @_;
+
+	if (exists $self->{iters}->{$name}) {
+		return $self->{iters}->{$name};
+	}
+}
+
+sub set_iterator {
+	my ($self, $name, $iter) = @_;
+	my ($iter_ref);
+
+	$iter_ref = ref($iter);
+
+	if ($iter_ref eq 'ARRAY') {
+		$iter = new Template::Zoom::Iterator($iter);
+	}
+	
+	$self->{iters}->{$name} = $iter;
 }
 
 sub element_by_class {
