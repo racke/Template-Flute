@@ -26,17 +26,51 @@ use Rose::DB;
 
 use Template::Zoom::Query;
 use Template::Zoom::Database::Rose;
+use Template::Zoom::Specification::XML;
+use Template::Zoom::HTML;
 
 # Constructor
 
 sub new {
-	my ($class, $template, $dbh) = @_;
-	my ($self);
+	my ($class, $self);
 
 	$class = shift;
 
-	$self = {template => $template, dbh => $dbh};
+	$self = {@_};
 	bless $self;
+}
+
+sub bootstrap {
+	my ($self) = @_;
+	my ($xml_file, $xml_spec, $spec, $template_file, $template_object);
+	
+	unless ($self->{specification}) {
+		if ($xml_file = $self->{specification_file}) {
+			$xml_spec = new Template::Zoom::Specification::XML;
+
+			unless ($self->{specification} = $xml_spec->parse_file($xml_file)) {
+				die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
+			}
+		}
+		else {
+			die "$0: Missing Template::Zoom specification.\n";
+		}
+	}
+
+	my ($name, $iter);
+	
+	while (($name, $iter) = each %{$self->{iterators}}) {
+		$self->{specification}->set_iterator($name, $iter);
+	}
+	
+	if ($template_file = $self->{template_file}) {
+		$template_object = new Template::Zoom::HTML;
+		$template_object->parse_template($template_file, $self->{specification});
+		$self->{template} = $template_object;
+	}
+	else {
+		die "$0: Missing Template::Zoom template.\n";
+	}
 }
 
 sub process {
@@ -47,6 +81,10 @@ sub process {
 		# create database object
 		$dbobj = new Template::Zoom::Database::Rose (dbh => $self->{dbh});
 	};
+
+	unless ($self->{template}) {
+		$self->bootstrap();
+	}
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
