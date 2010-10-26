@@ -1,4 +1,4 @@
-# Template::Zoom - Template::Zoom Rose iterator class
+# Template::Zoom::Iterator::Base - Template::Zoom Rose iterator class
 #
 # Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
