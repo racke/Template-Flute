@@ -20,12 +20,23 @@
 use strict;
 use warnings;
 
+use Getopt::Long;
+use File::Temp qw(tempfile);
+
 use Template::Zoom;
 use Template::Zoom::Config;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
-my %input;
+my (%opts, %input);
+
+# commandline options
+my $whandler = $SIG{__WARN__};
+$SIG{__WARN__} = sub {print STDERR "$0: @_";};
+unless (GetOptions (\%opts, 'browser')) {
+	exit 1;
+}
+$SIG{__WARN__} = $whandler;
 
 # get input out of commandline arguments (key=value pairs)
 for (@ARGV) {
@@ -83,5 +94,15 @@ my ($zoom);
 $zoom = new Template::Zoom ($html_object);
 
 $zoom->database($config_vars->{database});
-				
-print $zoom->process(), "\n";
+
+if ($opts{browser}) {
+	# store zoom result in temporary file
+	my ($tmph, $tmpfile) = tempfile();
+	print $tmph $zoom->process();
+	print "Using temporary file $tmpfile\n";
+	system('x-www-browser', $tmpfile);
+}
+else {
+	print $zoom->process(), "\n";
+}
+
