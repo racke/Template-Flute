@@ -174,7 +174,9 @@ sub elt_handler {
 			$elt->{zoom_rep_att} = $sob->{target};
 		}
 		elsif ($gi eq 'input') {
-			if ($elt->att('type') eq 'checkbox') {
+			my $type = $elt->att('type');
+			
+			if (defined $type && $type eq 'checkbox') {
 				$elt->{zoom_rep_sub} = \&set_checked;
 			}
 			else {
