@@ -48,6 +48,12 @@ sub inputs_add {
 	}
 }
 
+sub paging_add {
+	my ($self, $paging) = @_;
+
+	$self->{paging} = $paging;
+}
+
 # name method - returns name of the list
 sub name {
 	my ($self) = @_;

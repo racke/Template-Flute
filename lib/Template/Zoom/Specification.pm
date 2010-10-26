@@ -69,6 +69,16 @@ sub list_add {
 		$self->{classes}->{$class} = {%{$param}, type => 'param', list => $list_name};	
 	}
 
+	# loop through paging for this list
+	for my $paging (@{$new_listref->{paging}}) {
+		if (exists $listref->{paging}) {
+			die "Only one paging allowed per list\n";
+		}
+		$listref->{paging} = $paging;
+		$class = $paging->{class} || $paging->{name};
+		$self->{classes}->{$class} = {%{$paging}, type => 'paging', list => $list_name};	
+	}
+	
 	return $listref;
 }
 
@@ -167,6 +177,15 @@ sub element_by_id {
 	}
 
 	return;
+}
+
+
+sub list_paging {
+	my ($self, $list_name) = @_;
+
+	if (exists $self->{lists}->{$list_name}) {
+		return $self->{lists}->{$list_name}->{paging};
+	}	
 }
 
 1;

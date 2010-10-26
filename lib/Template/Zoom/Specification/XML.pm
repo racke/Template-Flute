@@ -41,7 +41,7 @@ sub new {
 
 sub parse_file {
 	my ($self, $file) = @_;
-	my ($twig, $xml);
+	my ($twig, %handlers, $xml);
 
 	# initialize stash
 	$self->{stash} = [];
@@ -49,13 +49,18 @@ sub parse_file {
 	# specification object
 	$self->{spec} = new Template::Zoom::Specification;
 
-	# twig parser object
-	$twig = new XML::Twig (twig_handlers => {specification => sub {$self->spec_handler($_[1])},
-											 list => sub {$self->list_handler($_[1])},
-											 form => sub {$self->form_handler($_[1])},
-											 param => sub {$self->param_handler($_[1])},
-											 input => sub {$self->input_handler($_[1])}});
+	# twig handlers
+	%handlers = (specification => sub {$self->spec_handler($_[1])},
+				 list => sub {$self->list_handler($_[1])},
+				 paging => sub {$self->paging_handler($_[1])},
+				 form => sub {$self->form_handler($_[1])},
+				 param => sub {$self->param_handler($_[1])},
+				 input => sub {$self->input_handler($_[1])},
+				 );
 	
+	# twig parser object
+	$twig = new XML::Twig (twig_handlers => \%handlers);
+
 	$xml = $twig->safe_parsefile($file);
 
 	unless ($xml) {
@@ -86,6 +91,12 @@ sub list_handler {
 
 	# add list to specification object
 	$self->{spec}->list_add(\%list);
+}
+
+sub paging_handler {
+	my ($self, $elt) = @_;
+
+	push @{$self->{stash}}, $elt;
 }
 
 sub form_handler {
