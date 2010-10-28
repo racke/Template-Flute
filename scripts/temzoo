@@ -91,7 +91,7 @@ for $form_object ($html_object->forms()) {
 
 my ($zoom);
 
-$zoom = new Template::Zoom ($html_object);
+$zoom = new Template::Zoom (template => $html_object);
 
 $zoom->database($config_vars->{database});
 
