@@ -95,7 +95,10 @@ sub process {
 
 		unless ($iter = $list->iterator()) {
 			if ($dbobj) {
-				$dbobj->build($list->query());
+				$iter = new Template::Zoom::Iterator::Rose(dbh => $self->{dbh},
+														   query => $list->query());
+				$iter->build();
+				$iter->run();
 			}
 			else {
 				die "$0: List " . $list->name . " without iterator and database object.\n";
