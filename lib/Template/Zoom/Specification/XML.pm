@@ -56,6 +56,7 @@ sub parse_file {
 				 form => sub {$self->form_handler($_[1])},
 				 param => sub {$self->param_handler($_[1])},
 				 input => sub {$self->input_handler($_[1])},
+				 sort => sub {$self->sort_handler($_[1])},
 				 );
 	
 	# twig parser object
@@ -91,6 +92,31 @@ sub list_handler {
 
 	# add list to specification object
 	$self->{spec}->list_add(\%list);
+}
+
+sub sort_handler {
+	my ($self, $elt) = @_;
+	my (@ops, $name);
+
+	$name = $elt->att('name');
+	
+	for my $child ($elt->children()) {
+		if ($child->gi() eq 'field') {
+			push (@ops, {type => 'field',
+						 name => $child->att('name'),
+						 direction => $child->att('direction')});
+		}
+		else {
+			die "Invalid child for sort $name.\n";
+		}
+	}
+
+	unless (@ops) {
+		die "Empty sort $name.\n";
+	}
+	
+	$elt->set_att('ops', \@ops);
+	push @{$self->{stash}}, $elt;	
 }
 
 sub paging_handler {

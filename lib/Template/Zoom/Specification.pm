@@ -62,6 +62,11 @@ sub list_add {
 	for my $input (@{$new_listref->{input}}) {
 		$listref->{input}->{$input->{name}} = $input;
 	}
+
+	# loop through sorts for this list
+	for my $sort (@{$new_listref->{sort}}) {
+		$listref->{sort}->{$sort->{name}} = $sort;
+	}
 	
 	# loop through params for this list
 	for my $param (@{$new_listref->{param}}) {
@@ -127,6 +132,14 @@ sub list_inputs {
 
 	if (exists $self->{lists}->{$list_name}) {
 		return $self->{lists}->{$list_name}->{input};
+	}
+}
+
+sub list_sorts {
+	my ($self, $list_name) = @_;
+
+	if (exists $self->{lists}->{$list_name}) {
+		return $self->{lists}->{$list_name}->{sort};
 	}
 }
 

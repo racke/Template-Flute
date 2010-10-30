@@ -48,6 +48,12 @@ sub inputs_add {
 	}
 }
 
+sub sorts_add {
+	my ($self, $sort) = @_;
+
+	$self->{sorts} = $sort;
+}
+
 sub paging_add {
 	my ($self, $paging) = @_;
 
@@ -160,8 +166,20 @@ sub query {
 		}
 	}
 
-	if ($self->{sob}->{sort}) {
-		$query{sort_by} = $self->{sob}->{sort};
+	# sorting
+	if (exists $self->{sorts}->{default}) {
+		my @sort;
+
+		for my $op (@{$self->{sorts}->{default}->{ops}}) {
+			if ($op->{direction}) {
+				push (@sort, "$op->{name} $op->{direction}");
+			}
+			else {
+				push (@sort, $op->{name});
+			}
+		}
+
+		$query{sort_by} = join(',', @sort);
 	}
 	
 	if ($found) {

@@ -150,6 +150,7 @@ sub elt_handler {
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
 			
 		$self->{lists}->{$name}->inputs_add($spec_object->list_inputs($name));
+		$self->{lists}->{$name}->sorts_add($spec_object->list_sorts($name));
 		$self->{lists}->{$name}->paging_add($spec_object->list_paging($name));
 
 		if (exists $sob->{iterator}) {
