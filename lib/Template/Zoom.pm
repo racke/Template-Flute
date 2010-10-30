@@ -180,7 +180,7 @@ sub process {
 
 sub replace_record {
 	my ($self, $list, $lel, $paste_pos, $record) = @_;
-	my ($param, $key, $rep_str, $att_name, $att_spec,
+	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags, $att_val);
 	
 	# now fill in params
@@ -198,7 +198,14 @@ sub replace_record {
 		}
 				
 		if ($param->{filter}) {
-			$rep_str = Vend::Tags->filter({op => $param->{filter}, body => $rep_str});
+			if (exists $self->{filters}->{$param->{filter}}) {
+				$filter = $self->{filters}->{$param->{filter}};
+			}
+			else {
+				die "Missing filter $param->{filter}\n";
+			}
+			
+			$rep_str = $filter->($rep_str);
 		}
 
 		for my $elt (@{$param->{elts}}) {
