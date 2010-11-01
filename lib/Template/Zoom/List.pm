@@ -24,13 +24,21 @@ use warnings;
 
 # Constructor
 sub new {
-	my ($class, $sob, $static) = @_;
+	my ($class, $sob, $static, $spec, $name) = @_;
 	my ($self);
 	
 	$class = shift;
 	$self = {sob => $sob, static => $static, valid_input => undef};
 
 	bless $self;
+	
+	if ($spec && $name) {
+		$self->inputs_add($spec->list_inputs($name));
+		$self->sorts_add($spec->list_sorts($name));
+		$self->paging_add($spec->list_paging($name));
+	}
+	
+	return $self;
 }
 
 sub params_add {

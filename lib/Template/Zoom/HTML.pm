@@ -146,13 +146,9 @@ sub elt_handler {
 			
 		$sob->{elts} = [$elt];
 
-		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)]);
+		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
 			
-		$self->{lists}->{$name}->inputs_add($spec_object->list_inputs($name));
-		$self->{lists}->{$name}->sorts_add($spec_object->list_sorts($name));
-		$self->{lists}->{$name}->paging_add($spec_object->list_paging($name));
-
 		if (exists $sob->{iterator}) {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
 				$self->{lists}->{$name}->set_iterator($iter);
