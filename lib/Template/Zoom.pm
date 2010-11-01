@@ -22,10 +22,7 @@ package Template::Zoom;
 use strict;
 use warnings;
 
-use Rose::DB;
-
 use Template::Zoom::Query;
-use Template::Zoom::Database::Rose;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
@@ -77,11 +74,6 @@ sub process {
 	my ($self, $params) = @_;
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos);
 
-	if ($self->{dbh}) {
-		# create database object
-		$dbobj = new Template::Zoom::Database::Rose (dbh => $self->{dbh});
-	};
-
 	unless ($self->{template}) {
 		$self->bootstrap();
 	}
@@ -94,10 +86,8 @@ sub process {
 		}
 
 		unless ($iter = $list->iterator()) {
-			if ($dbobj) {
-				$iter = new Template::Zoom::Iterator::Rose(dbh => $self->{dbh},
-														   query => $list->query());
-				$iter->build();
+			if ($self->{database}) {
+				$iter = $self->{database}->build($list->query());
 				$iter->run();
 			}
 			else {
@@ -261,20 +251,5 @@ sub replace_record {
 	#				$inc->{increment}->increment();
 	#			}
 }
-
-	sub database {
-		my ($self, $dbconf) = @_;
-	
-		Rose::DB->register_db(domain => 'default',
-							  type => 'default',
-							  driver => $dbconf->{dbtype},
-							  database => $dbconf->{dbname},
-							  username => $dbconf->{dbuser},
-							  password => $dbconf->{dbpass},
-							 );
-
-		$self->{rose} = new Rose::DB;
-		$self->{dbh} = $self->{rose}->dbh() or die $self->{rose}->error();
-	}
 
 1;

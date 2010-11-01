@@ -22,6 +22,8 @@ package Template::Zoom::Database::Rose;
 use strict;
 use warnings;
 
+use Rose::DB;
+
 use Template::Zoom::Iterator::Rose;
 
 # Constructor
@@ -31,7 +33,36 @@ sub new {
 	
 	$class = shift;
 	$self = {@args};
+
 	bless $self, $class;
+	
+	$self->initialize();
+	
+	return $self;
+}
+
+# Initialization routine
+sub initialize {
+	my ($self) = @_;
+	
+	my %rose_parms;
+	
+	if ($self->{dbh}) {
+		# database handle exist already
+	}
+	else {
+		%rose_parms = (domain => 'default',
+					   type => 'default',
+					   driver => $self->{dbtype},
+					   database => $self->{dbname},
+					   username => $self->{dbuser},
+					   password => $self->{dbpass},
+					  );
+		
+		Rose::DB->register_db(%rose_parms);
+		$self->{rose} = new Rose::DB;
+		$self->{dbh} = $self->{rose}->dbh();
+	}
 }
 
 # Build query and return iterator
