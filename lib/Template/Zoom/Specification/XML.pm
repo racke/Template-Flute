@@ -52,10 +52,10 @@ sub parse_file {
 	# twig handlers
 	%handlers = (specification => sub {$self->spec_handler($_[1])},
 				 list => sub {$self->list_handler($_[1])},
-				 paging => sub {$self->paging_handler($_[1])},
+				 paging => sub {$self->stash_handler($_[1])},
 				 form => sub {$self->form_handler($_[1])},
-				 param => sub {$self->param_handler($_[1])},
-				 input => sub {$self->input_handler($_[1])},
+				 param => sub {$self->stash_handler($_[1])},
+				 input => sub {$self->stash_handler($_[1])},
 				 sort => sub {$self->sort_handler($_[1])},
 				 );
 	
@@ -119,7 +119,7 @@ sub sort_handler {
 	push @{$self->{stash}}, $elt;	
 }
 
-sub paging_handler {
+sub stash_handler {
 	my ($self, $elt) = @_;
 
 	push @{$self->{stash}}, $elt;
@@ -158,24 +158,6 @@ sub stash_flush {
 	$self->{stash} = [];
 
 	return;
-}
-
-sub param_handler {
-	my ($self, $elt) = @_;
-	my ($name);
-
-	$name = $elt->att('name');
-
-	push @{$self->{stash}}, $elt;
-}
-
-sub input_handler {
-	my ($self, $elt) = @_;
-	my ($name);
-
-	$name = $elt->att('name');
-
-	push @{$self->{stash}}, $elt;
 }
 
 sub error {
