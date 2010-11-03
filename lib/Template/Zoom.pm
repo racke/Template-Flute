@@ -155,13 +155,14 @@ sub process {
 		
 		$lel->cut();
 		
-		if ($form->input()) {
+		if (keys(%{$form->inputs()}) && $form->input()) {
 			$iter = $dbobj->build($form->query());
 
 			$self->replace_record($form, $lel, \%paste_pos, $iter->next());
 		}
 		else {
-			$lel->copy();
+			my $subtree = $lel->copy();
+			$subtree->paste(%paste_pos);
 		}
 	}
 			

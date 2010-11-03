@@ -69,6 +69,13 @@ sub params {
 	return $self->{params};
 }
 
+# inputs method - returns form inputs
+sub inputs {
+	my ($self) = @_;
+
+	return $self->{inputs};
+}
+
 # input method - verifies that input parameters are sufficient
 sub input {
 	my ($self, $params) = @_;
