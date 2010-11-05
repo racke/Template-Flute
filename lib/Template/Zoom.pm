@@ -115,7 +115,7 @@ sub process {
 		my $row_pos = 0;
 		
 		while ($row = $iter->next()) {
-			$self->replace_record($list, $lel, \%paste_pos, $row);
+			$self->replace_record($list, $lel, \%paste_pos, $row, $row_pos);
 			
 			$row_pos++;
 		}
@@ -170,9 +170,9 @@ sub process {
 }
 
 sub replace_record {
-	my ($self, $list, $lel, $paste_pos, $record) = @_;
+	my ($self, $list, $lel, $paste_pos, $record, $row_pos) = @_;
 	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags, $att_val);
+		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
 	
 	# now fill in params
 	for $param (@{$list->params}) {
@@ -238,12 +238,9 @@ sub replace_record {
 	my $subtree = $lel->copy();
 
 	# alternate classes?
-	#			if ($sref->{lists}->{$name}->[2]->{alternate}) {
-	#				my $idx = $row_pos % $sref->{lists}->{$name}->[2]->{alternate};
-	#				
-	#				$subtree->set_att('class', $sref->{lists}->{$name}->[1]->[$idx]);
-	#			}
-	#::logError("Paste pos: " . ::uneval(\%paste_pos));
+	if ($class_alt = $list->static_class($row_pos)) {
+		$subtree->set_att('class', $class_alt);
+	}
 
 	$subtree->paste(%$paste_pos);
 

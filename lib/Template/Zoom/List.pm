@@ -28,6 +28,8 @@ sub new {
 	my ($self);
 	
 	$class = shift;
+	$static ||= [];
+	
 	$self = {sob => $sob, static => $static, valid_input => undef};
 
 	bless $self;
@@ -89,6 +91,25 @@ sub set_iterator {
 	$self->{iterator} = $iterator;
 }
 
+# set_static_class - set static class
+sub set_static_class {
+	my ($self, $class) = @_;
+
+	push(@{$self->{static}}, $class);
+}
+
+# apply_static_class - apply static class to element
+sub static_class {
+	my ($self, $row_pos) = @_;
+	my ($idx);
+
+	if (@{$self->{static}}) {
+		$idx = $row_pos % scalar(@{$self->{static}});
+		
+		return $self->{static}->[$idx];
+	}
+}
+		
 # elt (element) method - returns corresponding template element of the list
 sub elt {
 	my ($self) = @_;
