@@ -54,7 +54,7 @@ sub next {
 	return;
 };
 
-# Count method - return number of elemens
+# Count method - return number of elements
 sub count {
 	my ($self) = @_;
 
