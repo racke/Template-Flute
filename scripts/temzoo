@@ -25,6 +25,7 @@ use File::Temp qw(tempfile);
 
 use Template::Zoom;
 use Template::Zoom::Config;
+use Template::Zoom::Database::Rose;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
@@ -49,11 +50,16 @@ unless (@ARGV) {
 	die "$0: Commandline arguments missing.\n";
 }
 
-my ($config_file, $config_vars, $spec_file, $template_file);
+my ($config_file, $config_vars, $spec_file, $template_file, $db_object);
 
 $config_file = shift;
 
 $config_vars = Template::Zoom::Config::load($config_file);
+
+if (exists $config_vars->{database}) {
+	# setup database object
+	$db_object = new Template::Zoom::Database::Rose (%{$config_vars->{database}});
+}
 
 # parse specification file
 
@@ -91,9 +97,8 @@ for $form_object ($html_object->forms()) {
 
 my ($zoom);
 
-$zoom = new Template::Zoom (template => $html_object);
-
-$zoom->database($config_vars->{database});
+$zoom = new Template::Zoom (template => $html_object,
+							database => $db_object);
 
 if ($opts{browser}) {
 	# store zoom result in temporary file
