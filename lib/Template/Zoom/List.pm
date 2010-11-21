@@ -186,9 +186,15 @@ sub query {
 		else {
 			$name = $_->{name};
 		}
-			
-		push @{$query{query}}, $name => $_->{value};
 
+		if (exists $_->{op}) {
+			# specific operator
+			push @{$query{query}}, $name => {$_->{op} => $_->{value}};
+		}
+		else {
+			push @{$query{query}}, $name => $_->{value};
+		}
+		
 		# qualifiers need to be present in column specification
 		unless (exists $cols{$name}) {
 			push @{$query{columns}->{$self->{sob}->{table}}}, $name;
