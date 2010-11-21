@@ -171,7 +171,7 @@ sub process {
 
 sub replace_record {
 	my ($self, $list, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
+	my ($param, $key, $filter, $rep_str, $att_name, $att_spec, $name, $zref,
 		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
 	
 	# now fill in params
@@ -200,15 +200,18 @@ sub replace_record {
 		}
 
 		for my $elt (@{$param->{elts}}) {
-			if ($elt->{zoom_rep_sub}) {
+			$name = $param->{name};
+			$zref = $elt->{"zoom_$name"};
+			
+			if ($zref->{rep_sub}) {
 				# call subroutine to handle this element
-				$elt->{zoom_rep_sub}->($elt, $rep_str);
-			} elsif ($elt->{zoom_rep_att}) {
+				$zref->{rep_sub}->($elt, $rep_str);
+			} elsif ($zref->{rep_att}) {
 				# replace attribute instead of embedded text (e.g. for <input>)
-				$elt->set_att($elt->{zoom_rep_att}, $rep_str);
-			} elsif ($elt->{zoom_rep_elt}) {
+				$elt->set_att($zref->{rep_att}, $rep_str);
+			} elsif ($zref->{rep_elt}) {
 				# use provided text element for replacement
-				$elt->{zoom_rep_elt}->set_text($rep_str);
+				$zref->{rep_elt}->set_text($rep_str);
 			} else {
 				$elt->set_text($rep_str);
 			}

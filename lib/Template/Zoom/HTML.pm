@@ -180,25 +180,25 @@ sub elt_handler {
 		push (@{$sob->{elts}}, $elt);
 
 		if ($sob->{target}) {
-			$elt->{zoom_rep_att} = $sob->{target};
+			$elt->{"zoom_$name"}->{rep_att} = $sob->{target};
 		}
 		elsif ($gi eq 'input') {
 			my $type = $elt->att('type');
 			
 			if (defined $type && $type eq 'checkbox') {
-				$elt->{zoom_rep_sub} = \&set_checked;
+				$elt->{"zoom_$name"}->{rep_sub} = \&set_checked;
 			}
 			else {
 				# replace value attribute instead of text
-				$elt->{zoom_rep_att} = 'value';
+				$elt->{"zoom_$name"}->{rep_att} = 'value';
 			}
 		} elsif ($gi eq 'select') {
-			$elt->{zoom_rep_sub} = \&set_selected;
+			$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
 		} elsif (! $elt->contains_only_text()) {
 			# contains real elements, so we have to be careful with
 			# set text and apply it only to the first PCDATA element
 			if ($elt_text = $elt->first_child('#PCDATA')) {
-				$elt->{zoom_rep_elt} = $elt_text;
+				$elt->{"zoom_$name"}->{rep_elt} = $elt_text;
 			}
 		}
 			
@@ -207,7 +207,7 @@ sub elt_handler {
 			my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
 
 			if (exists $sob->{scope} && $sob->{scope} eq 'element') {
-				$elt->{zoom_rep_sub} = $subref;
+				$elt->{"zoom_$name"}->{rep_sub} = $subref;
 			} else {
 				$sob->{subref} = $subref;
 			}
