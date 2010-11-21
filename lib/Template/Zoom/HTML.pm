@@ -51,6 +51,15 @@ sub forms {
 	return values %{$self->{forms}};
 }
 
+# form method - returns specific form object
+sub form {
+	my ($self, $name) = @_;
+
+	if (exists $self->{forms}->{$name}) {
+		return $self->{forms}->{$name};
+	}
+}
+
 sub parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);
