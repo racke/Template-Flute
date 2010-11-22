@@ -58,6 +58,12 @@ sub inputs_add {
 	}
 }
 
+sub increments_add {
+	my ($self, $increments) = @_;
+
+	$self->{increments} = $increments;
+}
+
 sub sorts_add {
 	my ($self, $sort) = @_;
 
@@ -219,6 +225,15 @@ sub query {
 	
 	if ($found) {
 		return \%query;
+	}
+}
+
+# increment method - increments all incrementors
+sub increment {
+	my ($self) = @_;
+
+	for my $inc (@{$self->{increments}}) {
+		$inc->increment();
 	}
 }
 

@@ -157,6 +157,7 @@ sub elt_handler {
 
 		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
 			
 		if (exists $sob->{iterator}) {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
@@ -210,8 +211,15 @@ sub elt_handler {
 				$elt->{"zoom_$name"}->{rep_elt} = $elt_text;
 			}
 		}
+
+		if ($sob->{increment}) {
+			# create increment object and record it for increment updates
+			my $inc = new Template::Zoom::Increment (increment => $sob->{increment});
 			
-		if ($sob->{sub}) {
+			$sob->{increment} = $inc;
+			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
+		}
+		elsif ($sob->{sub}) {
 			# determine code reference for named function
 			my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
 
@@ -224,16 +232,6 @@ sub elt_handler {
 
 		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
-	} elsif ($sob->{type} eq 'increment') {
-		# increments
-		push (@{$sob->{elts}}, $elt);
-
-		# create increment object and record it for increment updates
-		$sob->{increment} = new Template::Zoom::Increment;
-		push(@{$self->{increments}->{$sob->{list}}->{array}}, $sob);
-
-		# record it for increment values
-		$self->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 		$self->{values}->{$name} = $sob;

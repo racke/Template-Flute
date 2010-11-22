@@ -118,6 +118,8 @@ sub process {
 			$self->replace_record($list, $lel, \%paste_pos, $row, $row_pos);
 			
 			$row_pos++;
+
+			$list->increment();
 		}
 
 		# replacements for simple values
@@ -246,11 +248,6 @@ sub replace_record {
 	}
 
 	$subtree->paste(%$paste_pos);
-
-	# call increment functions
-	#			for my $inc (@{$sref->{increments}->{$name}->{array}}) {
-	#				$inc->{increment}->increment();
-	#			}
 }
 
 1;
