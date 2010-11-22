@@ -106,6 +106,31 @@ sub input {
 	return 1;
 }
 
+# action method - returns form action
+sub action {
+	my ($self) = @_;
+
+	return $self->{action};
+}
+
+# set_action method - changes form action
+sub set_action {
+	my ($self, $action) = @_;
+
+	$self->{sob}->{elts}->[0]->set_att('action', $action);
+	$self->{action} = $action;
+}
+
+# finalize - adds action and other stuff to form
+sub finalize {
+	my ($self, $elt) = @_;
+	my ($action);
+	
+	if ($action = $self->{action}) {
+		$elt->set_att('action', $self->{action});
+	}
+}
+
 sub query {
 	my ($self) = @_;
 	my (%query, $found, %cols);
