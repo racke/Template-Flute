@@ -24,10 +24,10 @@ use warnings;
 
 # Constructor
 sub new {
-	my ($class, @args) = @_;
-	my ($self);
+	my ($proto, @args) = @_;
+	my ($class, $self);
 	
-	$class = shift;
+	$class = ref($proto) || $proto;
 
 	if (ref($args[0]) eq 'ARRAY') {
 		$self = {DATA => $args[0], INDEX => 0};
