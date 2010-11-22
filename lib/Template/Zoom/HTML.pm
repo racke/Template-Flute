@@ -44,6 +44,15 @@ sub lists {
 	return values %{$self->{lists}};
 }
 
+# list method - returns specific list object
+sub list {
+	my ($self, $name) = @_;
+
+	if (exists $self->{lists}->{$name}) {
+		return $self->{lists}->{$name};
+	}
+}
+
 # forms method - return list of Template::Zoom::Form objects for this template
 sub forms {
 	my ($self) = @_;
