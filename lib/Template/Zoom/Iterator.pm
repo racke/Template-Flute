@@ -61,4 +61,13 @@ sub count {
 	return $self->{COUNT};
 }
 
+# Reset method - rewind index of iterator
+sub reset {
+	my ($self) = @_;
+
+	$self->{INDEX} = 0;
+
+	return $self;
+}
+
 1;
