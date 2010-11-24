@@ -155,7 +155,7 @@ sub elt_handler {
 		
 		if (exists $self->{lists}->{$name}) {
 			# record static classes
-			push (@{$self->{lists}->{$name}->[1]}, join(' ', @$static_classes));
+			$self->{lists}->{$name}->set_static_class(@$static_classes);
 				
 			# discard repeated lists
 			$elt->cut();
