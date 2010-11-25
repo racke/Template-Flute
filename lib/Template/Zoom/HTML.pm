@@ -76,6 +76,13 @@ sub values {
 	return values %{$self->{values}};
 }
 
+# root method - returns root of HTML/XML tree
+sub root {
+	my ($self) = @_;
+
+	return $self->{xml}->root();
+}
+
 sub parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);
@@ -171,6 +178,22 @@ sub elt_handler {
 			
 		$sob->{elts} = [$elt];
 
+		# weed out parameters which aren't descendants of list element
+		for my $p (@{$self->{params}->{$name}->{array}}) {
+			my @p_new;
+			
+			for my $p_elt (@{$p->{elts}}) {
+				for my $a ($p_elt->ancestors()) {
+					if ($a eq $elt) {
+						push (@p_new, $p_elt);
+						last;
+					}
+				}
+			}
+
+			$p->{elts} = \@p_new;
+		}
+		
 		$self->{lists}->{$name} = new Template::Zoom::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
 		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});

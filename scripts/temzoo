@@ -34,7 +34,7 @@ my (%opts, %input);
 # commandline options
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser')) {
+unless (GetOptions (\%opts, 'browser', 'pdf=s')) {
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
@@ -100,7 +100,16 @@ my ($zoom);
 $zoom = new Template::Zoom (template => $html_object,
 							database => $db_object);
 
-if ($opts{browser}) {
+if ($opts{pdf}) {
+	require Template::Zoom::PDF;
+
+	$zoom->process();
+	
+	my $pdf = new Template::Zoom::PDF (xml => $html_object->root());
+
+	$pdf->process($opts{pdf});
+}
+elsif ($opts{browser}) {
 	# store zoom result in temporary file
 	my ($tmph, $tmpfile) = tempfile();
 	print $tmph $zoom->process();
