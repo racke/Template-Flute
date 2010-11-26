@@ -55,6 +55,7 @@ sub parse_file {
 				 paging => sub {$self->stash_handler($_[1])},
 				 form => sub {$self->form_handler($_[1])},
 				 param => sub {$self->stash_handler($_[1])},
+				 value => sub {$self->value_handler($_[1])},
 				 input => sub {$self->stash_handler($_[1])},
 				 sort => sub {$self->sort_handler($_[1])},
 				 );
@@ -138,6 +139,15 @@ sub form_handler {
 		
 	# add form to specification object
 	$self->{spec}->form_add(\%form);
+}
+
+sub value_handler {
+	my ($self, $elt) = @_;
+	my (%value);
+
+	$value{value} = $elt->atts();
+	
+	$self->{spec}->value_add(\%value);
 }
 
 sub stash_flush {

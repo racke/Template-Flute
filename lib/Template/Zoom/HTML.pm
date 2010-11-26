@@ -33,7 +33,7 @@ sub new {
 
 	$class = shift;
 
-	$self = {lists => {}, forms => {}, params => {}, query => {}};
+	$self = {lists => {}, forms => {}, params => {}, values => {}, query => {}};
 	bless $self;
 }
 
@@ -67,6 +67,13 @@ sub form {
 	if (exists $self->{forms}->{$name}) {
 		return $self->{forms}->{$name};
 	}
+}
+
+# values method - returns list of values for this template
+sub values {
+	my ($self) = @_;
+
+	return values %{$self->{values}};
 }
 
 sub parse_template {

@@ -119,6 +119,26 @@ sub form_add {
 	return $formref;
 }
 
+sub value_add {
+	my ($self, $new_valueref) = @_;
+	my ($valueref, $value_name, $id, $class);
+	
+	$value_name = $new_valueref->{value}->{name};
+
+	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
+	
+	if ($id = $new_valueref->{value}->{id}) {
+		$self->{ids}->{$id} = {%{$new_valueref->{value}}, type => 'value'};
+	}
+	else {
+		$class = $new_valueref->{value}->{class} || $value_name;
+
+		$self->{classes}->{$class} = {%{$new_valueref->{value}}, type => 'value'};
+	}
+	
+	return $valueref;
+}	
+	
 sub list_iterator {
 	my ($self, $list_name) = @_;
 

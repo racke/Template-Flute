@@ -121,24 +121,6 @@ sub process {
 
 			$list->increment();
 		}
-
-		# replacements for simple values
-#		while (($key, $value) = each %{$sref->{values}}) {
-#			for my $elt (@{$value->{elts}}) {
-#				if ($value->{scope} eq 'scratch') {
-#					$rep_str = $::Scratch->{$key};
-#				}
-#				else {
-#					$rep_str = $value->{value};
-#				}
-#				
-#				if ($value->{filter}) {
-#					$rep_str = Vend::Tags->filter({op => $value->{filter}, body => $rep_str});
-#				}
-#				
-#				$elt->set_text($rep_str);
-#			}
-#		}
 	}
 
 	for my $form ($self->{template}->forms()) {
@@ -167,7 +149,10 @@ sub process {
 			$subtree->paste(%paste_pos);
 		}
 	}
-			
+
+	# replace simple values
+	$self->replace_values();
+	
 	return $self->{template}->{xml}->sprint;
 }
 
@@ -191,14 +176,7 @@ sub replace_record {
 		}
 				
 		if ($param->{filter}) {
-			if (exists $self->{filters}->{$param->{filter}}) {
-				$filter = $self->{filters}->{$param->{filter}};
-			}
-			else {
-				die "Missing filter $param->{filter}\n";
-			}
-			
-			$rep_str = $filter->($rep_str);
+			$rep_str = $self->filter($param->{filter}, $rep_str);
 		}
 
 		for my $elt (@{$param->{elts}}) {
@@ -248,6 +226,54 @@ sub replace_record {
 	}
 
 	$subtree->paste(%$paste_pos);
+}
+
+sub filter {
+	my ($self, $filter, $value) = @_;
+	my ($rep_str);
+
+	if (exists $self->{filters}->{$filter}) {
+		$filter = $self->{filters}->{$filter};
+		$rep_str = $filter->($value);
+	}
+	else {
+		die "Missing filter $filter\n";
+	}
+
+	return $rep_str;
+}
+
+sub value {
+	my ($self, $value) = @_;
+	my ($rep_str);
+	
+	if ($self->{scopes}) {
+		if (exists $value->{scope}) {
+			$rep_str = $self->{values}->{$value->{scope}}->{$value->{name}};
+		}
+	}
+	else {
+		$rep_str = $self->{values}->{$value->{name}};
+	}
+
+	if ($value->{filter}) {
+		$rep_str = $self->filter($value->{filter}, $rep_str);
+	}
+
+	return $rep_str;
+}
+
+sub replace_values {
+	my ($self) = @_;
+	my ($value, $rep_str);
+	
+	for my $value ($self->{template}->values()) {
+		for my $elt (@{$value->{elts}}) {
+			$rep_str = $self->value($value);
+			
+			$elt->set_text($rep_str);
+		}
+	}
 }
 
 1;
