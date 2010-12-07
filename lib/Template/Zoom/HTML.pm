@@ -179,10 +179,6 @@ sub elt_handler {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
 				$self->{lists}->{$name}->set_iterator($iter);
 			}
-			else {
-				die "$0: Iterator $sob->{iterator} not found.\n";
-			}
-				
 		}
 		return $self;
 	}
