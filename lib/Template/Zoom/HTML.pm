@@ -206,6 +206,13 @@ sub elt_handler {
 		push (@{$sob->{elts}}, $elt);
 
 		if ($sob->{target}) {
+			if (exists $sob->{op}) {
+				if ($sob->{op} eq 'append') {
+					# keep original value around
+					$elt->{"zoom_$name"}->{rep_att_orig} = $elt->att($sob->{target});
+				}
+			}
+			
 			$elt->{"zoom_$name"}->{rep_att} = $sob->{target};
 		}
 		elsif ($gi eq 'input') {

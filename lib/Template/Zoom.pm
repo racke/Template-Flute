@@ -188,7 +188,12 @@ sub replace_record {
 				$zref->{rep_sub}->($elt, $rep_str);
 			} elsif ($zref->{rep_att}) {
 				# replace attribute instead of embedded text (e.g. for <input>)
-				$elt->set_att($zref->{rep_att}, $rep_str);
+				if ($param->{op} eq 'append') {
+					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
+				}
+				else {
+					$elt->set_att($zref->{rep_att}, $rep_str);
+				}
 			} elsif ($zref->{rep_elt}) {
 				# use provided text element for replacement
 				$zref->{rep_elt}->set_text($rep_str);
