@@ -200,25 +200,6 @@ sub replace_record {
 			} else {
 				$elt->set_text($rep_str);
 			}
-
-			# replace attributes on request
-			if ($param->{attributes}) {
-				while (($att_name, $att_spec) = each %{$param->{attributes}}) {
-					if (exists ($att_spec->{filter})) {
-								# derive tags from current record
-						if (exists ($att_spec->{filter_tags})) {
-							while (($att_tag_name, $att_tag_spec) = each %{$att_spec->{filter_tags}}) {
-								$att_tags{$att_tag_name} = $record->{$att_tag_spec};
-							}
-						} else {
-							%att_tags = ();
-						}
-								
-						$att_val = Vend::Interpolate::filter_value($att_spec->{filter}, undef, \%att_tags, $att_spec->{filter_args});
-						$elt->set_att($att_name, $att_val);
-					}
-				}
-			}
 		}
 	}
 			

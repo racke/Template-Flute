@@ -156,14 +156,6 @@ sub elt_handler {
 	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 	my ($elt_text);
 
-#	if ($sob->{permission}) {
-#		unless (Vend::Tags->acl('check', $sob->{permission})) {
-#			# no permission for this document part
-#			$elt->cut();
-#			return;
-#		}
-#	}
-	
 	if ($sob->{type} eq 'list') {
 		my $iter;
 		
@@ -260,16 +252,6 @@ sub elt_handler {
 			
 			$sob->{increment} = $inc;
 			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
-		}
-		elsif ($sob->{sub}) {
-			# determine code reference for named function
-			my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
-
-			if (exists $sob->{scope} && $sob->{scope} eq 'element') {
-				$elt->{"zoom_$name"}->{rep_sub} = $subref;
-			} else {
-				$sob->{subref} = $subref;
-			}
 		}
 
 		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
