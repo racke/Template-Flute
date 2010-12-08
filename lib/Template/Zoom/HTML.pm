@@ -228,14 +228,9 @@ sub elt_handler {
 		}
 		elsif ($gi eq 'input') {
 			my $type = $elt->att('type');
+			# replace value attribute instead of text
+			$elt->{"zoom_$name"}->{rep_att} = 'value';
 			
-			if (defined $type && $type eq 'checkbox') {
-				$elt->{"zoom_$name"}->{rep_sub} = \&set_checked;
-			}
-			else {
-				# replace value attribute instead of text
-				$elt->{"zoom_$name"}->{rep_att} = 'value';
-			}
 		} elsif ($gi eq 'select') {
 			$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
 		} elsif (! $elt->contains_only_text()) {
@@ -262,20 +257,6 @@ sub elt_handler {
 	} else {
 		return $self;
 	}
-}
-
-# set_checked - Set checked value in a checkbox/radio button
-sub set_checked {
-	my ($elt, $value) = @_;
-
-	if ($value) {
-		$elt->set_att('checked', 'checked');
-	}
-	else {
-		$elt->del_att('checked', 'checked');
-	}
-	
-	$elt->set_att('value', 1);
 }
 
 # set_selected - Set selected value in a dropdown menu
