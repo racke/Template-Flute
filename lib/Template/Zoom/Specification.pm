@@ -192,6 +192,29 @@ sub set_iterator {
 	$self->{iters}->{$name} = $iter;
 }
 
+sub resolve_iterator {
+	my ($self, $input) = @_;
+	my ($input_ref, $iter);
+
+	$input_ref = ref($input);
+
+	if ($input_ref eq 'ARRAY') {
+		$iter = new Template::Zoom::Iterator($iter);
+	}
+	elsif ($input_ref) {
+		# iterator already resolved
+		$iter = $input_ref;
+	}
+	elsif (exists $self->{iters}->{$input}) {
+		$iter = $self->{iters}->{$input};
+	}
+	else {
+		die "Failed to resolve iterator $input.";
+	}
+
+	return $iter;
+}
+
 sub element_by_class {
 	my ($self, $class) = @_;
 

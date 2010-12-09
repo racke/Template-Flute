@@ -36,7 +36,7 @@ sub new {
 sub params_add {
 	my ($self, $params) = @_;
 
-	$self->{params} = $params;
+	$self->{params} = $params || [];
 }
 
 sub inputs_add {

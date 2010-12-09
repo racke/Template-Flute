@@ -232,7 +232,15 @@ sub elt_handler {
 			$elt->{"zoom_$name"}->{rep_att} = 'value';
 			
 		} elsif ($gi eq 'select') {
-			$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+			if ($sob->{iterator}) {
+				$elt->{"zoom_$name"}->{rep_sub} = sub {
+					set_selected($_[0], $_[1],
+								 $spec_object->resolve_iterator($sob->{iterator}));
+				};
+			}
+			else {
+				$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+			}
 		} elsif (! $elt->contains_only_text()) {
 			# contains real elements, so we have to be careful with
 			# set text and apply it only to the first PCDATA element
@@ -262,23 +270,45 @@ sub elt_handler {
 # set_selected - Set selected value in a dropdown menu
 
 sub set_selected {
-	my ($elt, $value) = @_;
-	my (@children, $eltval);
+	my ($elt, $value, $iter) = @_;
+	my (@children, $eltval, $optref);
 
 	@children = $elt->children('option');
-
-	for my $node (@children) {
-		$eltval = $node->att('value');
-
-		unless (length($eltval)) {
-			$eltval = $node->text();
-		}
+	
+	if ($iter) {
+		# remove existing children
+		$elt->cut_children();
 		
-		if ($eltval eq $value) {
-			$node->set_att('selected', 'selected');
+		# get options from iterator		
+		while ($optref = $iter->next()) {
+			my (%att, $text);
+			
+			if (exists $optref->{label}) {
+				$text = $optref->{label};
+				$att{value} = $optref->{value};
+			}
+			else {
+				$text = $optref->{value};
+			}
+			
+			$elt->insert_new_elt('last_child', 'option',
+									 \%att, $text);
 		}
-		else {
-			$node->del_att('selected', '');
+	}
+	else {
+		for my $node (@children) {
+			$eltval = $node->att('value');
+
+			unless (length($eltval)) {
+				$eltval = $node->text();
+			}
+		
+			if ($eltval eq $value) {
+				$node->set_att('selected', 'selected');
+			}
+			else {
+				$node->del_att('selected', '');
+			}
 		}
 	}
 }

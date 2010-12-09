@@ -115,7 +115,7 @@ sub process {
 		my $row_pos = 0;
 		
 		while ($row = $iter->next()) {
-			$self->replace_record($list, $lel, \%paste_pos, $row, $row_pos);
+			$self->replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
 			
 			$row_pos++;
 
@@ -142,11 +142,10 @@ sub process {
 		if (keys(%{$form->inputs()}) && $form->input()) {
 			$iter = $dbobj->build($form->query());
 
-			$self->replace_record($form, $lel, \%paste_pos, $iter->next());
-		}
+			$self->replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
+		}		
 		else {
-			my $subtree = $lel->copy();
-			$subtree->paste(%paste_pos);
+			$self->replace_record($form, 'form', $lel, \%paste_pos, {});
 		}
 	}
 
@@ -157,12 +156,12 @@ sub process {
 }
 
 sub replace_record {
-	my ($self, $list, $lel, $paste_pos, $record, $row_pos) = @_;
+	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
 	my ($param, $key, $filter, $rep_str, $att_name, $att_spec, $name, $zref,
 		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
-	
+
 	# now fill in params
-	for $param (@{$list->params}) {
+	for $param (@{$container->params}) {
 		$key = $param->{name};
 				
 		$rep_str = $record->{$param->{field} || $key};
@@ -207,7 +206,8 @@ sub replace_record {
 	my $subtree = $lel->copy();
 
 	# alternate classes?
-	if ($class_alt = $list->static_class($row_pos)) {
+	if ($type eq 'list'
+		&& ($class_alt = $container->static_class($row_pos))) {
 		$subtree->set_att('class', $class_alt);
 	}
 
