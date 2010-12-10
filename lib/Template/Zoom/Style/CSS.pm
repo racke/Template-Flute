@@ -256,6 +256,11 @@ sub build_properties {
 		$propref->{height} = $props_css->{height};
 	}
 
+	# line-height
+	if ($props_css->{'line-height'}) {
+		$propref->{'line_height'} = $props_css->{'line-height'};
+	}
+	
 	# margin
 	if ($props_css->{'margin'}) {
 		$sides = $self->by_sides($props_css->{'margin'});

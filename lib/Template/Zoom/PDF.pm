@@ -390,6 +390,13 @@ sub calculate {
 	
 #	print "PW $specs->{props}->{width}, PH $specs->{props}->{height}, MW $max_width H $height\n";
 
+	# line height
+	if (exists $specs->{props}->{line_height}) {
+		if ($height > 0) {
+			$height = to_points($specs->{props}->{line_height});
+		}
+	}
+	
 	# adjust to fixed width
 	if ($specs->{props}->{width}) {
 		if ($specs->{props}->{width} < $max_width) {
