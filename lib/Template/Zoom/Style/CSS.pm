@@ -76,15 +76,18 @@ sub properties {
 			$self->build_properties(\%props, ".$class");
 		}
 	}
-	elsif (defined $parms{tag} && $parms{tag} =~ /\S/) {
+
+	if (defined $parms{tag} && $parms{tag} =~ /\S/) {
 		@tags = split(/\s+/, $parms{tag});
 			
 		for my $tag (@tags) {
 			$self->build_properties(\%props, $tag);
+
+			if ($parms{tag} eq 'strong'
+				&& ! exists $props{font}->{weight}) {
+				$props{font}->{weight} = 'bold';
+			}
 		}
-	}
-	else {
-		return {};
 	}
 
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
