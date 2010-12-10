@@ -388,10 +388,6 @@ sub calculate {
 	
 	print "Before offset: MW $max_width H $height S $specs->{size}, ", Dumper($specs->{offset}) . "\n";
 	
-	# add borders and padding
-	$max_width += $specs->{offset}->{left} + $specs->{offset}->{right};
-	$height += $specs->{offset}->{top} + $specs->{offset}->{bottom};
-
 #	print "PW $specs->{props}->{width}, PH $specs->{props}->{height}, MW $max_width H $height\n";
 
 	# adjust to fixed width
