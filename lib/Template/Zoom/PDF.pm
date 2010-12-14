@@ -364,11 +364,17 @@ sub calculate {
 			if ($text eq "\n") {
 				$height += $specs->{size};
 			}
-			
-			$text_width = $txeng->advancewidth($text, font => $specs->{font},
-											   fontsize => $specs->{size});
+			elsif ($text =~ /\S/) {
+				$text_width = $txeng->advancewidth($text, font => $specs->{font},
+												   fontsize => $specs->{size});
 
-			print "TW for $text and $specs->{props}->{width} $specs->{size}: $text_width\n";
+				print "TW for $text and $specs->{props}->{width} $specs->{size}: $text_width\n";
+			}
+			else {
+				# whitespace
+				$text_width = $txeng->advancewidth("\x20", font => $specs->{font},
+												   fontsize => $specs->{size});
+			}
 			
 			if ($text_width > $max_width) {
 				$max_width = $text_width;
