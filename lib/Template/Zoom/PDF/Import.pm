@@ -70,7 +70,7 @@ sub import {
 	$parms{end} ||= $pdf_import->pages();
 
 	for (my $i = $parms{start}; $i <= $parms{end}; $i++) {
-		my (@mbox, $new_left, $new_bottom, $left_edge, $bottom, $right_edge, $top);
+		my (@mbox, $new_left, $new_bottom, $left_edge, $bottom, $right_edge, $top, $mdiff);
 			
 		$page_out = $parms{pdf}->page(0);
 		$page_in = $pdf_import->openpage($i);
@@ -85,6 +85,18 @@ sub import {
 
 		$new_left = $left_edge;
 		$new_bottom = floor ((1 + $top - $bottom) * (1-$scale));
+
+		# adjusting left margin on request
+		if ($parms{margin}->{left}) {
+			$mdiff = Template::Zoom::PDF::to_points($parms{margin}->{left});
+			$new_left -= $mdiff;
+		}
+
+		# adjusting top margin on request
+		if ($parms{margin}->{top}) {
+			$mdiff = Template::Zoom::PDF::to_points($parms{margin}->{top});
+			$new_bottom += $mdiff;
+		}
 		
 		$gfx->formimage($xo,
 						$new_left, $new_bottom, # x y
