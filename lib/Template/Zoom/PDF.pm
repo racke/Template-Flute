@@ -521,7 +521,7 @@ print "Add textbox (class " . ($elt->att('class') || "''") . ") with content $bo
 		($width_last, $y_last, $left_over) = $self->{pdftable}->text_block(@tb_parms);
 
 		unless (defined $width_last) {
-			die "Bad text block parameters: " . Dumper(\%parms);
+			warn "Bad text block parameters: " . Dumper(\%parms);
 		}
 	}
 	else {
