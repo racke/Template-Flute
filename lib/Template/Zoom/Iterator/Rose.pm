@@ -75,4 +75,15 @@ sub next {
 	return $self->{results}->{sth}->fetchrow_hashref();
 };
 
+# Count method - returns number of elements
+sub count {
+	my ($self) = @_;
+
+	unless ($self->{results}) {
+		$self->run();
+	}
+
+	return $self->{results}->{sth}->rows();
+};
+
 1;
