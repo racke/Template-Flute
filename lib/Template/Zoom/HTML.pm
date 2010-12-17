@@ -83,6 +83,28 @@ sub root {
 	return $self->{xml}->root();
 }
 
+# translate method - localization of static text
+sub translate {
+	my ($self, $i18n) = @_;
+	my ($root, @text_elts, $i18n_ret, $parent_gi);
+
+	$root = $self->root();
+
+	@text_elts = $root->descendants('#TEXT');
+
+	for my $elt (@text_elts) {
+		$parent_gi = $elt->parent->gi();
+
+		next if $parent_gi eq 'style';
+		
+		$i18n_ret = $i18n->localize($elt->text());
+
+		$elt->set_text($i18n_ret);
+	}
+
+	return;
+}
+
 sub parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);

@@ -78,6 +78,11 @@ sub process {
 		$self->bootstrap();
 	}
 	
+	if ($self->{i18n}) {
+		# translate static text first
+		$self->{template}->translate($self->{i18n});
+	}
+
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
 		# check for (required) input
