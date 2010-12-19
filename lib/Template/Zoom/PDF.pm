@@ -263,12 +263,17 @@ sub content_width {
 sub text_filter {
 	my ($self, $text) = @_;
 
-	# remove leading/trailing whitespace
-	$text =~ s/^\s+//;
-	$text =~ s/\s+$//;
+	# fall back to empty string
+	unless (defined $text) {
+		return '';
+	}
 
 	# replace newlines with blanks
 	$text =~ s/\n/ /gs;
+
+	# remove leading/trailing whitespace
+	$text =~ s/^\s+//;
+	$text =~ s/\s+$//;
 
 	return $text;
 }
@@ -517,11 +522,11 @@ sub textbox {
 
 print "Add textbox (class " . ($elt->att('class') || "''") . ") with content $boxtext at $parms{y} x $parms{x}, border $offset{top}\n";
 
-	if (length($boxtext)) {
+	if (length($boxtext) && $boxtext =~ /\S/) {
 		($width_last, $y_last, $left_over) = $self->{pdftable}->text_block(@tb_parms);
 
 		unless (defined $width_last) {
-			warn "Bad text block parameters: " . Dumper(\%parms);
+			warn qq{Bad text block parameters for "$boxtext" (CL } . ($elt->att('class') || $elt->parent()->att('class')) . "): " . Dumper(\%parms);
 		}
 	}
 	else {
