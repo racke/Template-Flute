@@ -256,12 +256,32 @@ sub value {
 
 sub replace_values {
 	my ($self) = @_;
-	my ($value, $rep_str);
+	my ($value, $rep_str, @elts);
 	
 	for my $value ($self->{template}->values()) {
-		for my $elt (@{$value->{elts}}) {
-			$rep_str = $self->value($value);
+		$rep_str = $self->value($value);
+		@elts = @{$value->{elts}};
+
+		if (exists $value->{op} && $value->{op} eq 'toggle') {
+			warn "Op toggle found for $value->{name} and $rep_str.\n";
+
+			if (exists $value->{args} && $value->{args} eq 'static') {
+				if ($rep_str) {
+					# preserve static text
+					next;
+				}
+			}
 			
+			unless ($rep_str) {
+				# remove corresponding HTML elements from tree
+				for my $elt (@elts) {
+					$elt->cut();
+				}
+				next;
+			}
+		}
+		
+		for my $elt (@elts) {
 			$elt->set_text($rep_str);
 		}
 	}
