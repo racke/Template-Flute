@@ -64,16 +64,22 @@ sub initialize {
 
 sub properties {
 	my ($self, %parms) = @_;
-	my (@classes, @tags, %props);
+	my (@classes, @tags, $props);
 
+	# inherit from parent element
+	if (exists $parms{inherit}) {
+		$props = $self->inherit($parms{inherit});
+	}
+	
 	# defaults
-	$props{color} = 'black';
+	$props->{color} = 'black';
+
 
 	if (defined $parms{class} && $parms{class} =~ /\S/) {
 		@classes = split(/\s+/, $parms{class});
 
 		for my $class (@classes) {
-			$self->build_properties(\%props, ".$class");
+			$self->build_properties($props, ".$class");
 		}
 	}
 
@@ -81,20 +87,20 @@ sub properties {
 		@tags = split(/\s+/, $parms{tag});
 			
 		for my $tag (@tags) {
-			$self->build_properties(\%props, $tag);
+			$self->build_properties($props, $tag);
 
 			if ($parms{tag} eq 'strong'
-				&& ! exists $props{font}->{weight}) {
-				$props{font}->{weight} = 'bold';
+				&& ! exists $props->{font}->{weight}) {
+				$props->{font}->{weight} = 'bold';
 			}
 		}
 	}
 
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
-		$self->build_properties(\%props, $parms{selector});
+		$self->build_properties($props, $parms{selector});
 	}
 	
-	return \%props;
+	return $props;
 }
 
 sub descendant_properties {
@@ -309,6 +315,23 @@ sub build_properties {
 	}
 	
 	return $propref;
+}
+
+sub inherit {
+	my ($self, $inherit) = @_;
+	my (%props);
+
+	# font
+	if ($inherit->{font}) {
+		%{$props{font}} = %{$inherit->{font}};
+	}
+
+	# line height
+	if ($inherit->{line_height}) {
+		$props{line_height} = $inherit->{line_height};
+	}
+
+	return \%props;
 }
 
 # helper functions

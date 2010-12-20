@@ -120,7 +120,8 @@ sub calculate {
 		next if $self->{gi} eq 'head';
 		
 		unless (exists $self->{eltmap}->{$child}) {
-			@parms = (elt => $child, pdf => $self->{pdf});
+			@parms = (elt => $child, pdf => $self->{pdf},
+					  parent => $self);
 
 			if ($child->is_text()) {
 				# inheriting specifications of parent
@@ -335,7 +336,12 @@ sub render {
 
 sub setup_specs {
 	my ($self) = @_;
-		
+	my ($inherit);
+	
+	if ($self->{parent}) {
+		$inherit = $self->{parent}->{specs}->{props};
+	}
+	
 	# lookup ourselves in selector map from ancestors
 	if ($self->{selector_map}) {
 		my (@selectors);
@@ -350,12 +356,12 @@ sub setup_specs {
 		for my $key (@selectors) {
 			if ($self->{selector_map}->{$key}) {
 				$self->{specs} = $self->{pdf}->setup_text_props($self->{elt},
-														 $self->{selector_map}->{$key});
+														 $self->{selector_map}->{$key}, $inherit);
 			}
 		}
 	}
 			
-	$self->{specs} ||= $self->{pdf}->setup_text_props($self->{elt});
+	$self->{specs} ||= $self->{pdf}->setup_text_props($self->{elt}, undef, $inherit);
 	return;
 }
 

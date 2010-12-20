@@ -279,7 +279,7 @@ sub text_filter {
 }
 
 sub setup_text_props {
-	my ($self, $elt, $selector) = @_;
+	my ($self, $elt, $selector, $inherit) = @_;
 	my ($props, %borders, %padding, %margins, %offset, $fontsize, $fontfamily,
 		$fontweight, $txeng);
 
@@ -290,7 +290,9 @@ sub setup_text_props {
 	# get properties from CSS
 	$props = $self->{css}->properties(class => $elt->att('class'),
 									  tag => $elt->gi(),
-									  selector => $selector);
+									  selector => $selector,
+									  inherit => $inherit,
+									 );
 			
 	# offsets from border, padding etc.
 	for my $s (qw/top right bottom left/) {
