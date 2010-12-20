@@ -96,13 +96,21 @@ sub calculate {
 		# simple text box
 		$text = $self->{elt}->text();
 
-		# filter text to remove unnecessary whitespace
+		# filter text and break into chunks to remove unnecessary whitespace
 		$text = $self->{pdf}->text_filter($text);
 		
 		# break text first
-		my @frags = split(/\s+/, $text);
+		my @frags;
+
+		while ($text =~ s/^(.*?)\s+//) {
+			push (@frags, $1, ' ');
+		}
+
+		if (length($text)) {
+			push (@frags, $text);
+		}
 		
-		$self->{box} = $self->{pdf}->calculate($self->{elt}, text => [$text],
+		$self->{box} = $self->{pdf}->calculate($self->{elt}, text => \@frags,
 											  specs => $self->{specs});
 
 		print "Check width $self->{box}->{width}, height $self->{box}->{height}, $self->{box}->{overflow}->{x} vs $self->{window}->{max_w} for $text\n";
@@ -323,11 +331,15 @@ sub render {
 	
 	if ($self->{elt}->is_text()) {
 		# render text
-		my @frags = split(/\s+/, $self->{elt}->text());
+		my $chunks = $self->{box}->{chunks};
+
+		print "Chunks: " . Dumper($chunks) . "\n";
 		
-		$self->{pdf}->textbox($self->{elt}, $self->{elt}->text(),
-							  $self->{specs}, \%parms,
-							  noborder => 1);
+		for (my $i = 0; $i < @$chunks; $i++) {
+			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],
+								  $self->{specs}, {%parms, vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
+								  noborder => 1);
+		}
 	}
 	elsif ($self->{gi} eq 'hr') {
 		# rendering horizontal line

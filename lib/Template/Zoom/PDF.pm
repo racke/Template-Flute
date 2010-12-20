@@ -361,8 +361,8 @@ sub setup_text_props {
 
 sub calculate {
 	my ($self, $elt, %parms) = @_;
-	my ($text, $text_width, $max_width, $height, $specs, $txeng, $overflow_x,
-	   $overflow_y, $clear_before, $clear_after);
+	my ($text, $chunk_width, $text_width, $max_width, $height, $specs, $txeng,
+		$overflow_x, $overflow_y, $clear_before, $clear_after, @chunks, $buf);
 	
 	$txeng = $self->{page}->text();
 	$max_width = 0;
@@ -379,26 +379,52 @@ sub calculate {
 		}
 		
 		$height = $specs->{size};
+
+		$buf = '';
+		$text_width = 0;
 		
 		for my $text (@{$parms{text}}) {
 			if ($text eq "\n") {
+				push (@chunks, $buf . $text);
+				$buf = '';
+				$text_width = 0;
+				
 				$height += $specs->{size};
 			}
 			elsif ($text =~ /\S/) {
-				$text_width = $txeng->advancewidth($text, font => $specs->{font},
+				$chunk_width = $txeng->advancewidth($text, font => $specs->{font},
 												   fontsize => $specs->{size});
 
 				print "TW for $text and $specs->{props}->{width} $specs->{size}: $text_width\n";
 			}
 			else {
 				# whitespace
-				$text_width = $txeng->advancewidth("\x20", font => $specs->{font},
+				$chunk_width = $txeng->advancewidth("\x20", font => $specs->{font},
 												   fontsize => $specs->{size});
+				$buf .= $text;
 			}
+
+			if ($specs->{props}->{width}
+				&& $text_width + $chunk_width > $specs->{props}->{width}) {
+				print "Line break by long text: $buf + $text\n";
+
+				push (@chunks, $buf . $text);
+				$buf = '';
+				$text_width = 0;
+			}
+			else {
+				$buf .= $text;
+			}
+
+			$text_width += $chunk_width;
 			
 			if ($text_width > $max_width) {
 				$max_width = $text_width;
 			}
+		}
+
+		if ($buf) {
+			push (@chunks, $buf);
 		}
 	}
 
@@ -448,6 +474,7 @@ sub calculate {
 	return {width => $max_width, height => $height, size => $specs->{size},
 			clear => {before => $clear_before, after => $clear_after},
 			overflow => {x => $overflow_x, y => $overflow_y},
+			chunks => \@chunks,
 		   };
 }
 
