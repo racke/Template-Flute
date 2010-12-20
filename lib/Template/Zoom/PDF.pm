@@ -284,6 +284,7 @@ sub setup_text_props {
 		$fontweight, $txeng);
 
 	my $class = $elt->att('class') || '';
+	my $gi = $elt->gi();
 
 	$selector ||= '';
 	
@@ -294,19 +295,6 @@ sub setup_text_props {
 									  inherit => $inherit,
 									 );
 			
-	# offsets from border, padding etc.
-	for my $s (qw/top right bottom left/) {
-		$borders{$s} = to_points($props->{border}->{$s}->{width});
-		$margins{$s} = to_points($props->{margin}->{$s});
-		$padding{$s} = to_points($props->{padding}->{$s});
-
-		$offset{$s} += $margins{$s} + $borders{$s} + $padding{$s};
-	}
-
-	# height and width
-	$props->{width} = to_points($props->{width});
-	$props->{height} = to_points($props->{height});
-	
 	$txeng = $self->{page}->text;
 
 	if ($props->{font}->{size} && $props->{font}->{size} =~ s/^(\d+)(pt)?$/$1/) {
@@ -339,6 +327,31 @@ sub setup_text_props {
 
 	$txeng->font($self->{font}, $fontsize);
 
+	if ($gi eq 'hr') {
+		unless (keys %{$props->{margin}}) {
+			# default margins for horizontal rule
+			my $margin;
+
+			$margin = 0.5 * $fontsize;
+
+			$props->{margin} = {top => $margin,
+								bottom => $margin};
+		}
+	}
+				
+	# offsets from border, padding etc.
+	for my $s (qw/top right bottom left/) {
+		$borders{$s} = to_points($props->{border}->{$s}->{width});
+		$margins{$s} = to_points($props->{margin}->{$s});
+		$padding{$s} = to_points($props->{padding}->{$s});
+
+		$offset{$s} += $margins{$s} + $borders{$s} + $padding{$s};
+	}
+
+	# height and width
+	$props->{width} = to_points($props->{width});
+	$props->{height} = to_points($props->{height});
+	
 	return {font => $self->{font}, size => $fontsize, offset => \%offset,
 			borders => \%borders, margins => \%margins, padding => \%padding, props => $props,
 			# for debugging
@@ -572,6 +585,30 @@ print "Add textbox (class " . ($elt->att('class') || "''") . ") with content $bo
 
 	return {height => $box_height, width => $text_width };
 #print "Current pos: " . $self->{y} . ' x ' . $self->{hpos} . "\n\n";
+}
+
+# draw horizontal line according to specs
+sub hline {
+	my ($self, $specs, $hpos, $vpos, $length, $width) = @_;
+	my ($gfx);
+
+	$gfx = $self->{page}->gfx;
+
+	# set line color
+	$gfx->strokecolor($specs->{props}->{color});
+
+	# set line width
+	$gfx->linewidth($width || 1);
+	
+	# starting point
+	$gfx->move($hpos, $vpos);
+
+	$gfx->line($hpos + $length, $vpos);
+	
+	# draw line
+	$gfx->stroke();
+
+	return;
 }
 
 # draw borders according to specs

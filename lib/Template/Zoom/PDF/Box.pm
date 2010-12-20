@@ -105,7 +105,7 @@ sub calculate {
 		$self->{box} = $self->{pdf}->calculate($self->{elt}, text => [$text],
 											  specs => $self->{specs});
 
-		print "Check width $self->{box}->{width}, $self->{box}->{overflow}->{x} vs $self->{window}->{max_w} for $text\n";
+		print "Check width $self->{box}->{width}, height $self->{box}->{height}, $self->{box}->{overflow}->{x} vs $self->{window}->{max_w} for $text\n";
 		
 		if ($self->{box}->{overflow}->{x}) {
 			warn "Uh oh, out of bounds for $text: $self->{box}->{overflow}->{x}\n";
@@ -274,7 +274,11 @@ sub calculate {
 	# set up clear properties
 	my $clear = {after => 0, before => 0};
 
-	if ($self->{gi} eq 'br') {
+	if ($self->{gi} eq 'hr') {
+		$clear->{before} = $clear->{after} = 1;
+		$max_width ||= $self->{bounding}->{max_w};
+	}
+	elsif ($self->{gi} eq 'br') {
 		$clear->{before} = 1;
 	}
 	elsif ($self->{gi} =~ /^h\d$/
@@ -324,6 +328,13 @@ sub render {
 		$self->{pdf}->textbox($self->{elt}, $self->{elt}->text(),
 							  $self->{specs}, \%parms,
 							  noborder => 1);
+	}
+	elsif ($self->{gi} eq 'hr') {
+		# rendering horizontal line
+
+		$self->{pdf}->hline($self->{specs}, $parms{hpos},
+							$parms{vpos} - $self->{specs}->{offset}->{top},
+							$self->{box}->{width}, $self->{specs}->{props}->{height});
 	}
 	else {
 		# render borders
