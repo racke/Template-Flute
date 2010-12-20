@@ -86,7 +86,7 @@ sub root {
 # translate method - localization of static text
 sub translate {
 	my ($self, $i18n) = @_;
-	my ($root, @text_elts, $i18n_ret, $parent_gi);
+	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n);
 
 	$root = $self->root();
 
@@ -96,8 +96,15 @@ sub translate {
 		$parent_gi = $elt->parent->gi();
 
 		next if $parent_gi eq 'style';
+
+		$parent_i18n = $elt->parent->att('i18n-key');
 		
-		$i18n_ret = $i18n->localize($elt->text());
+		if ($parent_i18n) {
+			$i18n_ret = $i18n->localize($parent_i18n);
+		}
+		else {
+			$i18n_ret = $i18n->localize($elt->text());
+		}
 
 		$elt->set_text($i18n_ret);
 	}
@@ -283,7 +290,11 @@ sub elt_handler {
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
+		
 		$self->{values}->{$name} = $sob;
+	} elsif ($sob->{type} eq 'i18n') {
+
+		$elt->set_att('i18n-key', $sob->{'key'});
 	} else {
 		return $self;
 	}

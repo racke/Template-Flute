@@ -138,7 +138,27 @@ sub value_add {
 	
 	return $valueref;
 }	
+
+sub i18n_add {
+	my ($self, $new_i18nref) = @_;
+	my ($i18nref, $i18n_name, $id, $class);
+
+	$i18n_name = $new_i18nref->{value}->{name};
 	
+	$i18nref = $self->{i18n}->{$new_i18nref->{value}->{name}} = {};
+	
+	if ($id = $new_i18nref->{value}->{id}) {
+		$self->{ids}->{$id} = {%{$new_i18nref->{value}}, type => 'i18n'};
+	}
+	else {
+		$class = $new_i18nref->{value}->{class} || $i18n_name;
+
+		$self->{classes}->{$class} = {%{$new_i18nref->{value}}, type => 'i18n'};
+	}
+	
+	return $i18nref;
+}
+
 sub list_iterator {
 	my ($self, $list_name) = @_;
 
