@@ -236,21 +236,28 @@ sub filter {
 
 sub value {
 	my ($self, $value) = @_;
-	my ($rep_str);
+	my ($raw_value, $rep_str);
 	
 	if ($self->{scopes}) {
 		if (exists $value->{scope}) {
-			$rep_str = $self->{values}->{$value->{scope}}->{$value->{name}};
+			$raw_value = $self->{values}->{$value->{scope}}->{$value->{name}};
 		}
 	}
 	else {
-		$rep_str = $self->{values}->{$value->{name}};
+		$raw_value = $self->{values}->{$value->{name}};
 	}
 
 	if ($value->{filter}) {
-		$rep_str = $self->filter($value->{filter}, $rep_str);
+		$rep_str = $self->filter($value->{filter}, $raw_value);
+	}
+	else {
+		$rep_str = $raw_value;
 	}
 
+	if (wantarray) {
+		return ($raw_value, $rep_str);
+	}
+	
 	return $rep_str;
 }
 
@@ -259,11 +266,12 @@ sub replace_values {
 	my ($value, $rep_str, @elts);
 	
 	for my $value ($self->{template}->values()) {
-		$rep_str = $self->value($value);
 		@elts = @{$value->{elts}};
 
 		if (exists $value->{op} && $value->{op} eq 'toggle') {
-			warn "Op toggle found for $value->{name} and $rep_str.\n";
+			my $raw;
+
+			($raw, $rep_str) = $self->value($value);
 
 			if (exists $value->{args} && $value->{args} eq 'static') {
 				if ($rep_str) {
@@ -272,13 +280,16 @@ sub replace_values {
 				}
 			}
 			
-			unless ($rep_str) {
+			unless ($raw) {
 				# remove corresponding HTML elements from tree
 				for my $elt (@elts) {
 					$elt->cut();
 				}
 				next;
 			}
+		}
+		else {
+			$rep_str = $self->value($value);
 		}
 		
 		for my $elt (@elts) {
