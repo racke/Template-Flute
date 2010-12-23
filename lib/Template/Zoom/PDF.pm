@@ -262,11 +262,14 @@ sub content_width {
 
 sub text_filter {
 	my ($self, $text) = @_;
-
+	my ($orig);
+	
 	# fall back to empty string
 	unless (defined $text) {
 		return '';
 	}
+
+	$orig = $text;
 
 	# replace newlines with blanks
 	$text =~ s/\n/ /gs;
@@ -275,6 +278,11 @@ sub text_filter {
 	$text =~ s/^\s+//;
 	$text =~ s/\s+$//;
 
+	if (length $orig && ! length $text) {
+		# reduce not further than a single whitespace
+		return ' ';
+	}
+	
 	return $text;
 }
 
@@ -401,7 +409,6 @@ sub calculate {
 				# whitespace
 				$chunk_width = $txeng->advancewidth("\x20", font => $specs->{font},
 												   fontsize => $specs->{size});
-				$buf .= $text;
 			}
 
 			if ($specs->{props}->{width}

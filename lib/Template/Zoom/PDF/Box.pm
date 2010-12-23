@@ -102,7 +102,7 @@ sub calculate {
 		# break text first
 		my @frags;
 
-		while ($text =~ s/^(.*?)\s+//) {
+		while ($text =~ s/^(.+?)\s+//) {
 			push (@frags, $1, ' ');
 		}
 
