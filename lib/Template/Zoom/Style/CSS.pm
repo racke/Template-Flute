@@ -232,7 +232,7 @@ sub build_properties {
 	if ($props_css->{clear}) {
 		$propref->{clear} = $props_css->{clear};
 	}
-	else {
+	elsif (! $propref->{clear}) {
 		$propref->{clear} = 'none';
 	}
 	
@@ -245,7 +245,7 @@ sub build_properties {
 	if ($props_css->{float}) {
 		$propref->{float} = $props_css->{float};
 	}
-	else {
+	elsif (! $propref->{float}) {
 		$propref->{float} = 'none';
 	}
 	
