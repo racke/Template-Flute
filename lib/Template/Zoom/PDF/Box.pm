@@ -199,7 +199,8 @@ sub calculate {
 		if ($hpos_next > 0) {
 			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class}\n";
 
-			if ($child->property('float') eq 'right') {
+			if ($child->property('float') eq 'right'
+				&& $self->property('float') ne 'right') {
 				# push it to the right border
 				
 				if ($self->property('width')) {
@@ -246,6 +247,20 @@ sub calculate {
 			# stripe height is simply height of this child
 			$max_stripe_height = $child->{box}->{height};
 
+			if ($child->property('float') eq 'right'
+				&& $self->property('float') ne 'right') {
+				# push it to the right border
+				if ($self->property('width')) {
+					$max_width = $self->property('width');
+				}
+				else {
+					$max_width = $self->{bounding}->{max_w};
+				}
+
+				$hpos = $max_width - $child->{box}->{width};
+				$hpos_next = $max_width;
+			}
+				
 			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}\n";
 			$hpos_next = $child->{box}->{width};
 		}
