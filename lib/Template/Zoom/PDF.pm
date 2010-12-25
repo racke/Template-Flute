@@ -205,7 +205,13 @@ my $footer_height	=  3;
 
 	$root_box = new Template::Zoom::PDF::Box(@root_parms);
 
+	# calculate sizes
 	$root_box->calculate();
+
+	# page partitioning
+	$root_box->partition(1, 0);
+
+	# render
 	$root_box->render(vpos => $self->{border_top},
 					  hpos => $self->{border_left});
 	
@@ -214,6 +220,28 @@ my $footer_height	=  3;
 	$pdf->saveas();
 	
 	return;
+}
+
+# select_page PAGE_NUM
+#
+# Selects page with the given PAGE_NUM. Creates new page if necessary.
+
+sub select_page {
+	my ($self, $page_num) = @_;
+	my ($diff, $cur_page);
+	
+	if ($page_num > $self->{pdf}->pages()) {
+		$diff = $page_num - $self->{pdf}->pages();
+
+		for (my $i = 0; $i < $diff; $i++) {
+			$cur_page = $self->{pdf}->page();
+		}
+	}
+	else {
+		$cur_page = $self->{pdf}->openpage($page_num);
+	}
+
+	$self->{page} = $cur_page;
 }
 
 # converts widths to points, default unit is mm
@@ -249,6 +277,13 @@ sub to_points {
 	}
 
 	return sprintf("%.0f", $points);
+}
+
+sub content_height {
+	my ($self) = @_;
+	my ($height);
+
+	return $self->{page_height};
 }
 
 sub content_width {

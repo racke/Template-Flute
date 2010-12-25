@@ -52,6 +52,9 @@ sub new {
 	else {
 		$self->{class} = '';
 	}
+
+	# Page for element
+	$self->{page} ||= 1;
 	
 	# Mapping child elements to box objects
 	$self->{eltmap} = {};
@@ -118,7 +121,7 @@ sub calculate {
 		if ($self->{box}->{overflow}->{x}) {
 			warn "Uh oh, out of bounds for $text: $self->{box}->{overflow}->{x}\n";
 		}
-		
+
 		return $self->{box};
 	}
 	
@@ -190,7 +193,7 @@ sub calculate {
 			$hpos = 0;
 			$hpos_next = 0;
 			$max_stripe_height = 0;
-			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: A $clear_after\n";
+			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
 		}
 
 		# keep vertical position
@@ -261,17 +264,17 @@ sub calculate {
 				$hpos_next = $max_width;
 			}
 				
-			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}\n";
+			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}, VPOS $vpos\n";
 			$hpos_next = $child->{box}->{width};
 		}
 
 		$self->{eltpos}->[$i] = {hpos => $hpos, vpos => -$vpos};
 
 		if ($child->{elt}->is_text()) {
-			print "POS for TEXT " . $child->{elt}->text() . ": " . Dumper($self->{eltpos}->[$i]);
+			print "POS (relative) for TEXT '" . $child->{elt}->text() . "': " . Dumper($self->{eltpos}->[$i]);
 		}
 		else {
-			print "POS for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
+			print "POS (relative) for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
 		}
 
 		# advance to new relative position
@@ -319,6 +322,91 @@ sub calculate {
 	return $self->{box};
 }
 
+# partition - partition boxes through pages
+sub partition {
+	my ($self, $page_num, $height_base) = @_;
+	my (@children, $children_height, $vpos_diff, $page_num_max);
+
+	$children_height = 0;
+	$page_num_max = $page_num;
+
+	if ($page_num > $self->{page}) {
+		$self->{page} = $page_num;
+	}
+	
+	print "PART $self->{gi} $self->{class}, PAGE $page_num, BASE $height_base BOX: " . Dumper($self->{box});
+
+	if ($height_base + $self->{box}->{height} > $self->{pdf}->content_height()) {
+		print "SPLIT required due to H " . $self->{pdf}->content_height() . "\n";
+				
+		@children = @{$self->{eltstack}};
+
+		if (@children > 1) {
+			# partition children
+			print "MULTIPLE\n";
+			for (my $i = 0; $i < @children; $i++) {
+				my $c_info = "GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class};
+				
+				if ($height_base + $children_height + $children[$i]->{box}->{height} > $self->{pdf}->content_height()) {
+					print "CALL CHILD FROM BASE $height_base WITH CH $children_height, $c_info\n";
+					$page_num_max = $children[$i]->partition($page_num_max, $height_base +  $children_height);
+					# adjust positions of children
+					print "PAGE NUM GI $self->{gi} CLASS $self->{class}: FROM $page_num TO $page_num_max (CH: $children_height, HB: $height_base)\n";
+
+					print "OLD ELT POS $c_info: " . Dumper($self->{eltpos}->[$i]) . "\n";
+
+					$vpos_diff = - $self->{eltpos}->[$i]->{vpos};
+
+					unless ($children[$i]->{box}->{height} > $self->{pdf}->content_height()) {
+						$self->{eltpos}->[$i]->{vpos} = 0;
+						$self->{eltpos}->[$i]->{page} = $page_num_max;
+						$children[$i]->adjust_page($page_num_max);
+					}
+					
+					print "NEW ELT POS: " . Dumper($self->{eltpos}->[$i]) . "\n";
+
+#					if ($page_num_max == $page_num) {
+#						# advance page for following element
+#						$page_num++;
+#					}
+					
+					# reset heights
+					$height_base = 0;
+					$children_height = $children[$i]->{box}->{height};
+					next;
+				}
+				elsif ($vpos_diff) {
+					$self->{eltpos}->[$i]->{vpos} += $vpos_diff;
+					$self->{eltpos}->[$i]->{page} = $page_num_max;
+
+					$children[$i]->adjust_page($page_num_max);
+					print "ADJUST CHILD ON PAGE $page_num_max FROM BASE $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . " TO: " . Dumper($self->{eltpos}->[$i]) . "\n";
+				}
+				else {					
+					print "CHILD FIT FROM BASE ON PAGE $page_num_max $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . "\n";
+					$self->{eltpos}->[$i]->{page} = $page_num_max;
+				}
+				
+				$children_height += $children[$i]->{box}->{height};
+			}
+		}
+		elsif (@children) {
+			print "SINGLE\n";
+
+			$children[0]->partition($page_num, $height_base);
+			$page_num_max++;
+#			$page_num += 1;
+#			$self->{page} = $page_num;
+		}
+		else {
+			$page_num_max++;
+			print "Advance page for element without children to $page_num_max\n";
+		}
+	}
+
+	return $page_num_max;
+}
+
 # property - returns property $name
 
 sub property {
@@ -331,17 +419,43 @@ sub property {
 
 sub render {
 	my ($self, %parms) = @_;
-	my ($child, $pos, $margins);
+	my ($child, $pos, $margins, $page_before, $page_cur);
 
-	print "RENDER for  GI $self->{gi}, CLASS $self->{class}: " . Dumper(\%parms);
+	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
+
+	if (exists $parms{page}
+		&& $parms{page} > $self->{page}) {
+		$self->{pdf}->select_page($parms{page});
+	}
+	else {
+		$self->{pdf}->select_page($self->{page});
+	}
+
+	$page_before = $self->{page};
 	
 	# loop through our stack
 	for (my $i = 0; $i < @{$self->{eltstack}};  $i++) {
 		$child = $self->{eltstack}->[$i];
 		$pos = $self->{eltpos}->[$i];
+		$page_cur = $pos->{page} || $page_before;
+
+		if ($page_cur > $page_before) {
+			if ($i > 0) {
+				# page turn, adjust position
+				my $c_info = "GI " . $child->{gi} . ", CLASS " . $child->{class};
+				print "PAGE TURN FROM $page_before TO $page_cur CLASS $self->{class} GI $self->{gi} FOR $c_info\n";
+
+				$parms{vpos} = $self->{pdf}->{border_top};
+				$parms{hpos} = $self->{pdf}->{border_left};
+			}
+			
+			$page_before = $page_cur;
+		}
 		
 		$child->render(hpos => $parms{hpos} + $self->{specs}->{offset}->{left} + $pos->{hpos},
-					  vpos => $parms{vpos} - $self->{specs}->{offset}->{top} + $pos->{vpos});
+					   vpos => $parms{vpos} - $self->{specs}->{offset}->{top} + $pos->{vpos},
+					   page => $pos->{page} || $self->{page},
+					   );
 	}
 	
 	if ($self->{elt}->is_text()) {
@@ -369,6 +483,18 @@ sub render {
 							  $self->{box}->{width},
 							  $self->{box}->{height},
 							  $self->{specs});
+	}
+}
+
+sub adjust_page {
+	my ($self, $page_num) = @_;
+	my (@children);
+
+	@children = @{$self->{eltstack}};
+	
+	for (my $i = 0; $i < @children; $i++) {
+		$self->{eltpos}->[$i]->{page} = $page_num;
+		$children[$i]->adjust_page($page_num);
 	}
 }
 
