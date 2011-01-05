@@ -134,14 +134,25 @@ sub set_action {
 	$self->{action} = $action;
 }
 
+# set_method method - changes form method
+sub set_method {
+	my ($self, $method) = @_;
+
+	$self->{sob}->{elts}->[0]->set_att('method', $method);
+	$self->{method} = $method;
+}
+
 # finalize - adds action and other stuff to form
 sub finalize {
 	my ($self, $elt) = @_;
-	my ($action);
-	
-	if ($action = $self->{action}) {
-		$elt->set_att('action', $self->{action});
+
+	for (qw/action method/) {
+		if (exists $self->{$_} && $self->{$_}) {
+			$elt->set_att($_, $self->{$_});
+		}
 	}
+
+	return;
 }
 
 sub query {
