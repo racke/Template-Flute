@@ -56,6 +56,7 @@ sub parse_file {
 				 form => sub {$self->form_handler($_[1])},
 				 param => sub {$self->stash_handler($_[1])},
 				 value => sub {$self->value_handler($_[1])},
+ 				 field => sub {$self->stash_handler($_[1])},
 				 i18n => sub {$self->i18n_handler($_[1])},
 				 input => sub {$self->stash_handler($_[1])},
 				 sort => sub {$self->sort_handler($_[1])},

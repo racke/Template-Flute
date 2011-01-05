@@ -39,6 +39,12 @@ sub params_add {
 	$self->{params} = $params || [];
 }
 
+sub fields_add {
+	my ($self, $fields) = @_;
+
+	$self->{fields} = $fields || [];
+}
+
 sub inputs_add {
 	my ($self, $inputs) = @_;
 
@@ -60,6 +66,13 @@ sub elt {
 	my ($self) = @_;
 
 	return $self->{sob}->{elts}->[0];
+}
+
+# fields method - returns defined form fields
+sub fields {
+	my ($self) = @_;
+
+	return $self->{fields};
 }
 
 # params method - returns form parameter

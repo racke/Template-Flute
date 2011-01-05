@@ -235,6 +235,8 @@ sub elt_handler {
 		$sob->{elts} = [$elt];
 
 		$self->{forms}->{$name} = new Template::Zoom::Form ($sob);
+
+		$self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
 		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
 			
 		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
@@ -292,6 +294,10 @@ sub elt_handler {
 		push (@{$sob->{elts}}, $elt);
 		
 		$self->{values}->{$name} = $sob;
+	} elsif ($sob->{type} eq 'field') {
+		# match for form field found in HTML
+		push (@{$sob->{elts}}, $elt);
+		push(@{$self->{fields}->{$sob->{form}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'i18n') {
 
 		$elt->set_att('i18n-key', $sob->{'key'});

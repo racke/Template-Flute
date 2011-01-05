@@ -116,6 +116,12 @@ sub form_add {
 		$self->{classes}->{$class} = {%{$param}, type => 'param', form => $form_name};	
 	}
 
+	# loop through fields for this form
+	for my $field (@{$new_formref->{field}}) {
+		$class = $field->{class} || $field->{name};
+		$self->{classes}->{$class} = {%{$field}, type => 'field', form => $form_name};	
+	}
+	
 	return $formref;
 }
 
