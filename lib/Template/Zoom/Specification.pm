@@ -219,7 +219,7 @@ sub resolve_iterator {
 	$input_ref = ref($input);
 
 	if ($input_ref eq 'ARRAY') {
-		$iter = new Template::Zoom::Iterator($iter);
+		$iter = new Template::Zoom::Iterator($input);
 	}
 	elsif ($input_ref) {
 		# iterator already resolved
