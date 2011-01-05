@@ -1,6 +1,6 @@
 # Template::Zoom::Specification::XML - Zoom XML Specification routines
 #
-# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2010-11 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 # Template::Zoom::List - Zoom list class
 #
-# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2010-2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
