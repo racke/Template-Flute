@@ -135,7 +135,7 @@ sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
 
-	if (! $params && $self->{valid_input} == 1) {
+	if ((! $params || ! (keys %$params)) && $self->{valid_input} == 1) {
 		return 1;
 	}
 	
