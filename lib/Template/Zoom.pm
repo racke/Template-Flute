@@ -120,11 +120,13 @@ sub process {
 		my $row_pos = 0;
 		
 		while ($row = $iter->next()) {
-			$self->replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+			if ($row = $list->filter($self, $row)) {
+				$self->replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
 			
-			$row_pos++;
+				$row_pos++;
 
-			$list->increment();
+				$list->increment();
+			}
 		}
 	}
 

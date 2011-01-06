@@ -236,6 +236,25 @@ sub query {
 	}
 }
 
+# set_filter method - set global filter for list
+sub set_filter {
+	my ($self, $name) = @_;
+
+	$self->{filter} = $name;
+}
+
+# filter method - run row filter if applicable
+sub filter {
+	my ($self, $zoom, $row) = @_;
+	my ($new_row) = @_;
+	
+	if ($self->{filter}) {
+		return $zoom->filter($self->{filter}, $row);
+	}
+	
+	return $row;
+}
+
 # increment method - increments all incrementors
 sub increment {
 	my ($self) = @_;

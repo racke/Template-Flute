@@ -224,6 +224,11 @@ sub elt_handler {
 				$self->{lists}->{$name}->set_iterator($iter);
 			}
 		}
+
+		if (exists $sob->{filter}) {
+			$self->{lists}->{$name}->set_filter($sob->{filter});
+		}
+		
 		return $self;
 	}
 
