@@ -143,6 +143,10 @@ sub input {
 	$params ||= {};
 	
 	for my $input (values %{$self->{inputs}}) {
+		if ($input->{optional} && ! $params->{$input->{name}}) {
+			# skip optional inputs without a value
+			next;
+		}
 		if ($input->{required} && ! $params->{$input->{name}}) {
 			warn "Missing input for $input->{name}.\n";
 			$error_count++;
@@ -193,6 +197,10 @@ sub query {
 			$name = $_->{name};
 		}
 
+		if ($_->{optional} && ! exists $_->{value}) {
+			next;
+		}
+		
 		if (exists $_->{op}) {
 			# specific operator
 			push @{$query{query}}, $name => {$_->{op} => $_->{value}};
