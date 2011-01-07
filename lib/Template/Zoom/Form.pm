@@ -142,6 +142,20 @@ sub set_method {
 	$self->{method} = $method;
 }
 
+# fill - fills form fields
+sub fill {
+	my ($self, $href) = @_;
+	my ($f, @elts);
+
+	for my $f (@{$self->fields()}) {
+		@elts = @{$f->{elts}};
+
+		if (@elts == 1) {
+			$elts[0]->set_att('value', $href->{$f->{name}});
+		}
+	}
+}
+
 # finalize - adds action and other stuff to form
 sub finalize {
 	my ($self, $elt) = @_;
