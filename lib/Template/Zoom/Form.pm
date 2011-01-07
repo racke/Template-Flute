@@ -145,13 +145,21 @@ sub set_method {
 # fill - fills form fields
 sub fill {
 	my ($self, $href) = @_;
-	my ($f, @elts);
+	my ($f, @elts, $zref);
 
 	for my $f (@{$self->fields()}) {
 		@elts = @{$f->{elts}};
 
 		if (@elts == 1) {
-			$elts[0]->set_att('value', $href->{$f->{name}});
+			$zref = $elts[0]->{"zoom_$f->{name}"};
+			
+			if ($zref->{rep_sub}) {
+				# call subroutine to handle this element
+				$zref->{rep_sub}->($elts[0], $href->{$f->{name}});
+			}
+			else {
+				$elts[0]->set_att('value', $href->{$f->{name}});
+			}
 		}
 	}
 }

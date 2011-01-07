@@ -302,6 +302,18 @@ sub elt_handler {
 	} elsif ($sob->{type} eq 'field') {
 		# match for form field found in HTML
 		push (@{$sob->{elts}}, $elt);
+
+		if ($gi eq 'select') {
+			if ($sob->{iterator}) {
+				$elt->{"zoom_$name"}->{rep_sub} = sub {
+					set_selected($_[0], $_[1],
+								 $spec_object->resolve_iterator($sob->{iterator}));
+				};
+			}
+			else {
+				$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+			}
+		}
 		push(@{$self->{fields}->{$sob->{form}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'i18n') {
 
