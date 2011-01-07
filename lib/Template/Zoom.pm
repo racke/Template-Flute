@@ -197,6 +197,14 @@ sub replace_record {
 				if ($param->{op} eq 'append') {
 					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
 				}
+				elsif ($param->{op} eq 'toggle') {
+					if ($rep_str) {
+						$elt->set_att($zref->{rep_att}, $rep_str);
+					}
+					else {
+						$elt->del_att($zref->{rep_att});
+					}
+				}
 				else {
 					$elt->set_att($zref->{rep_att}, $rep_str);
 				}
