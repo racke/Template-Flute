@@ -157,6 +157,9 @@ sub fill {
 				# call subroutine to handle this element
 				$zref->{rep_sub}->($elts[0], $href->{$f->{name}});
 			}
+			elsif ($elts[0]->gi() eq 'textarea') {
+				$elts[0]->set_text($href->{$f->{name}});
+			}
 			else {
 				$elts[0]->set_att('value', $href->{$f->{name}});
 			}
