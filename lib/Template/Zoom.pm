@@ -300,4 +300,10 @@ sub replace_values {
 	}
 }
 
+sub set_values {
+	my ($self, $values) = @_;
+
+	$self->{values} = $values;
+}
+
 1;
