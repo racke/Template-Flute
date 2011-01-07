@@ -83,6 +83,9 @@ sub process {
 		$self->{template}->translate($self->{i18n});
 	}
 
+	# replace simple values
+	$self->replace_values();
+	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
 		# check for (required) input
@@ -156,9 +159,6 @@ sub process {
 		}
 	}
 
-	# replace simple values
-	$self->replace_values();
-	
 	return $self->{template}->{xml}->sprint;
 }
 
