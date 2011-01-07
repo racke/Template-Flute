@@ -122,8 +122,13 @@ sub form_add {
 
 	# loop through fields for this form
 	for my $field (@{$new_formref->{field}}) {
-		$class = $field->{class} || $field->{name};
-		$self->{classes}->{$class} = {%{$field}, type => 'field', form => $form_name};	
+		if (exists $field->{id}) {
+			$self->{ids}->{$field->{id}} = {%{$field}, type => 'field', form => $form_name};
+		}
+		else {
+			$class = $field->{class} || $field->{name};
+			$self->{classes}->{$class} = {%{$field}, type => 'field', form => $form_name};
+		}
 	}
 	
 	return $formref;
