@@ -162,28 +162,9 @@ sub process {
 	return $self->{template}->{xml}->sprint;
 }
 
-sub replace_record {
-	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($param, $key, $filter, $rep_str, $att_name, $att_spec, $name, $zref,
-		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
-
-	# now fill in params
-	for $param (@{$container->params}) {
-		$key = $param->{name};
-				
-		$rep_str = $record->{$param->{field} || $key};
-
-		if ($param->{increment}) {
-			$rep_str = $param->{increment}->value();
-		}
-				
-		if ($param->{subref}) {
-			$rep_str = $param->{subref}->($record);
-		}
-				
-		if ($param->{filter}) {
-			$rep_str = $self->filter($param->{filter}, $rep_str);
-		}
+sub replace_within_elts {
+	my ($self, $param, $rep_str) = @_;
+	my ($name, $zref);
 
 		for my $elt (@{$param->{elts}}) {
 			$name = $param->{name};
@@ -215,6 +196,33 @@ sub replace_record {
 				$elt->set_text($rep_str);
 			}
 		}
+	
+}
+
+sub replace_record {
+	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
+	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
+		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
+
+	# now fill in params
+	for $param (@{$container->params}) {
+		$key = $param->{name};
+				
+		$rep_str = $record->{$param->{field} || $key};
+
+		if ($param->{increment}) {
+			$rep_str = $param->{increment}->value();
+		}
+				
+		if ($param->{subref}) {
+			$rep_str = $param->{subref}->($record);
+		}
+				
+		if ($param->{filter}) {
+			$rep_str = $self->filter($param->{filter}, $rep_str);
+		}
+
+		$self->replace_within_elts($param, $rep_str);	
 	}
 			
 	# now add to the template
@@ -301,10 +309,8 @@ sub replace_values {
 		else {
 			$rep_str = $self->value($value);
 		}
-		
-		for my $elt (@elts) {
-			$elt->set_text($rep_str);
-		}
+
+		$self->replace_within_elts($value, $rep_str);
 	}
 }
 

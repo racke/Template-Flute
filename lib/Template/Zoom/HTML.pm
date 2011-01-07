@@ -183,7 +183,6 @@ sub parse_handler {
 
 sub elt_handler {
 	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
-	my ($elt_text);
 
 	if ($sob->{type} eq 'list') {
 		my $iter;
@@ -252,38 +251,7 @@ sub elt_handler {
 	if ($sob->{type} eq 'param') {
 		push (@{$sob->{elts}}, $elt);
 
-		if ($sob->{target}) {
-			if (exists $sob->{op}) {
-				if ($sob->{op} eq 'append') {
-					# keep original value around
-					$elt->{"zoom_$name"}->{rep_att_orig} = $elt->att($sob->{target});
-				}
-			}
-			
-			$elt->{"zoom_$name"}->{rep_att} = $sob->{target};
-		}
-		elsif ($gi eq 'input') {
-			my $type = $elt->att('type');
-			# replace value attribute instead of text
-			$elt->{"zoom_$name"}->{rep_att} = 'value';
-			
-		} elsif ($gi eq 'select') {
-			if ($sob->{iterator}) {
-				$elt->{"zoom_$name"}->{rep_sub} = sub {
-					set_selected($_[0], $_[1],
-								 $spec_object->resolve_iterator($sob->{iterator}));
-				};
-			}
-			else {
-				$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
-			}
-		} elsif (! $elt->contains_only_text()) {
-			# contains real elements, so we have to be careful with
-			# set text and apply it only to the first PCDATA element
-			if ($elt_text = $elt->first_child('#PCDATA')) {
-				$elt->{"zoom_$name"}->{rep_elt} = $elt_text;
-			}
-		}
+		$self->elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 
 		if ($sob->{increment}) {
 			# create increment object and record it for increment updates
@@ -297,6 +265,8 @@ sub elt_handler {
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
+
+		$self->elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 		
 		$self->{values}->{$name} = $sob;
 	} elsif ($sob->{type} eq 'field') {
@@ -320,6 +290,44 @@ sub elt_handler {
 		$elt->set_att('i18n-key', $sob->{'key'});
 	} else {
 		return $self;
+	}
+}
+
+# elt_indicate_replacements - indicate location of replacements
+
+sub elt_indicate_replacements {
+	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
+	my ($elt_text);
+	
+	if ($sob->{target}) {
+		if (exists $sob->{op}) {
+			if ($sob->{op} eq 'append') {
+				# keep original value around
+				$elt->{"zoom_$name"}->{rep_att_orig} = $elt->att($sob->{target});
+			}
+		}
+			
+		$elt->{"zoom_$name"}->{rep_att} = $sob->{target};
+	} elsif ($gi eq 'input') {
+		my $type = $elt->att('type');
+		# replace value attribute instead of text
+		$elt->{"zoom_$name"}->{rep_att} = 'value';
+			
+	} elsif ($gi eq 'select') {
+		if ($sob->{iterator}) {
+			$elt->{"zoom_$name"}->{rep_sub} = sub {
+				set_selected($_[0], $_[1],
+							 $spec_object->resolve_iterator($sob->{iterator}));
+			};
+		} else {
+			$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+		}
+	} elsif (! $elt->contains_only_text()) {
+		# contains real elements, so we have to be careful with
+		# set text and apply it only to the first PCDATA element
+		if ($elt_text = $elt->first_child('#PCDATA')) {
+			$elt->{"zoom_$name"}->{rep_elt} = $elt_text;
+		}
 	}
 }
 
