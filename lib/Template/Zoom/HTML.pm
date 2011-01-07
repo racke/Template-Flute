@@ -334,6 +334,10 @@ sub set_selected {
 			else {
 				$text = $optref->{value};
 			}
+
+			if ($optref->{value} eq $value) {
+				$att{selected} = 'selected';
+			}
 			
 			$elt->insert_new_elt('last_child', 'option',
 									 \%att, $text);
