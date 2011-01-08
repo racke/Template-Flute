@@ -53,6 +53,7 @@ sub parse_file {
 	%handlers = (specification => sub {$self->spec_handler($_[1])},
 				 list => sub {$self->list_handler($_[1])},
 				 paging => sub {$self->stash_handler($_[1])},
+ 				 filter => sub {$self->stash_handler($_[1])},
 				 form => sub {$self->form_handler($_[1])},
 				 param => sub {$self->stash_handler($_[1])},
 				 value => sub {$self->value_handler($_[1])},

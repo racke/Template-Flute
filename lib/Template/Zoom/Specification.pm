@@ -61,7 +61,12 @@ sub list_add {
 			$listref->{$_} = $new_listref->{list}->{$_};
 		}
 	}
-		
+
+	# loop through filters for this list
+	for my $filter (@{$new_listref->{filter}}) {
+		$listref->{filter}->{$filter->{name}} = $filter;
+	}
+
 	# loop through inputs for this list
 	for my $input (@{$new_listref->{input}}) {
 		$listref->{input}->{$input->{name}} = $input;
@@ -195,6 +200,14 @@ sub list_sorts {
 
 	if (exists $self->{lists}->{$list_name}) {
 		return $self->{lists}->{$list_name}->{sort};
+	}
+}
+
+sub list_filters {
+	my ($self, $list_name) = @_;
+
+	if (exists $self->{lists}->{$list_name}) {
+		return $self->{lists}->{$list_name}->{filter};
 	}
 }
 

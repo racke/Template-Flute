@@ -36,6 +36,7 @@ sub new {
 	
 	if ($spec && $name) {
 		$self->inputs_add($spec->list_inputs($name));
+		$self->filters_add($spec->list_filters($name));
 		$self->sorts_add($spec->list_sorts($name));
 		$self->paging_add($spec->list_paging($name));
 	}
@@ -62,6 +63,12 @@ sub increments_add {
 	my ($self, $increments) = @_;
 
 	$self->{increments} = $increments;
+}
+
+sub filters_add {
+	my ($self, $filters) = @_;
+
+	$self->{filters} = $filters;
 }
 
 sub sorts_add {
@@ -215,6 +222,16 @@ sub query {
 		}
 	}
 
+	# filter
+	if (exists $self->{filters}) {
+		for my $fname (keys %{$self->{filters}}) {
+			if (exists $self->{filters}->{$fname}->{field}) {
+				push @{$query{columns}->{$self->{sob}->{table}}},
+					$self->{filters}->{$fname}->{field};
+			}
+		}
+	}
+	
 	# sorting
 	if (exists $self->{sorts}->{default}) {
 		my @sort;
@@ -246,10 +263,21 @@ sub set_filter {
 # filter method - run row filter if applicable
 sub filter {
 	my ($self, $zoom, $row) = @_;
-	my ($new_row) = @_;
+	my ($new_row);
 	
-	if ($self->{filter}) {
-		return $zoom->filter($self->{filter}, $row);
+	if ($self->{filters}) {
+		if (ref($self->{filters}) eq 'HASH') {
+			$new_row = $row;
+			
+			for my $f (keys %{$self->{filters}}) {
+				$new_row = $zoom->filter($f, $new_row);
+				return unless $new_row;
+			}
+
+			return $new_row;
+		}
+
+		return $zoom->filter($self->{filters}, $row);
 	}
 	
 	return $row;
