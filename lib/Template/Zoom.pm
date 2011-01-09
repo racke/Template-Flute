@@ -175,10 +175,10 @@ sub replace_within_elts {
 				$zref->{rep_sub}->($elt, $rep_str);
 			} elsif ($zref->{rep_att}) {
 				# replace attribute instead of embedded text (e.g. for <input>)
-				if ($param->{op} eq 'append') {
+				if (exists $param->{op} && $param->{op} eq 'append') {
 					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
 				}
-				elsif ($param->{op} eq 'toggle') {
+				elsif (exists $param->{op} && $param->{op} eq 'toggle') {
 					if ($rep_str) {
 						$elt->set_att($zref->{rep_att}, $rep_str);
 					}
