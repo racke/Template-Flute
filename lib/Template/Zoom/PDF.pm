@@ -25,7 +25,6 @@ use warnings;
 use Data::Dumper;
 
 use PDF::API2;
-use PDF::Table;
 
 use Template::Zoom::HTML::Table;
 use Template::Zoom::Style::CSS;
@@ -59,11 +58,9 @@ sub process {
 	$self->{cur_page} = 1;
 	
 	$pdf = new PDF::API2(-file => $file);
-	$table = new PDF::Table;
 
 	$self->{pdf} = $pdf;
 #	$self->{page} = $page;
-	$self->{pdftable} = $table;
 	
 
 # Page definitions in mm
@@ -305,13 +302,12 @@ sub text_filter {
 	}
 
 	$orig = $text;
-
+	
 	# replace newlines with blanks
 	$text =~ s/\n/ /gs;
 
-	# remove leading/trailing whitespace
-	$text =~ s/^\s+//;
-	$text =~ s/\s+$//;
+	# collapse blanks
+	$text =~ s/\s+/ /g;
 
 	if (length $orig && ! length $text) {
 		# reduce not further than a single whitespace
@@ -604,56 +600,18 @@ sub textbox {
 		
 	@tb_parms = ($txeng,  $boxtext, %parms);
 
-print "Add textbox (class " . ($elt->att('class') || "''") . ") with content $boxtext at $parms{y} x $parms{x}, border $offset{top}\n";
+print "Add textbox (class " . ($elt->att('class') || "''") . ") with content '$boxtext' at $parms{y} x $parms{x}, border $offset{top}\n";
 
 	if (length($boxtext) && $boxtext =~ /\S/) {
-		($width_last, $y_last, $left_over) = $self->{pdftable}->text_block(@tb_parms);
-
-		unless (defined $width_last) {
-			warn qq{Bad text block parameters for "$boxtext" (CL } . ($elt->att('class') || $elt->parent()->att('class')) . "): " . Dumper(\%parms);
-		}
+		# try different approach
+		$txeng->translate($parms{x}, $parms{y});
+		$txeng->text($boxtext);
 	}
 	else {
 		$y_last = $parms{y};
 	}
 
-#print "Results: W $width_last Y $y_last LO $left_over\n";
-
 	$txeng->fill();
-
-	my $gfx = $self->{page}->gfx();
-	
-	if ($width_last && $width_last < $text_width) {
-		# Adjusting result
-#		print "Adjusting hpos from $text_width to $width_last.\n";
-		if ($width_last) {
-			$text_width = $width_last + $self->{border_left};
-		}
-	}
-		
-	# move position downwards
-	if ($y_last != $parms{y}) {
-		$text_height = $self->{y} - $y_last;
-	}
-	else {
-		$text_height = $specs->{size};
-	}
-
-	$box_height = $offset{top} + $text_height + $offset{bottom};
-
-	if ($self->{y} - $box_height < $self->{vpos_next}) {
-		$self->{vpos_next} = $self->{y} - $box_height;
-#		print "VPOS_NEXT is $self->{vpos_next} = $self->{y} - $box_height.\n";
-	}
-	
-	# move position downwards
-#	$self->{y} -= $offset{bottom};
-
-	# move horizontal position
-	$self->{hpos} += $text_width;
-
-	return {height => $box_height, width => $text_width };
-#print "Current pos: " . $self->{y} . ' x ' . $self->{hpos} . "\n\n";
 }
 
 # draw horizontal line according to specs
