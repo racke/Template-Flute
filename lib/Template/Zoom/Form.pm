@@ -160,8 +160,36 @@ sub fill {
 			elsif ($elts[0]->gi() eq 'textarea') {
 				$elts[0]->set_text($href->{$f->{name}});
 			}
+			elsif ($elts[0]->gi() eq 'input') {
+				if ($elts[0]->att('type') eq 'submit') {
+					# don't override button text
+				}
+				elsif ($elts[0]->att('type') eq 'checkbox') {
+					if ($href->{$f->{name}} eq $elts[0]->att('value')) {
+						$elts[0]->set_att('checked', 'checked');
+					}
+					else {
+						$elts[0]->del_att('checked');
+					}
+				}
+			}
 			else {
 				$elts[0]->set_att('value', $href->{$f->{name}});
+			}
+		}
+		elsif (@elts > 1) {
+			# handle radio buttons
+			for my $elt (@elts) {
+				if ($elt->gi() eq 'input') {
+					if ($elt->att('type') eq 'radio') {
+						if ($href->{$f->{name}} eq $elt->att('value')) {
+							$elt->set_att('checked', 'checked');
+						}
+					}
+					else {
+						$elt->del_att('checked');
+					}
+				}
 			}
 		}
 	}
