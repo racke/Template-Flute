@@ -39,14 +39,40 @@ sub new {
 
 sub bootstrap {
 	my ($self) = @_;
-	my ($xml_file, $xml_spec, $spec, $template_file, $template_object);
+	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
 	
 	unless ($self->{specification}) {
-		if ($xml_file = $self->{specification_file}) {
-			$xml_spec = new Template::Zoom::Specification::XML;
+		if ($parser_name = $self->{specification_parser}) {
+			# load parser class
+			my $class;
+			
+			if ($parser_name =~ /::/) {
+				$class = $parser_name;
+			}
+			else {
+				$class = "Template::Zoom::Specification::$parser_name";
+			}
 
-			unless ($self->{specification} = $xml_spec->parse_file($xml_file)) {
-				die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
+			eval "require $class";
+			if ($@) {
+				die "Failed to load class $class as specification parser: $@\n";
+			}
+
+			eval {
+				$parser_spec = $class->new();
+			};
+
+			if ($@) {
+				die "Failed to instantiate class $class as specification parser: $@\n";
+			}
+		}
+		else {
+			$parser_spec = new Template::Zoom::Specification::XML;
+		}
+		
+		if ($spec_file = $self->{specification_file}) {
+			unless ($self->{specification} = $parser_spec->parse_file($spec_file)) {
+				die "$0: error parsing $spec_file: " . $parser_spec->error() . "\n";
 			}
 		}
 		else {
