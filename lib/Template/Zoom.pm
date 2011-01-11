@@ -192,37 +192,33 @@ sub replace_within_elts {
 	my ($self, $param, $rep_str) = @_;
 	my ($name, $zref);
 
-		for my $elt (@{$param->{elts}}) {
-			$name = $param->{name};
-			$zref = $elt->{"zoom_$name"};
+	for my $elt (@{$param->{elts}}) {
+		$name = $param->{name};
+		$zref = $elt->{"zoom_$name"};
 			
-			if ($zref->{rep_sub}) {
-				# call subroutine to handle this element
-				$zref->{rep_sub}->($elt, $rep_str);
-			} elsif ($zref->{rep_att}) {
-				# replace attribute instead of embedded text (e.g. for <input>)
-				if (exists $param->{op} && $param->{op} eq 'append') {
-					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
-				}
-				elsif (exists $param->{op} && $param->{op} eq 'toggle') {
-					if ($rep_str) {
-						$elt->set_att($zref->{rep_att}, $rep_str);
-					}
-					else {
-						$elt->del_att($zref->{rep_att});
-					}
-				}
-				else {
+		if ($zref->{rep_sub}) {
+			# call subroutine to handle this element
+			$zref->{rep_sub}->($elt, $rep_str);
+		} elsif ($zref->{rep_att}) {
+			# replace attribute instead of embedded text (e.g. for <input>)
+			if (exists $param->{op} && $param->{op} eq 'append') {
+				$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
+			} elsif (exists $param->{op} && $param->{op} eq 'toggle') {
+				if ($rep_str) {
 					$elt->set_att($zref->{rep_att}, $rep_str);
+				} else {
+					$elt->del_att($zref->{rep_att});
 				}
-			} elsif ($zref->{rep_elt}) {
-				# use provided text element for replacement
-				$zref->{rep_elt}->set_text($rep_str);
 			} else {
-				$elt->set_text($rep_str);
+				$elt->set_att($zref->{rep_att}, $rep_str);
 			}
+		} elsif ($zref->{rep_elt}) {
+			# use provided text element for replacement
+			$zref->{rep_elt}->set_text($rep_str);
+		} else {
+			$elt->set_text($rep_str);
 		}
-	
+	}
 }
 
 sub replace_record {
