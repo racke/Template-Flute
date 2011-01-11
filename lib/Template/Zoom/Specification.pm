@@ -56,10 +56,8 @@ sub list_add {
 
 	$self->{classes}->{$class} = {%{$new_listref->{list}}, type => 'list'};
 
-	for (qw/iterator filter/) {
-		if (exists $new_listref->{list}->{$_}) {
-			$listref->{$_} = $new_listref->{list}->{$_};
-		}
+	if (exists $new_listref->{list}->{iterator}) {
+		$listref->{iterator} = $new_listref->{list}->{iterator};
 	}
 
 	# loop through filters for this list
