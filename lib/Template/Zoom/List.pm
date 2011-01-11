@@ -247,10 +247,29 @@ sub query {
 
 		$query{sort_by} = join(',', @sort);
 	}
+
+	# limits
+	if (exists $self->{limits}) {
+		my $limit;
+
+		if (exists $self->{limits}->{all}) {
+			$query{limit} = $self->{limits}->{all};
+		}
+		elsif (exists $self->{limits}->{plus}) {
+			$query{limit} = $self->{limits}->{plus} + 1;
+		}
+	}
 	
 	if ($found) {
 		return \%query;
 	}
+}
+
+# set_limit method - set list limit
+sub set_limit {
+	my ($self, $type, $limit) = @_;
+
+	$self->{limits}->{$type} = $limit;
 }
 
 # set_filter method - set global filter for list
