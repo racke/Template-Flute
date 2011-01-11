@@ -298,6 +298,13 @@ sub elt_handler {
 sub elt_indicate_replacements {
 	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
 	my ($elt_text);
+
+	if (exists $sob->{op}) {
+		if ($sob->{op} eq 'hook') {
+			$elt->{"zoom_$name"}->{rep_sub} = \&hook_html;
+			return;
+		}
+	}
 	
 	if ($sob->{target}) {
 		if (exists $sob->{op}) {
@@ -379,6 +386,29 @@ sub set_selected {
 			}
 		}
 	}
+}
+
+sub hook_html {
+	my ($elt, $value) = @_;
+	my ($parser, $html, $body, @children, @ret, $elt_hook);
+	
+	$parser = new XML::Twig ();
+	unless ($html = $parser->safe_parse_html($value)) {
+		die "Failed to parse HTML snippet: $@.\n";
+	}
+
+	$elt->cut_children();
+	
+	# locate body element
+	@ret = $html->root()->get_xpath(qq{//body});
+
+	@children = $ret[0]->cut_children();
+	
+	for my $elt_hook (@children) {
+		$elt_hook->paste(last_child => $elt);
+	}
+	
+	return;
 }
 
 1;
