@@ -145,13 +145,14 @@ sub set_method {
 # fill - fills form fields
 sub fill {
 	my ($self, $href) = @_;
-	my ($f, @elts, $zref);
+	my ($f, @elts, $zref, $type);
 
 	for my $f (@{$self->fields()}) {
 		@elts = @{$f->{elts}};
 
 		if (@elts == 1) {
 			$zref = $elts[0]->{"zoom_$f->{name}"};
+			$type = $elts[0]->att('type') || '';
 			
 			if ($zref->{rep_sub}) {
 				# call subroutine to handle this element
@@ -161,10 +162,10 @@ sub fill {
 				$elts[0]->set_text($href->{$f->{name}});
 			}
 			elsif ($elts[0]->gi() eq 'input') {
-				if ($elts[0]->att('type') eq 'submit') {
+				if ($type eq 'submit') {
 					# don't override button text
 				}
-				elsif ($elts[0]->att('type') eq 'checkbox') {
+				elsif ($type eq 'checkbox') {
 					if ($href->{$f->{name}} eq $elts[0]->att('value')) {
 						$elts[0]->set_att('checked', 'checked');
 					}
