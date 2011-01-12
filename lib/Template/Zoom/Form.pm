@@ -173,9 +173,9 @@ sub fill {
 						$elts[0]->del_att('checked');
 					}
 				}
-			}
-			else {
-				$elts[0]->set_att('value', $href->{$f->{name}});
+				else {
+					$elts[0]->set_att('value', $href->{$f->{name}});
+				}
 			}
 		}
 		elsif (@elts > 1) {
