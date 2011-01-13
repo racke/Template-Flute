@@ -173,13 +173,13 @@ sub input {
 
 sub query {
 	my ($self) = @_;
-	my (%query, $found, $name, %cols);
+	my (%query, $found_table, $found_param, $name, %cols);
 
 	%query = (tables => [], columns => {}, query => []);
 	
 	if ($self->{sob}->{table}) {
 		push @{$query{tables}}, $self->{sob}->{table};
-		$found = 1;
+		$found_table = 1;
 	}
 
 	for (@{$self->{params}}) {
@@ -192,7 +192,7 @@ sub query {
 		
 		push @{$query{columns}->{$self->{sob}->{table}}}, $name;
 		$cols{$name} = 1;
-		$found = 1;
+		$found_param = 1;
 	}
 
 	# qualifier based on the input
@@ -260,7 +260,7 @@ sub query {
 		}
 	}
 	
-	if ($found) {
+	if ($found_table && $found_param) {
 		return \%query;
 	}
 }

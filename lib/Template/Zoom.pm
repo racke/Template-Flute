@@ -98,7 +98,7 @@ sub bootstrap {
 
 sub process {
 	my ($self, $params) = @_;
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos);
+	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 
 	unless ($self->{template}) {
 		$self->bootstrap();
@@ -121,8 +121,13 @@ sub process {
 
 		unless ($iter = $list->iterator()) {
 			if ($self->{database}) {
-				$iter = $self->{database}->build($list->query());
-				$iter->run();
+				if ($query = $list->query()) {
+					$iter = $self->{database}->build($query);
+					$iter->run();
+				}
+				else {
+					die "$0: List " . $list->name . " without iterator and database query.\n";
+				}
 			}
 			else {
 				die "$0: List " . $list->name . " without iterator and database object.\n";
