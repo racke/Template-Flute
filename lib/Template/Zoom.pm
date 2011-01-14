@@ -347,4 +347,10 @@ sub set_values {
 	$self->{values} = $values;
 }
 
+sub template {
+	my $self = shift;
+
+	return $self->{template};
+}
+
 1;
