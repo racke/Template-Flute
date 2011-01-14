@@ -57,7 +57,7 @@ sub process {
 
 	$self->{cur_page} = 1;
 	
-	$pdf = new PDF::API2(-file => $file);
+	$pdf = new PDF::API2(-file => $file || $self->{file});
 
 	$self->{pdf} = $pdf;
 #	$self->{page} = $page;
