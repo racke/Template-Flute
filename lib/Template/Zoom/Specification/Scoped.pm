@@ -43,9 +43,6 @@ sub parse_file {
 	my ($self, $file) = @_;
 	my ($scoped, $config, $key, $value, %list);
 
-	# initialize stash
-	$self->{stash} = [];
-	
 	# specification object
 	$self->{spec} = new Template::Zoom::Specification;
 	
@@ -103,112 +100,6 @@ sub parse_file {
 	}
 
 	return $self->{spec};
-}
-
-sub spec_handler {
-	my ($self, $elt) = @_;
-	my ($name);
-
-	$name = $elt->att('name');
-}
-
-sub list_handler {
-	my ($self, $elt) = @_;
-	my ($name, %list);
-	
-	$name = $elt->att('name');
-
-	$list{list} = $elt->atts();
-	
-	# flush elements from stash into list hash
-	$self->stash_flush($elt, \%list);
-
-	# add list to specification object
-	$self->{spec}->list_add(\%list);
-}
-
-sub sort_handler {
-	my ($self, $elt) = @_;
-	my (@ops, $name);
-
-	$name = $elt->att('name');
-	
-	for my $child ($elt->children()) {
-		if ($child->gi() eq 'field') {
-			push (@ops, {type => 'field',
-						 name => $child->att('name'),
-						 direction => $child->att('direction')});
-		}
-		else {
-			die "Invalid child for sort $name.\n";
-		}
-	}
-
-	unless (@ops) {
-		die "Empty sort $name.\n";
-	}
-	
-	$elt->set_att('ops', \@ops);
-	push @{$self->{stash}}, $elt;	
-}
-
-sub stash_handler {
-	my ($self, $elt) = @_;
-
-	push @{$self->{stash}}, $elt;
-}
-
-sub form_handler {
-	my ($self, $elt) = @_;
-	my ($name, %form);
-	
-	$name = $elt->att('name');
-	
-	$form{form} = $elt->atts();
-
-	# flush elements from stash into form hash
-	$self->stash_flush($elt, \%form);
-		
-	# add form to specification object
-	$self->{spec}->form_add(\%form);
-}
-
-sub value_handler {
-	my ($self, $elt) = @_;
-	my (%value);
-
-	$value{value} = $elt->atts();
-	
-	$self->{spec}->value_add(\%value);
-}
-
-sub i18n_handler {
-	my ($self, $elt) = @_;
-	my (%i18n);
-
-	$i18n{value} = $elt->atts();
-	
-	$self->{spec}->i18n_add(\%i18n);
-}
-
-sub stash_flush {
-	my ($self, $elt, $hashref) = @_;
-
-	# examine stash
-	for my $item_elt (@{$self->{stash}}) {
-		# check whether we are really the parent
-		if ($item_elt->parent() eq $elt) {
-			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
-		}
-		else {
-			warn "Misplace item in stash (" . $item_elt->gi() . "\n";
-		}
-	}
-
-	# clear stash
-	$self->{stash} = [];
-
-	return;
 }
 
 sub error {
