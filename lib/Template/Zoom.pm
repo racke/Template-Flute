@@ -22,7 +22,6 @@ package Template::Zoom;
 use strict;
 use warnings;
 
-use Template::Zoom::Query;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
