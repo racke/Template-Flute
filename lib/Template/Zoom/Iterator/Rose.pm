@@ -61,7 +61,7 @@ sub run {
 	$sth->execute(@{$self->{bind}});
 	$self->{results}->{sth} = $sth;
 
-	$self->{results}->{row} = $sth->rows();
+	$self->{results}->{rows} = $sth->rows();
 	return 1;
 }
 
