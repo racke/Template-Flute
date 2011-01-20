@@ -61,18 +61,28 @@ sub run {
 	$sth->execute(@{$self->{bind}});
 	$self->{results}->{sth} = $sth;
 
+	$self->{results}->{row} = $sth->rows();
 	return 1;
 }
 
 # Next method - return next element or undef
 sub next {
 	my ($self) = @_;
+	my ($record);
 
 	unless ($self->{results}) {
 		$self->run();
 	}
 
-	return $self->{results}->{sth}->fetchrow_hashref();
+	if (exists $self->{results}->{sth}) {
+		unless ($record = $self->{results}->{sth}->fetchrow_hashref()) {
+			# pending records depleted
+			delete $self->{results}->{sth};
+			$self->{results}->{valid} = 0;
+		}
+	}
+
+	return $record;
 };
 
 # Count method - returns number of elements
@@ -83,7 +93,7 @@ sub count {
 		$self->run();
 	}
 
-	return $self->{results}->{sth}->rows();
+	return $self->{results}->{rows};
 };
 
 1;
