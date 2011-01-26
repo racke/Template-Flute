@@ -39,17 +39,45 @@ sub new {
 	bless ($self, $class);
 }
 
+sub parse {
+	my ($self, $text) = @_;
+	my ($scoped, $config);
+	
+	# create Config::Scoped parser and parse text
+	$scoped = new Config::Scoped;
+
+	if (ref($text) eq 'SCALAR') {
+		$config = $scoped->parse(text => $$text);
+	}
+	else {
+		$config = $scoped->parse(text => $text);
+	}
+
+	$self->{spec} = $self->create_specification($config);
+
+	return $self->{spec};
+}
+
 sub parse_file {
 	my ($self, $file) = @_;
 	my ($scoped, $config, $key, $value, %list);
 
-	# specification object
-	$self->{spec} = new Template::Zoom::Specification;
-	
-	# twig parser object
+	# create Config::Scoped parser and parse file
 	$scoped = new Config::Scoped(file => $file);
 	$config = $scoped->parse();
 
+	$self->{spec} = $self->create_specification($config);
+
+	return $self->{spec};
+}
+
+sub create_specification {
+	my ($self, $config) = @_;
+	my ($spec, $scoped, $key, $value, %list);
+
+	# specification object
+	$spec = new Template::Zoom::Specification;
+	
 	# lists
 	while (($key, $value) = each %{$config->{list}}) {
 		$value->{name} = $key;
@@ -84,22 +112,22 @@ sub parse_file {
 			$value->{name} = $key;
 
 			if ($cname eq 'value') {
-				$self->{spec}->value_add({value => $value});
+				$spec->value_add({value => $value});
 			}
 			elsif ($cname eq 'i18n') {
-				$self->{spec}->i18n_add({i18n => $value});
+				$spec->i18n_add({i18n => $value});
 			}
 		}
 	}
 
 	while (($key, $value) = each %{$config->{list}}) {
-		$self->{spec}->list_add({list => $value,
+		$spec->list_add({list => $value,
 								 param => $value->{param},
 								 input => $value->{input},
 								 filter => $value->{filter}});
 	}
 
-	return $self->{spec};
+	return $spec;
 }
 
 sub error {
