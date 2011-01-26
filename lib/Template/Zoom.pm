@@ -25,6 +25,50 @@ use warnings;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
+=head1 NAME
+
+Template::Zoom - Modern HTML Engine
+
+=head1 VERSION
+
+Version 0.0001
+
+=cut
+
+our $VERSION = '0.0001';
+
+=head1 SYNOPSIS
+
+    use Template::Zoom;
+
+    my ($cart, $zoom, %values);
+
+    $cart = [{...},{...}];
+    $values{cost} = ...
+
+    $zoom = new Template::Zoom(specification_file => 'cart.xml',
+                           template_file => 'cart.html',
+                           iterators => {cart => $cart},
+                           values => \%values,
+                           );
+
+    print $zoom->process();
+
+=head1 DESCRIPTION
+
+Template::Zoom enables you to completely separate web design and programming
+tasks for dynamic web applications.
+
+Templates are plain HTML files without inline code or mini language, thus
+making it easy to maintain them for web designers and to preview them with
+a browser.
+
+The CSS selectors in the template are tied to your data structures or
+objects by a specification, which relieves the programmer from changing
+his code for mere changes of class names.
+
+=cut
+
 # Constructor
 
 sub new {
@@ -351,5 +395,54 @@ sub template {
 
 	return $self->{template};
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), C<< <racke at linuxia.de> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-template-zoom at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom>.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Template::Zoom
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Template-Zoom>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Template-Zoom>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Template-Zoom/>
+
+=back
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke).
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

@@ -24,6 +24,25 @@ use warnings;
 
 use Template::Zoom::Iterator;
 
+=head1 NAME
+
+Template::Zoom::Specification - Specification class for Template::Zoom
+
+=head1 SYNOPSIS
+
+    $xml_spec = new Template::Zoom::Specification::XML;
+    $spec = $xml_spec->parse_file('spec.xml');
+    $spec->set_iterator('cart', $cart);
+
+    $conf_spec = new Template::Zoom::Specification::Scoped;
+    $spec = $conf_spec->parse_file('spec.conf);
+
+=head1 DESCRIPTION
+
+    Specification class for Template::Zoom.
+
+=cut
+
 # Constructor
 
 sub new {
@@ -153,7 +172,8 @@ sub value_add {
 
 		$self->{classes}->{$class} = {%{$new_valueref->{value}}, type => 'value'};
 	}
-	
+use Data::Dumper;
+print Dumper($valueref);
 	return $valueref;
 }	
 
@@ -290,4 +310,24 @@ sub list_paging {
 	}	
 }
 
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), C<< <racke at linuxia.de> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-template-zoom at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom>.
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke).
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+	
 1;
