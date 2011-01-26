@@ -112,6 +112,26 @@ sub translate {
 	return;
 }
 
+sub parse {
+	my ($self, $template, $spec_object) = @_;
+	my ($object);
+	
+	if (ref($template) eq 'SCALAR') {
+		$object = $self->parse_template($template, $spec_object);
+	}
+	else {
+		$object = $self->parse_template(\$template, $spec_object);
+	}
+
+	return $object;
+}
+
+sub parse_file {
+	my ($self, $template_file, $spec_object) = @_;
+
+	return $self->parse_template($template_file, $spec_object);
+}
+
 sub parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);
@@ -119,8 +139,14 @@ sub parse_template {
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
 	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->parse_handler($_[1], $spec_object)}});
-	$xml = $twig->safe_parsefile_html($template);
 
+	if (ref($template) eq 'SCALAR') {
+		$xml = $twig->safe_parse_html($$template);
+	}
+	else {
+		$xml = $twig->safe_parsefile_html($template);
+	}
+	
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";
 	}
