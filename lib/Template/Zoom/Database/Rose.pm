@@ -36,13 +36,13 @@ sub new {
 
 	bless $self, $class;
 	
-	$self->initialize();
+	$self->_initialize();
 	
 	return $self;
 }
 
 # Initialization routine
-sub initialize {
+sub _initialize {
 	my ($self) = @_;
 	
 	my %rose_parms;
