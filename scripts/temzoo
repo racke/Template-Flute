@@ -29,12 +29,13 @@ use Template::Zoom::Database::Rose;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
-my (%opts, %input);
+my (%opts, %input, %values);
 
 # commandline options
+$opts{value} = \%values;
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser', 'pdf=s')) {
+unless (GetOptions (\%opts, 'browser', 'value=s%', 'pdf=s')) {
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
@@ -98,7 +99,8 @@ for $form_object ($html_object->forms()) {
 my ($zoom);
 
 $zoom = new Template::Zoom (template => $html_object,
-							database => $db_object);
+							database => $db_object,
+							values => \%values);
 
 if ($opts{pdf}) {
 	require Template::Zoom::PDF;
