@@ -50,17 +50,17 @@ sub parse_file {
 	$self->{spec} = new Template::Zoom::Specification;
 
 	# twig handlers
-	%handlers = (specification => sub {$self->spec_handler($_[1])},
-				 list => sub {$self->list_handler($_[1])},
-				 paging => sub {$self->stash_handler($_[1])},
- 				 filter => sub {$self->stash_handler($_[1])},
-				 form => sub {$self->form_handler($_[1])},
-				 param => sub {$self->stash_handler($_[1])},
-				 value => sub {$self->value_handler($_[1])},
- 				 field => sub {$self->stash_handler($_[1])},
-				 i18n => sub {$self->i18n_handler($_[1])},
-				 input => sub {$self->stash_handler($_[1])},
-				 sort => sub {$self->sort_handler($_[1])},
+	%handlers = (specification => sub {$self->_spec_handler($_[1])},
+				 list => sub {$self->_list_handler($_[1])},
+				 paging => sub {$self->_stash_handler($_[1])},
+ 				 filter => sub {$self->_stash_handler($_[1])},
+				 form => sub {$self->_form_handler($_[1])},
+				 param => sub {$self->_stash_handler($_[1])},
+				 value => sub {$self->_value_handler($_[1])},
+ 				 field => sub {$self->_stash_handler($_[1])},
+				 i18n => sub {$self->_i18n_handler($_[1])},
+				 input => sub {$self->_stash_handler($_[1])},
+				 sort => sub {$self->_sort_handler($_[1])},
 				 );
 	
 	# twig parser object
@@ -69,21 +69,21 @@ sub parse_file {
 	$xml = $twig->safe_parsefile($file);
 
 	unless ($xml) {
-		$self->add_error(file => $file, error => $@);
+		$self->_add_error(file => $file, error => $@);
 		return;
 	}
 
 	return $self->{spec};
 }
 
-sub spec_handler {
+sub _spec_handler {
 	my ($self, $elt) = @_;
 	my ($name);
 
 	$name = $elt->att('name');
 }
 
-sub list_handler {
+sub _list_handler {
 	my ($self, $elt) = @_;
 	my ($name, %list);
 	
@@ -92,13 +92,13 @@ sub list_handler {
 	$list{list} = $elt->atts();
 	
 	# flush elements from stash into list hash
-	$self->stash_flush($elt, \%list);
+	$self->_stash_flush($elt, \%list);
 
 	# add list to specification object
 	$self->{spec}->list_add(\%list);
 }
 
-sub sort_handler {
+sub _sort_handler {
 	my ($self, $elt) = @_;
 	my (@ops, $name);
 
@@ -123,13 +123,13 @@ sub sort_handler {
 	push @{$self->{stash}}, $elt;	
 }
 
-sub stash_handler {
+sub _stash_handler {
 	my ($self, $elt) = @_;
 
 	push @{$self->{stash}}, $elt;
 }
 
-sub form_handler {
+sub _form_handler {
 	my ($self, $elt) = @_;
 	my ($name, %form);
 	
@@ -138,13 +138,13 @@ sub form_handler {
 	$form{form} = $elt->atts();
 
 	# flush elements from stash into form hash
-	$self->stash_flush($elt, \%form);
+	$self->_stash_flush($elt, \%form);
 		
 	# add form to specification object
 	$self->{spec}->form_add(\%form);
 }
 
-sub value_handler {
+sub _value_handler {
 	my ($self, $elt) = @_;
 	my (%value);
 
@@ -153,7 +153,7 @@ sub value_handler {
 	$self->{spec}->value_add(\%value);
 }
 
-sub i18n_handler {
+sub _i18n_handler {
 	my ($self, $elt) = @_;
 	my (%i18n);
 
@@ -162,7 +162,7 @@ sub i18n_handler {
 	$self->{spec}->i18n_add(\%i18n);
 }
 
-sub stash_flush {
+sub _stash_flush {
 	my ($self, $elt, $hashref) = @_;
 
 	# examine stash
@@ -190,7 +190,7 @@ sub error {
 	}
 }
 
-sub add_error {
+sub _add_error {
 	my ($self, @args) = @_;
 	my (%error);
 
