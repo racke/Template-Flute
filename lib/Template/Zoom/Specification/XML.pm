@@ -39,10 +39,47 @@ sub new {
 	bless $self;
 }
 
+sub parse {
+	my ($self, $text) = @_;
+	my ($twig, $xml);
+
+	$twig = $self->_initialize;
+
+	if (ref($text) eq 'SCALAR') {
+		$xml = $twig->safe_parse($$text);
+	}
+	else {
+		$xml = $twig->parse($text);
+	}
+
+	unless ($xml) {
+		$self->_add_error(error => $@);
+		return;
+	}
+
+	return $self->{spec};
+}
+
 sub parse_file {
 	my ($self, $file) = @_;
-	my ($twig, %handlers, $xml);
+	my ($twig, $xml);
 
+	$twig = $self->_initialize;
+	
+	$xml = $twig->safe_parsefile($file);
+
+	unless ($xml) {
+		$self->_add_error(file => $file, error => $@);
+		return;
+	}
+
+	return $self->{spec};
+}
+
+sub _initialize {
+	my $self = shift;
+	my (%handlers, $twig);
+	
 	# initialize stash
 	$self->{stash} = [];
 	
@@ -66,14 +103,7 @@ sub parse_file {
 	# twig parser object
 	$twig = new XML::Twig (twig_handlers => \%handlers);
 
-	$xml = $twig->safe_parsefile($file);
-
-	unless ($xml) {
-		$self->_add_error(file => $file, error => $@);
-		return;
-	}
-
-	return $self->{spec};
+	return $twig;
 }
 
 sub _spec_handler {
