@@ -117,10 +117,10 @@ sub parse {
 	my ($object);
 	
 	if (ref($template) eq 'SCALAR') {
-		$object = $self->parse_template($template, $spec_object);
+		$object = $self->_parse_template($template, $spec_object);
 	}
 	else {
-		$object = $self->parse_template(\$template, $spec_object);
+		$object = $self->_parse_template(\$template, $spec_object);
 	}
 
 	return $object;
@@ -129,16 +129,16 @@ sub parse {
 sub parse_file {
 	my ($self, $template_file, $spec_object) = @_;
 
-	return $self->parse_template($template_file, $spec_object);
+	return $self->_parse_template($template_file, $spec_object);
 }
 
-sub parse_template {
+sub _parse_template {
 	my ($self, $template, $spec_object) = @_;
 	my ($twig, $xml, $object, $list);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
-	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->parse_handler($_[1], $spec_object)}});
+	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
 
 	if (ref($template) eq 'SCALAR') {
 		$xml = $twig->safe_parse_html($$template);
@@ -167,7 +167,7 @@ sub parse_template {
 
 # parse_handler - Callback for HTML elements
 
-sub parse_handler {
+sub _parse_handler {
 	my ($self, $elt, $spec_object) = @_;
 	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob);
 
@@ -193,7 +193,7 @@ sub parse_handler {
 	if ($id) {
 		if ($sob = $spec_object->element_by_id($id)) {
 			$name = $sob->{name} || $id;
-			$self->elt_handler($sob, $elt, $gi, $spec_object, $name);
+			$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
 			return $self;
 		}
 	}
@@ -201,13 +201,13 @@ sub parse_handler {
 	for my $class (@classes) {
 		$sob = $spec_object->element_by_class($class);
 		$name = $sob->{name} || $class;
-		$self->elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
+		$self->_elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
 	}
 
 	return $self;
 }
 
-sub elt_handler {
+sub _elt_handler {
 	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
 	if ($sob->{type} eq 'list') {

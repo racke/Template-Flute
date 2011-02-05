@@ -80,7 +80,7 @@ sub new {
 	bless $self;
 }
 
-sub bootstrap {
+sub _bootstrap {
 	my ($self) = @_;
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
 	
@@ -131,7 +131,7 @@ sub bootstrap {
 	
 	if ($template_file = $self->{template_file}) {
 		$template_object = new Template::Zoom::HTML;
-		$template_object->parse_template($template_file, $self->{specification});
+		$template_object->parse_file($template_file, $self->{specification});
 		$self->{template} = $template_object;
 	}
 	else {
@@ -144,7 +144,7 @@ sub process {
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 
 	unless ($self->{template}) {
-		$self->bootstrap();
+		$self->_bootstrap();
 	}
 	
 	if ($self->{i18n}) {
@@ -153,7 +153,7 @@ sub process {
 	}
 
 	# replace simple values
-	$self->replace_values();
+	$self->_replace_values();
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
@@ -198,7 +198,7 @@ sub process {
 		
 		while ($row = $iter->next()) {
 			if ($row = $list->filter($self, $row)) {
-				$self->replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+				$self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
 			
 				$row_pos++;
 
@@ -226,17 +226,17 @@ sub process {
 		if (keys(%{$form->inputs()}) && $form->input()) {
 			$iter = $dbobj->build($form->query());
 
-			$self->replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
+			$self->_replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
 		}		
 		else {
-			$self->replace_record($form, 'form', $lel, \%paste_pos, {});
+			$self->_replace_record($form, 'form', $lel, \%paste_pos, {});
 		}
 	}
 
 	return $self->{template}->{xml}->sprint;
 }
 
-sub replace_within_elts {
+sub _replace_within_elts {
 	my ($self, $param, $rep_str) = @_;
 	my ($name, $zref);
 
@@ -269,7 +269,7 @@ sub replace_within_elts {
 	}
 }
 
-sub replace_record {
+sub _replace_record {
 	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
 	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
@@ -292,7 +292,7 @@ sub replace_record {
 			$rep_str = $self->filter($param->{filter}, $rep_str);
 		}
 
-		$self->replace_within_elts($param, $rep_str);	
+		$self->_replace_within_elts($param, $rep_str);	
 	}
 			
 	# now add to the template
@@ -349,7 +349,7 @@ sub value {
 	return $rep_str;
 }
 
-sub replace_values {
+sub _replace_values {
 	my ($self) = @_;
 	my ($value, $rep_str, @elts);
 	
@@ -380,7 +380,7 @@ sub replace_values {
 			$rep_str = $self->value($value);
 		}
 
-		$self->replace_within_elts($value, $rep_str);
+		$self->_replace_within_elts($value, $rep_str);
 	}
 }
 
