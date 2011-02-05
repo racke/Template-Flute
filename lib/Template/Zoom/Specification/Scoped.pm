@@ -138,7 +138,7 @@ sub error {
 	}
 }
 
-sub add_error {
+sub _add_error {
 	my ($self, @args) = @_;
 	my (%error);
 
