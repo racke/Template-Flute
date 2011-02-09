@@ -44,6 +44,21 @@ sub new {
 	bless $self;
 }
 
+sub container_add {
+	my ($self, $new_containerref) = @_;
+	my ($containerref, $container_name, $class);
+
+	$container_name = $new_containerref->{container}->{name};
+
+	$containerref = $self->{containers}->{$new_containerref->{container}->{name}} = {input => {}};
+
+	$class = $new_containerref->{container}->{class} || $container_name;
+
+	$self->{classes}->{$class} = {%{$new_containerref->{container}}, type => 'container'};
+
+	return $containerref;
+}
+
 sub list_add {
 	my ($self, $new_listref) = @_;
 	my ($listref, $list_name, $class);

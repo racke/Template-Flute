@@ -110,6 +110,16 @@ sub process {
 
 	# replace simple values
 	$self->_replace_values();
+
+	for my $container ($self->{template}->containers()) {
+		if (exists $self->{values}) {
+			$container->set_values($self->{values});
+		}
+		
+		unless ($container->visible()) {
+			$container->elt()->cut();
+		}
+	}
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
