@@ -331,6 +331,11 @@ sub inherit {
 		$props{line_height} = $inherit->{line_height};
 	}
 
+	# text
+	if ($inherit->{text}) {
+		$props{text} = $inherit->{text};
+	}
+	
 	return \%props;
 }
 

@@ -64,6 +64,9 @@ sub new {
 
 	# Positions of child elements
 	$self->{eltpos} = [];
+
+	# Stripes with child elements
+	$self->{stripes} = [];
 	
 	bless ($self, $class);
 
@@ -157,14 +160,16 @@ sub calculate {
 	# processed all childs, now determine my size itself
 
 	my ($max_width, $max_height, $vpos, $hpos, $max_stripe_height, $child) = (0,0,0,0);
-	my ($hpos_next, $vpos_next, $stripe_base, $clear_after);
+	my ($hpos_next, $vpos_next, @stripes, $stripe_pos, $stripe_base, $clear_after);
 
 	$stripe_base = 0;
 	$clear_after = 0;
+	$stripe_pos = 0;
 	
 	for (my $i = 0; $i < @{$self->{eltstack}}; $i++) {
 		$child = $self->{eltstack}->[$i];
-
+		$child->{stackpos} = $i;
+		
 		if ($hpos > 0 && ! $child->{box}->{clear}->{before}
 			&& ! $clear_after) {
 			# check if item fits horizontally
@@ -177,7 +182,7 @@ sub calculate {
 				$hpos = 0;				
 				$hpos_next = 0;
 				$max_stripe_height = 0;
-
+				$stripe_pos++;
 			}
 
 			if ($hpos_next > $self->{bounding}->{max_w}) {
@@ -186,13 +191,14 @@ sub calculate {
 				$hpos = 0;
 				$hpos_next = 0;
 				$max_stripe_height = 0;
-
+				$stripe_pos++;
 			}
 		}
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
 			$max_stripe_height = 0;
+			$stripe_pos++;
 			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
 		}
 
@@ -269,7 +275,7 @@ sub calculate {
 		}
 
 		$self->{eltpos}->[$i] = {hpos => $hpos, vpos => -$vpos};
-
+		
 		if ($child->{elt}->is_text()) {
 			print "POS (relative) for TEXT '" . $child->{elt}->text() . "': " . Dumper($self->{eltpos}->[$i]);
 		}
@@ -277,13 +283,16 @@ sub calculate {
 			print "POS (relative) for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
 		}
 
+		# record child within its stripe
+		push (@{$self->{stripes}->[$stripe_pos]}, $child);
+		
 		# advance to new relative position
 		$hpos = $hpos_next;
 		$vpos = $vpos_next;
 
 		$clear_after = $child->{box}->{clear}->{after};
 	}
-
+	
 	# add offsets
 	$max_width += $self->{specs}->{offset}->{left} + $self->{specs}->{offset}->{right};
 	$max_height += $self->{specs}->{offset}->{top} + $self->{specs}->{offset}->{bottom};
@@ -318,8 +327,56 @@ sub calculate {
 					size => $self->{specs}->{size}};
 
 	print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
+ 	return $self->{box};
+}
+
+sub align {
+	my ($self, $offset) = @_;
+	my ($avail_width, $avail_width_text, $textprops, $child, $box_pos);
+
+	$offset ||= 0;
 	
-	return $self->{box};
+	for (my $i = 0; $i < @{$self->{stripes}}; $i++) {
+		for my $child (@{$self->{stripes}->[$i]}) {
+			# skip over text elements (align only applies to grand children)
+			next if $child->{elt}->is_text();
+			
+			if ($textprops = $child->property('text')) {
+				if ($child->property('width')) {
+					$avail_width = $child->property('width');
+				}
+				elsif (@{$self->{stripes}->[$i]} == 1) {
+					# single box in a stripe can take over all the space
+					# in the bounding box
+					$avail_width = $child->{bounding}->{max_w} - $offset - $self->{specs}->{offset}->{left} - $self->{specs}->{offset}->{right};
+#					$avail_width = $self->{box}->{width};
+				}
+				else {
+					$avail_width = $child->{box}->{width};
+				}
+
+				for (my $cpos = 0; $cpos < @{$child->{eltstack}}; $cpos++) {
+					next unless $child->{eltstack}->[$cpos]->{elt}->is_text();
+
+					$avail_width_text = $avail_width - $child->{eltstack}->[$cpos]->{box}->{text_width};
+
+					if ($avail_width_text > 0) {
+						if ($textprops->{align} eq 'right') {
+							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text;
+						}
+						elsif ($textprops->{align} eq 'center') {
+							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text / 2;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (my $i = 0; $i < @{$self->{eltstack}}; $i++) {
+		$child = $self->{eltstack}->[$i];
+		$child->align($offset + $self->{eltpos}->[$i]->{hpos});
+	}
 }
 
 # partition - partition boxes through pages
@@ -466,7 +523,7 @@ sub render {
 		
 		for (my $i = 0; $i < @$chunks; $i++) {
 			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],
-								  $self->{specs}, {%parms, vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
+								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
 								  noborder => 1);
 		}
 	}

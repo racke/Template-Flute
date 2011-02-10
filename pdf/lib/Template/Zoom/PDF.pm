@@ -205,6 +205,9 @@ my $footer_height	=  3;
 	# calculate sizes
 	$root_box->calculate();
 
+	# align
+	$root_box->align();
+	
 	# page partitioning
 	$root_box->partition(1, 0);
 
@@ -512,6 +515,7 @@ sub calculate {
 	return {width => $max_width, height => $height, size => $specs->{size},
 			clear => {before => $clear_before, after => $clear_after},
 			overflow => {x => $overflow_x, y => $overflow_y},
+			text_width => $text_width,
 			chunks => \@chunks,
 		   };
 }
