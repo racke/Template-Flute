@@ -219,17 +219,17 @@ sub calculate {
 			else {
 				# add to current width
 				$max_width += $child->{box}->{width};
-
-				# check whether we need to extend the height
-				my $height_extend = 0;
-			
-				if ($child->{box}->{height} > $max_stripe_height) {
-					$height_extend = $child->{box}->{height} - $max_stripe_height;
-				}
-
-				$max_stripe_height += $height_extend;
-				$max_height += $height_extend;
 			}
+
+			# check whether we need to extend the height
+			my $height_extend = 0;
+			
+			if ($child->{box}->{height} > $max_stripe_height) {
+				$height_extend = $child->{box}->{height} - $max_stripe_height;
+			}
+
+			$max_stripe_height += $height_extend;
+			$max_height += $height_extend;
 		}
 		else {
 			# starting new stripe now
