@@ -181,8 +181,6 @@ sub calculate {
 				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: too wide forH $hpos_next\n";
 				$hpos = 0;				
 				$hpos_next = 0;
-				$max_stripe_height = 0;
-				$stripe_pos++;
 			}
 
 			if ($hpos_next > $self->{bounding}->{max_w}) {
@@ -190,15 +188,11 @@ sub calculate {
 				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
 				$hpos = 0;
 				$hpos_next = 0;
-				$max_stripe_height = 0;
-				$stripe_pos++;
 			}
 		}
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
-			$max_stripe_height = 0;
-			$stripe_pos++;
 			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
 		}
 
@@ -230,7 +224,7 @@ sub calculate {
 				my $height_extend = 0;
 			
 				if ($child->{box}->{height} > $max_stripe_height) {
-					$height_extend = $child->{box}->{height} > $max_stripe_height;
+					$height_extend = $child->{box}->{height} - $max_stripe_height;
 				}
 
 				$max_stripe_height += $height_extend;
@@ -238,6 +232,13 @@ sub calculate {
 			}
 		}
 		else {
+			# starting new stripe now
+			$stripe_pos++;
+			$max_stripe_height = 0;
+			
+			# stripe base moves to max_height
+			$stripe_base = $max_height;
+		
 			if ($child->{box}->{width} > $max_width) {
 				$max_width = $child->{box}->{width};
 			}
@@ -249,10 +250,7 @@ sub calculate {
 				$vpos_next = $stripe_base;
 			}
 			$vpos = $stripe_base;
-			
-			# stripe base moves to max_height
-			$stripe_base = $max_height;
-			
+		
 			# stripe height is simply height of this child
 			$max_stripe_height = $child->{box}->{height};
 
