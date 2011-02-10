@@ -436,8 +436,6 @@ sub calculate {
 			elsif ($text =~ /\S/) {
 				$chunk_width = $txeng->advancewidth($text, font => $specs->{font},
 												   fontsize => $specs->{size});
-
-				print "TW for $text and $specs->{props}->{width} $specs->{size}: $text_width\n";
 			}
 			else {
 				# whitespace
