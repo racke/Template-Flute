@@ -251,7 +251,7 @@ sub to_points {
 
 	return 0 unless defined $width;
 
-	if ($width =~ s/^(\d+(\.\d+)?)(in|px|pt|cm|mm)?$/$1/) {
+	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
 		$unit = $3 || 'mm';
 	}
 	else {
