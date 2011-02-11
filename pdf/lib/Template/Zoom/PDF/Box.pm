@@ -27,7 +27,7 @@ use Data::Dumper;
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
-	my ($elt_class, @p);
+	my ($elt_class, $elt_id, @p);
 	
 	$class = ref($proto) || $proto;
 	$self = {@args};
@@ -53,6 +53,16 @@ sub new {
 		$self->{class} = '';
 	}
 
+	# Record corresponding ID for box
+	$elt_id = $self->{elt}->att('id');
+
+	if (defined $elt_id) {
+		$self->{id} = $elt_id;
+	}
+	else {
+		$self->{id} = '';
+	}
+	
 	# Page for element
 	$self->{page} ||= 1;
 	
@@ -71,7 +81,7 @@ sub new {
 	bless ($self, $class);
 
 	# Create selector map
-	@p = (class => $self->{class}, parent => $self->{selector_map});
+	@p = (id => $self->{id}, class => $self->{class}, parent => $self->{selector_map});
 	
 	$self->{selector_map} = $self->{pdf}->{css}->descendant_properties(@p);
 		

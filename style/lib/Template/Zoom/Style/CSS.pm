@@ -64,7 +64,7 @@ sub initialize {
 
 sub properties {
 	my ($self, %parms) = @_;
-	my (@classes, @tags, $props);
+	my (@ids, @classes, @tags, $props);
 
 	# inherit from parent element
 	if (exists $parms{inherit}) {
@@ -74,6 +74,13 @@ sub properties {
 	# defaults
 	$props->{color} = 'black';
 
+	if (defined $parms{id} && $parms{id} =~ /\S/) {
+		@ids = split(/\s+/, $parms{id});
+
+		for my $id (@ids) {
+			$self->build_properties($props, "#$id");
+		}
+	}
 
 	if (defined $parms{class} && $parms{class} =~ /\S/) {
 		@classes = split(/\s+/, $parms{class});

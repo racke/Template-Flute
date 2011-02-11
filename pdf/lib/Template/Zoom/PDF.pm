@@ -326,12 +326,14 @@ sub setup_text_props {
 		$fontweight, $txeng);
 
 	my $class = $elt->att('class') || '';
+	my $id = $elt->att('id') || '';
 	my $gi = $elt->gi();
 
 	$selector ||= '';
 	
 	# get properties from CSS
-	$props = $self->{css}->properties(class => $elt->att('class'),
+	$props = $self->{css}->properties(id => $id,
+									  class => $elt->att('class'),
 									  tag => $elt->gi(),
 									  selector => $selector,
 									  inherit => $inherit,
