@@ -157,12 +157,12 @@ my $footer_height	=  3;
 
 	# set font
 	if ($css_defaults->{font}->{family}) {
-		$self->{fontfamily} = $css_defaults->{font}->{family};
+		$self->{fontfamily} = $self->_font_select($css_defaults->{font}->{family});
 	}
 	else {
 		$self->{fontfamily} = FONT_FAMILY;
 	}
-
+	
 	if ($css_defaults->{font}->{size}) {
 		$self->{fontsize} = to_points($css_defaults->{font}->{size});
 	}
@@ -347,7 +347,7 @@ sub setup_text_props {
 	}
 
 	if ($props->{font}->{family}) {
-		$fontfamily = $props->{font}->{family};
+		$fontfamily = $self->_font_select($props->{font}->{family});
 	}
 	else {
 		$fontfamily = $self->{fontfamily};
@@ -696,6 +696,19 @@ sub rect {
 	if ($color) {
 		$gfx->fill();
 	}
+}
+
+# auxiliary methods
+
+# select font from list provided by CSS (currently just the first)
+
+sub _font_select {
+	my ($self, $font_string) = @_;
+	my (@fonts);
+
+	@fonts = split(/,/, $font_string);
+
+	return $fonts[0];
 }
 
 1;
