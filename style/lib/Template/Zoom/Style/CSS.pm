@@ -112,10 +112,24 @@ sub properties {
 
 sub descendant_properties {
 	my ($self, %parms) = @_;
-	my (@classes, @selectors, $regex, $sel, @tags, %selmap);
+	my (@ids, @classes, @selectors, $regex, $sel, @tags, %selmap);
 
 	if (ref($parms{parent}) eq 'HASH') {
 		%selmap = %{$parms{parent}};
+	}
+
+	if (defined $parms{id} && $parms{id} =~ /\S/) {
+		@ids = split(/\s+/, $parms{id});
+
+		for my $id (@ids) {
+			$regex = qr{^#$id\s+};
+			@selectors = $self->grep_properties($regex);
+
+			for (@selectors) {
+				$sel = substr($_, length($id) + 2);
+				$selmap{$sel} = $_;
+			}
+		}
 	}
 	
 	if (defined $parms{class} && $parms{class} =~ /\S/) {
