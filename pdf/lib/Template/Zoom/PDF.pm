@@ -700,6 +700,19 @@ sub rect {
 	}
 }
 
+sub image {
+	my ($self, $object, $x_left, $y_top, $width, $height, $specs) = @_;
+	my ($gfx, $method, $image_object);
+
+	$gfx = $self->{page}->gfx;
+	
+	$method = 'image_' . $object->{type};
+
+	$image_object = $self->{pdf}->$method($object->{file});
+
+	$gfx->image($image_object, $x_left, $y_top, $width, $height);
+}
+
 # auxiliary methods
 
 # select font from list provided by CSS (currently just the first)

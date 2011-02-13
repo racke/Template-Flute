@@ -24,6 +24,8 @@ use warnings;
 
 use Data::Dumper;
 
+use Template::Zoom::PDF::Image;
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -136,6 +138,25 @@ sub calculate {
 		}
 
 		return $self->{box};
+	}
+
+	if ($self->{gi} eq 'img') {
+		my (@info, $file);
+
+		$file = $self->{elt}->att('src');
+		
+		$self->{object} = new Template::Zoom::PDF::Image(file => $file);
+		
+		if ($self->{specs}->{props}->{width} > 0
+			&& $self->{specs}->{props}->{height} > 0) {
+
+			$self->{box} = {width => $self->{specs}->{props}->{width},
+							height => $self->{specs}->{props}->{height},
+							clear => {after => 0, before => 0},
+							size => $self->{specs}->{size}};
+
+			return;
+		}
 	}
 	
 	for my $child ($self->{elt}->children()) {
@@ -533,6 +554,16 @@ sub render {
 			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],
 								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
 								  noborder => 1);
+		}
+	}
+	elsif ($self->{gi} eq 'img') {
+		# rendering image
+		if ($self->{object}->{type}) {
+			$self->{pdf}->image($self->{object},
+								$parms{hpos}, $parms{vpos},
+								$self->{box}->{width},
+								$self->{box}->{height},
+								$self->{specs});
 		}
 	}
 	elsif ($self->{gi} eq 'hr') {
