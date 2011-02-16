@@ -64,7 +64,7 @@ sub initialize {
 
 sub properties {
 	my ($self, %parms) = @_;
-	my (@classes, @tags, $props);
+	my (@ids, @classes, @tags, $props);
 
 	# inherit from parent element
 	if (exists $parms{inherit}) {
@@ -74,6 +74,13 @@ sub properties {
 	# defaults
 	$props->{color} = 'black';
 
+	if (defined $parms{id} && $parms{id} =~ /\S/) {
+		@ids = split(/\s+/, $parms{id});
+
+		for my $id (@ids) {
+			$self->build_properties($props, "#$id");
+		}
+	}
 
 	if (defined $parms{class} && $parms{class} =~ /\S/) {
 		@classes = split(/\s+/, $parms{class});
@@ -105,10 +112,24 @@ sub properties {
 
 sub descendant_properties {
 	my ($self, %parms) = @_;
-	my (@classes, @selectors, $regex, $sel, @tags, %selmap);
+	my (@ids, @classes, @selectors, $regex, $sel, @tags, %selmap);
 
 	if (ref($parms{parent}) eq 'HASH') {
 		%selmap = %{$parms{parent}};
+	}
+
+	if (defined $parms{id} && $parms{id} =~ /\S/) {
+		@ids = split(/\s+/, $parms{id});
+
+		for my $id (@ids) {
+			$regex = qr{^#$id\s+};
+			@selectors = $self->grep_properties($regex);
+
+			for (@selectors) {
+				$sel = substr($_, length($id) + 2);
+				$selmap{$sel} = $_;
+			}
+		}
 	}
 	
 	if (defined $parms{class} && $parms{class} =~ /\S/) {
@@ -331,6 +352,11 @@ sub inherit {
 		$props{line_height} = $inherit->{line_height};
 	}
 
+	# text
+	if ($inherit->{text}) {
+		$props{text} = $inherit->{text};
+	}
+	
 	return \%props;
 }
 

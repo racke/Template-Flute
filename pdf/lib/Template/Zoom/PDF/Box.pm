@@ -24,10 +24,12 @@ use warnings;
 
 use Data::Dumper;
 
+use Template::Zoom::PDF::Image;
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
-	my ($elt_class, @p);
+	my ($elt_class, $elt_id, @p);
 	
 	$class = ref($proto) || $proto;
 	$self = {@args};
@@ -53,6 +55,16 @@ sub new {
 		$self->{class} = '';
 	}
 
+	# Record corresponding ID for box
+	$elt_id = $self->{elt}->att('id');
+
+	if (defined $elt_id) {
+		$self->{id} = $elt_id;
+	}
+	else {
+		$self->{id} = '';
+	}
+	
 	# Page for element
 	$self->{page} ||= 1;
 	
@@ -64,11 +76,14 @@ sub new {
 
 	# Positions of child elements
 	$self->{eltpos} = [];
+
+	# Stripes with child elements
+	$self->{stripes} = [];
 	
 	bless ($self, $class);
 
 	# Create selector map
-	@p = (class => $self->{class}, parent => $self->{selector_map});
+	@p = (id => $self->{id}, class => $self->{class}, parent => $self->{selector_map});
 	
 	$self->{selector_map} = $self->{pdf}->{css}->descendant_properties(@p);
 		
@@ -124,6 +139,25 @@ sub calculate {
 
 		return $self->{box};
 	}
+
+	if ($self->{gi} eq 'img') {
+		my (@info, $file);
+
+		$file = $self->{elt}->att('src');
+		
+		$self->{object} = new Template::Zoom::PDF::Image(file => $file);
+		
+		if ($self->{specs}->{props}->{width} > 0
+			&& $self->{specs}->{props}->{height} > 0) {
+
+			$self->{box} = {width => $self->{specs}->{props}->{width},
+							height => $self->{specs}->{props}->{height},
+							clear => {after => 0, before => 0},
+							size => $self->{specs}->{size}};
+
+			return;
+		}
+	}
 	
 	for my $child ($self->{elt}->children()) {
 		# discard elements we won't use anyway
@@ -157,14 +191,16 @@ sub calculate {
 	# processed all childs, now determine my size itself
 
 	my ($max_width, $max_height, $vpos, $hpos, $max_stripe_height, $child) = (0,0,0,0);
-	my ($hpos_next, $vpos_next, $stripe_base, $clear_after);
+	my ($hpos_next, $vpos_next, @stripes, $stripe_pos, $stripe_base, $clear_after);
 
 	$stripe_base = 0;
 	$clear_after = 0;
+	$stripe_pos = 0;
 	
 	for (my $i = 0; $i < @{$self->{eltstack}}; $i++) {
 		$child = $self->{eltstack}->[$i];
-
+		$child->{stackpos} = $i;
+		
 		if ($hpos > 0 && ! $child->{box}->{clear}->{before}
 			&& ! $clear_after) {
 			# check if item fits horizontally
@@ -176,8 +212,6 @@ sub calculate {
 				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: too wide forH $hpos_next\n";
 				$hpos = 0;				
 				$hpos_next = 0;
-				$max_stripe_height = 0;
-
 			}
 
 			if ($hpos_next > $self->{bounding}->{max_w}) {
@@ -185,14 +219,11 @@ sub calculate {
 				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
 				$hpos = 0;
 				$hpos_next = 0;
-				$max_stripe_height = 0;
-
 			}
 		}
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
-			$max_stripe_height = 0;
 			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
 		}
 
@@ -219,19 +250,26 @@ sub calculate {
 			else {
 				# add to current width
 				$max_width += $child->{box}->{width};
-
-				# check whether we need to extend the height
-				my $height_extend = 0;
-			
-				if ($child->{box}->{height} > $max_stripe_height) {
-					$height_extend = $child->{box}->{height} > $max_stripe_height;
-				}
-
-				$max_stripe_height += $height_extend;
-				$max_height += $height_extend;
 			}
+
+			# check whether we need to extend the height
+			my $height_extend = 0;
+			
+			if ($child->{box}->{height} > $max_stripe_height) {
+				$height_extend = $child->{box}->{height} - $max_stripe_height;
+			}
+
+			$max_stripe_height += $height_extend;
+			$max_height += $height_extend;
 		}
 		else {
+			# starting new stripe now
+			$stripe_pos++;
+			$max_stripe_height = 0;
+			
+			# stripe base moves to max_height
+			$stripe_base = $max_height;
+		
 			if ($child->{box}->{width} > $max_width) {
 				$max_width = $child->{box}->{width};
 			}
@@ -243,10 +281,7 @@ sub calculate {
 				$vpos_next = $stripe_base;
 			}
 			$vpos = $stripe_base;
-			
-			# stripe base moves to max_height
-			$stripe_base = $max_height;
-			
+		
 			# stripe height is simply height of this child
 			$max_stripe_height = $child->{box}->{height};
 
@@ -269,7 +304,7 @@ sub calculate {
 		}
 
 		$self->{eltpos}->[$i] = {hpos => $hpos, vpos => -$vpos};
-
+		
 		if ($child->{elt}->is_text()) {
 			print "POS (relative) for TEXT '" . $child->{elt}->text() . "': " . Dumper($self->{eltpos}->[$i]);
 		}
@@ -277,13 +312,16 @@ sub calculate {
 			print "POS (relative) for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
 		}
 
+		# record child within its stripe
+		push (@{$self->{stripes}->[$stripe_pos]}, $child);
+		
 		# advance to new relative position
 		$hpos = $hpos_next;
 		$vpos = $vpos_next;
 
 		$clear_after = $child->{box}->{clear}->{after};
 	}
-
+	
 	# add offsets
 	$max_width += $self->{specs}->{offset}->{left} + $self->{specs}->{offset}->{right};
 	$max_height += $self->{specs}->{offset}->{top} + $self->{specs}->{offset}->{bottom};
@@ -318,8 +356,56 @@ sub calculate {
 					size => $self->{specs}->{size}};
 
 	print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
+ 	return $self->{box};
+}
+
+sub align {
+	my ($self, $offset) = @_;
+	my ($avail_width, $avail_width_text, $textprops, $child, $box_pos);
+
+	$offset ||= 0;
 	
-	return $self->{box};
+	for (my $i = 0; $i < @{$self->{stripes}}; $i++) {
+		for my $child (@{$self->{stripes}->[$i]}) {
+			# skip over text elements (align only applies to grand children)
+			next if $child->{elt}->is_text();
+			
+			if ($textprops = $child->property('text')) {
+				if ($child->property('width')) {
+					$avail_width = $child->property('width');
+				}
+				elsif (@{$self->{stripes}->[$i]} == 1) {
+					# single box in a stripe can take over all the space
+					# in the bounding box
+					$avail_width = $child->{bounding}->{max_w} - $offset - $self->{specs}->{offset}->{left} - $self->{specs}->{offset}->{right};
+#					$avail_width = $self->{box}->{width};
+				}
+				else {
+					$avail_width = $child->{box}->{width};
+				}
+
+				for (my $cpos = 0; $cpos < @{$child->{eltstack}}; $cpos++) {
+					next unless $child->{eltstack}->[$cpos]->{elt}->is_text();
+
+					$avail_width_text = $avail_width - $child->{eltstack}->[$cpos]->{box}->{text_width};
+
+					if ($avail_width_text > 0) {
+						if ($textprops->{align} eq 'right') {
+							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text;
+						}
+						elsif ($textprops->{align} eq 'center') {
+							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text / 2;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (my $i = 0; $i < @{$self->{eltstack}}; $i++) {
+		$child = $self->{eltstack}->[$i];
+		$child->align($offset + $self->{eltpos}->[$i]->{hpos});
+	}
 }
 
 # partition - partition boxes through pages
@@ -466,8 +552,18 @@ sub render {
 		
 		for (my $i = 0; $i < @$chunks; $i++) {
 			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],
-								  $self->{specs}, {%parms, vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
+								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
 								  noborder => 1);
+		}
+	}
+	elsif ($self->{gi} eq 'img') {
+		# rendering image
+		if ($self->{object}->{type}) {
+			$self->{pdf}->image($self->{object},
+								$parms{hpos}, $parms{vpos},
+								$self->{box}->{width},
+								$self->{box}->{height},
+								$self->{specs});
 		}
 	}
 	elsif ($self->{gi} eq 'hr') {

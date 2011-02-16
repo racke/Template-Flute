@@ -82,7 +82,7 @@ $html_file = shift;
 
 $html_object = new Template::Zoom::HTML;
 
-$html_object->parse_template($html_file, $spec);
+$html_object->parse_file($html_file, $spec);
 
 for $list_object ($html_object->lists()) {
 	# seed and check input
@@ -107,7 +107,7 @@ if ($opts{pdf}) {
 
 	$zoom->process();
 	
-	my $pdf = new Template::Zoom::PDF (xml => $html_object->root());
+	my $pdf = new Template::Zoom::PDF (template => $html_object);
 
 	$pdf->process($opts{pdf});
 }

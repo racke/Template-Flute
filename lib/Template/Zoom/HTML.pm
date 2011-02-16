@@ -23,6 +23,7 @@ use strict;
 use warnings;
 
 use Template::Zoom::Increment;
+use Template::Zoom::Container;
 use Template::Zoom::List;
 use Template::Zoom::Form;
 
@@ -33,8 +34,28 @@ sub new {
 
 	$class = shift;
 
-	$self = {lists => {}, forms => {}, params => {}, values => {}, query => {}};
+	$self = {containers => {}, lists => {}, forms => {},
+			 params => {}, values => {}, query => {}};
+	
 	bless $self;
+}
+
+# containers method - return list of Template::Zoom::Container objects for this# template
+
+sub containers {
+	my ($self) = @_;
+
+	return values %{$self->{containers}};
+}
+
+# container method - returns specific container object
+
+sub container {
+	my ($self, $name) = @_;
+
+	if (exists $self->{containers}->{$name}) {
+		return $self->{containers}->{$name};
+	}
 }
 
 # lists method - return list of Template::Zoom::List objects for this template
@@ -210,6 +231,12 @@ sub _parse_handler {
 sub _elt_handler {
 	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
+	if ($sob->{type} eq 'container') {
+		$sob->{elts} = [$elt];
+		$self->{containers}->{$name} = new Template::Zoom::Container ($sob, $spec_object, $name);
+		return $self;
+	}
+	
 	if ($sob->{type} eq 'list') {
 		my $iter;
 		

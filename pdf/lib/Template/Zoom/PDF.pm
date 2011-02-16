@@ -157,12 +157,12 @@ my $footer_height	=  3;
 
 	# set font
 	if ($css_defaults->{font}->{family}) {
-		$self->{fontfamily} = $css_defaults->{font}->{family};
+		$self->{fontfamily} = $self->_font_select($css_defaults->{font}->{family});
 	}
 	else {
 		$self->{fontfamily} = FONT_FAMILY;
 	}
-
+	
 	if ($css_defaults->{font}->{size}) {
 		$self->{fontsize} = to_points($css_defaults->{font}->{size});
 	}
@@ -205,6 +205,9 @@ my $footer_height	=  3;
 	# calculate sizes
 	$root_box->calculate();
 
+	# align
+	$root_box->align();
+	
 	# page partitioning
 	$root_box->partition(1, 0);
 
@@ -248,7 +251,7 @@ sub to_points {
 
 	return 0 unless defined $width;
 
-	if ($width =~ s/^(\d+(\.\d+)?)(in|px|pt|cm|mm)?$/$1/) {
+	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
 		$unit = $3 || 'mm';
 	}
 	else {
@@ -323,12 +326,14 @@ sub setup_text_props {
 		$fontweight, $txeng);
 
 	my $class = $elt->att('class') || '';
+	my $id = $elt->att('id') || '';
 	my $gi = $elt->gi();
 
 	$selector ||= '';
 	
 	# get properties from CSS
-	$props = $self->{css}->properties(class => $elt->att('class'),
+	$props = $self->{css}->properties(id => $id,
+									  class => $elt->att('class'),
 									  tag => $elt->gi(),
 									  selector => $selector,
 									  inherit => $inherit,
@@ -344,7 +349,7 @@ sub setup_text_props {
 	}
 
 	if ($props->{font}->{family}) {
-		$fontfamily = $props->{font}->{family};
+		$fontfamily = $self->_font_select($props->{font}->{family});
 	}
 	else {
 		$fontfamily = $self->{fontfamily};
@@ -433,8 +438,6 @@ sub calculate {
 			elsif ($text =~ /\S/) {
 				$chunk_width = $txeng->advancewidth($text, font => $specs->{font},
 												   fontsize => $specs->{size});
-
-				print "TW for $text and $specs->{props}->{width} $specs->{size}: $text_width\n";
 			}
 			else {
 				# whitespace
@@ -512,6 +515,7 @@ sub calculate {
 	return {width => $max_width, height => $height, size => $specs->{size},
 			clear => {before => $clear_before, after => $clear_after},
 			overflow => {x => $overflow_x, y => $overflow_y},
+			text_width => $text_width,
 			chunks => \@chunks,
 		   };
 }
@@ -694,6 +698,32 @@ sub rect {
 	if ($color) {
 		$gfx->fill();
 	}
+}
+
+sub image {
+	my ($self, $object, $x_left, $y_top, $width, $height, $specs) = @_;
+	my ($gfx, $method, $image_object);
+
+	$gfx = $self->{page}->gfx;
+	
+	$method = 'image_' . $object->{type};
+
+	$image_object = $self->{pdf}->$method($object->{file});
+
+	$gfx->image($image_object, $x_left, $y_top, $width, $height);
+}
+
+# auxiliary methods
+
+# select font from list provided by CSS (currently just the first)
+
+sub _font_select {
+	my ($self, $font_string) = @_;
+	my (@fonts);
+
+	@fonts = split(/,/, $font_string);
+
+	return $fonts[0];
 }
 
 1;

@@ -88,6 +88,7 @@ sub _initialize {
 
 	# twig handlers
 	%handlers = (specification => sub {$self->_spec_handler($_[1])},
+ 				 container => sub {$self->_container_handler($_[1])},
 				 list => sub {$self->_list_handler($_[1])},
 				 paging => sub {$self->_stash_handler($_[1])},
  				 filter => sub {$self->_stash_handler($_[1])},
@@ -111,6 +112,21 @@ sub _spec_handler {
 	my ($name);
 
 	$name = $elt->att('name');
+}
+
+sub _container_handler {
+	my ($self, $elt) = @_;
+	my ($name, %container);
+	
+	$name = $elt->att('name');
+
+	$container{container} = $elt->atts();
+	
+	# flush elements from stash into container hash
+	$self->_stash_flush($elt, \%container);
+
+	# add container to specification object
+	$self->{spec}->container_add(\%container);
 }
 
 sub _list_handler {
