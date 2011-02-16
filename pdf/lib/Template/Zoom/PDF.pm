@@ -48,18 +48,23 @@ sub new {
 		$self->{css} = new Template::Zoom::Style::CSS(template => $self->{template});
 	}
 
+	# create PDF::API2 object
+	if ($self->{file}) {
+		$self->{pdf} = new PDF::API2(-file => $self->{file});
+	}
+	else {
+		$self->{pdf} = new PDF::API2();
+	}
+	
 	bless ($self, $class);
 }
 
 sub process {
 	my ($self, $file) = @_;
-	my ($pdf, $font, $table);
+	my ($font, $table);
 
 	$self->{cur_page} = 1;
-	
-	$pdf = new PDF::API2(-file => $file || $self->{file});
 
-	$self->{pdf} = $pdf;
 #	$self->{page} = $page;
 	
 
@@ -105,9 +110,9 @@ my $footer_height	=  3;
 		print "Borders are T $self->{border_top} R $self->{border_right} B $self->{border_bottom} L $self->{border_left}.\n\n";
 	}
 
-	$pdf->mediabox( to_points($page_width), to_points($page_height) );
+	$self->{pdf}->mediabox( to_points($page_width), to_points($page_height) );
 
-	my %h = $pdf->info(
+	my %h = $self->{pdf}->info(
         'Producer'     => "Template::Zoom",
 	);
 
@@ -139,9 +144,9 @@ my $footer_height	=  3;
 	}
 
 	# Open first page
-	$self->{page} ||= $pdf->page($self->{cur_page});
+	$self->{page} ||= $self->{pdf}->page($self->{cur_page});
 
-	$pdf->preferences(
+	$self->{pdf}->preferences(
 					  -fullscreen => 0,
 					  -singlepage => 1,
 					  -afterfullscreenoutlines => 1,
@@ -217,7 +222,7 @@ my $footer_height	=  3;
 	
 #	$self->walk_template($self->{xml});
 	
-	$pdf->saveas();
+	$self->{pdf}->saveas($file);
 	
 	return;
 }
