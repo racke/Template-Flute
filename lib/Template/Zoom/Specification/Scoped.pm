@@ -25,6 +25,25 @@ use warnings;
 use Template::Zoom::Specification;
 use Config::Scoped;
 
+=head1 NAME
+
+Template::Zoom::Specification::Scoped - Config::Scoped Specification Parser
+
+=head1 SYNOPSIS
+
+    $scoped = new Template::Zoom::Specification::Scoped;
+
+    $spec = $scoped->parse_file($specification_file);
+    $spec = $scoped->parse($specification_text);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::Specification::Scoped object.
+
+=cut
+
 # Constructor
 
 sub new {
@@ -39,6 +58,15 @@ sub new {
 	bless ($self, $class);
 }
 
+=head1 METHODS
+
+=head2 parse [ STRING | SCALARREF ]
+
+Parses text from STRING or SCALARREF and returns L<Template::Zoom::Specification>
+object in case of success.
+
+=cut
+	
 sub parse {
 	my ($self, $text) = @_;
 	my ($scoped, $config);
@@ -58,6 +86,13 @@ sub parse {
 	return $self->{spec};
 }
 
+=head2 parse_file FILENAME
+
+Parses text from file FILENAME and returns L<Template::Zoom::Specification>
+object in case of success.
+
+=cut
+
 sub parse_file {
 	my ($self, $file) = @_;
 	my ($scoped, $config, $key, $value, %list);
@@ -70,6 +105,13 @@ sub parse_file {
 
 	return $self->{spec};
 }
+
+=head2 create_specification [ HASHREF ]
+	
+	Takes L<Config::Scoped> hash reference and returns L<Template::Zoom::Specification> object.
+    Mostly used for parse and parse_file methods.
+
+=cut
 
 sub create_specification {
 	my ($self, $config) = @_;
@@ -130,6 +172,12 @@ sub create_specification {
 	return $spec;
 }
 
+=head2 error
+
+    Returns last error.
+
+=cut
+
 sub error {
 	my ($self) = @_;
 
@@ -146,5 +194,21 @@ sub _add_error {
 	
 	unshift (@{$self->{errors}}, \%error);
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

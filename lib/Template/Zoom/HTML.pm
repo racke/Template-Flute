@@ -27,6 +27,25 @@ use Template::Zoom::Container;
 use Template::Zoom::List;
 use Template::Zoom::Form;
 
+=head1 NAME
+
+Template::Zoom::HTML - HTML Template Parser
+
+=head1 SYNOPSIS
+
+    $html_object = new Template::Zoom::HTML;
+
+    $html_object->parse('<div class="example">Hello world</div>');
+    $html_object->parse_file($html_file, $spec);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::HTML object.
+
+=cut
+
 # constructor
 
 sub new {
@@ -40,6 +59,14 @@ sub new {
 	bless $self;
 }
 
+=head1 METHODS
+
+=head2 containers
+
+Returns list of L<Template::Zoom::Container> objects for this template.
+
+=cut
+
 # containers method - return list of Template::Zoom::Container objects for this# template
 
 sub containers {
@@ -48,7 +75,11 @@ sub containers {
 	return values %{$self->{containers}};
 }
 
-# container method - returns specific container object
+=head2 container NAME
+
+Returns container object named NAME.
+
+=cut
 
 sub container {
 	my ($self, $name) = @_;
@@ -58,12 +89,23 @@ sub container {
 	}
 }
 
-# lists method - return list of Template::Zoom::List objects for this template
+=head2 lists
+
+Returns list of L<Template::Zoom::List> objects for this template.
+
+=cut
+
 sub lists {
 	my ($self) = @_;
 
 	return values %{$self->{lists}};
 }
+
+=head2 list NAME
+
+Returns list object named NAME.
+
+=cut
 
 # list method - returns specific list object
 sub list {
@@ -74,12 +116,23 @@ sub list {
 	}
 }
 
-# forms method - return list of Template::Zoom::Form objects for this template
+=head2 forms
+	
+Returns list of L<Template::Zoom::Form> objects for this template.
+
+=cut
+
 sub forms {
 	my ($self) = @_;
 
 	return values %{$self->{forms}};
 }
+
+=head2 form NAME
+
+Returns form object named NAME.
+
+=cut
 
 # form method - returns specific form object
 sub form {
@@ -90,12 +143,23 @@ sub form {
 	}
 }
 
-# values method - returns list of values for this template
+=head2 values
+
+Returns list of values for this form.
+
+=cut
+
 sub values {
 	my ($self) = @_;
 
 	return values %{$self->{values}};
 }
+
+=head2 root
+
+Returns root of HTML/XML tree.
+
+=cut
 
 # root method - returns root of HTML/XML tree
 sub root {
@@ -104,7 +168,13 @@ sub root {
 	return $self->{xml}->root();
 }
 
-# translate method - localization of static text
+=head2 translate I18NOBJECT
+
+Localizes static text inside the HTML template through
+the I18NOBJECT.
+
+=cut
+
 sub translate {
 	my ($self, $i18n) = @_;
 	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n);
@@ -133,6 +203,13 @@ sub translate {
 	return;
 }
 
+=head2 parse [ STRING | SCALARREF ] SPECOBJECT
+
+Parses HTML template from STRING or SCALARREF with the help
+of a L<Template::Zoom::Specification> object SPECOBJECT.
+
+=cut
+
 sub parse {
 	my ($self, $template, $spec_object) = @_;
 	my ($object);
@@ -147,6 +224,13 @@ sub parse {
 	return $object;
 }
 
+=head2 parse_file FILENAME SPECOBJECT
+
+Parses HTML template from file FILENAME with the help
+of a L<Template::Zoom::Specification> object SPECOBJECT.
+
+=cut
+	
 sub parse_file {
 	my ($self, $template_file, $spec_object) = @_;
 
@@ -463,6 +547,22 @@ sub hook_html {
 	
 	return;
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
 

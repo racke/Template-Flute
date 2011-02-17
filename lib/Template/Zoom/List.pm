@@ -22,6 +22,12 @@ package Template::Zoom::List;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Template::Zoom::List - List object for Template::Zoom templates.
+
+=cut
+
 # Constructor
 sub new {
 	my ($class, $sob, $static, $spec, $name) = @_;
@@ -83,21 +89,38 @@ sub paging_add {
 	$self->{paging} = $paging;
 }
 
-# name method - returns name of the list
+=head1 METHODS
+
+=head2 name
+
+Returns name of the list.
+
+=cut
+
 sub name {
 	my ($self) = @_;
 
 	return $self->{sob}->{name};
 }
 
-# iterator method - returns iterator for the list
+=head2 iterator
+
+Returns iterator for the list.
+
+=cut
+	
 sub iterator {
 	my ($self) = @_;
 
 	return $self->{iterator};
 }
 
-# set_iterator method - sets iterator for the list
+=head2 set_iterator NAME
+
+Sets list iterator to NAME.
+
+=cut
+
 sub set_iterator {
 	my ($self, $iterator) = @_;
 	
@@ -170,6 +193,13 @@ sub input {
 	$self->{valid_input} = 1;
 	return 1;
 }
+
+=head2 query
+
+Returns Perl structure for database query based on
+the specification.
+
+=cut
 
 sub query {
 	my ($self) = @_;
@@ -310,5 +340,21 @@ sub increment {
 		$inc->increment();
 	}
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

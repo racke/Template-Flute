@@ -39,7 +39,7 @@ Template::Zoom::Specification - Specification class for Template::Zoom
 
 =head1 DESCRIPTION
 
-    Specification class for Template::Zoom.
+Specification class for L<Template::Zoom>.
 
 =cut
 
@@ -187,8 +187,7 @@ sub value_add {
 
 		$self->{classes}->{$class} = {%{$new_valueref->{value}}, type => 'value'};
 	}
-use Data::Dumper;
-print Dumper($valueref);
+
 	return $valueref;
 }	
 
@@ -212,6 +211,12 @@ sub i18n_add {
 	return $i18nref;
 }
 
+=head2 list_iterator NAME
+
+Returns iterator for list named NAME or undef.
+
+=cut
+
 sub list_iterator {
 	my ($self, $list_name) = @_;
 
@@ -220,6 +225,12 @@ sub list_iterator {
 	}
 }
 
+=head2 list_inputs NAME
+
+Returns inputs for list named NAME or undef.
+
+=cut
+	
 sub list_inputs {
 	my ($self, $list_name) = @_;
 
@@ -227,6 +238,12 @@ sub list_inputs {
 		return $self->{lists}->{$list_name}->{input};
 	}
 }
+
+=head2 list_sorts NAME
+
+Return sorts for list named NAME or undef.
+
+=cut
 
 sub list_sorts {
 	my ($self, $list_name) = @_;
@@ -236,6 +253,12 @@ sub list_sorts {
 	}
 }
 
+=head2 list_filters NAME
+
+Return filters for list named NAME or undef.
+
+=cut
+
 sub list_filters {
 	my ($self, $list_name) = @_;
 
@@ -243,6 +266,12 @@ sub list_filters {
 		return $self->{lists}->{$list_name}->{filter};
 	}
 }
+
+=head2 form_inputs NAME
+
+Return inputs for form named NAME or undef.
+
+=cut
 
 sub form_inputs {
 	my ($self, $form_name) = @_;
@@ -296,6 +325,12 @@ sub resolve_iterator {
 	return $iter;
 }
 
+=head2 element_by_class NAME
+
+Returns element of the specification tied to HTML class NAME or undef.
+
+=cut
+
 sub element_by_class {
 	my ($self, $class) = @_;
 
@@ -305,6 +340,12 @@ sub element_by_class {
 
 	return;
 }
+
+=head2 element_by_id NAME
+
+Returns element of the specification tied to HTML id NAME or undef.
+
+=cut
 
 sub element_by_id {
 	my ($self, $id) = @_;
@@ -333,6 +374,7 @@ Stefan Hornburg (Racke), C<< <racke at linuxia.de> >>
 
 Please report any bugs or feature requests to C<bug-template-zoom at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom>.
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2011 Stefan Hornburg (Racke).

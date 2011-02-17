@@ -26,6 +26,25 @@ use XML::Twig;
 
 use Template::Zoom::Specification;
 
+=head1 NAME
+
+Template::Zoom::Specification::XML - XML Specification Parser
+
+=head1 SYNOPSIS
+
+    $xml = new Template::Zoom::Specification::XML;
+
+    $spec = $xml->parse_file($specification_file);
+    $spec = $xml->parse($specification_text);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::Specification::XML object.
+
+=cut
+
 # Constructor
 
 sub new {
@@ -38,6 +57,15 @@ sub new {
 	$self = \%params;
 	bless $self;
 }
+
+=head1 METHODS
+
+=head2 parse [ STRING | SCALARREF ]
+
+Parses text from STRING or SCALARREF and returns L<Template::Zoom::Specification>
+object in case of success.
+
+=cut
 
 sub parse {
 	my ($self, $text) = @_;
@@ -60,6 +88,13 @@ sub parse {
 	return $self->{spec};
 }
 
+=head2 parse_file STRING
+
+Parses file and returns L<Template::Zoom::Specification> object in
+case of success.
+
+=cut
+	
 sub parse_file {
 	my ($self, $file) = @_;
 	my ($twig, $xml);
@@ -228,6 +263,12 @@ sub _stash_flush {
 	return;
 }
 
+=head2 error
+
+    Returns last error.
+
+=cut
+
 sub error {
 	my ($self) = @_;
 
@@ -244,5 +285,21 @@ sub _add_error {
 	
 	unshift (@{$self->{errors}}, \%error);
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

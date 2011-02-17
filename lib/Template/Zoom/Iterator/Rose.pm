@@ -24,6 +24,28 @@ use warnings;
 
 use Rose::DB::Object::QueryBuilder qw(build_select);
 
+=head1 NAME
+
+Template::Zoom::Iterator::Rose - Iterator class for Template::Zoom
+
+=cut
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::Iterator::Rose object with the following parameters:
+
+=over 4
+
+=item dbh
+
+L<DBI> database handle.
+
+=back
+
+=cut
+
 # Constructor
 sub new {
 	my ($class, @args) = @_;
@@ -33,6 +55,15 @@ sub new {
 	$self = {@args};
 	bless $self, $class;
 }
+
+=head1 METHODS
+
+=head2 build
+
+Builds database query. See L<Rose::DB::Object::QueryBuilder> for
+instructions.
+
+=cut
 
 # Build method
 sub build {
@@ -52,7 +83,12 @@ sub build {
 	return 1;
 }
 
-# Run method - executes database query
+=head3 run
+
+Executes database query.
+
+=cut
+
 sub run {
 	my ($self) = @_;
 	my ($sth);
@@ -65,7 +101,13 @@ sub run {
 	return 1;
 }
 
-# Next method - return next element or undef
+=head3 next
+
+Returns next record in result set from database query or
+undef if result set is exhausted.
+
+=cut
+	
 sub next {
 	my ($self) = @_;
 	my ($record);
@@ -85,7 +127,12 @@ sub next {
 	return $record;
 };
 
-# Count method - returns number of elements
+=head3 count
+
+Returns count of records in result set from database query.
+
+=cut
+
 sub count {
 	my ($self) = @_;
 
@@ -95,5 +142,21 @@ sub count {
 
 	return $self->{results}->{rows};
 };
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

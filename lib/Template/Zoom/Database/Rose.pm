@@ -26,6 +26,38 @@ use Rose::DB;
 
 use Template::Zoom::Iterator::Rose;
 
+=head1 NAME
+
+Template::Zoom::Database::Rose - Database abstraction for Template::Zoom
+
+=head1 SYNOPSIS
+
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::Database::Rose object with either a DBI handle
+passed as dbh parameter or the following parameters:
+
+=over 4
+
+=item dbname
+
+Database name.
+
+=item dbuser
+
+Database user.
+
+=item dbpass
+
+Database password.
+
+=back
+
+=cut
+
 # Constructor
 sub new {
 	my ($class, @args) = @_;
@@ -64,6 +96,14 @@ sub _initialize {
 		$self->{dbh} = $self->{rose}->dbh();
 	}
 }
+
+=head2 METHODS
+
+=head3 build
+
+Returns iterator from query.
+
+=cut
 
 # Build query and return iterator
 sub build {

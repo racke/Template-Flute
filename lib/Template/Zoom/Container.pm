@@ -22,6 +22,12 @@ package Template::Zoom::Container;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Template::Zoom::Container - Container object for Template::Zoom templates.
+
+=cut
+
 # Constructor
 sub new {
 	my ($class, $sob, $spec, $name) = @_;
@@ -36,13 +42,26 @@ sub new {
 	return $self;
 }
 
-# name method - returns name of the container
+=head1 METHODS
+
+=head2 name
+
+Returns name of the container.
+
+=cut
+
 sub name {
 	my ($self) = @_;
 
 	return $self->{sob}->{name};
 }
 
+=head2 name
+
+Passes current values to this container.
+
+=cut
+	
 # set_values method - set values for this container
 sub set_values {
 	my ($self, $values) = @_;
@@ -57,6 +76,13 @@ sub elt {
 	return $self->{sob}->{elts}->[0];
 }
 
+=head2 visible
+
+Determines whether the container is visible. Possible return values are 1 (visible),
+0 (hidden) or undef if the specification for the container misses a value attribute.
+
+=cut
+	
 # visible
 sub visible {
 	my ($self) = @_;
@@ -74,4 +100,20 @@ sub visible {
 	}
 }
 
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+	
 1;

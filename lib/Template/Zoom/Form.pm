@@ -22,6 +22,12 @@ package Template::Zoom::Form;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Template::Zoom::Form - Form object for Template::Zoom templates.
+
+=cut
+
 # Constructor
 sub new {
 	my ($class, $sob, $static) = @_;
@@ -54,7 +60,14 @@ sub inputs_add {
 	}
 }
 
-# name method - returns name of the form
+=head1 METHODS
+
+=head2 name
+
+Returns name of the form.
+
+=cut
+
 sub name {
 	my ($self) = @_;
 
@@ -68,7 +81,12 @@ sub elt {
 	return $self->{sob}->{elts}->[0];
 }
 
-# fields method - returns defined form fields
+=head2 fields
+
+Returns form fields.
+
+=cut
+
 sub fields {
 	my ($self) = @_;
 
@@ -134,7 +152,12 @@ sub set_action {
 	$self->{action} = $action;
 }
 
-# set_method method - changes form method
+=head2 set_method METHOD
+
+Sets form method to METHOD, e.g. GET or POST.
+
+=cut
+
 sub set_method {
 	my ($self, $method) = @_;
 
@@ -209,6 +232,13 @@ sub finalize {
 	return;
 }
 
+=head2 query
+
+Returns Perl structure for database query based on
+the specification.
+
+=cut
+
 sub query {
 	my ($self) = @_;
 	my (%query, $found, %cols);
@@ -242,5 +272,21 @@ sub query {
 		return \%query;
 	}
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
