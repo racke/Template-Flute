@@ -55,6 +55,9 @@ sub new {
 	else {
 		$self->{pdf} = new PDF::API2();
 	}
+
+	# font cache
+	$self->{_font_cache} = {};
 	
 	bless ($self, $class);
 }
@@ -182,13 +185,7 @@ my $footer_height	=  3;
 		$self->{fontweight} = '';
 	}
 
-	if ($self->{fontweight}) {
-		$font = $self->{pdf}->corefont("$self->{fontfamily},$self->{fontweight}",
-									   -encoding => 'latin1');
-	}
-	else {
-		$font = $self->{pdf}->corefont($self->{fontfamily},-encoding => 'latin1');
-	}
+	$font = $self->font($self->{fontfamily}, $self->{fontweight});
 	
 	$self->{page}->text->font($font, $self->{fontsize});
 
@@ -300,6 +297,31 @@ sub content_width {
 	return to_points($width);
 }
 
+sub font {
+	my ($self, $name, $weight) = @_;
+	my ($key, $obj);
+
+	# determine font name from supplied name and optional weight
+	if ($weight) {
+		$key = "$name-$weight";
+	}
+	else {
+		$key = $name;
+	}
+		
+	if (exists $self->{_font_cache}->{$key}) {
+		# return font object from cache
+		return $self->{_font_cache}->{$key};
+	}
+
+	# create new font object
+	$obj = $self->{pdf}->corefont($key, -encoding => 'latin1');
+
+	$self->{_font_cache}->{$key} = $obj;
+	
+	return $obj;
+}
+
 sub text_filter {
 	my ($self, $text) = @_;
 	my ($orig);
@@ -367,13 +389,8 @@ sub setup_text_props {
 		$fontweight = $self->{fontweight};
 	}
 	
-	if ($fontweight) {
-		$self->{font} = $self->{pdf}->corefont("$fontfamily,$fontweight",-encoding => 'latin1' );
-	}
-	else {
-		$self->{font} = $self->{pdf}->corefont($fontfamily,-encoding => 'latin1' );
-	}
-
+	$self->{font} = $self->font($fontfamily, $fontweight);
+	
 	$txeng->font($self->{font}, $fontsize);
 
 	if ($gi eq 'hr') {
