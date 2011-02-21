@@ -48,18 +48,26 @@ sub new {
 		$self->{css} = new Template::Zoom::Style::CSS(template => $self->{template});
 	}
 
+	# create PDF::API2 object
+	if ($self->{file}) {
+		$self->{pdf} = new PDF::API2(-file => $self->{file});
+	}
+	else {
+		$self->{pdf} = new PDF::API2();
+	}
+
+	# font cache
+	$self->{_font_cache} = {};
+	
 	bless ($self, $class);
 }
 
 sub process {
 	my ($self, $file) = @_;
-	my ($pdf, $font, $table);
+	my ($font, $table);
 
 	$self->{cur_page} = 1;
-	
-	$pdf = new PDF::API2(-file => $file || $self->{file});
 
-	$self->{pdf} = $pdf;
 #	$self->{page} = $page;
 	
 
@@ -105,9 +113,9 @@ my $footer_height	=  3;
 		print "Borders are T $self->{border_top} R $self->{border_right} B $self->{border_bottom} L $self->{border_left}.\n\n";
 	}
 
-	$pdf->mediabox( to_points($page_width), to_points($page_height) );
+	$self->{pdf}->mediabox( to_points($page_width), to_points($page_height) );
 
-	my %h = $pdf->info(
+	my %h = $self->{pdf}->info(
         'Producer'     => "Template::Zoom",
 	);
 
@@ -139,9 +147,9 @@ my $footer_height	=  3;
 	}
 
 	# Open first page
-	$self->{page} ||= $pdf->page($self->{cur_page});
+	$self->{page} ||= $self->{pdf}->page($self->{cur_page});
 
-	$pdf->preferences(
+	$self->{pdf}->preferences(
 					  -fullscreen => 0,
 					  -singlepage => 1,
 					  -afterfullscreenoutlines => 1,
@@ -177,13 +185,7 @@ my $footer_height	=  3;
 		$self->{fontweight} = '';
 	}
 
-	if ($self->{fontweight}) {
-		$font = $self->{pdf}->corefont("$self->{fontfamily},$self->{fontweight}",
-									   -encoding => 'latin1');
-	}
-	else {
-		$font = $self->{pdf}->corefont($self->{fontfamily},-encoding => 'latin1');
-	}
+	$font = $self->font($self->{fontfamily}, $self->{fontweight});
 	
 	$self->{page}->text->font($font, $self->{fontsize});
 
@@ -217,7 +219,7 @@ my $footer_height	=  3;
 	
 #	$self->walk_template($self->{xml});
 	
-	$pdf->saveas();
+	$self->{pdf}->saveas($file);
 	
 	return;
 }
@@ -295,6 +297,31 @@ sub content_width {
 	return to_points($width);
 }
 
+sub font {
+	my ($self, $name, $weight) = @_;
+	my ($key, $obj);
+
+	# determine font name from supplied name and optional weight
+	if ($weight) {
+		$key = "$name-$weight";
+	}
+	else {
+		$key = $name;
+	}
+		
+	if (exists $self->{_font_cache}->{$key}) {
+		# return font object from cache
+		return $self->{_font_cache}->{$key};
+	}
+
+	# create new font object
+	$obj = $self->{pdf}->corefont($key, -encoding => 'latin1');
+
+	$self->{_font_cache}->{$key} = $obj;
+	
+	return $obj;
+}
+
 sub text_filter {
 	my ($self, $text) = @_;
 	my ($orig);
@@ -362,13 +389,8 @@ sub setup_text_props {
 		$fontweight = $self->{fontweight};
 	}
 	
-	if ($fontweight) {
-		$self->{font} = $self->{pdf}->corefont("$fontfamily,$fontweight",-encoding => 'latin1' );
-	}
-	else {
-		$self->{font} = $self->{pdf}->corefont($fontfamily,-encoding => 'latin1' );
-	}
-
+	$self->{font} = $self->font($fontfamily, $fontweight);
+	
 	$txeng->font($self->{font}, $fontsize);
 
 	if ($gi eq 'hr') {
