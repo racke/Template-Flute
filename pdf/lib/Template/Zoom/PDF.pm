@@ -35,6 +35,7 @@ use Template::Zoom::PDF::Box;
 # defaults
 use constant FONT_FAMILY => 'Helvetica';
 use constant FONT_SIZE => '12';
+use constant PAGE_SIZE => 'a4';
 
 sub new {
 	my ($proto, @args) = @_;
@@ -42,7 +43,8 @@ sub new {
 
 	$class = ref($proto) || $proto;
 	$self = {@args};
-
+	bless ($self, $class);
+	
 	if ($self->{template}) {
 		$self->{xml} = $self->{template}->root();
 		$self->{css} = new Template::Zoom::Style::CSS(template => $self->{template});
@@ -58,6 +60,14 @@ sub new {
 
 	# font cache
 	$self->{_font_cache} = {};
+
+	# page size
+	if ($self->{page_size}) {
+		$self->set_page_size(delete $self->{page_size});
+	}
+	else {
+		$self->set_page_size(PAGE_SIZE);
+	}
 	
 	bless ($self, $class);
 }
@@ -112,8 +122,6 @@ my $footer_height	=  3;
 		print "Starting page at X $self->{hpos} Y $self->{y}.\n";
 		print "Borders are T $self->{border_top} R $self->{border_right} B $self->{border_bottom} L $self->{border_left}.\n\n";
 	}
-
-	$self->{pdf}->mediabox( to_points($page_width), to_points($page_height) );
 
 	my %h = $self->{pdf}->info(
         'Producer'     => "Template::Zoom",
@@ -224,6 +232,27 @@ my $footer_height	=  3;
 	return;
 }
 
+sub set_page_size {
+	my ($self, @args) = @_;
+	my ($ret, @ps);
+
+	if (ref($args[0]) eq 'ARRAY') {
+		@args = @{$args[0]};
+	}
+	
+	if (@args > 1) {
+		# passing page size as numbers
+		@ps = map {to_points($_, 'pt')} @args;
+	}
+	else {
+		$ps[0] = $args[0];
+	}
+	
+	$self->{_page_size} = \@ps;
+
+	$self->{pdf}->mediabox(@ps);
+}
+
 # select_page PAGE_NUM
 #
 # Selects page with the given PAGE_NUM. Creates new page if necessary.
@@ -248,13 +277,13 @@ sub select_page {
 
 # converts widths to points, default unit is mm
 sub to_points {
-	my $width = shift;
+	my ($width, $default_unit) = @_;
 	my ($unit, $points);
 
 	return 0 unless defined $width;
 
 	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
-		$unit = $3 || 'mm';
+		$unit = $3 || $default_unit || 'mm';
 	}
 	else {
 		warn "Invalid width $width\n";
