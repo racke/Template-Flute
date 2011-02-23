@@ -35,7 +35,7 @@ my (%opts, %input, %values);
 $opts{value} = \%values;
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser', 'value=s%', 'pdf=s')) {
+unless (GetOptions (\%opts, 'browser', 'combine', 'value=s%', 'pdf=s')) {
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
@@ -49,6 +49,31 @@ for (@ARGV) {
 
 unless (@ARGV) {
 	die "$0: Commandline arguments missing.\n";
+}
+
+if ($opts{combine}) {
+	unless ($opts{pdf}) {
+		die "$0: --combine option only valid together with --pdf=FILE\n";
+	}
+
+	require Template::Zoom::PDF;
+	require Template::Zoom::PDF::Import;
+		
+	# combine PDF's from commandline
+	my ($pdf, $import);
+
+	$pdf = new Template::Zoom::PDF (file => $opts{pdf},
+								   );
+
+	$import = new Template::Zoom::PDF::Import;
+
+	for my $file (@ARGV) {
+		$import->import(pdf => $pdf->{pdf}, file => $file);
+	}
+
+	$pdf->{pdf}->saveas();
+
+	exit 0;
 }
 
 my ($config_file, $config_vars, $spec_file, $template_file, $db_object);
