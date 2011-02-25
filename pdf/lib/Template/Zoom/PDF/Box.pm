@@ -209,14 +209,14 @@ sub calculate {
 			if ($self->{specs}->{props}->{width}
 				&& $self->{specs}->{props}->{width} < $hpos_next) {
 				# doesn't fit in fixed width of this box
-				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: too wide forH $hpos_next\n";
+#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: too wide forH $hpos_next\n";
 				$hpos = 0;				
 				$hpos_next = 0;
 			}
 
 			if ($hpos_next > $self->{bounding}->{max_w}) {
 				# doesn't fit in bounding box
-				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
+#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
 				$hpos = 0;
 				$hpos_next = 0;
 			}
@@ -224,14 +224,14 @@ sub calculate {
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
-			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
+#			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
 		}
 
 		# keep vertical position
 		$vpos_next = $vpos;
 		
 		if ($hpos_next > 0) {
-			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class}\n";
+#			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class}\n";
 
 			if ($child->property('float') eq 'right'
 				&& $self->property('float') ne 'right') {
@@ -299,18 +299,18 @@ sub calculate {
 				$hpos_next = $max_width;
 			}
 				
-			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}, VPOS $vpos\n";
+#			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}, VPOS $vpos\n";
 			$hpos_next = $child->{box}->{width};
 		}
 
 		$self->{eltpos}->[$i] = {hpos => $hpos, vpos => -$vpos};
 		
-		if ($child->{elt}->is_text()) {
-			print "POS (relative) for TEXT '" . $child->{elt}->text() . "': " . Dumper($self->{eltpos}->[$i]);
-		}
-		else {
-			print "POS (relative) for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
-		}
+#		if ($child->{elt}->is_text()) {
+#			print "POS (relative) for TEXT '" . $child->{elt}->text() . "': " . Dumper($self->{eltpos}->[$i]);
+#		}
+#		else {
+#			print "POS (relative) for GI $child->{gi} CLASS $child->{class}: " . Dumper($self->{eltpos}->[$i]);
+#		}
 
 		# record child within its stripe
 		push (@{$self->{stripes}->[$stripe_pos]}, $child);
@@ -355,7 +355,7 @@ sub calculate {
 					clear => $clear,
 					size => $self->{specs}->{size}};
 
-	print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
+#	print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
  	return $self->{box};
 }
 
@@ -507,7 +507,7 @@ sub render {
 	my ($self, %parms) = @_;
 	my ($child, $pos, $margins, $page_before, $page_cur);
 
-	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
+#	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
 
 	if (exists $parms{page}
 		&& $parms{page} > $self->{page}) {
@@ -529,7 +529,7 @@ sub render {
 			if ($i > 0) {
 				# page turn, adjust position
 				my $c_info = "GI " . $child->{gi} . ", CLASS " . $child->{class};
-				print "PAGE TURN FROM $page_before TO $page_cur CLASS $self->{class} GI $self->{gi} FOR $c_info\n";
+#				print "PAGE TURN FROM $page_before TO $page_cur CLASS $self->{class} GI $self->{gi} FOR $c_info\n";
 
 				$parms{vpos} = $self->{pdf}->{border_top};
 				$parms{hpos} = $self->{pdf}->{border_left};
@@ -548,7 +548,7 @@ sub render {
 		# render text
 		my $chunks = $self->{box}->{chunks};
 
-		print "Chunks: " . Dumper($chunks) . "\n";
+#		print "Chunks: " . Dumper($chunks) . "\n";
 		
 		for (my $i = 0; $i < @$chunks; $i++) {
 			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],

@@ -145,9 +145,9 @@ my $footer_height	=  3;
 			die "Failed to import file $self->{import}.\n";
 		}
 
-		if ($self->{verbose} || 1) {
-			print "Imported PDF $self->{import}: $ret->{pages} pages.\n\n";
-		}
+#		if ($self->{verbose} || 1) {
+#			print "Imported PDF $self->{import}: $ret->{pages} pages.\n\n";
+#		}
 
 		$self->{page} = $ret->{cur_page};
 #		$pdf->saveas();
@@ -498,7 +498,7 @@ sub calculate {
 
 			if ($specs->{props}->{width}
 				&& $text_width + $chunk_width > $specs->{props}->{width}) {
-				print "Line break by long text: $buf + $text\n";
+#				print "Line break by long text: $buf + $text\n";
 
 				push (@chunks, $buf . $text);
 				$buf = '';
@@ -530,7 +530,7 @@ sub calculate {
 		$clear_after = 1;
 	}
 	
-	print "Before offset: MW $max_width H $height S $specs->{size}, ", Dumper($specs->{offset}) . "\n";
+#	print "Before offset: MW $max_width H $height S $specs->{size}, ", Dumper($specs->{offset}) . "\n";
 	
 #	print "PW $specs->{props}->{width}, PH $specs->{props}->{height}, MW $max_width H $height\n";
 
@@ -604,11 +604,11 @@ sub textbox {
 		$specs = $self->setup_text_props($elt);
 	}
 
-	unless ($specs->{borders}) {
-		delete $specs->{font};
-		print "Elt: ", $elt->sprint(), "\n";
-		print "Specs for textbox: " . Dumper($specs) . "\n";
-	}
+#	unless ($specs->{borders}) {
+#		delete $specs->{font};
+#		print "Elt: ", $elt->sprint(), "\n";
+#		print "Specs for textbox: " . Dumper($specs) . "\n";
+#	}
 	
 	$props = $specs->{props};
 	%borders = %{$specs->{borders}};
@@ -616,7 +616,7 @@ sub textbox {
 	%padding = %{$specs->{padding}};
 
 	if ($box) {
-		print "Set from box: " . Dumper($box) . " for size $specs->{size}\n";
+#		print "Set from box: " . Dumper($box) . " for size $specs->{size}\n";
 		$self->{hpos} = $box->{hpos};
 		$self->{y} = $box->{vpos};
 	}
@@ -655,7 +655,7 @@ sub textbox {
 		
 	@tb_parms = ($txeng,  $boxtext, %parms);
 
-print "Add textbox (class " . ($elt->att('class') || "''") . ") with content '$boxtext' at $parms{y} x $parms{x}, border $offset{top}\n";
+#print "Add textbox (class " . ($elt->att('class') || "''") . ") with content '$boxtext' at $parms{y} x $parms{x}, border $offset{top}\n";
 
 	if (length($boxtext) && $boxtext =~ /\S/) {
 		# try different approach
