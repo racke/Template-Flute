@@ -457,34 +457,33 @@ sub setup_text_props {
 sub calculate {
 	my ($self, $elt, %parms) = @_;
 	my ($text, $chunk_width, $text_width, $max_width, $height, $specs, $txeng,
-		$overflow_x, $overflow_y, $clear_before, $clear_after, @chunks, $buf);
+		$overflow_x, $overflow_y, $clear_before, $clear_after, @chunks, $buf, $lines);
 	
 	$txeng = $self->{page}->text();
 	$max_width = 0;
 	$height = 0;
 	$overflow_x = $overflow_y = 0;
 	$clear_before = $clear_after = 0;
-	
-	if (ref($parms{text}) eq 'ARRAY') {
-		if ($parms{specs}) {
-			$specs = $parms{specs};
-		}
-		else {
-			$specs = $self->setup_text_props($elt);
-		}
-		
-		$height = $specs->{size};
+	$lines = 1;
 
+	if ($parms{specs}) {
+		$specs = $parms{specs};
+	}
+	else {
+		$specs = $self->setup_text_props($elt);
+	}
+
+	if (ref($parms{text}) eq 'ARRAY') {
 		$buf = '';
 		$text_width = 0;
 		
 		for my $text (@{$parms{text}}) {
 			if ($text eq "\n") {
+				# force newline
 				push (@chunks, $buf . $text);
 				$buf = '';
 				$text_width = 0;
-				
-				$height += $specs->{size};
+				$lines++;
 			}
 			elsif ($text =~ /\S/) {
 				$chunk_width = $txeng->advancewidth($text, font => $specs->{font},
@@ -503,6 +502,7 @@ sub calculate {
 				push (@chunks, $buf);
 				$buf = $text;
 				$text_width = 0;
+				$lines++;
 			}
 			else {
 				$buf .= $text;
@@ -536,9 +536,10 @@ sub calculate {
 
 	# line height
 	if (exists $specs->{props}->{line_height}) {
-		if ($height > 0) {
-			$height = to_points($specs->{props}->{line_height});
-		}
+		$height = $lines * to_points($specs->{props}->{line_height});
+	}
+	else {
+		$height = $lines * $specs->{size};
 	}
 	
 	# adjust to fixed width
