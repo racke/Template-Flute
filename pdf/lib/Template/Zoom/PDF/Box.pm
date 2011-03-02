@@ -505,7 +505,7 @@ sub property {
 
 sub render {
 	my ($self, %parms) = @_;
-	my ($child, $pos, $margins, $page_before, $page_cur);
+	my ($child, $pos, $page_before, $page_cur);
 
 #	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
 
@@ -575,10 +575,17 @@ sub render {
 	}
 	else {
 		# render borders
-		$self->{pdf}->borders($parms{hpos}, $parms{vpos},
-							  $self->{box}->{width},
-							  $self->{box}->{height},
-							  $self->{specs});
+		my ($hpos, $vpos, $width, $height, $margins);
+		
+		$margins = $self->{specs}->{margins};
+
+		# adjust border dimensions by margins
+		$hpos = $parms{hpos} + $margins->{left};
+		$vpos = $parms{vpos} - $margins->{top};
+		$width = $self->{box}->{width} - $margins->{left} - $margins->{right};
+		$height = $self->{box}->{height} - $margins->{top} - $margins->{bottom};
+		
+		$self->{pdf}->borders($hpos, $vpos, $width, $height, $self->{specs});
 	}
 }
 

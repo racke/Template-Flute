@@ -645,7 +645,7 @@ sub textbox {
 	}
 	
 	%parms = (x => $self->{hpos},
-			  y => $self->{y} - $padding{top} - $specs->{size},
+			  y => $self->{y} - $specs->{size},
 			  w => to_points($self->{page_width} - $self->{margin_left} - $self->{margin_right}),
 			  h => to_points(100),
 			  lead => $specs->{size},
