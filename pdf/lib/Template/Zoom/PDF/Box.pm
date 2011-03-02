@@ -131,7 +131,7 @@ sub calculate {
 		$self->{box} = $self->{pdf}->calculate($self->{elt}, text => \@frags,
 											  specs => $self->{specs});
 
-		print "Check width $self->{box}->{width}, height $self->{box}->{height}, $self->{box}->{overflow}->{x} vs $self->{window}->{max_w} for $text\n";
+#		print "Check width $self->{box}->{width}, height $self->{box}->{height}, $self->{box}->{overflow}->{x} vs $self->{window}->{max_w} for $text\n";
 		
 		if ($self->{box}->{overflow}->{x}) {
 			warn "Uh oh, out of bounds for $text: $self->{box}->{overflow}->{x}\n";
@@ -420,26 +420,26 @@ sub partition {
 		$self->{page} = $page_num;
 	}
 	
-	print "PART $self->{gi} $self->{class}, PAGE $page_num, BASE $height_base BOX: " . Dumper($self->{box});
+#	print "PART $self->{gi} $self->{class}, PAGE $page_num, BASE $height_base BOX: " . Dumper($self->{box});
 
 	if ($height_base + $self->{box}->{height} > $self->{pdf}->content_height()) {
-		print "SPLIT required due to H " . $self->{pdf}->content_height() . "\n";
+#		print "SPLIT required due to H " . $self->{pdf}->content_height() . "\n";
 				
 		@children = @{$self->{eltstack}};
 
 		if (@children > 1) {
 			# partition children
-			print "MULTIPLE\n";
+#			print "MULTIPLE\n";
 			for (my $i = 0; $i < @children; $i++) {
 				my $c_info = "GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class};
 				
 				if ($height_base + $children_height + $children[$i]->{box}->{height} > $self->{pdf}->content_height()) {
-					print "CALL CHILD FROM BASE $height_base WITH CH $children_height, $c_info\n";
+#					print "CALL CHILD FROM BASE $height_base WITH CH $children_height, $c_info\n";
 					$page_num_max = $children[$i]->partition($page_num_max, $height_base +  $children_height);
 					# adjust positions of children
-					print "PAGE NUM GI $self->{gi} CLASS $self->{class}: FROM $page_num TO $page_num_max (CH: $children_height, HB: $height_base)\n";
+#					print "PAGE NUM GI $self->{gi} CLASS $self->{class}: FROM $page_num TO $page_num_max (CH: $children_height, HB: $height_base)\n";
 
-					print "OLD ELT POS $c_info: " . Dumper($self->{eltpos}->[$i]) . "\n";
+#					print "OLD ELT POS $c_info: " . Dumper($self->{eltpos}->[$i]) . "\n";
 
 					$vpos_diff = - $self->{eltpos}->[$i]->{vpos};
 
@@ -449,7 +449,7 @@ sub partition {
 						$children[$i]->adjust_page($page_num_max);
 					}
 					
-					print "NEW ELT POS: " . Dumper($self->{eltpos}->[$i]) . "\n";
+#					print "NEW ELT POS: " . Dumper($self->{eltpos}->[$i]) . "\n";
 
 #					if ($page_num_max == $page_num) {
 #						# advance page for following element
@@ -466,10 +466,10 @@ sub partition {
 					$self->{eltpos}->[$i]->{page} = $page_num_max;
 
 					$children[$i]->adjust_page($page_num_max);
-					print "ADJUST CHILD ON PAGE $page_num_max FROM BASE $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . " TO: " . Dumper($self->{eltpos}->[$i]) . "\n";
+#					print "ADJUST CHILD ON PAGE $page_num_max FROM BASE $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . " TO: " . Dumper($self->{eltpos}->[$i]) . "\n";
 				}
 				else {					
-					print "CHILD FIT FROM BASE ON PAGE $page_num_max $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . "\n";
+#					print "CHILD FIT FROM BASE ON PAGE $page_num_max $height_base WITH CH $children_height, GI " . $children[$i]->{gi} . ", CLASS " . $children[$i]->{class} . "\n";
 					$self->{eltpos}->[$i]->{page} = $page_num_max;
 				}
 				
@@ -477,7 +477,7 @@ sub partition {
 			}
 		}
 		elsif (@children) {
-			print "SINGLE\n";
+#			print "SINGLE\n";
 
 			$children[0]->partition($page_num, $height_base);
 			$page_num_max++;
@@ -486,7 +486,7 @@ sub partition {
 		}
 		else {
 			$page_num_max++;
-			print "Advance page for element without children to $page_num_max\n";
+#			print "Advance page for element without children to $page_num_max\n";
 		}
 	}
 
