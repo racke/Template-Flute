@@ -500,8 +500,8 @@ sub calculate {
 				&& $text_width + $chunk_width > $specs->{props}->{width}) {
 #				print "Line break by long text: $buf + $text\n";
 
-				push (@chunks, $buf . $text);
-				$buf = '';
+				push (@chunks, $buf);
+				$buf = $text;
 				$text_width = 0;
 			}
 			else {
