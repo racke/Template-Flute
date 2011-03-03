@@ -22,7 +22,9 @@ package Template::Zoom::PDF::Image;
 use strict;
 use warnings;
 
+use File::Temp qw(tempfile);
 use Image::Size;
+use Image::Magick;
 
 # map of supported image types
 my %types = (JPG => 'jpeg',
@@ -43,11 +45,16 @@ sub new {
 		die "Missing file name for image object.\n";
 	}
 
+	bless ($self, $class);
+	
 	# determine width, height, file type
 	@ret = imgsize($self->{file});
 
 	if (exists $types{$ret[2]}) {
 		$self->{type} = $types{$ret[2]};
+	}
+	else {
+		$self->convert();
 	}
 	
 	return $self;
@@ -65,6 +72,33 @@ sub info {
 	}
 
 	return @ret;
+}
+
+sub convert {
+	my ($self, $format) = @_;
+	my ($magick, $msg, $tmph, $tmpfile);
+
+	$format ||= 'png';
+	
+	$self->{original_file} = $self->{file};
+
+	# create temporary file
+	($tmph, $tmpfile) = tempfile('temzooXXXXXX', SUFFIX => ".$format");
+	
+	$magick = new Image::Magick;
+
+	if ($msg = $magick->Read($self->{file})) {
+		die "Failed to read picture from $self->{file}: $msg\n";
+	}
+
+	if ($msg = $magick->Write(file => $tmph, magick => $format)) {
+		die "Failed to write picture to $tmpfile: $msg\n";
+	}
+	
+	$self->{file} = $tmpfile;
+	$self->{type} = $format;
+
+	return 1;
 }
 
 1;
