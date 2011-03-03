@@ -65,6 +65,8 @@ sub new {
 	@ret = imgsize($self->{file});
 
 	if (exists $types{$ret[2]}) {
+		$self->{width} = $ret[0];
+		$self->{height} = $ret[1];
 		$self->{type} = $types{$ret[2]};
 	}
 	else {
@@ -86,6 +88,18 @@ sub info {
 	}
 
 	return @ret;
+}
+
+sub width {
+	my $self = shift;
+
+	return $self->{width};
+}
+
+sub height {
+	my $self = shift;
+
+	return $self->{height};
 }
 
 sub convert {
@@ -111,7 +125,8 @@ sub convert {
 	
 	$self->{file} = $tmpfile;
 	$self->{type} = $format;
-
+	($self->{width}, $self->{height}) = $magick->Get('width', 'height');
+	
 	return 1;
 }
 

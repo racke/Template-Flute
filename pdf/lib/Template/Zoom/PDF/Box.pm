@@ -158,6 +158,15 @@ sub calculate {
 
 			return;
 		}
+		else {
+			$self->{box} = {width => $self->{object}->width(),
+							height => $self->{object}->height(),
+							clear => {after => 0, before => 0},
+							size => $self->{specs}->{size}};
+				
+#			print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
+			return;
+		}
 	}
 	
 	for my $child ($self->{elt}->children()) {
