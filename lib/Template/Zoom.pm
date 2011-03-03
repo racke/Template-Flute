@@ -109,6 +109,8 @@ Create a Template::Zoom object with the following parameters:
 
 =item specification_file
 
+Specification file name.
+
 =item specification_parser
 
 Select specification parser. This can be either the full class name
