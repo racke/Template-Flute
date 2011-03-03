@@ -22,6 +22,8 @@ package Template::Zoom::HTML;
 use strict;
 use warnings;
 
+use XML::Twig;
+
 use Template::Zoom::Increment;
 use Template::Zoom::Container;
 use Template::Zoom::List;
