@@ -145,7 +145,8 @@ sub calculate {
 
 		$file = $self->{elt}->att('src');
 		
-		$self->{object} = new Template::Zoom::PDF::Image(file => $file);
+		$self->{object} = new Template::Zoom::PDF::Image(file => $file,
+														 pdf => $self->{pdf});
 		
 		if ($self->{specs}->{props}->{width} > 0
 			&& $self->{specs}->{props}->{height} > 0) {

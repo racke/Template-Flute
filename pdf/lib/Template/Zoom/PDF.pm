@@ -232,6 +232,12 @@ my $footer_height	=  3;
 	return;
 }
 
+sub template {
+	my $self = shift;
+	
+	return $self->{template};
+}
+
 sub set_page_size {
 	my ($self, @args) = @_;
 	my ($ret, @ps);

@@ -22,6 +22,8 @@ package Template::Zoom::PDF::Image;
 use strict;
 use warnings;
 
+use File::Basename;
+use File::Spec;
 use File::Temp qw(tempfile);
 use Image::Size;
 use Image::Magick;
@@ -36,7 +38,7 @@ my %types = (JPG => 'jpeg',
 
 sub new {
 	my ($proto, @args) = @_;
-	my ($class, $self, @ret);
+	my ($class, $self, @ret, $img_dir, $template_file, $template_dir);
 
 	$class = ref($proto) || $proto;
 	$self = {@args};
@@ -46,6 +48,18 @@ sub new {
 	}
 
 	bless ($self, $class);
+
+	$img_dir = dirname($self->{file});
+
+	if ($img_dir eq '.') {
+		# check whether HTML template is located in another directory
+		$template_dir = dirname($self->{pdf}->template()->file());
+
+		if ($template_dir ne '.') {
+			$self->{file} = File::Spec->catfile($template_dir,
+												basename($self->{file}));
+		}
+	}
 	
 	# determine width, height, file type
 	@ret = imgsize($self->{file});
