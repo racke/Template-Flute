@@ -570,7 +570,8 @@ sub render {
 		# rendering image
 		if ($self->{object}->{type}) {
 			$self->{pdf}->image($self->{object},
-								$parms{hpos}, $parms{vpos},
+								$parms{hpos},
+								$parms{vpos} - $self->{box}->{height},
 								$self->{box}->{width},
 								$self->{box}->{height},
 								$self->{specs});
