@@ -6,6 +6,7 @@ use Test::More tests => 2;
 
 use Template::Zoom;
 use Template::Zoom::Specification::Scoped;
+use Template::Zoom::HTML;
 
 my $xml = <<EOF;
 <specification name="helloworld">
