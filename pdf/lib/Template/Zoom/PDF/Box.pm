@@ -627,6 +627,9 @@ sub setup_specs {
 		if ($self->{class}) {
 			push (@selectors, ".$self->{class}");
 		}
+		if ($self->{id}) {
+			push (@selectors, "#$self->{id}");
+		}
 		if ($self->{gi}) {
 			push (@selectors, $self->{gi});
 		}
