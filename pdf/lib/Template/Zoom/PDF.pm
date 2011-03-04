@@ -358,7 +358,7 @@ sub font {
 }
 
 sub text_filter {
-	my ($self, $text) = @_;
+	my ($self, $text, $transform) = @_;
 	my ($orig);
 	
 	# fall back to empty string
@@ -377,6 +377,22 @@ sub text_filter {
 	if (length $orig && ! length $text) {
 		# reduce not further than a single whitespace
 		return ' ';
+	}
+
+	# transform text analogous to CSS specification
+	if (defined $transform) {
+		if ($transform eq 'uppercase') {
+			$text = uc($text);
+		}
+		elsif ($transform eq 'lowercase') {
+			$text = lc($text);
+		}
+		elsif ($transform eq 'capitalize') {
+			$text =~ s/\b(\w)/\u$1/g;
+		}
+		else {
+			die "Unknown transformation $transform\n";
+		}
 	}
 	
 	return $text;

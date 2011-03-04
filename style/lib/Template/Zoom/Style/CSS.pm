@@ -329,7 +329,10 @@ sub build_properties {
 	if ($props_css->{'text-align'}) {
 		$propref->{text}->{align} = $props_css->{'text-align'};
 	}
-
+	if ($props_css->{'text-transform'}) {
+		$propref->{text}->{transform} = $props_css->{'text-transform'};
+	}
+	
 	# width
 	if ($props_css->{'width'}) {
 		$propref->{width} = $props_css->{width};

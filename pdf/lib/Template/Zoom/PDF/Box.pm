@@ -115,7 +115,7 @@ sub calculate {
 		$text = $self->{elt}->text();
 
 		# filter text and break into chunks to remove unnecessary whitespace
-		$text = $self->{pdf}->text_filter($text);
+		$text = $self->{pdf}->text_filter($text, $self->property('text', 'transform'));
 		
 		# break text first
 		my @frags;
@@ -399,7 +399,7 @@ sub align {
 
 					$avail_width_text = $avail_width - $child->{eltstack}->[$cpos]->{box}->{text_width};
 
-					if ($avail_width_text > 0) {
+					if ($avail_width_text > 0 && exists $textprops->{align}) {
 						if ($textprops->{align} eq 'right') {
 							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text;
 						}
@@ -506,11 +506,21 @@ sub partition {
 # property - returns property $name
 
 sub property {
-	my ($self, $name) = @_;
+	my ($self, @names) = @_;
+	my $ptr;
 
-	if (exists $self->{specs}->{props}->{$name}) {
-		return $self->{specs}->{props}->{$name};
+	$ptr = $self->{specs}->{props};
+	
+	for my $name (@names) {
+		if (exists $ptr->{$name}) {
+			$ptr = $ptr->{$name};
+		}
+		else {
+			return;
+		}
 	}
+	
+	return $ptr;
 }
 
 sub render {
