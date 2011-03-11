@@ -32,6 +32,46 @@ use Template::Zoom::Style::CSS;
 use Template::Zoom::PDF::Import;
 use Template::Zoom::PDF::Box;
 
+=head1 NAME
+
+Template::Zoom::PDF - PDF generator for HTML templates
+
+=head1 SYNOPSIS
+
+  $zoom = new Template::Zoom (specification_file => 'invoice.xml',
+                              template_file => 'invoice.html',
+                              values => \%values);
+  $zoom->process();
+
+  $pdf = new Template::Zoom::PDF (template => $zoom->template(),
+                                  file => 'invoice.pdf');
+
+  $pdf->process();
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Zoom::PDF object with the following parameters:
+
+=over 4
+
+=item template
+
+L<Template::Zoom::HTML> object.
+
+=item file
+
+PDF output file.
+
+=item page_size
+
+Page size for the PDF (default: A4).
+
+=back
+
+=cut
+
 # defaults
 use constant FONT_FAMILY => 'Helvetica';
 use constant FONT_SIZE => '12';
@@ -71,6 +111,12 @@ sub new {
 	
 	bless ($self, $class);
 }
+
+=head2 process
+
+Processes HTML template and creates PDF file.
+
+=cut
 
 sub process {
 	my ($self, $file) = @_;
@@ -232,6 +278,13 @@ my $footer_height	=  3;
 	return;
 }
 
+=head2 set_page_size
+
+Sets the page size for the PDF.
+
+
+=cut
+	
 sub set_page_size {
 	my ($self, @args) = @_;
 	my ($ret, @ps);
@@ -253,9 +306,11 @@ sub set_page_size {
 	$self->{pdf}->mediabox(@ps);
 }
 
-# select_page PAGE_NUM
-#
-# Selects page with the given PAGE_NUM. Creates new page if necessary.
+=head2 select_page PAGE_NUM
+	
+Selects page with the given PAGE_NUM. Creates new page if necessary.
+
+=cut
 
 sub select_page {
 	my ($self, $page_num) = @_;
@@ -275,41 +330,12 @@ sub select_page {
 	$self->{page} = $cur_page;
 }
 
-# converts widths to points, default unit is mm
-sub to_points {
-	my ($width, $default_unit) = @_;
-	my ($unit, $points);
+=head2 content_height
 
-	return 0 unless defined $width;
+Returns the height of the content part of the page.
 
-	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
-		$unit = $3 || $default_unit || 'mm';
-	}
-	else {
-		warn "Invalid width $width\n";
-		return;
-	}
-
-	if ($unit eq 'in') {
-		# 72 points per inch
-		$points = 72 * $width;
-	}
-	elsif ($unit eq 'cm') {
-		$points = 72 * $width / 2.54;
-	}
-	elsif ($unit eq 'mm') {
-		$points = 72 * $width / 25.4;
-	}
-	elsif ($unit eq 'pt') {
-		$points = $width;
-	}
-	elsif ($unit eq 'px') {
-		$points = $width;
-	}
-
-	return sprintf("%.0f", $points);
-}
-
+=cut
+	
 sub content_height {
 	my ($self) = @_;
 	my ($height);
@@ -317,6 +343,12 @@ sub content_height {
 	return $self->{page_height};
 }
 
+=head2 content_width
+
+Returns the width of the content part of the page.
+
+=cut
+	
 sub content_width {
 	my ($self) = @_;
 	my ($width);
@@ -326,6 +358,12 @@ sub content_width {
 	return to_points($width);
 }
 
+=head2 font NAME [weight]
+
+Returns PDF::API2 font object for font NAME, WEIGHT is optional.
+
+=cut
+	
 sub font {
 	my ($self, $name, $weight) = @_;
 	my ($key, $obj);
@@ -351,6 +389,12 @@ sub font {
 	return $obj;
 }
 
+=head2 text_filter TEXT
+
+Adjusts whitespace in TEXT for output in PDF.
+
+=cut
+	
 sub text_filter {
 	my ($self, $text) = @_;
 	my ($orig);
@@ -375,6 +419,13 @@ sub text_filter {
 	
 	return $text;
 }
+
+=head2 setup_text_props ELT SELECTOR [INHERIT]
+
+Determines text properties for HTML template element ELT, CSS selector SELECTOR
+and INHERIT flag.
+
+=cut
 
 sub setup_text_props {
 	my ($self, $elt, $selector, $inherit) = @_;
@@ -454,6 +505,12 @@ sub setup_text_props {
 		   };
 }
 
+=head2 calculate ELT [PARAMETERS]
+
+Calculates width and height for HTML template element ELT.
+
+=cut	
+	
 sub calculate {
 	my ($self, $elt, %parms) = @_;
 	my ($text, $chunk_width, $text_width, $max_width, $height, $specs, $txeng,
@@ -572,6 +629,12 @@ sub calculate {
 		   };
 }
 
+=head2 check_out_of_bounds POS DIM
+
+Check whether we are out of bounds with position POS and dimensions DIM.
+
+=cut
+
 sub check_out_of_bounds {
 	my ($self, $pos, $dim) = @_;
 
@@ -590,6 +653,12 @@ sub check_out_of_bounds {
 	
 	return;
 }
+
+=head2 textbox ELT TEXT PROPS BOX ATTRIBUTES
+
+Adds textbox for HTML template element ELT to the PDF.
+
+=cut
 
 sub textbox {
 	my ($self, $elt, $boxtext, $boxprops, $box, %atts) = @_;
@@ -670,7 +739,12 @@ sub textbox {
 	$txeng->fill();
 }
 
-# draw horizontal line according to specs
+=head2 hline SPECS HPOS VPOS LENGTH WIDTH
+
+Add horizontal line to PDF.
+
+=cut
+	
 sub hline {
 	my ($self, $specs, $hpos, $vpos, $length, $width) = @_;
 	my ($gfx);
@@ -694,7 +768,12 @@ sub hline {
 	return;
 }
 
-# draw borders according to specs
+=head2 borders X_LEFT Y_TOP WIDTH HEIGHT
+
+Adds borders to the PDF.
+
+=cut
+
 sub borders {
 	my ($self, $x_left, $y_top, $width, $height, $specs) = @_;
 	my ($gfx);
@@ -734,6 +813,12 @@ sub borders {
 	}
 }
 
+=head2 rect X_LEFT Y_TOP X_RIGHT Y_BOTTOM COLOR
+
+Adds rectangle to the PDF.
+
+=cut
+
 # primitives
 sub rect {
 	my ($self, $x_left, $y_top, $x_right, $y_bottom, $color) = @_;
@@ -752,6 +837,12 @@ sub rect {
 	}
 }
 
+=head2 image OBJECT HPOS VPOS WIDTH HEIGHT
+
+Add image OBJECT to the PDF.
+
+=cut
+
 sub image {
 	my ($self, $object, $x_left, $y_top, $width, $height, $specs) = @_;
 	my ($gfx, $method, $image_object);
@@ -763,6 +854,48 @@ sub image {
 	$image_object = $self->{pdf}->$method($object->{file});
 
 	$gfx->image($image_object, $x_left, $y_top, $width, $height);
+}
+
+=head1 FUNCTIONS
+
+=head2 to_points [DEFAULT_UNIT]
+	
+Converts widths to points, default unit is mm.
+
+=cut
+	
+sub to_points {
+	my ($width, $default_unit) = @_;
+	my ($unit, $points);
+
+	return 0 unless defined $width;
+
+	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
+		$unit = $3 || $default_unit || 'mm';
+	}
+	else {
+		warn "Invalid width $width\n";
+		return;
+	}
+
+	if ($unit eq 'in') {
+		# 72 points per inch
+		$points = 72 * $width;
+	}
+	elsif ($unit eq 'cm') {
+		$points = 72 * $width / 2.54;
+	}
+	elsif ($unit eq 'mm') {
+		$points = 72 * $width / 25.4;
+	}
+	elsif ($unit eq 'pt') {
+		$points = $width;
+	}
+	elsif ($unit eq 'px') {
+		$points = $width;
+	}
+
+	return sprintf("%.0f", $points);
 }
 
 # auxiliary methods
@@ -777,5 +910,22 @@ sub _font_select {
 
 	return $fonts[0];
 }
+
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
