@@ -22,6 +22,7 @@ package Template::Zoom;
 use strict;
 use warnings;
 
+use Template::Zoom::Utils;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
@@ -41,6 +42,15 @@ sub _bootstrap {
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
 	
 	unless ($self->{specification}) {
+		unless ($self->{specification_file}) {
+			# try to derive specification file name from template file name
+			$self->{specification_file} = Template::Zoom::Utils::derive_filename($self->{template_file}, '.xml');
+
+			unless (-f $self->{specification_file}) {
+				die "Missing Template::Zoom specification for template $self->{template_file}\n";
+			}
+		}
+			
 		if ($parser_name = $self->{specification_parser}) {
 			# load parser class
 			my $class;
@@ -75,7 +85,7 @@ sub _bootstrap {
 			}
 		}
 		else {
-			die "$0: Missing Template::Zoom specification.\n";
+			die "$0: Missing Template::Zoom specification, template: $self->{template_file}.\n";
 		}
 	}
 
