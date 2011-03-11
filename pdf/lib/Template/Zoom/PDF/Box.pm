@@ -115,7 +115,7 @@ sub calculate {
 		$text = $self->{elt}->text();
 
 		# filter text and break into chunks to remove unnecessary whitespace
-		$text = $self->{pdf}->text_filter($text);
+		$text = $self->{pdf}->text_filter($text, $self->property('text', 'transform'));
 		
 		# break text first
 		my @frags;
@@ -145,7 +145,8 @@ sub calculate {
 
 		$file = $self->{elt}->att('src');
 		
-		$self->{object} = new Template::Zoom::PDF::Image(file => $file);
+		$self->{object} = new Template::Zoom::PDF::Image(file => $file,
+														 pdf => $self->{pdf});
 		
 		if ($self->{specs}->{props}->{width} > 0
 			&& $self->{specs}->{props}->{height} > 0) {
@@ -155,6 +156,15 @@ sub calculate {
 							clear => {after => 0, before => 0},
 							size => $self->{specs}->{size}};
 
+			return;
+		}
+		else {
+			$self->{box} = {width => $self->{object}->width(),
+							height => $self->{object}->height(),
+							clear => {after => 0, before => 0},
+							size => $self->{specs}->{size}};
+				
+#			print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
 			return;
 		}
 	}
@@ -389,7 +399,7 @@ sub align {
 
 					$avail_width_text = $avail_width - $child->{eltstack}->[$cpos]->{box}->{text_width};
 
-					if ($avail_width_text > 0) {
+					if ($avail_width_text > 0 && exists $textprops->{align}) {
 						if ($textprops->{align} eq 'right') {
 							$child->{eltstack}->[$cpos]->{hoff} += $avail_width_text;
 						}
@@ -496,11 +506,21 @@ sub partition {
 # property - returns property $name
 
 sub property {
-	my ($self, $name) = @_;
+	my ($self, @names) = @_;
+	my $ptr;
 
-	if (exists $self->{specs}->{props}->{$name}) {
-		return $self->{specs}->{props}->{$name};
+	$ptr = $self->{specs}->{props};
+	
+	for my $name (@names) {
+		if (exists $ptr->{$name}) {
+			$ptr = $ptr->{$name};
+		}
+		else {
+			return;
+		}
 	}
+	
+	return $ptr;
 }
 
 sub render {
@@ -560,7 +580,8 @@ sub render {
 		# rendering image
 		if ($self->{object}->{type}) {
 			$self->{pdf}->image($self->{object},
-								$parms{hpos}, $parms{vpos},
+								$parms{hpos},
+								$parms{vpos} - $self->{box}->{height},
 								$self->{box}->{width},
 								$self->{box}->{height},
 								$self->{specs});
@@ -615,6 +636,9 @@ sub setup_specs {
 		
 		if ($self->{class}) {
 			push (@selectors, ".$self->{class}");
+		}
+		if ($self->{id}) {
+			push (@selectors, "#$self->{id}");
 		}
 		if ($self->{gi}) {
 			push (@selectors, $self->{gi});

@@ -278,13 +278,18 @@ my $footer_height	=  3;
 	return;
 }
 
+sub template {
+	my $self = shift;
+	
+	return $self->{template};
+}
+
 =head2 set_page_size
 
 Sets the page size for the PDF.
 
-
 =cut
-	
+
 sub set_page_size {
 	my ($self, @args) = @_;
 	my ($ret, @ps);
@@ -333,6 +338,41 @@ sub select_page {
 =head2 content_height
 
 Returns the height of the content part of the page.
+
+sub to_points {
+	my ($width, $default_unit) = @_;
+	my ($unit, $points);
+
+	return 0 unless defined $width;
+
+	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
+		$unit = $3 || $default_unit || 'mm';
+	}
+	else {
+		warn "Invalid width $width\n";
+		return;
+	}
+
+	if ($unit eq 'in') {
+		# 72 points per inch
+		$points = 72 * $width;
+	}
+	elsif ($unit eq 'cm') {
+		$points = 72 * $width / 2.54;
+	}
+	elsif ($unit eq 'mm') {
+		$points = 72 * $width / 25.4;
+	}
+	elsif ($unit eq 'pt') {
+		$points = $width;
+	}
+	elsif ($unit eq 'px') {
+		$points = $width;
+	}
+
+	return sprintf("%.0f", $points);
+}
+>>>>>>> master
 
 =cut
 	
@@ -396,7 +436,7 @@ Adjusts whitespace in TEXT for output in PDF.
 =cut
 	
 sub text_filter {
-	my ($self, $text) = @_;
+	my ($self, $text, $transform) = @_;
 	my ($orig);
 	
 	# fall back to empty string
@@ -415,6 +455,22 @@ sub text_filter {
 	if (length $orig && ! length $text) {
 		# reduce not further than a single whitespace
 		return ' ';
+	}
+
+	# transform text analogous to CSS specification
+	if (defined $transform) {
+		if ($transform eq 'uppercase') {
+			$text = uc($text);
+		}
+		elsif ($transform eq 'lowercase') {
+			$text = lc($text);
+		}
+		elsif ($transform eq 'capitalize') {
+			$text =~ s/\b(\w)/\u$1/g;
+		}
+		else {
+			die "Unknown transformation $transform\n";
+		}
 	}
 	
 	return $text;

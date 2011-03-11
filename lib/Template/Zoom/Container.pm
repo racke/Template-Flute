@@ -98,6 +98,9 @@ sub visible {
 
 		return undef;
 	}
+
+	# container is visible if no value is specified
+	return 1;
 }
 
 =head1 AUTHOR

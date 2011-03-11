@@ -56,7 +56,7 @@ sub new {
 	$class = shift;
 
 	$self = {containers => {}, lists => {}, forms => {},
-			 params => {}, values => {}, query => {}};
+			 params => {}, values => {}, query => {}, file => undef};
 	
 	bless $self;
 }
@@ -205,6 +205,12 @@ sub translate {
 	return;
 }
 
+sub file {
+	my $self = shift;
+	
+	return $self->{file};
+}
+
 =head2 parse [ STRING | SCALARREF ] SPECOBJECT
 
 Parses HTML template from STRING or SCALARREF with the help
@@ -248,9 +254,11 @@ sub _parse_template {
 	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
 
 	if (ref($template) eq 'SCALAR') {
+		$self->{file} = '';
 		$xml = $twig->safe_parse_html($$template);
 	}
 	else {
+		$self->{file} = $template;
 		$xml = $twig->safe_parsefile_html($template);
 	}
 	
