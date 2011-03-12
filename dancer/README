@@ -1,0 +1,63 @@
+NAME
+    Dancer::Template::TemplateZoom - Template::Zoom wrapper for Dancer
+
+VERSION
+    Version 0.0001
+
+DESCRIPTION
+    This class is an interface between Dancer's template engine abstraction
+    layer and the Template::Zoom module.
+
+    In order to use this engine, use the template setting:
+
+        template: template_zoom
+
+    The default template extension is ".html".
+
+METHODS
+  default_tmpl_ext
+    Returns default template extension.
+
+  render TEMPLATE TOKENS
+    Renders template TEMPLATE with values from TOKENS.
+
+SEE ALSO
+    Dancer, Template::Zoom
+
+AUTHOR
+    Stefan Hornburg (Racke), <racke@linuxia.de>
+
+BUGS
+    Please report any bugs or feature requests to `bug-template-zoom at
+    rt.cpan.org', or through the web interface at
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Template::Zoom
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dancer-Template-TemplateZoo
+        m
+
+    * AnnoCPAN: Annotated CPAN documentation
+        http://annocpan.org/dist/Dancer-Template-TemplateZoom
+
+    * CPAN Ratings
+        http://cpanratings.perl.org/d/Dancer-Template-TemplateZoom
+
+    * Search CPAN
+        http://search.cpan.org/dist/Dancer-Template-TemplateZoom/
+
+LICENSE AND COPYRIGHT
+    Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
