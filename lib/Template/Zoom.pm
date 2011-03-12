@@ -306,6 +306,9 @@ sub value {
 		if (exists $value->{scope}) {
 			$raw_value = $self->{values}->{$value->{scope}}->{$value->{name}};
 		}
+		else {
+			$raw_value = $self->{values}->{$value->{name}};
+		}
 	}
 	else {
 		$raw_value = $self->{values}->{$value->{name}};
