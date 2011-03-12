@@ -1,0 +1,9 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+lib/Template/Zoom/PDF.pm
+lib/Template/Zoom/PDF/Box.pm
+lib/Template/Zoom/PDF/Image.pm
+lib/Template/Zoom/PDF/Import.pm
+

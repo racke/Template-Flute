@@ -36,6 +36,14 @@ use Template::Zoom::PDF::Box;
 
 Template::Zoom::PDF - PDF generator for HTML templates
 
+=head1 VERSION
+
+Version 0.0001
+
+=cut
+
+our $VERSION = '0.0001';
+
 =head1 SYNOPSIS
 
   $zoom = new Template::Zoom (specification_file => 'invoice.xml',

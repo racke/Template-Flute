@@ -1,0 +1,149 @@
+NAME
+    Template::Zoom::PDF - PDF generator for HTML templates
+
+VERSION
+    Version 0.0001
+
+SYNOPSIS
+      $zoom = new Template::Zoom (specification_file => 'invoice.xml',
+                                  template_file => 'invoice.html',
+                                  values => \%values);
+      $zoom->process();
+
+      $pdf = new Template::Zoom::PDF (template => $zoom->template(),
+                                      file => 'invoice.pdf');
+
+      $pdf->process();
+
+CONSTRUCTOR
+  new
+    Create a Template::Zoom::PDF object with the following parameters:
+
+    template
+        Template::Zoom::HTML object.
+
+    file
+        PDF output file.
+
+    page_size
+        Page size for the PDF (default: A4).
+
+  process
+    Processes HTML template and creates PDF file.
+
+  set_page_size
+    Sets the page size for the PDF.
+
+  select_page PAGE_NUM
+    Selects page with the given PAGE_NUM. Creates new page if necessary.
+
+  content_height
+    Returns the height of the content part of the page.
+
+    sub to_points { my ($width, $default_unit) = @_; my ($unit, $points);
+
+            return 0 unless defined $width;
+
+            if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
+                    $unit = $3 || $default_unit || 'mm';
+            }
+            else {
+                    warn "Invalid width $width\n";
+                    return;
+            }
+
+            if ($unit eq 'in') {
+                    # 72 points per inch
+                    $points = 72 * $width;
+            }
+            elsif ($unit eq 'cm') {
+                    $points = 72 * $width / 2.54;
+            }
+            elsif ($unit eq 'mm') {
+                    $points = 72 * $width / 25.4;
+            }
+            elsif ($unit eq 'pt') {
+                    $points = $width;
+            }
+            elsif ($unit eq 'px') {
+                    $points = $width;
+            }
+
+            return sprintf("%.0f", $points);
+    }
+    >>>>>>> master
+
+  content_width
+    Returns the width of the content part of the page.
+
+  font NAME [weight]
+    Returns PDF::API2 font object for font NAME, WEIGHT is optional.
+
+  text_filter TEXT
+    Adjusts whitespace in TEXT for output in PDF.
+
+  setup_text_props ELT SELECTOR [INHERIT]
+    Determines text properties for HTML template element ELT, CSS selector
+    SELECTOR and INHERIT flag.
+
+  calculate ELT [PARAMETERS]
+    Calculates width and height for HTML template element ELT.
+
+  check_out_of_bounds POS DIM
+    Check whether we are out of bounds with position POS and dimensions DIM.
+
+  textbox ELT TEXT PROPS BOX ATTRIBUTES
+    Adds textbox for HTML template element ELT to the PDF.
+
+  hline SPECS HPOS VPOS LENGTH WIDTH
+    Add horizontal line to PDF.
+
+  borders X_LEFT Y_TOP WIDTH HEIGHT
+    Adds borders to the PDF.
+
+  rect X_LEFT Y_TOP X_RIGHT Y_BOTTOM COLOR
+    Adds rectangle to the PDF.
+
+  image OBJECT HPOS VPOS WIDTH HEIGHT
+    Add image OBJECT to the PDF.
+
+FUNCTIONS
+  to_points [DEFAULT_UNIT]
+    Converts widths to points, default unit is mm.
+
+AUTHOR
+    Stefan Hornburg (Racke), <racke@linuxia.de>
+
+BUGS
+    Please report any bugs or feature requests to `bug-template-zoom-pdf at
+    rt.cpan.org', or through the web interface at
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom-PDF.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Template::Zoom::PDF
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom-PDF
+
+    * AnnoCPAN: Annotated CPAN documentation
+        http://annocpan.org/dist/Template-Zoom-PDF
+
+    * CPAN Ratings
+        http://cpanratings.perl.org/d/Template-Zoom-PDF
+
+    * Search CPAN
+        http://search.cpan.org/dist/Template-Zoom-PDF/
+
+LICENSE AND COPYRIGHT
+    Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
