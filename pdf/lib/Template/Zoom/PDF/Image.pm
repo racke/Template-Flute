@@ -36,6 +36,35 @@ my %types = (JPG => 'jpeg',
 			 GIF => 'gif',
 			);
 
+=head1 NAME
+
+Template::Zoom::PDF::Image - PDF image class
+
+=head1 SYNOPSIS
+
+  new Template::Zoom::PDF::Image(file => $file,
+                                 pdf => $self->{pdf});
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create Template::Zoom::PDF::Image object with the following parameters:
+
+=over 4
+
+=item file
+
+Image file (required).
+
+=item pdf
+
+Template::Zoom::PDF object (required).
+
+=back
+
+=cut
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self, @ret, $img_dir, $template_file, $template_dir);
@@ -76,6 +105,14 @@ sub new {
 	return $self;
 }
 
+=head1 FUNCTIONS
+
+=head2 info
+
+Returns image information, see L<Image::Size>.
+
+=cut
+
 sub info {
 	my ($filename) = @_;
 	my (@ret);
@@ -90,11 +127,23 @@ sub info {
 	return @ret;
 }
 
+=head2 width
+
+Returns image width.
+
+=cut
+
 sub width {
 	my $self = shift;
 
 	return $self->{width};
 }
+
+=head2 height
+
+Returns image height.
+
+=cut
 
 sub height {
 	my $self = shift;
@@ -102,6 +151,13 @@ sub height {
 	return $self->{height};
 }
 
+=head2 convert FORMAT
+
+Converts image to FORMAT. This is necessary as PDF::API2 does support
+only a limited range of formats.
+
+=cut	
+	
 sub convert {
 	my ($self, $format) = @_;
 	my ($magick, $msg, $tmph, $tmpfile);
@@ -130,5 +186,21 @@ sub convert {
 	
 	return 1;
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

@@ -372,7 +372,6 @@ sub to_points {
 
 	return sprintf("%.0f", $points);
 }
->>>>>>> master
 
 =cut
 	
@@ -971,6 +970,39 @@ sub _font_select {
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-template-zoom-pdf at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom-PDF>.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Template::Zoom::PDF
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom-PDF>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Template-Zoom-PDF>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Template-Zoom-PDF>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Template-Zoom-PDF/>
+
+=back
 
 =head1 LICENSE AND COPYRIGHT
 

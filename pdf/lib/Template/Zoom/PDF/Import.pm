@@ -25,6 +25,44 @@ use warnings;
 use PDF::API2;
 use POSIX qw/floor/;
 
+=head1 NAME
+
+Template::Zoom::PDF::Import - PDF import class
+
+=head1 SYNOPSIS
+
+  $import{file} = 'shippinglabel.pdf';
+  $import{scale} = 0.8;
+  $import{margin} = {left => '3mm', top => '6mm'};
+
+  $pdf = new Template::Zoom::PDF (template => $zoom->template(),
+                                  file => 'invoice.pdf',
+                                  import => \%import);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates a Template::Zoom::PDF::Import object with the following parameters:
+
+=over 4
+
+=item file
+
+PDF file to be imported (required).
+
+=item scale
+
+Scaling factor for the PDF.
+
+=item margin
+
+Margin adjustments.
+
+=back
+
+=cut
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -35,6 +73,14 @@ sub new {
 	bless ($self, $class);
 }
 
+=head1 FUNCTIONS
+
+=head2 import
+
+Imports the PDF file.
+
+=cut
+	
 sub import {
 	my ($self, %parms) = @_;
 	my ($pdf_import, $pages, $page_in, $page_out, $scale, @mbox, $gfx, $txt, $xo);
@@ -107,6 +153,22 @@ sub import {
 
 	return {pages => $pdf_import->pages(), cur_page => $page_out};
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
 

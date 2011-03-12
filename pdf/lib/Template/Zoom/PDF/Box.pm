@@ -26,6 +26,30 @@ use Data::Dumper;
 
 use Template::Zoom::PDF::Image;
 
+=head1 NAME
+
+Template::Zoom::PDF::Box - PDF boxes class
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates a Template::Zoom:PDF::Box object with the following parameters:
+
+=over 4
+
+=item pdf
+
+Template::Zoom::PDF object (required).
+
+=item elt
+
+Corresponding HTML template element for the box (required).
+
+=back
+
+=cut
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -105,6 +129,14 @@ sub new {
 	
 	return $self;
 }
+
+=head1 FUNCTIONS
+
+=head2 calculate
+
+Calculates dimensions of the box.
+
+=cut
 
 sub calculate {
 	my ($self) = @_;
@@ -369,6 +401,12 @@ sub calculate {
  	return $self->{box};
 }
 
+=head2 align OFFSET
+
+Aligns boxes (center, left, right).
+
+=cut
+
 sub align {
 	my ($self, $offset) = @_;
 	my ($avail_width, $avail_width_text, $textprops, $child, $box_pos);
@@ -418,7 +456,12 @@ sub align {
 	}
 }
 
-# partition - partition boxes through pages
+=head2 partition PAGE_NUM HEIGHT_BASE
+
+Partitions boxes through pages.
+
+=cut
+
 sub partition {
 	my ($self, $page_num, $height_base) = @_;
 	my (@children, $children_height, $vpos_diff, $page_num_max);
@@ -503,7 +546,11 @@ sub partition {
 	return $page_num_max;
 }
 
-# property - returns property $name
+=head2 property NAME NAME ...
+
+Returns property.
+
+=cut
 
 sub property {
 	my ($self, @names) = @_;
@@ -522,6 +569,12 @@ sub property {
 	
 	return $ptr;
 }
+
+=head2 render PARAMETERS
+
+Renders box.
+
+=cut
 
 sub render {
 	my ($self, %parms) = @_;
@@ -610,6 +663,12 @@ sub render {
 	}
 }
 
+=head2 adjust_page PAGE_NUM
+
+Adjust page number for all descendants to PAGE_NUM.
+
+=cut
+
 sub adjust_page {
 	my ($self, $page_num) = @_;
 	my (@children);
@@ -622,6 +681,12 @@ sub adjust_page {
 	}
 }
 
+=head2 setup_specs
+
+Setup specifications for this box.
+
+=cut
+	
 sub setup_specs {
 	my ($self) = @_;
 	my ($inherit);
@@ -656,4 +721,20 @@ sub setup_specs {
 	return;
 }
 
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+	
 1;
