@@ -3,7 +3,7 @@ LICENSE
 MANIFEST
 Makefile.PL
 README
-lib/Template/Zoom/Style/CSS.pm
+lib/Template/Flute/Style/CSS.pm
 t/00-load.t
 t/manifest.t
 t/pod-coverage.t

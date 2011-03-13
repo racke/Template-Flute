@@ -3,8 +3,8 @@ LICENSE
 MANIFEST
 Makefile.PL
 README
-lib/Template/Zoom/PDF.pm
-lib/Template/Zoom/PDF/Box.pm
-lib/Template/Zoom/PDF/Image.pm
-lib/Template/Zoom/PDF/Import.pm
+lib/Template/Flute/PDF.pm
+lib/Template/Flute/PDF/Box.pm
+lib/Template/Flute/PDF/Image.pm
+lib/Template/Flute/PDF/Import.pm
 

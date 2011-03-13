@@ -1,0 +1,572 @@
+package Template::Flute::HTML;
+
+use strict;
+use warnings;
+
+use XML::Twig;
+
+use Template::Flute::Increment;
+use Template::Flute::Container;
+use Template::Flute::List;
+use Template::Flute::Form;
+
+=head1 NAME
+
+Template::Flute::HTML - HTML Template Parser
+
+=head1 SYNOPSIS
+
+    $html_object = new Template::Flute::HTML;
+
+    $html_object->parse('<div class="example">Hello world</div>');
+    $html_object->parse_file($html_file, $spec);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create a Template::Flute::HTML object.
+
+=cut
+
+# constructor
+
+sub new {
+	my ($class, $self);
+
+	$class = shift;
+
+	$self = {containers => {}, lists => {}, forms => {},
+			 params => {}, values => {}, query => {}, file => undef};
+	
+	bless $self;
+}
+
+=head1 METHODS
+
+=head2 containers
+
+Returns list of L<Template::Flute::Container> objects for this template.
+
+=cut
+
+# containers method - return list of Template::Flute::Container objects for this# template
+
+sub containers {
+	my ($self) = @_;
+
+	return values %{$self->{containers}};
+}
+
+=head2 container NAME
+
+Returns container object named NAME.
+
+=cut
+
+sub container {
+	my ($self, $name) = @_;
+
+	if (exists $self->{containers}->{$name}) {
+		return $self->{containers}->{$name};
+	}
+}
+
+=head2 lists
+
+Returns list of L<Template::Flute::List> objects for this template.
+
+=cut
+
+sub lists {
+	my ($self) = @_;
+
+	return values %{$self->{lists}};
+}
+
+=head2 list NAME
+
+Returns list object named NAME.
+
+=cut
+
+# list method - returns specific list object
+sub list {
+	my ($self, $name) = @_;
+
+	if (exists $self->{lists}->{$name}) {
+		return $self->{lists}->{$name};
+	}
+}
+
+=head2 forms
+	
+Returns list of L<Template::Flute::Form> objects for this template.
+
+=cut
+
+sub forms {
+	my ($self) = @_;
+
+	return values %{$self->{forms}};
+}
+
+=head2 form NAME
+
+Returns form object named NAME.
+
+=cut
+
+# form method - returns specific form object
+sub form {
+	my ($self, $name) = @_;
+
+	if (exists $self->{forms}->{$name}) {
+		return $self->{forms}->{$name};
+	}
+}
+
+=head2 values
+
+Returns list of values for this form.
+
+=cut
+
+sub values {
+	my ($self) = @_;
+
+	return values %{$self->{values}};
+}
+
+=head2 root
+
+Returns root of HTML/XML tree.
+
+=cut
+
+# root method - returns root of HTML/XML tree
+sub root {
+	my ($self) = @_;
+
+	return $self->{xml}->root();
+}
+
+=head2 translate I18NOBJECT
+
+Localizes static text inside the HTML template through
+the I18NOBJECT.
+
+=cut
+
+sub translate {
+	my ($self, $i18n) = @_;
+	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n);
+
+	$root = $self->root();
+
+	@text_elts = $root->descendants('#TEXT');
+
+	for my $elt (@text_elts) {
+		$parent_gi = $elt->parent->gi();
+
+		next if $parent_gi eq 'style';
+
+		$parent_i18n = $elt->parent->att('i18n-key');
+		
+		if ($parent_i18n) {
+			$i18n_ret = $i18n->localize($parent_i18n);
+		}
+		else {
+			$i18n_ret = $i18n->localize($elt->text());
+		}
+
+		$elt->set_text($i18n_ret);
+	}
+
+	return;
+}
+
+=head2 file
+
+Returns name of template file.
+
+=cut
+
+sub file {
+	my $self = shift;
+	
+	return $self->{file};
+}
+
+=head2 parse [ STRING | SCALARREF ] SPECOBJECT
+
+Parses HTML template from STRING or SCALARREF with the help
+of a L<Template::Flute::Specification> object SPECOBJECT.
+
+=cut
+
+sub parse {
+	my ($self, $template, $spec_object) = @_;
+	my ($object);
+	
+	if (ref($template) eq 'SCALAR') {
+		$object = $self->_parse_template($template, $spec_object);
+	}
+	else {
+		$object = $self->_parse_template(\$template, $spec_object);
+	}
+
+	return $object;
+}
+
+=head2 parse_file FILENAME SPECOBJECT
+
+Parses HTML template from file FILENAME with the help
+of a L<Template::Flute::Specification> object SPECOBJECT.
+
+=cut
+	
+sub parse_file {
+	my ($self, $template_file, $spec_object) = @_;
+
+	return $self->_parse_template($template_file, $spec_object);
+}
+
+sub _parse_template {
+	my ($self, $template, $spec_object) = @_;
+	my ($twig, $xml, $object, $list);
+
+	$object = {specs => {}, lists => {}, forms => {}, params => {}};
+		
+	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
+
+	if (ref($template) eq 'SCALAR') {
+		$self->{file} = '';
+		$xml = $twig->safe_parse_html($$template);
+	}
+	else {
+		$self->{file} = $template;
+		$xml = $twig->safe_parsefile_html($template);
+	}
+	
+	unless ($xml) {
+		die "Invalid HTML template: $template: $@\n";
+	}
+
+	# examine list on alternates
+	for my $name (keys %{$object->{lists}}) {
+		$list = $object->{lists}->{$name};
+
+		if (@{$list->[1]} > 1) {
+			$list->[2]->{alternate} = @{$list->[1]};
+		}
+	}
+
+	$self->{xml} = $object->{xml} = $xml;
+
+	return $object;
+}
+
+# parse_handler - Callback for HTML elements
+
+sub _parse_handler {
+	my ($self, $elt, $spec_object) = @_;
+	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob);
+
+	$gi = $elt->gi();
+	$class_names = $elt->class();
+	$id = $elt->id();
+	
+	# don't act on elements without class or id
+	return unless $class_names || $id;
+	
+	# weed out "static" classes
+	if ($class_names) {
+		for my $class (split(/\s+/, $class_names)) {
+			if ($spec_object->element_by_class($class)) {
+				push @classes, $class;
+			}
+			else {
+				push @static_classes, $class;
+			}
+		}
+	}
+	
+	if ($id) {
+		if ($sob = $spec_object->element_by_id($id)) {
+			$name = $sob->{name} || $id;
+			$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
+			return $self;
+		}
+	}
+
+	for my $class (@classes) {
+		$sob = $spec_object->element_by_class($class);
+		$name = $sob->{name} || $class;
+		$self->_elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
+	}
+
+	return $self;
+}
+
+sub _elt_handler {
+	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
+
+	if ($sob->{type} eq 'container') {
+		$sob->{elts} = [$elt];
+		$self->{containers}->{$name} = new Template::Flute::Container ($sob, $spec_object, $name);
+		return $self;
+	}
+	
+	if ($sob->{type} eq 'list') {
+		my $iter;
+		
+		if (exists $self->{lists}->{$name}) {
+			# record static classes
+			$self->{lists}->{$name}->set_static_class(@$static_classes);
+				
+			# discard repeated lists
+			$elt->cut();
+			return;
+		}
+			
+		$sob->{elts} = [$elt];
+
+		# weed out parameters which aren't descendants of list element
+		for my $p (@{$self->{params}->{$name}->{array}}) {
+			my @p_new;
+			
+			for my $p_elt (@{$p->{elts}}) {
+				for my $a ($p_elt->ancestors()) {
+					if ($a eq $elt) {
+						push (@p_new, $p_elt);
+						last;
+					}
+				}
+			}
+
+			$p->{elts} = \@p_new;
+		}
+		
+		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
+		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
+			
+		if (exists $sob->{iterator}) {
+			if ($iter = $spec_object->iterator($sob->{iterator})) {
+				$self->{lists}->{$name}->set_iterator($iter);
+			}
+		}
+
+		if (exists $sob->{filter}) {
+			$self->{lists}->{$name}->set_filter($sob->{filter});
+		}
+		
+		return $self;
+	}
+
+	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
+		return $self;
+	}
+
+	if ($sob->{type} eq 'form') {
+		$sob->{elts} = [$elt];
+
+		$self->{forms}->{$name} = new Template::Flute::Form ($sob);
+
+		$self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
+		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
+			
+		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
+			
+		return $self;
+	}
+	
+	if ($sob->{type} eq 'param') {
+		push (@{$sob->{elts}}, $elt);
+
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+
+		if ($sob->{increment}) {
+			# create increment object and record it for increment updates
+			my $inc = new Template::Flute::Increment (increment => $sob->{increment});
+			
+			$sob->{increment} = $inc;
+			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
+		}
+
+		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
+		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
+	} elsif ($sob->{type} eq 'value') {
+		push (@{$sob->{elts}}, $elt);
+
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+		
+		$self->{values}->{$name} = $sob;
+	} elsif ($sob->{type} eq 'field') {
+		# match for form field found in HTML
+		push (@{$sob->{elts}}, $elt);
+
+		if ($gi eq 'select') {
+			if ($sob->{iterator}) {
+				$elt->{"flute_$name"}->{rep_sub} = sub {
+					_set_selected($_[0], $_[1],
+								 $spec_object->resolve_iterator($sob->{iterator}));
+				};
+			}
+			else {
+				$elt->{"flute_$name"}->{rep_sub} = \&_set_selected;
+			}
+		}
+		push(@{$self->{fields}->{$sob->{form}}->{array}}, $sob);
+	} elsif ($sob->{type} eq 'i18n') {
+
+		$elt->set_att('i18n-key', $sob->{'key'});
+	} else {
+		return $self;
+	}
+}
+
+# _elt_indicate_replacements - indicate location of replacements
+
+sub _elt_indicate_replacements {
+	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
+	my ($elt_text);
+
+	if (exists $sob->{op}) {
+		if ($sob->{op} eq 'hook') {
+			$elt->{"flute_$name"}->{rep_sub} = \&hook_html;
+			return;
+		}
+	}
+	
+	if ($sob->{target}) {
+		if (exists $sob->{op}) {
+			if ($sob->{op} eq 'append') {
+				# keep original value around
+				$elt->{"flute_$name"}->{rep_att_orig} = $elt->att($sob->{target});
+			}
+		}
+			
+		$elt->{"flute_$name"}->{rep_att} = $sob->{target};
+	} elsif ($gi eq 'input') {
+		my $type = $elt->att('type');
+		# replace value attribute instead of text
+		$elt->{"flute_$name"}->{rep_att} = 'value';
+			
+	} elsif ($gi eq 'select') {
+		if ($sob->{iterator}) {
+			$elt->{"flute_$name"}->{rep_sub} = sub {
+				_set_selected($_[0], $_[1],
+							 $spec_object->resolve_iterator($sob->{iterator}));
+			};
+		} else {
+			$elt->{"flute_$name"}->{rep_sub} = \&_set_selected;
+		}
+	} elsif (! $elt->contains_only_text()) {
+		# contains real elements, so we have to be careful with
+		# set text and apply it only to the first PCDATA element
+		if ($elt_text = $elt->first_child('#PCDATA')) {
+			$elt->{"flute_$name"}->{rep_elt} = $elt_text;
+		}
+	}
+}
+
+# _set_selected - Set selected value in a dropdown menu
+
+sub _set_selected {
+	my ($elt, $value, $iter) = @_;
+	my (@children, $eltval, $optref);
+
+	@children = $elt->children('option');
+	
+	if ($iter) {
+		# remove existing children
+		$elt->cut_children();
+		
+		# get options from iterator		
+		while ($optref = $iter->next()) {
+			my (%att, $text);
+			
+			if (exists $optref->{label}) {
+				$text = $optref->{label};
+				$att{value} = $optref->{value};
+			}
+			else {
+				$text = $optref->{value};
+			}
+
+			if ($optref->{value} eq $value) {
+				$att{selected} = 'selected';
+			}
+			
+			$elt->insert_new_elt('last_child', 'option',
+									 \%att, $text);
+		}
+	}
+	else {
+		for my $node (@children) {
+			$eltval = $node->att('value');
+
+			unless (length($eltval)) {
+				$eltval = $node->text();
+			}
+		
+			if ($eltval eq $value) {
+				$node->set_att('selected', 'selected');
+			}
+			else {
+				$node->del_att('selected', '');
+			}
+		}
+	}
+}
+
+=head2 hook_html ELT VALUE
+
+Parse HTML provided by VALUE and replace any children of ELT
+with the result.
+
+=cut
+	
+sub hook_html {
+	my ($elt, $value) = @_;
+	my ($parser, $html, $body, @children, @ret, $elt_hook);
+	
+	$parser = new XML::Twig ();
+	unless ($html = $parser->safe_parse_html($value)) {
+		die "Failed to parse HTML snippet: $@.\n";
+	}
+
+	$elt->cut_children();
+	
+	# locate body element
+	@ret = $html->root()->get_xpath(qq{//body});
+
+	@children = $ret[0]->cut_children();
+	
+	for my $elt_hook (@children) {
+		$elt_hook->paste(last_child => $elt);
+	}
+	
+	return;
+}
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2010-2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+
+1;
+

@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use Test::More tests => 2;
 
-use Template::Zoom;
-use Template::Zoom::Specification::Scoped;
-use Template::Zoom::HTML;
+use Template::Flute;
+use Template::Flute::Specification::Scoped;
+use Template::Flute::HTML;
 
 my $xml = <<EOF;
 <specification name="helloworld">
@@ -27,26 +27,26 @@ EOF
 # parse scoped specification
 my ($spec, $ret);
 
-$spec = new Template::Zoom::Specification::Scoped;
+$spec = new Template::Flute::Specification::Scoped;
 
 $ret = $spec->parse($scoped);
 
-isa_ok($ret, 'Template::Zoom::Specification');
+isa_ok($ret, 'Template::Flute::Specification');
 
 # parse HTML template
 my ($html_object);
 
-$html_object = new Template::Zoom::HTML;
+$html_object = new Template::Flute::HTML;
 
 $html_object->parse($html, $ret);
 
-my $zoom = new Template::Zoom(specification => $ret,
+my $flute = new Template::Flute(specification => $ret,
 							  template => $html_object,
 							  values => {hello => 'Hello World'},
 );
 
 eval {
-	$ret = $zoom->process();
+	$ret = $flute->process();
 };
 
 ok($ret =~ /Hello World/);

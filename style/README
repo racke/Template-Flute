@@ -1,15 +1,15 @@
 NAME
-    Template::Zoom::Style::CSS - CSS parser class for Template::Zoom
+    Template::Flute::Style::CSS - CSS parser class for Template::Flute
 
 VERSION
     Version 0.0001
 
 CONSTRUCTOR
   new
-    Create Template::Zoom::Style::CSS object with the following parameters:
+    Create Template::Flute::Style::CSS object with the following parameters:
 
     template
-        Template::Zoom::HTML object.
+        Template::Flute::HTML object.
 
 METHODS
   properties
@@ -356,28 +356,28 @@ AUTHOR
 
 BUGS
     Please report any bugs or feature requests to
-    `bug-template-zoom-style-css at rt.cpan.org', or through the web
+    `bug-template-flute-style-css at rt.cpan.org', or through the web
     interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom-Style-CSS.
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute-Style-CSS.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc Template::Zoom::Style::CSS
+        perldoc Template::Flute::Style::CSS
 
     You can also look for information at:
 
     * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom-Style-CSS
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Flute-Style-CSS
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Template-Zoom-Style-CSS
+        http://annocpan.org/dist/Template-Flute-Style-CSS
 
     * CPAN Ratings
-        http://cpanratings.perl.org/d/Template-Zoom-Style-CSS
+        http://cpanratings.perl.org/d/Template-Flute-Style-CSS
 
     * Search CPAN
-        http://search.cpan.org/dist/Template-Zoom-Style-CSS/
+        http://search.cpan.org/dist/Template-Flute-Style-CSS/
 
 LICENSE AND COPYRIGHT
     Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.

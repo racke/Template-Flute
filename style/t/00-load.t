@@ -3,8 +3,8 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'Template::Zoom::Style::CSS' ) || print "Bail out!
+    use_ok( 'Template::Flute::Style::CSS' ) || print "Bail out!
 ";
 }
 
-diag( "Testing Template::Zoom::Style::CSS $Template::Zoom::Style::CSS::VERSION, Perl $], $^X" );
+diag( "Testing Template::Flute::Style::CSS $Template::Flute::Style::CSS::VERSION, Perl $], $^X" );

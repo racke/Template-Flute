@@ -1,16 +1,16 @@
 NAME
-    Dancer::Template::TemplateZoom - Template::Zoom wrapper for Dancer
+    Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
     Version 0.0001
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
-    layer and the Template::Zoom module.
+    layer and the Template::Flute module.
 
     In order to use this engine, use the template setting:
 
-        template: template_zoom
+        template: template_flute
 
     The default template extension is ".html".
 
@@ -22,20 +22,20 @@ METHODS
     Renders template TEMPLATE with values from TOKENS.
 
 SEE ALSO
-    Dancer, Template::Zoom
+    Dancer, Template::Flute
 
 AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
 
 BUGS
-    Please report any bugs or feature requests to `bug-template-zoom at
+    Please report any bugs or feature requests to `bug-template-flute at
     rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom.
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc Template::Zoom
+        perldoc Template::Flute
 
     You can also look for information at:
 
@@ -44,13 +44,13 @@ SUPPORT
         m
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Dancer-Template-TemplateZoom
+        http://annocpan.org/dist/Dancer-Template-TemplateFlute
 
     * CPAN Ratings
-        http://cpanratings.perl.org/d/Dancer-Template-TemplateZoom
+        http://cpanratings.perl.org/d/Dancer-Template-TemplateFlute
 
     * Search CPAN
-        http://search.cpan.org/dist/Dancer-Template-TemplateZoom/
+        http://search.cpan.org/dist/Dancer-Template-TemplateFlute/
 
 LICENSE AND COPYRIGHT
     Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.

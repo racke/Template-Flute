@@ -3,10 +3,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'Template::Zoom',
+    NAME                => 'Template::Flute',
     AUTHOR              => q{Stefan Hornburg (Racke) <racke@linuxia.de>},
-    VERSION_FROM        => 'lib/Template/Zoom.pm',
-    ABSTRACT_FROM       => 'lib/Template/Zoom.pm',
+    VERSION_FROM        => 'lib/Template/Flute.pm',
+    ABSTRACT_FROM       => 'lib/Template/Flute.pm',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
       ? ('LICENSE'=> 'perl')
       : ()),
@@ -16,5 +16,5 @@ WriteMakefile(
         'XML::Twig' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Template-Zoom-*' },
+    clean               => { FILES => 'Template-Flute-*' },
 );

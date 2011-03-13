@@ -1,27 +1,27 @@
 NAME
-    Template::Zoom - Modern HTML Engine
+    Template::Flute - Modern HTML Engine
 
 VERSION
     Version 0.0001
 
 SYNOPSIS
-        use Template::Zoom;
+        use Template::Flute;
 
-        my ($cart, $zoom, %values);
+        my ($cart, $flute, %values);
 
         $cart = [{...},{...}];
         $values{cost} = ...
 
-        $zoom = new Template::Zoom(specification_file => 'cart.xml',
+        $flute = new Template::Flute(specification_file => 'cart.xml',
                                template_file => 'cart.html',
                                iterators => {cart => $cart},
                                values => \%values,
                                );
 
-        print $zoom->process();
+        print $flute->process();
 
 DESCRIPTION
-    Template::Zoom enables you to completely separate web design and
+    Template::Flute enables you to completely separate web design and
     programming tasks for dynamic web applications.
 
     Templates are plain HTML files without inline code or mini language,
@@ -33,7 +33,7 @@ DESCRIPTION
     his code for mere changes of class names.
 
   Workflow
-    The easiest way to use Template::Zoom is to pass all necessary
+    The easiest way to use Template::Flute is to pass all necessary
     parameters to the constructor and call the process method to generate
     the HTML.
 
@@ -41,10 +41,10 @@ DESCRIPTION
 
     1. Parse specification
         Parse specification based on your specification format (e.g with
-        Template::Zoom::Specification::XML or
-        Template::Zoom::Specification::Scoped.).
+        Template::Flute::Specification::XML or
+        Template::Flute::Specification::Scoped.).
 
-            $xml_spec = new Template::Zoom::Specification::XML;
+            $xml_spec = new Template::Flute::Specification::XML;
             $spec = $xml_spec->parse(q{<specification name="cart" description="Cart">
                  <list name="cart" class="cartitem" iterator="cart">
                  <param name="name" field="title"/>
@@ -55,13 +55,13 @@ DESCRIPTION
                  </specification>});
 
     2. Parse template
-        Parse template with Template::Zoom::HTML object.
+        Parse template with Template::Flute::HTML object.
 
-            $template = new Template::Zoom::HTML;
+            $template = new Template::Flute::HTML;
 
 CONSTRUCTOR
   new
-    Create a Template::Zoom object with the following parameters:
+    Create a Template::Flute object with the following parameters:
 
     specification_file
         Specification file name.
@@ -69,19 +69,19 @@ CONSTRUCTOR
     specification_parser
         Select specification parser. This can be either the full class name
         like MyApp::Specification::Parser or the last part for classes
-        residing in the Template::Zoom::Specification namespace.
+        residing in the Template::Flute::Specification namespace.
 
     template_file
         HTML template file.
 
     database
-        Template::Zoom::Database::Rose object.
+        Template::Flute::Database::Rose object.
 
     filters
         Hash reference of filter functions.
 
     i18n
-        Template::Zoom::I18N object.
+        Template::Flute::I18N object.
 
     values
         Hash reference of values to be used by the process method.
@@ -108,9 +108,9 @@ SPECIFICATION
     (variables, lists, forms) which is added to the template.
 
     The default format for the specification is XML implemented by the
-    Template::Zoom::Specification::XML module. You can use the
+    Template::Flute::Specification::XML module. You can use the
     Config::Scoped format implemented by
-    Template::Zoom::Specification::Scoped module or write your own
+    Template::Flute::Specification::Scoped module or write your own
     specification parser class.
 
     Possible elements in the specification are:
@@ -131,45 +131,45 @@ SPECIFICATION
     i18n
 
 ITERATORS
-    Template::Zoom uses iterators to retrieve list elements and insert them
+    Template::Flute uses iterators to retrieve list elements and insert them
     into the document tree. This abstraction relieves us from worrying about
     where the data actually comes from. We basically just need an array of
     hash references and an iterator class with a next and a count method.
     For your convenience you can create an iterator from
-    Template::Zoom::Iterator class very easily.
+    Template::Flute::Iterator class very easily.
 
 LIST
-    Template::Zoom::List
+    Template::Flute::List
 
 FORMS
-    Template::Zoom::Form
+    Template::Flute::Form
 
 AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
 
 BUGS
-    Please report any bugs or feature requests to `bug-template-zoom at
+    Please report any bugs or feature requests to `bug-template-flute at
     rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom.
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc Template::Zoom
+        perldoc Template::Flute
 
     You can also look for information at:
 
     * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Flute
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Template-Zoom
+        http://annocpan.org/dist/Template-Flute
 
     * CPAN Ratings
-        http://cpanratings.perl.org/d/Template-Zoom
+        http://cpanratings.perl.org/d/Template-Flute
 
     * Search CPAN
-        http://search.cpan.org/dist/Template-Zoom/
+        http://search.cpan.org/dist/Template-Flute/
 
 LICENSE AND COPYRIGHT
     Copyright 2010-2011 Stefan Hornburg (Racke) <racke@linuxia.de>.

@@ -23,11 +23,11 @@ use warnings;
 use Getopt::Long;
 use File::Temp qw(tempfile);
 
-use Template::Zoom;
-use Template::Zoom::Config;
-use Template::Zoom::Database::Rose;
-use Template::Zoom::Specification::XML;
-use Template::Zoom::HTML;
+use Template::Flute;
+use Template::Flute::Config;
+use Template::Flute::Database::Rose;
+use Template::Flute::Specification::XML;
+use Template::Flute::HTML;
 
 my (%opts, %input, %values);
 
@@ -56,16 +56,16 @@ if ($opts{combine}) {
 		die "$0: --combine option only valid together with --pdf=FILE\n";
 	}
 
-	require Template::Zoom::PDF;
-	require Template::Zoom::PDF::Import;
+	require Template::Flute::PDF;
+	require Template::Flute::PDF::Import;
 		
 	# combine PDF's from commandline
 	my ($pdf, $import);
 
-	$pdf = new Template::Zoom::PDF (file => $opts{pdf},
+	$pdf = new Template::Flute::PDF (file => $opts{pdf},
 								   );
 
-	$import = new Template::Zoom::PDF::Import;
+	$import = new Template::Flute::PDF::Import;
 
 	for my $file (@ARGV) {
 		$import->import(pdf => $pdf->{pdf}, file => $file);
@@ -80,11 +80,11 @@ my ($config_file, $config_vars, $spec_file, $template_file, $db_object);
 
 $config_file = shift;
 
-$config_vars = Template::Zoom::Config::load($config_file);
+$config_vars = Template::Flute::Config::load($config_file);
 
 if (exists $config_vars->{database}) {
 	# setup database object
-	$db_object = new Template::Zoom::Database::Rose (%{$config_vars->{database}});
+	$db_object = new Template::Flute::Database::Rose (%{$config_vars->{database}});
 }
 
 # parse specification file
@@ -93,7 +93,7 @@ my ($xml_spec, $xml_file, $spec);
 
 $xml_file = shift;
 
-$xml_spec = new Template::Zoom::Specification::XML;
+$xml_spec = new Template::Flute::Specification::XML;
 
 unless ($spec = $xml_spec->parse_file($xml_file)) {
 	die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
@@ -105,7 +105,7 @@ my ($html_file, $html_object, $list_object, $form_object);
 
 $html_file = shift;
 
-$html_object = new Template::Zoom::HTML;
+$html_object = new Template::Flute::HTML;
 
 $html_object->parse_file($html_file, $spec);
 
@@ -121,29 +121,29 @@ for $form_object ($html_object->forms()) {
 
 # process template
 
-my ($zoom);
+my ($flute);
 
-$zoom = new Template::Zoom (template => $html_object,
+$flute = new Template::Flute (template => $html_object,
 							database => $db_object,
 							values => \%values);
 
 if ($opts{pdf}) {
-	require Template::Zoom::PDF;
+	require Template::Flute::PDF;
 
-	$zoom->process();
+	$flute->process();
 	
-	my $pdf = new Template::Zoom::PDF (template => $html_object);
+	my $pdf = new Template::Flute::PDF (template => $html_object);
 
 	$pdf->process($opts{pdf});
 }
 elsif ($opts{browser}) {
-	# store zoom result in temporary file
+	# store flute result in temporary file
 	my ($tmph, $tmpfile) = tempfile();
-	print $tmph $zoom->process();
+	print $tmph $flute->process();
 	print "Using temporary file $tmpfile\n";
 	system('x-www-browser', $tmpfile);
 }
 else {
-	print $zoom->process(), "\n";
+	print $flute->process(), "\n";
 }
 

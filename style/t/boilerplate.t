@@ -48,7 +48,7 @@ TODO: {
     "placeholder date/time"       => qr(Date/time)
   );
 
-  module_boilerplate_ok('lib/Template/Zoom/Style/CSS.pm');
+  module_boilerplate_ok('lib/Template/Flute/Style/CSS.pm');
 
 
 }

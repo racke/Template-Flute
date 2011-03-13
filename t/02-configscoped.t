@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Test::More tests => 2;
 
-use Template::Zoom::Specification::Scoped;
+use Template::Flute::Specification::Scoped;
 
 my $conf = <<EOF;
 list test {
@@ -17,7 +17,7 @@ input user {
 }
 EOF
 
-my $spec = new Template::Zoom::Specification::Scoped;
+my $spec = new Template::Flute::Specification::Scoped;
 my $ret;
 
 eval {
@@ -25,7 +25,7 @@ eval {
 };
 
 diag("Failure parsing specification: $@") if $@;
-isa_ok($ret, 'Template::Zoom::Specification');
+isa_ok($ret, 'Template::Flute::Specification');
 
 # check for list
 ok(exists($ret->{lists}->{test}->{input}));

@@ -3,4 +3,4 @@ LICENSE
 MANIFEST
 Makefile.PL
 README
-lib/Dancer/Template/TemplateZoom.pm
+lib/Dancer/Template/TemplateFlute.pm

@@ -1,26 +1,26 @@
 NAME
-    Template::Zoom::PDF - PDF generator for HTML templates
+    Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
     Version 0.0001
 
 SYNOPSIS
-      $zoom = new Template::Zoom (specification_file => 'invoice.xml',
+      $flute = new Template::Flute (specification_file => 'invoice.xml',
                                   template_file => 'invoice.html',
                                   values => \%values);
-      $zoom->process();
+      $flute->process();
 
-      $pdf = new Template::Zoom::PDF (template => $zoom->template(),
+      $pdf = new Template::Flute::PDF (template => $flute->template(),
                                       file => 'invoice.pdf');
 
       $pdf->process();
 
 CONSTRUCTOR
   new
-    Create a Template::Zoom::PDF object with the following parameters:
+    Create a Template::Flute::PDF object with the following parameters:
 
     template
-        Template::Zoom::HTML object.
+        Template::Flute::HTML object.
 
     file
         PDF output file.
@@ -115,28 +115,28 @@ AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
 
 BUGS
-    Please report any bugs or feature requests to `bug-template-zoom-pdf at
+    Please report any bugs or feature requests to `bug-template-flute-pdf at
     rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom-PDF.
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute-PDF.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc Template::Zoom::PDF
+        perldoc Template::Flute::PDF
 
     You can also look for information at:
 
     * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom-PDF
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Flute-PDF
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Template-Zoom-PDF
+        http://annocpan.org/dist/Template-Flute-PDF
 
     * CPAN Ratings
-        http://cpanratings.perl.org/d/Template-Zoom-PDF
+        http://cpanratings.perl.org/d/Template-Flute-PDF
 
     * Search CPAN
-        http://search.cpan.org/dist/Template-Zoom-PDF/
+        http://search.cpan.org/dist/Template-Flute-PDF/
 
 LICENSE AND COPYRIGHT
     Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
