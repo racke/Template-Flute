@@ -27,6 +27,32 @@ use CSS::Tiny;
 # names for the sides of a box, as in border-top, border-right, ...
 use constant SIDE_NAMES => qw/top right bottom left/;
 
+our $VERSION = '0.0001';
+
+=head1 NAME
+
+Template::Zoom::Style::CSS - CSS parser class for Template::Zoom
+
+=head1 VERSION
+
+Version 0.0001
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Create Template::Zoom::Style::CSS object with the following parameters:
+
+=over 4
+
+=item template
+
+L<Template::Zoom::HTML> object.
+
+=back
+
+=cut
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -37,13 +63,13 @@ sub new {
 	bless ($self, $class);
 
 	if ($self->{template}) {
-		$self->{css} = $self->initialize();
+		$self->{css} = $self->_initialize();
 	}
 
 	return $self;
 }
 
-sub initialize {
+sub _initialize {
 	my ($self) = @_;
 	my (@ret, $css);
 
@@ -62,6 +88,38 @@ sub initialize {
 	return $css;
 }
 
+=head1 METHODS
+
+=head2 properties
+
+Builds CSS properties based on the following parameters:
+
+=over 4
+
+=item selector
+
+CSS selector.
+
+=item class
+
+CSS class.
+
+=item id
+
+CSS id.
+
+=item tag
+
+HTML tag.
+
+=item inherit
+
+CSS properties to inherit from.
+
+=back
+
+=cut
+
 sub properties {
 	my ($self, %parms) = @_;
 	my (@ids, @classes, @tags, $props);
@@ -78,7 +136,7 @@ sub properties {
 		@ids = split(/\s+/, $parms{id});
 
 		for my $id (@ids) {
-			$self->build_properties($props, "#$id");
+			$self->_build_properties($props, "#$id");
 		}
 	}
 
@@ -86,7 +144,7 @@ sub properties {
 		@classes = split(/\s+/, $parms{class});
 
 		for my $class (@classes) {
-			$self->build_properties($props, ".$class");
+			$self->_build_properties($props, ".$class");
 		}
 	}
 
@@ -94,7 +152,7 @@ sub properties {
 		@tags = split(/\s+/, $parms{tag});
 			
 		for my $tag (@tags) {
-			$self->build_properties($props, $tag);
+			$self->_build_properties($props, $tag);
 
 			if (($parms{tag} eq 'strong' || $parms{tag} eq 'b')
 				&& ! exists $props->{font}->{weight}) {
@@ -104,11 +162,37 @@ sub properties {
 	}
 
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
-		$self->build_properties($props, $parms{selector});
+		$self->_build_properties($props, $parms{selector});
 	}
 	
 	return $props;
 }
+
+=head2 descendant_properties
+
+Builds descendant CSS properties based on the following parameters:
+
+=over 4
+
+=item parent
+
+Parent properties.
+
+=item class
+
+CSS class.
+
+=item id
+
+CSS id.
+
+=item tag
+
+HTML tag.
+
+=back
+
+=cut
 
 sub descendant_properties {
 	my ($self, %parms) = @_;
@@ -123,7 +207,7 @@ sub descendant_properties {
 
 		for my $id (@ids) {
 			$regex = qr{^#$id\s+};
-			@selectors = $self->grep_properties($regex);
+			@selectors = $self->_grep_properties($regex);
 
 			for (@selectors) {
 				$sel = substr($_, length($id) + 2);
@@ -137,7 +221,7 @@ sub descendant_properties {
 
 		for my $class (@classes) {
 			$regex = qr{^.$class\s+};
-			@selectors = $self->grep_properties($regex);
+			@selectors = $self->_grep_properties($regex);
 
 			for (@selectors) {
 				$sel = substr($_, length($class) + 2);
@@ -150,7 +234,7 @@ sub descendant_properties {
 			
 		for my $tag (@tags) {
 			$regex = qr{^$tag\s+};
-			@selectors = $self->grep_properties($regex);
+			@selectors = $self->_grep_properties($regex);
 			
 			for (@selectors) {
 				$sel = substr($_, length($tag) + 1);
@@ -162,7 +246,7 @@ sub descendant_properties {
 	return \%selmap;
 }
 
-sub grep_properties {
+sub _grep_properties {
 	my ($self, $sel_regex) = @_;
 	my (@selectors);
 
@@ -171,7 +255,7 @@ sub grep_properties {
 	return @selectors;
 }
 
-sub build_properties {
+sub _build_properties {
 	my ($self, $propref, $sel) = @_;
 	my ($props_css, $sides);
 	my (@specs, $value);
@@ -217,7 +301,7 @@ sub build_properties {
 	# border-width, border-style, border-color
 	for my $p (qw/width style color/) {
 		if ($value = $props_css->{"border-$p"}) {
-			$sides = $self->by_sides($value);
+			$sides = $self->_by_sides($value);
 
 			$propref->{border}->{all}->{$p} = $sides->{all};
 			
@@ -293,7 +377,7 @@ sub build_properties {
 	
 	# margin
 	if ($props_css->{'margin'}) {
-		$sides = $self->by_sides($props_css->{'margin'});
+		$sides = $self->_by_sides($props_css->{'margin'});
 
 		for (SIDE_NAMES) {
 			$propref->{margin}->{$_} = $sides->{$_} || $sides->{all};
@@ -310,7 +394,7 @@ sub build_properties {
 	
 	# padding
 	if ($props_css->{'padding'}) {
-		$sides = $self->by_sides($props_css->{'padding'});
+		$sides = $self->_by_sides($props_css->{'padding'});
 
 		for (SIDE_NAMES) {
 			$propref->{padding}->{$_} = $sides->{$_} || $sides->{all};
@@ -365,7 +449,7 @@ sub inherit {
 
 # helper functions
 
-sub by_sides {
+sub _by_sides {
 	my ($self, $value) = @_;
 	my (@specs, %sides);
 
@@ -394,6 +478,55 @@ sub by_sides {
 	return \%sides;
 
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-template-zoom-style-css at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Zoom-Style-CSS>.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Template::Zoom::Style::CSS
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Zoom-Style-CSS>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Template-Zoom-Style-CSS>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Template-Zoom-Style-CSS>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Template-Zoom-Style-CSS/>
+
+=back
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
 
