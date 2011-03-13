@@ -96,7 +96,7 @@ sub properties {
 		for my $tag (@tags) {
 			$self->build_properties($props, $tag);
 
-			if ($parms{tag} eq 'strong'
+			if (($parms{tag} eq 'strong' || $parms{tag} eq 'b')
 				&& ! exists $props->{font}->{weight}) {
 				$props->{font}->{weight} = 'bold';
 			}
