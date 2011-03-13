@@ -71,7 +71,6 @@ CONSTRUCTOR
 
             return sprintf("%.0f", $points);
     }
-    >>>>>>> master
 
   content_width
     Returns the width of the content part of the page.
@@ -139,7 +138,7 @@ SUPPORT
         http://search.cpan.org/dist/Template-Flute-PDF/
 
 LICENSE AND COPYRIGHT
-    Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+    Copyright 2010-2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of either: the GNU General Public License as published
