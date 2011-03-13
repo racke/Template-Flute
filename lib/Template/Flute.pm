@@ -597,6 +597,11 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =back
 
+=head1 HISTORY
+
+Template::Flute was initially named Template::Zoom. I renamed the module because of
+a request from Matt S. Trout, author of the L<HTML::Zoom> module.
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2010-2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
