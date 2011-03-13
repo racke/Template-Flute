@@ -78,6 +78,37 @@ L<Template::Flute::Specification::XML> or L<Template::Flute::Specification::Scop
 Parse template with L<Template::Flute::HTML> object.
 
     $template = new Template::Flute::HTML;
+    $template->parse(q{<html>
+        <head>
+        <title>Cart Example</title>
+        </head>
+        <body>
+        <table class="cart">
+        <tr class="cartheader">
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        </tr>
+        <tr class="cartitem">
+        <td class="name">Sample Book</td>
+        <td><input class="quantity" name="quantity" size="3" value="10"></td>
+        <td class="price">$1</td>
+        </tr>
+        <tr class="cartheader"><th colspan="2"></th><th>Total</th>
+        </tr>
+        <tr>
+        <td colspan="2"></td><td class="cost">$10</td>
+        </tr>
+        </table>
+        </body></html>},
+        $spec);
+
+=item 3. Produce HTML output
+
+    $zoom = new Template::Zoom(template => $template,
+                               iterators => {cart => $cart},
+                               values => {cost => '84.94'});
+    $zoom->process();
 
 =back
 	
