@@ -26,6 +26,12 @@ use warnings;
 
 Template::Zoom::Container - Container object for Template::Zoom templates.
 
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates Template::Zoom::Container object.
+
 =cut
 
 # Constructor
@@ -56,20 +62,24 @@ sub name {
 	return $self->{sob}->{name};
 }
 
-=head2 name
+=head2 set_values
 
 Passes current values to this container.
 
 =cut
 	
-# set_values method - set values for this container
 sub set_values {
 	my ($self, $values) = @_;
 
 	$self->{values} = $values;
 }
 
-# elt (element) method - returns corresponding template element of the container
+=head2 elt
+
+Returns corresponding HTML template element of the list.
+
+=cut
+
 sub elt {
 	my ($self) = @_;
 

@@ -41,6 +41,12 @@ Template::Zoom::Specification - Specification class for Template::Zoom
 
 Specification class for L<Template::Zoom>.
 
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates Template::Zoom::Specification object.
+
 =cut
 
 # Constructor
@@ -63,6 +69,14 @@ sub new {
 	bless $self;
 }
 
+=head1 METHODS
+
+=head2 container_add CONTAINER
+
+Add container specified by hash reference CONTAINER.
+
+=cut
+
 sub container_add {
 	my ($self, $new_containerref) = @_;
 	my ($containerref, $container_name, $class);
@@ -78,6 +92,12 @@ sub container_add {
 	return $containerref;
 }
 
+=head2 list_add LIST
+
+Add list specified by hash reference LIST.
+
+=cut
+	
 sub list_add {
 	my ($self, $new_listref) = @_;
 	my ($listref, $list_name, $class);
@@ -128,6 +148,12 @@ sub list_add {
 	return $listref;
 }
 
+=head2 form_add FORM
+
+Add form specified by hash reference FORM.
+
+=cut
+	
 sub form_add {
 	my ($self, $new_formref) = @_;
 	my ($formref, $form_name, $id, $class);
@@ -171,6 +197,12 @@ sub form_add {
 	return $formref;
 }
 
+=head2 value_add VALUE
+
+Add value specified by hash reference VALUE.
+
+=cut
+	
 sub value_add {
 	my ($self, $new_valueref) = @_;
 	my ($valueref, $value_name, $id, $class);
@@ -191,6 +223,12 @@ sub value_add {
 	return $valueref;
 }	
 
+=head2 i18n_add I18N
+
+Add i18n specified by hash reference I18N.
+
+=cut
+	
 sub i18n_add {
 	my ($self, $new_i18nref) = @_;
 	my ($i18nref, $i18n_name, $id, $class);
@@ -281,6 +319,12 @@ sub form_inputs {
 	}
 }
 
+=head2 iterator NAME
+
+Returns iterator identified by NAME.
+
+=cut
+
 sub iterator {
 	my ($self, $name) = @_;
 
@@ -288,6 +332,14 @@ sub iterator {
 		return $self->{iters}->{$name};
 	}
 }
+
+=head2 set_iterator NAME ITER
+
+Sets iterator for NAME to ITER. ITER can be a iterator
+object like L<Template::Zoom::Iterator> or a reference
+to an array containing hash references.
+
+=cut
 
 sub set_iterator {
 	my ($self, $name, $iter) = @_;
@@ -301,6 +353,12 @@ sub set_iterator {
 	
 	$self->{iters}->{$name} = $iter;
 }
+
+=head2 resolve_iterator INPUT
+
+Resolves iterator INPUT.
+
+=cut
 
 sub resolve_iterator {
 	my ($self, $input) = @_;
@@ -357,7 +415,12 @@ sub element_by_id {
 	return;
 }
 
+=head2 list_paging NAME
 
+Returns paging for list NAME.
+
+=cut
+	
 sub list_paging {
 	my ($self, $list_name) = @_;
 

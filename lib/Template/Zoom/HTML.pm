@@ -205,6 +205,12 @@ sub translate {
 	return;
 }
 
+=head2 file
+
+Returns name of template file.
+
+=cut
+
 sub file {
 	my $self = shift;
 	
@@ -398,7 +404,7 @@ sub _elt_handler {
 	if ($sob->{type} eq 'param') {
 		push (@{$sob->{elts}}, $elt);
 
-		$self->elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 
 		if ($sob->{increment}) {
 			# create increment object and record it for increment updates
@@ -413,7 +419,7 @@ sub _elt_handler {
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 
-		$self->elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 		
 		$self->{values}->{$name} = $sob;
 	} elsif ($sob->{type} eq 'field') {
@@ -423,12 +429,12 @@ sub _elt_handler {
 		if ($gi eq 'select') {
 			if ($sob->{iterator}) {
 				$elt->{"zoom_$name"}->{rep_sub} = sub {
-					set_selected($_[0], $_[1],
+					_set_selected($_[0], $_[1],
 								 $spec_object->resolve_iterator($sob->{iterator}));
 				};
 			}
 			else {
-				$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+				$elt->{"zoom_$name"}->{rep_sub} = \&_set_selected;
 			}
 		}
 		push(@{$self->{fields}->{$sob->{form}}->{array}}, $sob);
@@ -440,9 +446,9 @@ sub _elt_handler {
 	}
 }
 
-# elt_indicate_replacements - indicate location of replacements
+# _elt_indicate_replacements - indicate location of replacements
 
-sub elt_indicate_replacements {
+sub _elt_indicate_replacements {
 	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
 	my ($elt_text);
 
@@ -470,11 +476,11 @@ sub elt_indicate_replacements {
 	} elsif ($gi eq 'select') {
 		if ($sob->{iterator}) {
 			$elt->{"zoom_$name"}->{rep_sub} = sub {
-				set_selected($_[0], $_[1],
+				_set_selected($_[0], $_[1],
 							 $spec_object->resolve_iterator($sob->{iterator}));
 			};
 		} else {
-			$elt->{"zoom_$name"}->{rep_sub} = \&set_selected;
+			$elt->{"zoom_$name"}->{rep_sub} = \&_set_selected;
 		}
 	} elsif (! $elt->contains_only_text()) {
 		# contains real elements, so we have to be careful with
@@ -485,9 +491,9 @@ sub elt_indicate_replacements {
 	}
 }
 
-# set_selected - Set selected value in a dropdown menu
+# _set_selected - Set selected value in a dropdown menu
 
-sub set_selected {
+sub _set_selected {
 	my ($elt, $value, $iter) = @_;
 	my (@children, $eltval, $optref);
 
@@ -535,6 +541,13 @@ sub set_selected {
 	}
 }
 
+=head2 hook_html ELT VALUE
+
+Parse HTML provided by VALUE and replace any children of ELT
+with the result.
+
+=cut
+	
 sub hook_html {
 	my ($elt, $value) = @_;
 	my ($parser, $html, $body, @children, @ret, $elt_hook);

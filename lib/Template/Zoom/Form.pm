@@ -26,6 +26,12 @@ use warnings;
 
 Template::Zoom::Form - Form object for Template::Zoom templates.
 
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates Template::Zoom::Form object.
+
 =cut
 
 # Constructor
@@ -39,18 +45,38 @@ sub new {
 	bless $self;
 }
 
+=head1 METHODS
+
+=head2 params_add PARAMS
+
+Add parameters from PARAMS to form.
+
+=cut
+	
 sub params_add {
 	my ($self, $params) = @_;
 
 	$self->{params} = $params || [];
 }
 
+=head2 fields_add FIELDS
+
+Add fields from FIELDS to form.
+
+=cut
+	
 sub fields_add {
 	my ($self, $fields) = @_;
 
 	$self->{fields} = $fields || [];
 }
 
+=head2 inputs_add INPUTS
+
+Add inputs from INPUTS to form.
+
+=cut
+	
 sub inputs_add {
 	my ($self, $inputs) = @_;
 
@@ -59,8 +85,6 @@ sub inputs_add {
 		$self->{valid_input} = 0;
 	}
 }
-
-=head1 METHODS
 
 =head2 name
 
@@ -74,7 +98,12 @@ sub name {
 	return $self->{sob}->{name};
 }
 
-# elt (element) method - returns corresponding template element of the form
+=head2 elt
+
+Returns corresponding HTML template element of the form.
+
+=cut
+	
 sub elt {
 	my ($self) = @_;
 
@@ -93,21 +122,37 @@ sub fields {
 	return $self->{fields};
 }
 
-# params method - returns form parameter
+=head2 params
+
+Returns form parameters.
+
+=cut
+	
 sub params {
 	my ($self) = @_;
 
 	return $self->{params};
 }
 
-# inputs method - returns form inputs
+=head2 inputs
+
+Returns form inputs.
+
+=cut
+	
 sub inputs {
 	my ($self) = @_;
 
 	return $self->{inputs};
 }
 
-# input method - verifies that input parameters are sufficient
+=head2 input PARAMS
+
+Verifies that input parameters are sufficient.
+Returns 1 in case of success, 0 otherwise.
+
+=cut	
+
 sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
@@ -137,14 +182,24 @@ sub input {
 	return 1;
 }
 
-# action method - returns form action
+=head2 action
+
+Returns current form action.
+
+=cut
+
 sub action {
 	my ($self) = @_;
 
 	return $self->{action};
 }
 
-# set_action method - changes form action
+=head2 set_action ACTION
+
+Sets from action to ACTION.
+
+=cut
+
 sub set_action {
 	my ($self, $action) = @_;
 
@@ -164,6 +219,12 @@ sub set_method {
 	$self->{sob}->{elts}->[0]->set_att('method', $method);
 	$self->{method} = $method;
 }
+
+=head2 fill PARAMS
+
+Fills form with parameters from hash reference PARAMS.
+
+=cut
 
 # fill - fills form fields
 sub fill {
@@ -219,7 +280,12 @@ sub fill {
 	}
 }
 
-# finalize - adds action and other stuff to form
+=head2 finalize ELT
+
+Finalizes form.
+
+=cut
+
 sub finalize {
 	my ($self, $elt) = @_;
 

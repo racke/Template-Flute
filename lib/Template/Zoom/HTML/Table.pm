@@ -22,6 +22,18 @@ package Template::Zoom::HTML::Table;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Template::Zoom::HTML::Table - Class for examining HTML tables
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates Template::Zoom::HTML::Table object.
+
+=cut
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -35,6 +47,13 @@ sub new {
 		
 	bless ($self, $class);
 }
+
+=head2 walk ELT
+
+Walks HTML table from HTML template element ELT and returns Perl structure
+with rows, cells and table data.
+
+=cut
 
 sub walk {
 	my ($self, $root) = @_;
@@ -72,5 +91,21 @@ sub walk {
 		
 	return \@data;
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), <racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

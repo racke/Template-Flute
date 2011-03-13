@@ -26,6 +26,12 @@ use warnings;
 
 Template::Zoom::List - List object for Template::Zoom templates.
 
+=head1 CONSTRUCTOR
+
+=head2 new
+
+Creates Template::Zoom::List object.
+
 =cut
 
 # Constructor
@@ -50,11 +56,25 @@ sub new {
 	return $self;
 }
 
+=head1 METHODS
+
+=head2 params_add PARAMS
+
+Add parameters from PARAMS to list.
+
+=cut
+	
 sub params_add {
 	my ($self, $params) = @_;
 
 	$self->{params} = $params || [];
 }
+
+=head2 inputs_add INPUTS
+
+Add inputs from INPUTS to list.
+
+=cut
 
 sub inputs_add {
 	my ($self, $inputs) = @_;
@@ -65,11 +85,23 @@ sub inputs_add {
 	}
 }
 
+=head2 increments_add INCREMENTS
+
+Add increments from INCREMENTS to list.
+
+=cut
+
 sub increments_add {
 	my ($self, $increments) = @_;
 
 	$self->{increments} = $increments;
 }
+
+=head2 filters_add FILTERS
+
+Add filters from FILTERS to list.
+
+=cut
 
 sub filters_add {
 	my ($self, $filters) = @_;
@@ -77,12 +109,24 @@ sub filters_add {
 	$self->{filters} = $filters;
 }
 
+=head2 sorts_add SORT
+
+Add sort from SORT to list.
+
+=cut
+
 sub sorts_add {
 	my ($self, $sort) = @_;
 
 	$self->{sorts} = $sort;
 }
 
+=head2 paging_add PAGING
+
+Add paging from PAGING to list.
+
+=cut
+	
 sub paging_add {
 	my ($self, $paging) = @_;
 
@@ -127,14 +171,24 @@ sub set_iterator {
 	$self->{iterator} = $iterator;
 }
 
-# set_static_class - set static class
+=head2 set_static_class CLASS
+
+Set static class for list to CLASS.
+
+=cut
+
 sub set_static_class {
 	my ($self, $class) = @_;
 
 	push(@{$self->{static}}, $class);
 }
 
-# apply_static_class - apply static class to element
+=head2 static_class ROW_POS
+
+Apply static class for ROW_POS.
+
+=cut
+	
 sub static_class {
 	my ($self, $row_pos) = @_;
 	my ($idx);
@@ -145,22 +199,38 @@ sub static_class {
 		return $self->{static}->[$idx];
 	}
 }
-		
-# elt (element) method - returns corresponding template element of the list
+
+=head2 elt
+
+Returns corresponding HTML template element of the list.
+
+=cut
+
 sub elt {
 	my ($self) = @_;
 
 	return $self->{sob}->{elts}->[0];
 }
 
-# params method - returns list parameter
+=head2 params
+
+Returns list parameters.
+
+=cut
+
 sub params {
 	my ($self) = @_;
 
 	return $self->{params};
 }
 
-# input method - verifies that input parameters are sufficient
+=head2 input PARAMS
+
+Verifies that input parameters are sufficient.
+Returns 1 in case of success, 0 otherwise.
+
+=cut
+
 sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
@@ -295,6 +365,12 @@ sub query {
 	}
 }
 
+=head3 set_limit TYPE LIMIT
+
+Set list limit for type TYPE to LIMIT.
+
+=cut
+
 # set_limit method - set list limit
 sub set_limit {
 	my ($self, $type, $limit) = @_;
@@ -302,14 +378,24 @@ sub set_limit {
 	$self->{limits}->{$type} = $limit;
 }
 
-# set_filter method - set global filter for list
+=head3 set_filter NAME
+
+Set global filter for list to NAME.
+
+=cut
+	
 sub set_filter {
 	my ($self, $name) = @_;
 
 	$self->{filter} = $name;
 }
 
-# filter method - run row filter if applicable
+=head3 filter ZOOM ROW
+
+Run row filter on ROW if applicable.
+
+=cut
+	
 sub filter {
 	my ($self, $zoom, $row) = @_;
 	my ($new_row);
@@ -332,7 +418,12 @@ sub filter {
 	return $row;
 }
 
-# increment method - increments all incrementors
+=head3 increment
+
+Increment all increments of the list.
+
+=cut
+
 sub increment {
 	my ($self) = @_;
 
