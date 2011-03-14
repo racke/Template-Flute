@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern HTML Engine
 
 VERSION
-    Version 0.0001
+    Version 0.0002
 
 SYNOPSIS
         use Template::Flute;
