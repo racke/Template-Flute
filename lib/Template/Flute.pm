@@ -105,10 +105,10 @@ Parse template with L<Template::Flute::HTML> object.
 
 =item 3. Produce HTML output
 
-    $zoom = new Template::Zoom(template => $template,
+    $flute = new Template::Flute(template => $template,
                                iterators => {cart => $cart},
                                values => {cost => '84.94'});
-    $zoom->process();
+    $flute->process();
 
 =back
 	
