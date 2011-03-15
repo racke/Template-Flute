@@ -344,7 +344,7 @@ sub query {
 	}
 }
 
-=head3 set_limit TYPE LIMIT
+=head2 set_limit TYPE LIMIT
 
 Set list limit for type TYPE to LIMIT.
 
@@ -357,7 +357,7 @@ sub set_limit {
 	$self->{limits}->{$type} = $limit;
 }
 
-=head3 set_filter NAME
+=head2 set_filter NAME
 
 Set global filter for list to NAME.
 
@@ -369,7 +369,7 @@ sub set_filter {
 	$self->{filter} = $name;
 }
 
-=head3 filter FLUTE ROW
+=head2 filter FLUTE ROW
 
 Run row filter on ROW if applicable.
 
@@ -397,7 +397,7 @@ sub filter {
 	return $row;
 }
 
-=head3 increment
+=head2 increment
 
 Increment all increments of the list.
 
