@@ -537,6 +537,18 @@ sub template {
 	return $self->{template};
 }
 
+=head2 specification
+
+Returns specification object.
+
+=cut
+
+sub specification {
+	my $self = shift;
+
+	return $self->{specification};
+}
+
 =head1 SPECIFICATION
 
 The specification ties the elements in the HTML template to the data
