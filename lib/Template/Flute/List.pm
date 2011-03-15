@@ -114,8 +114,6 @@ sub paging_add {
 	$self->{paging} = $paging;
 }
 
-=head1 METHODS
-
 =head2 name
 
 Returns name of the list.
