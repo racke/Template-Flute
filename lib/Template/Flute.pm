@@ -483,22 +483,30 @@ sub _replace_values {
 	for my $value ($self->{template}->values()) {
 		@elts = @{$value->{elts}};
 
-		if (exists $value->{op} && $value->{op} eq 'toggle') {
-			my $raw;
+		if (exists $value->{op}) {
+			if ($value->{op} eq 'toggle') {
+				my $raw;
 
-			($raw, $rep_str) = $self->value($value);
+				($raw, $rep_str) = $self->value($value);
 
-			if (exists $value->{args} && $value->{args} eq 'static') {
-				if ($rep_str) {
-					# preserve static text
+				if (exists $value->{args} && $value->{args} eq 'static') {
+					if ($rep_str) {
+						# preserve static text
+						next;
+					}
+				}
+			
+				unless ($raw) {
+					# remove corresponding HTML elements from tree
+					for my $elt (@elts) {
+						$elt->cut();
+					}
 					next;
 				}
 			}
-			
-			unless ($raw) {
-				# remove corresponding HTML elements from tree
+			elsif ($value->{op} eq 'hook') {
 				for my $elt (@elts) {
-					$elt->cut();
+					Template::Flute::HTML::hook_html($elt, $self->value($value));
 				}
 				next;
 			}
