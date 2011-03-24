@@ -117,6 +117,27 @@ sub new {
 
 Calculates dimensions of the box.
 
+=head3 Images
+
+The width and height of an image is determined according to
+the following priority list.
+
+=over 4
+
+=item 1.
+
+From width/height attribute of the <img> HTML tag.
+
+=item 2.
+
+From corresponding CSS width/height property.
+
+=item 3.
+
+From width/height of the image.
+
+=back
+
 =cut
 
 sub calculate {
@@ -154,32 +175,34 @@ sub calculate {
 	}
 
 	if ($self->{gi} eq 'img') {
-		my (@info, $file);
+		my (@info, $file, %size);
 
 		$file = $self->{elt}->att('src');
 		
 		$self->{object} = new Template::Flute::PDF::Image(file => $file,
 														 pdf => $self->{pdf});
+
+		for my $extent (qw/width height/) {
+			# size from HTML
+			if ($size{$extent}= $self->{elt}->att($extent)) {
+				next;
+			}
+
+			# size from CSS
+			if ($size{$extent} = $self->property($extent)) {
+				next;
+			}
+
+			# size from image
+			$size{$extent} = $self->{object}->$extent();
+		}
+
+		$self->{box} = {width => $size{width},
+						height => $size{height},
+						clear => {after => 0, before => 0},
+						size => $self->{specs}->{size}};
 		
-		if ($self->{specs}->{props}->{width} > 0
-			&& $self->{specs}->{props}->{height} > 0) {
-
-			$self->{box} = {width => $self->{specs}->{props}->{width},
-							height => $self->{specs}->{props}->{height},
-							clear => {after => 0, before => 0},
-							size => $self->{specs}->{size}};
-
-			return;
-		}
-		else {
-			$self->{box} = {width => $self->{object}->width(),
-							height => $self->{object}->height(),
-							clear => {after => 0, before => 0},
-							size => $self->{specs}->{size}};
-				
-#			print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
-			return;
-		}
+		return;
 	}
 	
 	for my $child ($self->{elt}->children()) {
