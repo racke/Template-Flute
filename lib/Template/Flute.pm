@@ -601,6 +601,25 @@ This container is only shown in the output if the value billing_address is set:
 
 =item value
 
+Value elements are replaced with a single value present in the values hash
+passed to the constructor of this class or later set with the
+L<set_values|/set_values_HASHREF> method.
+
+The following operations are supported for value elements:
+
+=over 4
+
+=item hook
+
+Insert HTML residing in value as subtree of the corresponding HTML element.
+HTML will be parsed with L<XML::Twig>.
+
+=item toggle
+
+Only shows corresponding HTML element if value is set.
+
+=back
+
 =item input
 
 =item filter
