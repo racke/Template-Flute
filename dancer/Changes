@@ -1,7 +1,13 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0002  Tue Mar 29 15:52:11 2011 CEST
+
+     [ENHANCEMENTS]
+
+     * Use new auto_iterators parameter for render method.
+
 0.0001  Sun Mar 13 15:40:50 2011 CET
 
-        * Initial release.
+     * Initial release.
 
 

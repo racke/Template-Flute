@@ -1,7 +1,14 @@
 Revision history for Template::Flute::PDF
 
+0.0002  Tue Mar 29 15:52:11 2011 CEST
+
+     [ENHANCEMENTS]
+
+     * Take width and height attributes from HTML <img> tag into account
+       for calculating image box size.
+
 0.0001  Sun Mar 13 15:40:50 2011 CET
 
-        * Initial release.
+     * Initial release.
 
 

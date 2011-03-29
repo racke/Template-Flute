@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern HTML Engine
 
 VERSION
-    Version 0.0002
+    Version 0.0003
 
 SYNOPSIS
         use Template::Flute;
@@ -84,10 +84,10 @@ DESCRIPTION
                 $spec);
 
     3. Produce HTML output
-            $zoom = new Template::Zoom(template => $template,
+            $flute = new Template::Flute(template => $template,
                                        iterators => {cart => $cart},
                                        values => {cost => '84.94'});
-            $zoom->process();
+            $flute->process();
 
 CONSTRUCTOR
   new
@@ -116,6 +116,9 @@ CONSTRUCTOR
     values
         Hash reference of values to be used by the process method.
 
+    auto_iterators
+        Builds iterators automatically from values.
+
 METHODS
   process [HASHREF]
     Processes HTML template and returns HTML output.
@@ -132,6 +135,9 @@ METHODS
 
   template
     Returns HTML template object.
+
+  specification
+    Returns specification object.
 
 SPECIFICATION
     The specification ties the elements in the HTML template to the data
@@ -155,6 +161,19 @@ SPECIFICATION
     list
     param
     value
+        Value elements are replaced with a single value present in the
+        values hash passed to the constructor of this class or later set
+        with the set_values method.
+
+        The following operations are supported for value elements:
+
+        hook
+            Insert HTML residing in value as subtree of the corresponding
+            HTML element. HTML will be parsed with XML::Twig.
+
+        toggle
+            Only shows corresponding HTML element if value is set.
+
     input
     filter
     sort

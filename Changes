@@ -1,11 +1,29 @@
 Revision history for Template::Flute
 
+0.0003  Tue Mar 29 15:52:11 2011 CEST
+
+    [ENHANCEMENTS]
+    
+    * Add auto_iterators parameter to Template::Flute class.
+    * Add seed method to Template::Flute::Iterator class.
+    * Add hook operation to value elements.
+    * Add specification method to Template::Flute class.
+
+    [DOCUMENTATION]
+
+    * Add documentation about value elements to Template::Flute's POD.
+    * Fix wrong POD headers for some methods in Template::Flute::List class.
+    * Fixed wrong module name Template::Zoom in Workflow POD section.
+      Thanks to Terrence Brannon for the report.
+    * Fix duplicate "METHODS" POD header in Template::Flute::List class.
+
 0.0002  Mon Mar 14 08:39:23 2011 CET
 
-		* Add missing modules Template::Flute::Utils and 
-          Template::Flute::Container to MANIFEST.
+    [BUG FIXES]
+	
+	* Add missing modules Template::Flute::Utils and 
+      Template::Flute::Container to MANIFEST.
 
 0.0001  Sun Mar 13 15:40:50 2011 CET
 
-        * Initial release.
-
+    * Initial release.
