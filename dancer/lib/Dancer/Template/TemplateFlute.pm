@@ -46,15 +46,18 @@ sub default_tmpl_ext {
 
 sub render ($$$) {
 	my ($self, $template, $tokens) = @_;
-	my ($flute);
+	my ($flute, $html);
 
 	# derive file name for specification from template file names
 	$flute = new Template::Flute(template_file => $template,
-							   scopes => 1,
-							   values => $tokens,
+								 scopes => 1,
+								 auto_iterators => 1,
+								 values => $tokens,
 							  );
 	
-	return $flute->process();
+	$html = $flute->process();
+
+	return $html;
 }
 
 =head1 SEE ALSO
