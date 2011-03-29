@@ -23,3 +23,5 @@ t/00-load.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+t/iterators/00-load.t
+t/iterators/01-simple.t

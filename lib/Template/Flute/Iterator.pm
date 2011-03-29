@@ -17,9 +17,16 @@ $cart = [{isbn => '978-0-2016-1622-4', title => 'The Pragmatic Programmer',
 
 $iter = new Template::Flute::Iterator($cart);
 
+print "Count: ", $iter->count(), "\n";
+
 while ($record = $iter->next()) {
-	print "Title: " . $record->title();
+	print "Title: ", $record->title(), "\n";
 }
+
+$iter->reset();
+
+$iter->seed({isbn => '978-0-9779201-5-0', title => 'Modern Perl',
+             quantity => 10});
 
 =head1 CONSTRUCTOR
 
@@ -35,17 +42,13 @@ sub new {
 	
 	$class = ref($proto) || $proto;
 
-	if (ref($args[0]) eq 'ARRAY') {
-		$self = {DATA => $args[0], INDEX => 0};
-	}
-	else {
-		$self = {DATA => \@args};
-	}
-
-	$self->{INDEX} = 0;
-	$self->{COUNT} = scalar(@{$self->{DATA}});
+	$self = {};
 	
 	bless $self, $class;
+
+	$self->seed(@args);
+
+	return $self;
 }
 
 =head1 METHODS
@@ -92,6 +95,28 @@ sub reset {
 	$self->{INDEX} = 0;
 
 	return $self;
+}
+
+=head2 seed
+
+Seeds iterator.
+
+=cut
+
+sub seed {
+	my ($self, @args) = @_;
+
+	if (ref($args[0]) eq 'ARRAY') {
+		$self->{DATA} = $args[0];
+	}
+	else {
+		$self->{DATA} = \@args;
+	}
+
+	$self->{INDEX} = 0;
+	$self->{COUNT} = scalar(@{$self->{DATA}});
+
+	return $self->{COUNT};
 }
 
 =head1 AUTHOR

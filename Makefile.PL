@@ -17,4 +17,5 @@ WriteMakefile(
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-*' },
+    test                => { TESTS => join( ' ', (glob( 't/*.t'), glob('t/*/*.t')))},
 );
