@@ -6,6 +6,7 @@ use warnings;
 use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
+use Template::Flute::Iterator;
 
 =head1 NAME
 
@@ -150,6 +151,10 @@ L<Template::Flute::I18N> object.
 
 Hash reference of values to be used by the process method.
 
+=item auto_iterators
+
+Builds iterators automatically from values.
+
 =back
 
 =cut
@@ -269,6 +274,8 @@ sub process {
 	
 	# determine database queries
 	for my $list ($self->{template}->lists()) {
+		my $name;
+		
 		# check for (required) input
 		unless ($list->input($params)) {
 			die "Input missing for " . $list->name . "\n";
@@ -283,6 +290,16 @@ sub process {
 				else {
 					die "$0: List " . $list->name . " without iterator and database query.\n";
 				}
+			}
+			elsif ($self->{auto_iterators} &&
+				   ($name = $list->iterator('name'))) {
+				if (ref($self->{values}->{$name}) eq 'ARRAY') {
+					$iter = Template::Flute::Iterator->new($self->{values}->{$name});
+				}
+				else {
+					$iter = Template::Flute::Iterator->new([]);
+				}
+				$list->set_iterator($iter);
 			}
 			else {
 				die "$0: List " . $list->name . " without iterator and database object.\n";
