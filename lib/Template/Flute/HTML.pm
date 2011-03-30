@@ -469,6 +469,9 @@ sub _elt_indicate_replacements {
 		}
 			
 		$elt->{"flute_$name"}->{rep_att} = $sob->{target};
+	} elsif ($gi eq 'img') {
+		# replace src attribute instead of text
+		$elt->{"flute_$name"}->{rep_att} = 'src';
 	} elsif ($gi eq 'input') {
 		my $type = $elt->att('type');
 		# replace value attribute instead of text
