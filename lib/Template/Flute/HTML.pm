@@ -138,6 +138,26 @@ sub values {
 	return values %{$self->{values}};
 }
 
+=head2 iterators
+
+Returns hash with iterator names as keys and iterator objects
+as values.
+
+=cut
+
+sub iterators {
+	my ($self) = @_;
+	my (%iterators, $name, $object);
+
+	for my $list (CORE::values %{$self->{lists}}) {
+		$name = $list->iterator('name');
+		next unless $name;
+		$iterators{$name} = $list->iterator();
+	}
+
+	wantarray ? %iterators : \%iterators;
+}
+
 =head2 root
 
 Returns root of HTML/XML tree.
