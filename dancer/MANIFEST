@@ -1,6 +1,12 @@
 Changes
 LICENSE
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 lib/Dancer/Template/TemplateFlute.pm
+t/00-load.t
+t/boilerplate.t
+t/manifest.t
+t/pod.t
+t/pod-coverage.t
