@@ -1,10 +1,15 @@
 Changes
 LICENSE
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 lib/Template/Flute/PDF.pm
 lib/Template/Flute/PDF/Box.pm
 lib/Template/Flute/PDF/Image.pm
 lib/Template/Flute/PDF/Import.pm
-
+t/00-load.t
+t/boilerplate.t
+t/manifest.t
+t/pod.t
+t/pod-coverage.t
