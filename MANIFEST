@@ -1,6 +1,7 @@
 Changes
 LICENSE
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 lib/Template/Flute.pm
@@ -19,9 +20,13 @@ lib/Template/Flute/I18N.pm
 lib/Template/Flute/Iterator.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
-t/00-load.t
+t/boilerplate.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+t/00-load.t
+t/01-helloworld.t
+t/02-configscoped.t
+t/03-xml.t
 t/iterators/00-load.t
 t/iterators/01-simple.t

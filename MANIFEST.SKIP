@@ -1,0 +1,10 @@
+.git
+^dancer
+^examples
+^pdf
+^html
+^scripts
+^style
+\.bak$
+\.old$
+^lib/Template/Flute/PDF
