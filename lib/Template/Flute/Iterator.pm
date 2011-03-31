@@ -9,29 +9,35 @@ Template::Flute::Iterator - Generic iterator class for Template::Flute
 
 =head1 SYNOPSIS
 
-$cart = [{isbn => '978-0-2016-1622-4', title => 'The Pragmatic Programmer',
-          quantity => 1},
-         {isbn => '978-1-4302-1833-3',
-          title => 'Pro Git', quantity => 1},
- 		];
+    $cart = [{isbn => '978-0-2016-1622-4',
+              title => 'The Pragmatic Programmer',
+              quantity => 1},
+             {isbn => '978-1-4302-1833-3',
+              title => 'Pro Git',
+              quantity => 1},
+            ];
 
-$iter = new Template::Flute::Iterator($cart);
+    $iter = new Template::Flute::Iterator($cart);
 
-print "Count: ", $iter->count(), "\n";
+    print "Count: ", $iter->count(), "\n";
 
-while ($record = $iter->next()) {
-	print "Title: ", $record->title(), "\n";
-}
+    while ($record = $iter->next()) {
+	    print "Title: ", $record->title(), "\n";
+    }
 
-$iter->reset();
+    $iter->reset();
 
-$iter->seed({isbn => '978-0-9779201-5-0', title => 'Modern Perl',
-             quantity => 10});
+    $iter->seed({isbn => '978-0-9779201-5-0',
+                 title => 'Modern Perl',
+                 quantity => 10});
 
 =head1 CONSTRUCTOR
 
 =head2 new
 
+Creates a Template::Flute::Iterator object. The elements of the
+iterator are hash references. They can be passed to the constructor
+as array or array reference.
 
 =cut
 
@@ -132,6 +138,10 @@ under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
+
+=head1 SEE ALSO
+
+L<Template::Flute::Iterator::JSON>
 
 =cut
 
