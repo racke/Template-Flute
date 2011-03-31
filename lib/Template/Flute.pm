@@ -285,27 +285,35 @@ sub process {
 		}
 
 		unless ($iter = $list->iterator()) {
-			if ($self->{database}) {
+			if ($name = $list->iterator('name')) {
+				# resolve iterator name to object
+				if ($iter = $self->{specification}->iterator($name)) {
+					$list->set_iterator($iter);
+				}
+				elsif ($self->{auto_iterators}) {
+					if (ref($self->{values}->{$name}) eq 'ARRAY') {
+						$iter = Template::Flute::Iterator->new($self->{values}->{$name});
+					}
+					else {
+						$iter = Template::Flute::Iterator->new([]);
+					}
+					$list->set_iterator($iter);
+				}
+				else {
+					die "Missing iterator object for list " . $list->name . " and iterator name $name";
+				}
+			}
+			elsif ($self->{database}) {
 				if ($query = $list->query()) {
 					$iter = $self->{database}->build($query);
 					$iter->run();
 				}
 				else {
-					die "$0: List " . $list->name . " without iterator and database query.\n";
+					die "List " . $list->name . " without iterator and database query.\n";
 				}
-			}
-			elsif ($self->{auto_iterators} &&
-				   ($name = $list->iterator('name'))) {
-				if (ref($self->{values}->{$name}) eq 'ARRAY') {
-					$iter = Template::Flute::Iterator->new($self->{values}->{$name});
-				}
-				else {
-					$iter = Template::Flute::Iterator->new([]);
-				}
-				$list->set_iterator($iter);
 			}
 			else {
-				die "$0: List " . $list->name . " without iterator and database object.\n";
+				die "List " . $list->name . " without iterator and database object.\n";
 			}
 		}
 		
