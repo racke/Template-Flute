@@ -242,7 +242,10 @@ sub _bootstrap {
 
 =head2 process [HASHREF]
 
-Processes HTML template and returns HTML output.
+Processes HTML template, manipulates the HTML tree based on the
+specification, values and iterators.
+
+Returns HTML output.
 
 =cut
 
@@ -396,6 +399,22 @@ sub _replace_within_elts {
 			$elt->set_text($rep_str);
 		}
 	}
+}
+
+=head2 process_template
+
+Processes HTML template and returns L<Template::Flute::HTML> object.
+
+=cut
+
+sub process_template {
+	my ($self) = @_;
+	
+	unless ($self->{template}) {
+		$self->_bootstrap();
+	}
+
+	return $self->{template};
 }
 
 sub _replace_record {
