@@ -18,6 +18,7 @@ lib/Template/Flute/Database/Rose.pm
 lib/Template/Flute/Form.pm
 lib/Template/Flute/I18N.pm
 lib/Template/Flute/Iterator.pm
+lib/Template/Flute/Iterator/JSON.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
 t/boilerplate.t
@@ -30,3 +31,4 @@ t/02-configscoped.t
 t/03-xml.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
+t/iterators/20-json.t
