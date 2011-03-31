@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern HTML Engine
 
 VERSION
-    Version 0.0003
+    Version 0.0004
 
 SYNOPSIS
         use Template::Flute;
@@ -121,7 +121,13 @@ CONSTRUCTOR
 
 METHODS
   process [HASHREF]
-    Processes HTML template and returns HTML output.
+    Processes HTML template, manipulates the HTML tree based on the
+    specification, values and iterators.
+
+    Returns HTML output.
+
+  process_template
+    Processes HTML template and returns Template::Flute::HTML object.
 
   filter FILTER VALUE
     Runs the filter named FILTER on VALUE and returns the result.

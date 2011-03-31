@@ -1,5 +1,24 @@
 Revision history for Template::Flute
 
+0.0004  Thu Mar 31 21:21:59 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Resolve iterator name to object for lists.
+    * Add process_template method to Template::Flute class.
+    * Add Template::Flute::Iterator::JSON class.
+	* Apply replacement to src attribute instead of tag body for HTML <img> tags.
+    * Add iterators method to Template::Flute::HTML class.
+
+    [BUG FIXES]
+
+    * Fix MANIFEST and remove unused dist.ini file.
+
+    [DOCUMENTATION]
+
+    * Add "See also", fix Synopsis and constructor documentation
+      for Template::Flute::Iterator class.
+
 0.0003  Tue Mar 29 15:52:11 2011 CEST
 
     [ENHANCEMENTS]
