@@ -4,9 +4,17 @@
 
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
 
-use Template::Flute::Specification::Scoped;
+eval "use Config::Scoped";
+
+if ($@) {
+	plan skip_all => "No Config::Scoped module.";
+}
+
+plan tests => 2;
+
+require Template::Flute::Specification::Scoped;
 
 my $conf = <<EOF;
 list test {

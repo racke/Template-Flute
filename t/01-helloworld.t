@@ -5,19 +5,13 @@ use warnings;
 use Test::More tests => 2;
 
 use Template::Flute;
-use Template::Flute::Specification::Scoped;
+use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 
 my $xml = <<EOF;
 <specification name="helloworld">
 <value name="hello"/>
 </specification>
-EOF
-
-my $scoped = <<EOF;
-value hello {
-    name=hello
-}
 EOF
 
 my $html = <<EOF;
@@ -27,9 +21,9 @@ EOF
 # parse scoped specification
 my ($spec, $ret);
 
-$spec = new Template::Flute::Specification::Scoped;
+$spec = new Template::Flute::Specification::XML;
 
-$ret = $spec->parse($scoped);
+$ret = $spec->parse($xml);
 
 isa_ok($ret, 'Template::Flute::Specification');
 
