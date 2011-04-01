@@ -1,5 +1,17 @@
 Revision history for Template::Flute
 
+0.0005  Fri Apr  1 17:35:30 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Accept full parameter in Template::Flute::Utils::derive_filename function.
+      This is useful to resolve relative paths, e.g for images in a HTML document.
+      Also add test for this function.
+
+    [BUG FIXES]
+
+    * Fix tests to handle missing Config::Scoped module gracefully.
+
 0.0004  Thu Mar 31 21:21:59 2011 CEST
 
     [ENHANCEMENTS]
