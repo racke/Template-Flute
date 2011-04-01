@@ -14,11 +14,11 @@ Template::Flute - Modern HTML Engine
 
 =head1 VERSION
 
-Version 0.0004
+Version 0.0005
 
 =cut
 
-our $VERSION = '0.0004';
+our $VERSION = '0.0005';
 
 =head1 SYNOPSIS
 
