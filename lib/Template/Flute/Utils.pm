@@ -12,19 +12,40 @@ Template::Flute::Utils - Template::Flute utility functions
 
 =head1 FUNCTIONS
 
-=head2 derive_filename FILENAME SUFFIX
+=head2 derive_filename FILENAME SUFFIX [FULL]
 
-Derives a filename with a different SUFFIX from FILENAME.
+Derives a filename with a different SUFFIX from FILENAME, e.g.
+
+    derive_filename('templates/helloworld.html', '.xml')
+
+returns
+
+    templates/helloworld.xml
+
+With the FULL parameter set it can be used to produce a path
+for a relative filename from another filename with a directory,
+e.g.
+
+    derive_filename('templates/helloworld.html', 'foobar.png', 1)
+
+returns
+
+    templates/foobar.png
 
 =cut
 
 sub derive_filename {
-	my ($orig_filename, $suffix) = @_;
+	my ($orig_filename, $suffix, $full) = @_;
 	my ($orig_dir, @frags);
 
 	@frags = fileparse($orig_filename, qr/\.[^.]*/);
 
-	return $frags[1] . $frags[0] . $suffix;
+	if ($full) {
+		return $frags[1] . $suffix;
+	}
+	else {
+		return $frags[1] . $frags[0] . $suffix;
+	}
 }
 
 =head1 AUTHOR

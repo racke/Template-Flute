@@ -29,6 +29,7 @@ t/00-load.t
 t/01-helloworld.t
 t/02-configscoped.t
 t/03-xml.t
+t/04-derive-filename.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
