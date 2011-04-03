@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Template::Flute;
+use Template::Flute::Utils;
 
 use base 'Dancer::Template::Abstract';
 
@@ -28,6 +29,17 @@ In order to use this engine, use the template setting:
 
 The default template extension is ".html".
 
+=head2 ITERATORS
+
+Iterators can be specified explicitly in the configuration file as below.
+
+engines:
+  template_flute:
+    iterators:
+      fruits:
+        class: JSON
+        file: fruits.json
+
 =head1 METHODS
 
 =head2 default_tmpl_ext
@@ -46,15 +58,48 @@ sub default_tmpl_ext {
 
 sub render ($$$) {
 	my ($self, $template, $tokens) = @_;
-	my ($flute, $html);
+	my ($flute, $html, $name, $value, %parms, %template_iterators, %iterators, $class);
 
-	# derive file name for specification from template file names
 	$flute = new Template::Flute(template_file => $template,
 								 scopes => 1,
 								 auto_iterators => 1,
 								 values => $tokens,
-							  );
-	
+								);
+
+	# process HTML template to determine iterators used by template
+	$flute->process_template();
+
+	# instantiate iterators where object isn't yet available
+	if (%template_iterators = $flute->template()->iterators) {
+		for my $name (keys %template_iterators) {
+			if ($value = $self->config->{iterators}->{$name}) {
+				%parms = %$value;
+			
+				$class = "Template::Flute::Iterator::$parms{class}";
+
+				if ($parms{file}) {
+					$parms{file} = Template::Flute::Utils::derive_filename($template,
+																		   $parms{file}, 1);
+				}
+
+				eval "require $class";
+				if ($@) {
+					die "Failed to load class $class as specification parser: $@\n";
+				}
+
+				eval {
+					$iterators{$name} = $class->new(%parms);
+				};
+				
+				if ($@) {
+					die "Failed to instantiate class $class as specification parser: $@\n";
+				}
+
+				$flute->specification->set_iterator($name, $iterators{$name});
+			}
+		}
+	}
+
 	$html = $flute->process();
 
 	return $html;
