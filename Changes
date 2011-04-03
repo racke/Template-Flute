@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0006  Sun Apr  3 07:09:34 2011 CEST
+
+    [BUG FIXES]
+
+    * Declare dependency on HTML::TreeBuilder.
+
 0.0005  Fri Apr  1 17:35:30 2011 CEST
 
     [ENHANCEMENTS]
