@@ -2,7 +2,7 @@ NAME
     Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
-    Version 0.0002
+    Version 0.0003
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
@@ -13,6 +13,13 @@ DESCRIPTION
         template: template_flute
 
     The default template extension is ".html".
+
+  ITERATORS
+    Iterators can be specified explicitly in the configuration file as
+    below.
+
+    engines: template_flute: iterators: fruits: class: JSON file:
+    fruits.json
 
 METHODS
   default_tmpl_ext

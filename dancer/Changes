@@ -1,5 +1,15 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0003  Sun Apr  3 07:31:18 2011 CEST
+
+     [ENHANCEMENTS]
+
+     * Add support for Template::Flute iterators in Dancer configuration.
+
+     [BUG FIXES]
+
+     * Fix MANIFEST.
+
 0.0002  Tue Mar 29 15:52:11 2011 CEST
 
      [ENHANCEMENTS]
