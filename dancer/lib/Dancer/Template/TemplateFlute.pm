@@ -84,7 +84,7 @@ sub render ($$$) {
 
 				eval "require $class";
 				if ($@) {
-					die "Failed to load class $class as specification parser: $@\n";
+					die "Failed to load class $class for iterator $name: $@\n";
 				}
 
 				eval {
@@ -92,7 +92,7 @@ sub render ($$$) {
 				};
 				
 				if ($@) {
-					die "Failed to instantiate class $class as specification parser: $@\n";
+					die "Failed to instantiate class $class for iterator $name: $@\n";
 				}
 
 				$flute->specification->set_iterator($name, $iterators{$name});
