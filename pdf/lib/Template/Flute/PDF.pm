@@ -57,6 +57,10 @@ PDF output file.
 
 Page size for the PDF (default: A4).
 
+=item html_base
+
+Base directory for HTML resources like images and stylesheets.
+
 =back
 
 =cut

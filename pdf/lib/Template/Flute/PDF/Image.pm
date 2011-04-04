@@ -66,8 +66,14 @@ sub new {
 		$template_dir = dirname($self->{pdf}->template()->file());
 
 		if ($template_dir ne '.') {
-			$self->{file} = File::Spec->catfile($template_dir,
-												basename($self->{file}));
+			if ($self->{pdf}->{html_base}) {
+				$self->{file} = File::Spec->catfile($self->{pdf}->{html_base},
+													basename($self->{file}));
+			}
+			else {
+				$self->{file} = File::Spec->catfile($template_dir,
+													basename($self->{file}));
+			}
 		}
 	}
 	
