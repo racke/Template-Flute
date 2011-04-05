@@ -18,7 +18,7 @@ my $html = <<EOF;
 <span class="hello">TEXT</span>
 EOF
 
-# parse scoped specification
+# parse XML specification
 my ($spec, $ret);
 
 $spec = new Template::Flute::Specification::XML;
