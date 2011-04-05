@@ -392,7 +392,8 @@ sub calculate {
 		$clear->{before} = 1;
 	}
 	elsif ($self->{gi} =~ /^h\d$/
-		   || $self->{gi} eq 'p') {
+		   || $self->{gi} eq 'p'
+		   || ($self->{gi} eq 'li' && $self->property('list_style') ne 'none')) {
 		$clear->{before} = $clear->{after} = 1;
 	}
 
