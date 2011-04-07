@@ -5,6 +5,8 @@ use warnings;
 
 use CSS::Tiny;
 
+use Template::Flute::Utils;
+
 # names for the sides of a box, as in border-top, border-right, ...
 use constant SIDE_NAMES => qw/top right bottom left/;
 
@@ -52,13 +54,25 @@ sub new {
 
 sub _initialize {
 	my ($self) = @_;
-	my (@ret, $css);
+	my (@ret, $css_file, $css);
 
 	# create CSS::Tiny object
 	$css = new CSS::Tiny;
 
+	# search for external stylesheets
+	for my $ext ($self->{template}->root()->get_xpath(qq{//link})) {
+		if ($ext->att('rel') eq 'stylesheet'
+			&& $ext->att('type') eq 'text/css') {
+			$css_file = Template::Flute::Utils::derive_filename
+				($self->{template}->file, $ext->att('href'), 1);
+			unless ($css->read($css_file)) {
+				die "Failed to parse CSS file $css_file: " . $css->errstr() . "\n";
+			}
+		}
+	}
+	
 	# search for inline stylesheets
-	@ret = $self->{template}->root()->get_xpath(qq{//style});
+	push (@ret, $self->{template}->root()->get_xpath(qq{//style}));
 	
 	for (@ret) {
 		unless ($css->read_string($_->text())) {
