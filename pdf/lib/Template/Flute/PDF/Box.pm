@@ -255,14 +255,14 @@ sub calculate {
 			if ($self->{specs}->{props}->{width}
 				&& $self->{specs}->{props}->{width} < $hpos_next) {
 				# doesn't fit in fixed width of this box
-#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: too wide forH $hpos_next\n";
+#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}: too wide for H $hpos_next\n";
 				$hpos = 0;				
 				$hpos_next = 0;
 			}
 
 			if ($hpos_next > $self->{bounding}->{max_w}) {
 				# doesn't fit in bounding box
-#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
+#				print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}: H $hpos HN $hpos_next MAX_W  $self->{bounding}->{max_w}\n";
 				$hpos = 0;
 				$hpos_next = 0;
 			}
@@ -270,14 +270,14 @@ sub calculate {
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
-#			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class}: CLR AFTER $clear_after\n";
+#			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}: CLR AFTER $clear_after\n";
 		}
 
 		# keep vertical position
 		$vpos_next = $vpos;
 		
 		if ($hpos_next > 0) {
-#			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class}\n";
+#			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}\n";
 
 			if ($child->property('float') eq 'right'
 				&& $self->property('float') ne 'right') {
@@ -402,7 +402,7 @@ sub calculate {
 					clear => $clear,
 					size => $self->{specs}->{size}};
 
-#	print "DIM for GI $self->{gi}, CLASS $self->{class}: " . Dumper($self->{box});
+#	print "DIM for GI $self->{gi}, CLASS $self->{class}, ID $self->{id}: " . Dumper($self->{box});
  	return $self->{box};
 }
 
