@@ -1,5 +1,17 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0002  Wed Apr 13 18:31:37 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Add support for list-style CSS property.
+	* Add support for external stylesheets on local file system.
+    * Add test for loading example stylesheet.
+
+    [BUG FIXES]
+
+    * Fix MANIFEST.
+
 0.0001  Sun Mar 13 15:40:50 2011 CET
 
-        * Initial release.
+    * Initial release.
