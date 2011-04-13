@@ -332,40 +332,6 @@ sub select_page {
 
 Returns the height of the content part of the page.
 
-sub to_points {
-	my ($width, $default_unit) = @_;
-	my ($unit, $points);
-
-	return 0 unless defined $width;
-
-	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
-		$unit = $3 || $default_unit || 'mm';
-	}
-	else {
-		warn "Invalid width $width\n";
-		return;
-	}
-
-	if ($unit eq 'in') {
-		# 72 points per inch
-		$points = 72 * $width;
-	}
-	elsif ($unit eq 'cm') {
-		$points = 72 * $width / 2.54;
-	}
-	elsif ($unit eq 'mm') {
-		$points = 72 * $width / 25.4;
-	}
-	elsif ($unit eq 'pt') {
-		$points = $width;
-	}
-	elsif ($unit eq 'px') {
-		$points = $width;
-	}
-
-	return sprintf("%.0f", $points);
-}
-
 =cut
 	
 sub content_height {
