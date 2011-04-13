@@ -6,6 +6,7 @@ use warnings;
 use Data::Dumper;
 
 use PDF::API2;
+use PDF::API2::Util;
 
 use Template::Flute::HTML::Table;
 use Template::Flute::Style::CSS;
@@ -69,6 +70,7 @@ Base directory for HTML resources like images and stylesheets.
 use constant FONT_FAMILY => 'Helvetica';
 use constant FONT_SIZE => '12';
 use constant PAGE_SIZE => 'a4';
+use constant MARGINS => (20, 20, 50, 20);
 
 sub new {
 	my ($proto, @args) = @_;
@@ -101,6 +103,13 @@ sub new {
 	else {
 		$self->set_page_size(PAGE_SIZE);
 	}
+
+	# margins
+	my @sides = qw(top right bottom left);
+	
+	for (my $i = 0; $i < @sides; $i++) {
+	    $self->{'margin_' . $sides[$i]} ||= (MARGINS)[$i];
+	}
 	
 	bless ($self, $class);
 }
@@ -117,45 +126,15 @@ sub process {
 
 	$self->{cur_page} = 1;
 
-#	$self->{page} = $page;
-	
+	$self->{border_left} = $self->{margin_left};
+	$self->{border_right} = $self->{page_width} - $self->{margin_right};
 
-# Page definitions in mm
-# --------------------------------------------------
-# Paper size 160x297 mm
-my $page_width    = 160; # Custom width in mm
-my $page_height   = 297; # A4 height in mm
-
-my $margin_left   =  10;
-my $margin_right  =  10;
-my $margin_top    =   2;
-my $margin_bottom =   5;
-
-my $spacer_bnr_inv		=   5;
-my $invoice_banner_height	=   8;
-my $invoice_address_height	=  20;
-
-my $totals_height		=  15;
-
-my $notes_height	= 10;
-my $promo_height	= 10;
-my $vat_coc_height	=  3;
-my $footer_height	=  3;
-
-	$self->{margin_left} = $margin_left;
-	$self->{margin_right} = $margin_right;
-	$self->{page_width} = $page_width;
-	
-	$self->{border_left} = to_points($margin_left);
-	$self->{border_right} = to_points($page_width - $margin_right);
-
-	$self->{border_top} = to_points($page_height - $margin_top);
-	$self->{border_bottom} = to_points($margin_bottom);
+	$self->{border_top} = $self->{page_height} - $self->{margin_top};
+	$self->{border_bottom} = $self->{margin_bottom};
 
 	$self->{vpos_next} = $self->{border_top};
 	
 	$self->{hpos} = $self->{border_left};
-	$self->{y} = $self->{page_height} = to_points($page_height - $margin_top);
 
 	if ($self->{verbose}) {
 		print "Starting page at X $self->{hpos} Y $self->{y}.\n";
@@ -294,8 +273,22 @@ sub set_page_size {
 	if (@args > 1) {
 		# passing page size as numbers
 		@ps = map {to_points($_, 'pt')} @args;
+		($self->{page_width}, $self->{page_height}) = @ps;
 	}
 	else {
+		# resolve page size
+		unless ($self->{_paper_sizes}) {
+			$self->{_paper_sizes} = {getPaperSizes()};
+		}
+
+		if (exists $self->{_paper_sizes}->{lc($args[0])}) {
+			($self->{page_width}, $self->{page_height})
+				= @{$self->{_paper_sizes}->{lc($args[0])}};
+		}
+		else {
+			die "Invalid paper size $args[0]";
+		}
+			
 		$ps[0] = $args[0];
 	}
 	
@@ -353,7 +346,7 @@ sub content_width {
 	
 	$width = $self->{page_width} - $self->{margin_left} - $self->{margin_right};
 
-	return to_points($width);
+	return $width;
 }
 
 =head2 font NAME [weight]
@@ -527,7 +520,7 @@ Calculates width and height for HTML template element ELT.
 	
 sub calculate {
 	my ($self, $elt, %parms) = @_;
-	my ($text, $chunk_width, $text_width, $max_width, $height, $specs, $txeng,
+	my ($text, $chunk_width, $text_width, $max_width, $avail_width, $height, $specs, $txeng,
 		$overflow_x, $overflow_y, $clear_before, $clear_after, @chunks, $buf, $lines);
 	
 	$txeng = $self->{page}->text();
@@ -542,6 +535,13 @@ sub calculate {
 	}
 	else {
 		$specs = $self->setup_text_props($elt);
+	}
+
+	if ($specs->{props}->{width}) {
+		$avail_width = $specs->{props}->{width};
+	}
+	else {
+		$avail_width = $self->content_width();
 	}
 
 	if (ref($parms{text}) eq 'ARRAY') {
@@ -566,8 +566,8 @@ sub calculate {
 												   fontsize => $specs->{size});
 			}
 
-			if ($specs->{props}->{width}
-				&& $text_width + $chunk_width > $specs->{props}->{width}) {
+			if ($avail_width
+				&& $text_width + $chunk_width > $avail_width) {
 #				print "Line break by long text: $buf + $text\n";
 
 				push (@chunks, $buf);
@@ -603,7 +603,7 @@ sub calculate {
 	
 #	print "Before offset: MW $max_width H $height S $specs->{size}, ", Dumper($specs->{offset}) . "\n";
 	
-#	print "PW $specs->{props}->{width}, PH $specs->{props}->{height}, MW $max_width H $height\n";
+#	print "PW $avail_width, PH $specs->{props}->{height}, MW $max_width H $height\n";
 
 	# line height
 	if (exists $specs->{props}->{line_height}) {
@@ -614,13 +614,10 @@ sub calculate {
 	}
 	
 	# adjust to fixed width
-	if ($specs->{props}->{width}) {
-		if ($specs->{props}->{width} < $max_width) {
-			$overflow_x = $max_width - $specs->{props}->{width};
-			$max_width = $specs->{props}->{width};
-		}
-		else {
-			$max_width = $specs->{props}->{width};
+	if ($avail_width) {
+		if ($avail_width < $max_width) {
+			$overflow_x = $max_width - $avail_width;
+			$max_width = $avail_width;
 		}
 	}
 
@@ -730,7 +727,7 @@ sub textbox {
 	
 	%parms = (x => $self->{hpos},
 			  y => $self->{y} - $specs->{size},
-			  w => to_points($self->{page_width} - $self->{margin_left} - $self->{margin_right}),
+			  w => $self->content_width(),
 			  h => to_points(100),
 			  lead => $specs->{size},
 #			  align => $props->{text}->{align} || 'left',
