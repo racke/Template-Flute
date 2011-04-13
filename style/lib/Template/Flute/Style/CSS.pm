@@ -369,6 +369,11 @@ sub _build_properties {
 	if ($props_css->{'line-height'}) {
 		$propref->{'line_height'} = $props_css->{'line-height'};
 	}
+
+	# list-style
+	if ($props_css->{'list-style'}) {
+		$propref->{'list_style'} = $props_css->{'list-style'};
+	}
 	
 	# margin
 	if ($props_css->{'margin'}) {
