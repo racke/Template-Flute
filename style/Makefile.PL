@@ -14,6 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'CSS::Tiny' => 0,
+        'Template::Flute' => 0.0005,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-Style-CSS*' },
