@@ -10,7 +10,7 @@ use Template::Flute::Iterator;
 
 =head1 NAME
 
-Template::Flute - Modern HTML Engine
+Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
@@ -42,13 +42,48 @@ our $VERSION = '0.0006';
 Template::Flute enables you to completely separate web design and programming
 tasks for dynamic web applications.
 
-Templates are plain HTML files without inline code or mini language, thus
-making it easy to maintain them for web designers and to preview them with
-a browser.
+Templates are designed to be designer-friendly; there's no inline code or mini
+templating language for your designers to learn - instead, standard HTML and CSS
+classes are used, leading to HTML that can easily be understood and edited by
+WYSIWYG editors and hand-coding designers alike.
 
-The CSS selectors in the template are tied to your data structures or
-objects by a specification, which relieves the programmer from changing
-his code for mere changes of class names.
+An example is easier than a wordy description:
+
+Given the following template snippet:
+
+    <div class="customer_name">Mr A Test</div>
+    <div class="customer_email">someone@example.com</div>
+
+and the following specification:
+
+   <specification name="example" description="Example">>
+        <value name="customer_name" />
+        <value name=="email" field="customer_email" />
+    </specification> 
+
+Processing the above as follows:
+
+    $flute = Template::Flute->new(
+        template_file      => 'template.html',
+        specification_file => 'spec.xml',
+    );
+    $flute->set_values({ 
+        customer_name => 'Bob McTest', 
+        email => 'bob@example.com,
+    });;
+    print $flute->process;
+
+The resulting output would be:
+
+    <div class="customer_name">Bob McTest</div>
+    <div class="email">bob@example.com</div>
+
+
+In other words, rather than including a templating language within your
+templates which your designers must master and which could interfere with
+previews in WYSWYG tools, CSS selectors in the template are tied to your 
+data structures or objects by a specification provided by the programmer.
+
 
 =head2 Workflow
 
