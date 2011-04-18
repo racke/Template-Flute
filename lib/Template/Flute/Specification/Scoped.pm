@@ -88,9 +88,10 @@ sub parse_file {
 }
 
 =head2 create_specification [ HASHREF ]
-	
-	Takes L<Config::Scoped> hash reference and returns L<Template::Flute::Specification> object.
-    Mostly used for parse and parse_file methods.
+
+Takes a L<Config::Scoped> hash reference and returns a 
+L<Template::Flute::Specification> object.  Mostly used for parse and 
+parse_file methods.
 
 =cut
 
@@ -155,7 +156,7 @@ sub create_specification {
 
 =head2 error
 
-    Returns last error.
+Returns last error.
 
 =cut
 
