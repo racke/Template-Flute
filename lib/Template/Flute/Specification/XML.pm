@@ -246,7 +246,7 @@ sub _stash_flush {
 
 =head2 error
 
-    Returns last error.
+Returns last error.
 
 =cut
 
