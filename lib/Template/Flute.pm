@@ -56,10 +56,10 @@ Given the following template snippet:
 
 and the following specification:
 
-   <specification name="example" description="Example">>
+   <specification name="example" description="Example">
         <value name="customer_name" />
-        <value name=="email" field="customer_email" />
-    </specification> 
+        <value name="email" field="customer_email" />
+    </specification>
 
 Processing the above as follows:
 
@@ -67,9 +67,9 @@ Processing the above as follows:
         template_file      => 'template.html',
         specification_file => 'spec.xml',
     );
-    $flute->set_values({ 
-        customer_name => 'Bob McTest', 
-        email => 'bob@example.com,
+    $flute->set_values({
+        customer_name => 'Bob McTest',
+        email => 'bob@example.com',
     });;
     print $flute->process;
 
@@ -81,7 +81,7 @@ The resulting output would be:
 
 In other words, rather than including a templating language within your
 templates which your designers must master and which could interfere with
-previews in WYSWYG tools, CSS selectors in the template are tied to your 
+previews in WYSWYG tools, CSS selectors in the template are tied to your
 data structures or objects by a specification provided by the programmer.
 
 
