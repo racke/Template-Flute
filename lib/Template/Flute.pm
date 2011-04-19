@@ -749,6 +749,15 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =back
 
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to David Previous (bigpresh) for writing a much clearer introduction for
+Template::Flute.
+
+Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
+
+Thanks to Terrence Brannon for spotting a documentation mix-up.
+
 =head1 HISTORY
 
 Template::Flute was initially named Template::Zoom. I renamed the module because of
