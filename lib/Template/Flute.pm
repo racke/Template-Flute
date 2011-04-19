@@ -527,18 +527,21 @@ Returns the value for NAME.
 
 sub value {
 	my ($self, $value) = @_;
-	my ($raw_value, $rep_str);
+	my ($raw_value, $ref_value, $rep_str);
+
+	$ref_value = $self->{values};
 	
 	if ($self->{scopes}) {
 		if (exists $value->{scope}) {
-			$raw_value = $self->{values}->{$value->{scope}}->{$value->{name}};
-		}
-		else {
-			$raw_value = $self->{values}->{$value->{name}};
+			$ref_value = $self->{values}->{$value->{scope}};
 		}
 	}
+
+	if (exists $value->{field}) {
+		$raw_value = $ref_value->{$value->{field}};
+	}
 	else {
-		$raw_value = $self->{values}->{$value->{name}};
+		$raw_value = $ref_value->{$value->{name}};
 	}
 
 	if ($value->{filter}) {
