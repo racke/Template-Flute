@@ -291,7 +291,7 @@ sub _parse_template {
 
 sub _parse_handler {
 	my ($self, $elt, $spec_object) = @_;
-	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob);
+	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob, $sob_ref);
 
 	$gi = $elt->gi();
 	$class_names = $elt->class();
@@ -303,7 +303,7 @@ sub _parse_handler {
 	# weed out "static" classes
 	if ($class_names) {
 		for my $class (split(/\s+/, $class_names)) {
-			if ($spec_object->element_by_class($class)) {
+			if ($spec_object->elements_by_class($class)) {
 				push @classes, $class;
 			}
 			else {
@@ -321,9 +321,11 @@ sub _parse_handler {
 	}
 
 	for my $class (@classes) {
-		$sob = $spec_object->element_by_class($class);
-		$name = $sob->{name} || $class;
-		$self->_elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
+		$sob_ref = $spec_object->elements_by_class($class);
+		for my $sob (@$sob_ref) {
+			$name = $sob->{name} || $class;
+			$self->_elt_handler($sob, $elt, $gi, $spec_object, $name, \@static_classes);
+		}
 	}
 
 	return $self;

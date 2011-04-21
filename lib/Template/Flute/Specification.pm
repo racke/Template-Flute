@@ -68,7 +68,7 @@ sub container_add {
 
 	$class = $new_containerref->{container}->{class} || $container_name;
 
-	$self->{classes}->{$class} = {%{$new_containerref->{container}}, type => 'container'};
+	$self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
 
 	return $containerref;
 }
@@ -89,7 +89,7 @@ sub list_add {
 
 	$class = $new_listref->{list}->{class} || $list_name;
 
-	$self->{classes}->{$class} = {%{$new_listref->{list}}, type => 'list'};
+	$self->{classes}->{$class} = [{%{$new_listref->{list}}, type => 'list'}];
 
 	if (exists $new_listref->{list}->{iterator}) {
 		$listref->{iterator} = $new_listref->{list}->{iterator};
@@ -113,7 +113,7 @@ sub list_add {
 	# loop through params for this list
 	for my $param (@{$new_listref->{param}}) {
 		$class = $param->{class} || $param->{name};
-		$self->{classes}->{$class} = {%{$param}, type => 'param', list => $list_name};	
+		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', list => $list_name};
 	}
 
 	# loop through paging for this list
@@ -123,7 +123,7 @@ sub list_add {
 		}
 		$listref->{paging} = $paging;
 		$class = $paging->{class} || $paging->{name};
-		$self->{classes}->{$class} = {%{$paging}, type => 'paging', list => $list_name};	
+		$self->{classes}->{$class} = [{%{$paging}, type => 'paging', list => $list_name}];
 	}
 	
 	return $listref;
@@ -149,7 +149,7 @@ sub form_add {
 	else {
 		$class = $new_formref->{form}->{class} || $form_name;
 
-		$self->{classes}->{$class} = {%{$new_formref->{form}}, type => 'form'};
+		$self->{classes}->{$class} = [{%{$new_formref->{form}}, type => 'form'}];
 	}
 	
 	# loop through inputs for this form
@@ -161,7 +161,7 @@ sub form_add {
 	for my $param (@{$new_formref->{param}}) {
 		$class = $param->{class} || $param->{name};
 
-		$self->{classes}->{$class} = {%{$param}, type => 'param', form => $form_name};	
+		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', form => $form_name};	
 	}
 
 	# loop through fields for this form
@@ -171,7 +171,7 @@ sub form_add {
 		}
 		else {
 			$class = $field->{class} || $field->{name};
-			$self->{classes}->{$class} = {%{$field}, type => 'field', form => $form_name};
+			push @{$self->{classes}->{$class}}, {%{$field}, type => 'field', form => $form_name};
 		}
 	}
 	
@@ -198,7 +198,7 @@ sub value_add {
 	else {
 		$class = $new_valueref->{value}->{class} || $value_name;
 
-		$self->{classes}->{$class} = {%{$new_valueref->{value}}, type => 'value'};
+		push @{$self->{classes}->{$class}}, {%{$new_valueref->{value}}, type => 'value'};
 	}
 
 	return $valueref;
@@ -224,7 +224,7 @@ sub i18n_add {
 	else {
 		$class = $new_i18nref->{value}->{class} || $i18n_name;
 
-		$self->{classes}->{$class} = {%{$new_i18nref->{value}}, type => 'i18n'};
+		push @{$self->{classes}->{$class}}, [{%{$new_i18nref->{value}}, type => 'i18n'}];
 	}
 	
 	return $i18nref;
@@ -364,13 +364,13 @@ sub resolve_iterator {
 	return $iter;
 }
 
-=head2 element_by_class NAME
+=head2 elements_by_class NAME
 
-Returns element of the specification tied to HTML class NAME or undef.
+Returns element(s) of the specification tied to HTML class NAME or undef.
 
 =cut
 
-sub element_by_class {
+sub elements_by_class {
 	my ($self, $class) = @_;
 
 	if (exists $self->{classes}->{$class}) {
