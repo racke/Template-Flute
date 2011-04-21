@@ -166,9 +166,17 @@ Select specification parser. This can be either the full class name
 like L<MyApp::Specification::Parser> or the last part for classes residing
 in the Template::Flute::Specification namespace.
 
+=item specification
+
+Specification object or specification as string.
+
 =item template_file
 
 HTML template file.
+
+=item template
+
+L<Template::Flute::HTML> object or template as string.
 
 =item database
 
@@ -202,6 +210,21 @@ sub new {
 	$class = shift;
 
 	$self = {@_};
+
+	bless $self, $class;
+	
+	if (exists $self->{specification}
+		&& ! ref($self->{specification})) {
+		# specification passed as string
+		$self->_bootstrap_specification('string', delete $self->{specification});
+	}
+
+	if (exists $self->{template}
+		&& ! ref($self->{template})
+		&& ref($self->{specification})) {
+		$self->_bootstrap_template('string', delete $self->{template});
+	}
+	
 	bless $self;
 }
 
@@ -218,59 +241,85 @@ sub _bootstrap {
 				die "Missing Template::Flute specification for template $self->{template_file}\n";
 			}
 		}
+
+		$self->_bootstrap_specification(file => $self->{specification_file});
+	}
+
+	$self->_bootstrap_template(file => $self->{template_file});
+}
+
+sub _bootstrap_specification {
+	my ($self, $source, $specification) = @_;
+	my ($parser_name, $parser_spec, $spec_file);
+	
+	if ($parser_name = $self->{specification_parser}) {
+		# load parser class
+		my $class;
 			
-		if ($parser_name = $self->{specification_parser}) {
-			# load parser class
-			my $class;
-			
-			if ($parser_name =~ /::/) {
-				$class = $parser_name;
-			}
-			else {
-				$class = "Template::Flute::Specification::$parser_name";
-			}
-
-			eval "require $class";
-			if ($@) {
-				die "Failed to load class $class as specification parser: $@\n";
-			}
-
-			eval {
-				$parser_spec = $class->new();
-			};
-
-			if ($@) {
-				die "Failed to instantiate class $class as specification parser: $@\n";
-			}
+		if ($parser_name =~ /::/) {
+			$class = $parser_name;
+		} else {
+			$class = "Template::Flute::Specification::$parser_name";
 		}
-		else {
-			$parser_spec = new Template::Flute::Specification::XML;
+
+		eval "require $class";
+		if ($@) {
+			die "Failed to load class $class as specification parser: $@\n";
 		}
-		
-		if ($spec_file = $self->{specification_file}) {
-			unless ($self->{specification} = $parser_spec->parse_file($spec_file)) {
-				die "$0: error parsing $spec_file: " . $parser_spec->error() . "\n";
-			}
+
+		eval {
+			$parser_spec = $class->new();
+		};
+
+		if ($@) {
+			die "Failed to instantiate class $class as specification parser: $@\n";
 		}
-		else {
-			die "$0: Missing Template::Flute specification, template: $self->{template_file}.\n";
+	} else {
+		$parser_spec = new Template::Flute::Specification::XML;
+	}
+	
+	if ($source eq 'file') {
+		unless ($self->{specification} = $parser_spec->parse_file($specification)) {
+			die "$0: error parsing $specification: " . $parser_spec->error() . "\n";
+		}
+	}
+	else {
+		# text
+		unless ($self->{specification} = $parser_spec->parse($specification)) {
+			die "$0: error parsing $spec_file: " . $parser_spec->error() . "\n";
 		}
 	}
 
+	
 	my ($name, $iter);
 	
 	while (($name, $iter) = each %{$self->{iterators}}) {
 		$self->{specification}->set_iterator($name, $iter);
 	}
 	
-	if ($template_file = $self->{template_file}) {
-		$template_object = new Template::Flute::HTML;
-		$template_object->parse_file($template_file, $self->{specification});
+	return $self->{specification};
+}
+
+sub _bootstrap_template {
+	my ($self, $source, $template) = @_;
+	my ($template_object);
+
+	$template_object = new Template::Flute::HTML;
+	
+	if ($source eq 'file') {
+		$template_object->parse_file($template, $self->{specification});
 		$self->{template} = $template_object;
 	}
-	else {
+	elsif ($source eq 'string') {
+		$template_object->parse($template, $self->{specification});
+		$self->{template} = $template_object;
+	}
+
+	unless ($self->{template}) {
 		die "$0: Missing Template::Flute template.\n";
 	}
+
+	return $self->{template};
 }
 
 =head1 METHODS
