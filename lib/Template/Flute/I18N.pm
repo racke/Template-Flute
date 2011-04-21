@@ -7,6 +7,22 @@ use warnings;
 
 Template::Flute::I18N - Localization class for Template::Flute
 
+=head1 SYNOPSIS
+
+    %german_map = (Cart=> 'Warenkorb', Price => 'Preis');
+
+    sub translate {
+        my $text = shift;
+
+        return $german_map{$text};
+    };
+
+    $i18n = Template::Flute::I18N->new(\&translate);
+
+    $flute = Template::Flute(specification => ...,
+                             template => ...,
+                             i18n => $i18n);
+
 =head1 CONSTRUCTOR
 
 =head2 new [CODEREF]
