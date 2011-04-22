@@ -1,5 +1,28 @@
 Revision history for Template::Flute
 
+0.0007 Fri Apr 22 10:47:36 2011 CEST
+
+    [API CHANGES]
+
+    * Renamed Template::Flute::Specification method element_by_class 
+      to elements_by_class to match the changed return value.
+ 
+    [ENHANCEMENTS]
+
+    * Allows two elements like params or values to tie to the same class.
+    * Enable passing specification and/or template as string to the 
+      Template::Flute constructor.
+    * Add support for field attribute to value element.
+
+    [TESTS]
+
+    * Add tests for HTML attribute targets and Template::Flute::I18N class.
+    * Add test for textarea in forms.
+
+    [DOCUMENTATION]
+
+    * Add "SYNOPSIS" section to POD for Template::Flute::I18N class.
+
 0.0006  Sun Apr  3 07:09:34 2011 CEST
 
     [BUG FIXES]

@@ -1,8 +1,8 @@
 NAME
-    Template::Flute - Modern HTML Engine
+    Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0006
+    Version 0.0007
 
 SYNOPSIS
         use Template::Flute;
@@ -24,13 +24,48 @@ DESCRIPTION
     Template::Flute enables you to completely separate web design and
     programming tasks for dynamic web applications.
 
-    Templates are plain HTML files without inline code or mini language,
-    thus making it easy to maintain them for web designers and to preview
-    them with a browser.
+    Templates are designed to be designer-friendly; there's no inline code
+    or mini templating language for your designers to learn - instead,
+    standard HTML and CSS classes are used, leading to HTML that can easily
+    be understood and edited by WYSIWYG editors and hand-coding designers
+    alike.
 
-    The CSS selectors in the template are tied to your data structures or
-    objects by a specification, which relieves the programmer from changing
-    his code for mere changes of class names.
+    An example is easier than a wordy description:
+
+    Given the following template snippet:
+
+        <div class="customer_name">Mr A Test</div>
+        <div class="customer_email">someone@example.com</div>
+
+    and the following specification:
+
+       <specification name="example" description="Example">
+            <value name="customer_name" />
+            <value name="email" field="customer_email" />
+        </specification>
+
+    Processing the above as follows:
+
+        $flute = Template::Flute->new(
+            template_file      => 'template.html',
+            specification_file => 'spec.xml',
+        );
+        $flute->set_values({
+            customer_name => 'Bob McTest',
+            email => 'bob@example.com',
+        });;
+        print $flute->process;
+
+    The resulting output would be:
+
+        <div class="customer_name">Bob McTest</div>
+        <div class="email">bob@example.com</div>
+
+    In other words, rather than including a templating language within your
+    templates which your designers must master and which could interfere
+    with previews in WYSWYG tools, CSS selectors in the template are tied to
+    your data structures or objects by a specification provided by the
+    programmer.
 
   Workflow
     The easiest way to use Template::Flute is to pass all necessary
@@ -101,8 +136,14 @@ CONSTRUCTOR
         like MyApp::Specification::Parser or the last part for classes
         residing in the Template::Flute::Specification namespace.
 
+    specification
+        Specification object or specification as string.
+
     template_file
         HTML template file.
+
+    template
+        Template::Flute::HTML object or template as string.
 
     database
         Template::Flute::Database::Rose object.
@@ -225,6 +266,15 @@ SUPPORT
 
     * Search CPAN
         http://search.cpan.org/dist/Template-Flute/
+
+ACKNOWLEDGEMENTS
+    Thanks to David Previous (bigpresh) for writing a much clearer
+    introduction for Template::Flute.
+
+    Thanks to Ton Verhagen for being a big supporter of my projects in all
+    aspects.
+
+    Thanks to Terrence Brannon for spotting a documentation mix-up.
 
 HISTORY
     Template::Flute was initially named Template::Zoom. I renamed the module
