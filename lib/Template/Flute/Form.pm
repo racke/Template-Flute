@@ -48,7 +48,15 @@ Add fields from FIELDS to form.
 	
 sub fields_add {
 	my ($self, $fields) = @_;
+	my (%field_iters);
 
+	for my $field (@$fields) {
+		if ($field->{iterator}) {
+			$field_iters{$field->{iterator}} = $field->{name};
+		}
+	}
+
+	$self->{iterators} = \%field_iters;
 	$self->{fields} = $fields || [];
 }
 
@@ -161,6 +169,18 @@ sub input {
 
 	$self->{valid_input} = 1;
 	return 1;
+}
+
+=head2 iterators
+
+Returns names of all iterators used by the fields for this form.
+
+=cut
+
+sub iterators {
+	my ($self) = @_;
+
+	return keys(%{$self->{iterators}});
 }
 
 =head2 action
