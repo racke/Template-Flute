@@ -521,7 +521,7 @@ sub _set_selected {
 				$text = $optref->{value};
 			}
 
-			if ($optref->{value} eq $value) {
+			if (defined $value && $optref->{value} eq $value) {
 				$att{selected} = 'selected';
 			}
 			
