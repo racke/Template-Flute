@@ -557,6 +557,10 @@ with the result.
 sub hook_html {
 	my ($elt, $value) = @_;
 	my ($parser, $html, $body, @children, @ret, $elt_hook);
+
+	unless (defined $value && $value =~ /\S/) {
+		return '';
+	}
 	
 	$parser = new XML::Twig ();
 	unless ($html = $parser->safe_parse_html($value)) {
