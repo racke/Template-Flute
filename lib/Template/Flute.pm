@@ -532,6 +532,10 @@ sub _replace_record {
 			$rep_str = $self->filter($param->{filter}, $rep_str);
 		}
 
+		unless (defined $rep_str) {
+			$rep_str = '';
+		}
+		
 		$self->_replace_within_elts($param, $rep_str);	
 	}
 			
