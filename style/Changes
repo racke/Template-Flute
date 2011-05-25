@@ -1,5 +1,11 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0003  Wed May 25 11:03:06 2011 CEST
+	
+    [BUG FIXES]
+
+    * Fix properties for tag.class selectors.
+
 0.0002  Wed Apr 13 18:31:37 2011 CEST
 
     [ENHANCEMENTS]
