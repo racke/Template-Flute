@@ -127,6 +127,10 @@ sub properties {
 	# defaults
 	$props->{color} = 'black';
 
+	if (defined $parms{tag} && $parms{tag} =~ /\S/) {
+		@tags = split(/\s+/, $parms{tag});
+	}
+	
 	if (defined $parms{id} && $parms{id} =~ /\S/) {
 		@ids = split(/\s+/, $parms{id});
 
@@ -140,12 +144,13 @@ sub properties {
 
 		for my $class (@classes) {
 			$self->_build_properties($props, ".$class");
+			for (@tags) {
+				$self->_build_properties($props, "$_.$class");
+			}
 		}
 	}
 
-	if (defined $parms{tag} && $parms{tag} =~ /\S/) {
-		@tags = split(/\s+/, $parms{tag});
-			
+	if (@tags) {
 		for my $tag (@tags) {
 			$self->_build_properties($props, $tag);
 
