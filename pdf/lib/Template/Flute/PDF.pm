@@ -20,11 +20,11 @@ Template::Flute::PDF - PDF generator for HTML templates
 
 =head1 VERSION
 
-Version 0.0003
+Version 0.0004
 
 =cut
 
-our $VERSION = '0.0003';
+our $VERSION = '0.0004';
 
 =head1 SYNOPSIS
 
