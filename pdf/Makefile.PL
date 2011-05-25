@@ -14,7 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'Template::Flute' => 0,
-        'Template::Flute::Style::CSS' => 0.0002,
+        'Template::Flute::Style::CSS' => 0.0003,
 		'PDF::API2' => 0,
         'Image::Size' => 0,
         'Image::Magick' => 0,
