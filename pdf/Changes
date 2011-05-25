@@ -1,5 +1,11 @@
 Revision history for Template::Flute::PDF
 
+0.0004  Wed May 25 14:02:56 2011 CEST
+
+    [BUG FIXES]
+
+    * Pass current HTML tag to CSS object.
+
 0.0003  Wed Apr 13 18:53:50 2011 CEST
 
     [ENHANCEMENTS]
