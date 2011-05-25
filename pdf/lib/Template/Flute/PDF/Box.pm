@@ -88,7 +88,7 @@ sub new {
 	bless ($self, $class);
 
 	# Create selector map
-	@p = (id => $self->{id}, class => $self->{class}, parent => $self->{selector_map});
+	@p = (id => $self->{id}, class => $self->{class}, parent => $self->{selector_map}, tag => $self->{gi});
 	
 	$self->{selector_map} = $self->{pdf}->{css}->descendant_properties(@p);
 		
