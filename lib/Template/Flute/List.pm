@@ -231,11 +231,13 @@ sub input {
 	$params ||= {};
 	
 	for my $input (values %{$self->{inputs}}) {
-		if ($input->{optional} && ! $params->{$input->{name}}) {
+		if ($input->{optional} && (! defined $params->{$input->{name}}
+			|| $params->{$input->{name}} !~ /\S/)) {
 			# skip optional inputs without a value
 			next;
 		}
-		if ($input->{required} && ! $params->{$input->{name}}) {
+		if ($input->{required} && (! defined $params->{$input->{name}}
+                        || $params->{$input->{name}} !~ /\S/)) {
 			warn "Missing input for $input->{name}.\n";
 			$error_count++;
 		}
