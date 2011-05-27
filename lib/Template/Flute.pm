@@ -446,6 +446,19 @@ sub process {
 		}
 		
 		$lel->cut();
+
+		if ($self->{auto_iterators}) {
+			for my $iter_name ($form->iterators()) {
+				if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+					$iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+				}
+				else {
+					$iter = Template::Flute::Iterator->new([]);
+				}
+
+				$self->{specification}->set_iterator($iter_name, $iter);
+			}
+		}
 		
 		if (keys(%{$form->inputs()}) && $form->input()) {
 			$iter = $dbobj->build($form->query());
