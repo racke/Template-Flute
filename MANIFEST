@@ -37,6 +37,7 @@ t/files/test.html
 t/files/test.xml
 t/i18n/01-simple.t
 t/forms/05-textarea.t
+t/forms/06-select.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
