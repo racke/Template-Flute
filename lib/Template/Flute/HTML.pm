@@ -433,7 +433,9 @@ sub _elt_handler {
 			if ($sob->{iterator}) {
 				$elt->{"flute_$name"}->{rep_sub} = sub {
 					_set_selected($_[0], $_[1],
-								 $spec_object->resolve_iterator($sob->{iterator}));
+								 $spec_object->resolve_iterator($sob->{iterator}),
+								 $sob,
+								 );
 				};
 			}
 			else {
@@ -483,7 +485,9 @@ sub _elt_indicate_replacements {
 		if ($sob->{iterator}) {
 			$elt->{"flute_$name"}->{rep_sub} = sub {
 				_set_selected($_[0], $_[1],
-							 $spec_object->resolve_iterator($sob->{iterator}));
+							  $spec_object->resolve_iterator($sob->{iterator}),
+							  $sob,
+							 );
 			};
 		} else {
 			$elt->{"flute_$name"}->{rep_sub} = \&_set_selected;
@@ -500,14 +504,21 @@ sub _elt_indicate_replacements {
 # _set_selected - Set selected value in a dropdown menu
 
 sub _set_selected {
-	my ($elt, $value, $iter) = @_;
-	my (@children, $eltval, $optref);
+	my ($elt, $value, $iter, $sob) = @_;
+	my (@children, $eltval, $optref, $cond);
 
 	@children = $elt->children('option');
 	
 	if ($iter) {
 		# remove existing children
-		$elt->cut_children();
+		if (exists $sob->{keep} && $sob->{keep} eq 'empty_value') {
+			$cond = 'option[@value=~/\S/]';
+		}
+		else {
+			$cond = '';
+		}
+		
+		$elt->cut_children($cond);
 		
 		# get options from iterator		
 		while ($optref = $iter->next()) {
