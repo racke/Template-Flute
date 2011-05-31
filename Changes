@@ -1,5 +1,29 @@
 Revision history for Template::Flute
 
+0.0008 Tue May 31 21:56:38 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Add keep attribute to field element with possible value "empty_value"
+      to preserve HTML option tags with empty value.
+    * Add support for auto_iterators to forms.
+    * Add iterators method to Template::Flute::Form class.
+
+    [BUG FIXES]
+
+    * Prevent warning caused by undefined value in Template::Flute::Form's
+      fill method.
+    * Accept 0 as value for list inputs.
+    * Prevent crashes from parsing empty strings for the hook operator.
+    * Prevent warning caused by undefined $value in Template::Flute::HTML's
+      set_selected method.
+    * Prevent warning caused by undefined $rep_str in Template::Flute's 
+      _replace_within_elts method.
+
+    [TESTS]
+
+    * Add test for select tags inside forms.
+
 0.0007 Fri Apr 22 10:47:36 2011 CEST
 
     [API CHANGES]
