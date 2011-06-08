@@ -225,7 +225,7 @@ sub new {
 		$self->_bootstrap_template('string', delete $self->{template});
 	}
 	
-	bless $self;
+	return $self;
 }
 
 sub _bootstrap {
