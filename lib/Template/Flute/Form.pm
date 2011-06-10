@@ -280,6 +280,23 @@ sub fill {
 							$elt->set_att('checked', 'checked');
 						}
 					}
+					elsif ($elt->att('type') eq 'checkbox') {
+						if (ref($value) eq 'ARRAY') {
+							if (grep {$_ eq $elt->att('value')}
+								@$value) {
+								$elt->set_att('checked', 'checked');
+							}
+							else {
+								$elt->del_att('checked');
+							}
+						}
+						elsif ($value eq $elt->att('value')) {
+							$elt->set_att('checked', 'checked');
+						}
+						else {
+							$elt->del_att('checked');
+						}
+					}
 					else {
 						$elt->del_att('checked');
 					}
