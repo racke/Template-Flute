@@ -35,7 +35,7 @@ my (%opts, %input, %values);
 $opts{value} = \%values;
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser', 'combine', 'value=s%', 'pdf=s')) {
+unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s', 'value=s%', 'pdf=s')) {
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
@@ -78,13 +78,15 @@ if ($opts{combine}) {
 
 my ($config_file, $config_vars, $spec_file, $template_file, $db_object);
 
-$config_file = shift;
+if ($opts{conf}) {
+	$config_file = $opts{conf};
 
-$config_vars = Template::Flute::Config::load($config_file);
+	$config_vars = Template::Flute::Config::load($config_file);
 
-if (exists $config_vars->{database}) {
-	# setup database object
-	$db_object = new Template::Flute::Database::Rose (%{$config_vars->{database}});
+	if (exists $config_vars->{database}) {
+		# setup database object
+		$db_object = new Template::Flute::Database::Rose (%{$config_vars->{database}});
+	}
 }
 
 # parse specification file
