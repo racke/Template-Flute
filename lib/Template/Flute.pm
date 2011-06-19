@@ -190,6 +190,10 @@ Hash reference of filter functions.
 
 L<Template::Flute::I18N> object.
 
+=item iterators
+
+Hash references of iterators.
+
 =item values
 
 Hash reference of values to be used by the process method.
