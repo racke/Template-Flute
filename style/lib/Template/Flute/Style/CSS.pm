@@ -32,6 +32,11 @@ Create Template::Flute::Style::CSS object with the following parameters:
 
 L<Template::Flute::HTML> object.
 
+=item prepend_directory
+
+Directory which is prepended to the CSS path when the
+template doesn't reside in a file.
+
 =back
 
 =cut
