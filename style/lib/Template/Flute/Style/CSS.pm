@@ -63,8 +63,18 @@ sub _initialize {
 	for my $ext ($self->{template}->root()->get_xpath(qq{//link})) {
 		if ($ext->att('rel') eq 'stylesheet'
 			&& $ext->att('type') eq 'text/css') {
-			$css_file = Template::Flute::Utils::derive_filename
-				($self->{template}->file, $ext->att('href'), 1);
+			if ($self->{template}->file) {
+				$css_file = Template::Flute::Utils::derive_filename
+					($self->{template}->file, $ext->att('href'), 1);
+			}
+			elsif ($self->{prepend_directory}) {
+				$css_file = join('/', $self->{prepend_directory},
+								 $ext->att('href'));
+			}
+			else {
+				$css_file = $ext->att('href');
+			}
+			
 			unless ($css->read($css_file)) {
 				die "Failed to parse CSS file $css_file: " . $css->errstr() . "\n";
 			}
