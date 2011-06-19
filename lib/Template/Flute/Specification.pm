@@ -113,6 +113,9 @@ sub list_add {
 	# loop through params for this list
 	for my $param (@{$new_listref->{param}}) {
 		$class = $param->{class} || $param->{name};
+		unless ($class) {
+			die "Neither class nor name for param within list $list_name.\n";
+		}
 		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', list => $list_name};
 	}
 
