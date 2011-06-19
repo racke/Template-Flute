@@ -209,7 +209,7 @@ sub new {
 
 	$class = shift;
 
-	$self = {@_};
+	$self = {iterators => {}, @_};
 
 	bless $self, $class;
 	
@@ -373,6 +373,10 @@ sub process {
 				# resolve iterator name to object
 				if ($iter = $self->{specification}->iterator($name)) {
 					$list->set_iterator($iter);
+				}
+				elsif (exists $self->{iterators}->{$name}) {
+					# iterator name from method parameters
+					$iter = $list->set_iterator($self->{iterators}->{$name});
 				}
 				elsif ($self->{auto_iterators}) {
 					if (ref($self->{values}->{$name}) eq 'ARRAY') {
