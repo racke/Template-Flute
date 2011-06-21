@@ -33,8 +33,14 @@ t/04-derive-filename.t
 t/05-intro.t
 t/06-from-string.t
 t/07-from-file.t
+t/08-utf8-html.t
+t/09-iso-html.t
+t/files/iso.xml
+t/files/iso.html
 t/files/test.html
 t/files/test.xml
+t/files/utf8.xml
+t/files/utf8.html
 t/i18n/01-simple.t
 t/forms/05-textarea.t
 t/forms/06-select.t
