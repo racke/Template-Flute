@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0008
+    Version 0.0009
 
 SYNOPSIS
         use Template::Flute;
@@ -153,6 +153,9 @@ CONSTRUCTOR
 
     i18n
         Template::Flute::I18N object.
+
+    iterators
+        Hash references of iterators.
 
     values
         Hash reference of values to be used by the process method.

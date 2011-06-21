@@ -1,5 +1,25 @@
 Revision history for Template::Flute
 
+0.0009 Tue Jun 21 14:24:57 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Add lookup into object attributes for list iterators in case
+      specification is passed as object.
+    * Add support for checkboxes to Template::Flute::Form's fill method.
+
+    [BUG FIXES]
+
+    * Let HTML templates handled by File::Slurp and the encoding 
+      determined by the specification.
+    * Turn second bless in Template::Flute's constructor into a 
+      simple return.
+
+    [DOCUMENTATION]
+
+    * Add documentation about iterators parameter for Template::Flute's 
+      constructor.
+
 0.0008 Tue May 31 21:56:38 2011 CEST
 
     [ENHANCEMENTS]
