@@ -13,6 +13,7 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'Test::More' => 0,
+        'File::Slurp' => 0,
         'XML::Twig' => 0,
         'HTML::TreeBuilder' => 0,
     },

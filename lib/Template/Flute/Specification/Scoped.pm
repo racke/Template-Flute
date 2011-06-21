@@ -97,10 +97,14 @@ parse_file methods.
 
 sub create_specification {
 	my ($self, $config) = @_;
-	my ($spec, $scoped, $key, $value, %list);
+	my ($spec, $scoped, $key, $value, %list, $encoding);
 
 	# specification object
 	$spec = new Template::Flute::Specification;
+
+	if ($encoding = $config->{specification}->{encoding}) {
+		$spec->encoding($encoding);
+	}
 	
 	# lists
 	while (($key, $value) = each %{$config->{list}}) {

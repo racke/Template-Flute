@@ -3,6 +3,8 @@ package Template::Flute::HTML;
 use strict;
 use warnings;
 
+use Encode;
+use File::Slurp ();
 use XML::Twig;
 
 use Template::Flute::Increment;
@@ -254,7 +256,7 @@ sub parse_file {
 
 sub _parse_template {
 	my ($self, $template, $spec_object) = @_;
-	my ($twig, $xml, $object, $list);
+	my ($twig, $xml, $object, $list, $html_content, $encoding);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
@@ -262,12 +264,18 @@ sub _parse_template {
 
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
-		$xml = $twig->safe_parse_html($$template);
+		$html_content = $$template;
 	}
 	else {
 		$self->{file} = $template;
-		$xml = $twig->safe_parsefile_html($template);
+		$encoding = $spec_object->encoding();
+		$html_content = File::Slurp::read_file($template, binmode => ":encoding($encoding)");
+		unless ($encoding eq 'utf8') {
+			$html_content = encode('utf8', $html_content);
+		}
 	}
+
+	$xml = $twig->safe_parse_html($html_content);
 	
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";

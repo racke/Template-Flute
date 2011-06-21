@@ -12,11 +12,14 @@ if ($@) {
 	plan skip_all => "No Config::Scoped module.";
 }
 
-plan tests => 2;
+plan tests => 3;
 
 require Template::Flute::Specification::Scoped;
 
 my $conf = <<EOF;
+specification {
+    encoding = iso8859-1
+}
 list test {
     class = cpan
 }
@@ -34,6 +37,9 @@ eval {
 
 diag("Failure parsing specification: $@") if $@;
 isa_ok($ret, 'Template::Flute::Specification');
+
+# check for proper encoding
+ok($ret->encoding() eq 'iso8859-1', 'get encoding from specification');
 
 # check for list
 ok(exists($ret->{lists}->{test}->{input}));

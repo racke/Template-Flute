@@ -125,9 +125,15 @@ sub _initialize {
 
 sub _spec_handler {
 	my ($self, $elt) = @_;
-	my ($name);
+	my ($value);
 
-	$name = $elt->att('name');
+	if ($value = $elt->att('name')) {
+		$self->{spec}->name($value);
+	}
+
+	if ($value = $elt->att('encoding')) {
+		$self->{spec}->encoding($value);
+	}
 }
 
 sub _container_handler {
