@@ -614,9 +614,14 @@ sub value {
 	if (exists $value->{include}) {
 		my (%args, $include_file);
 
-		$include_file = Template::Flute::Utils::derive_filename
-			($self->{template_file}, $value->{include}, 1,
-			 pass_absolute => 1);
+		if ($self->{template_file}) {
+			$include_file = Template::Flute::Utils::derive_filename
+				($self->{template_file}, $value->{include}, 1,
+				 pass_absolute => 1);
+		}
+		else {
+			$include_file = $value->{include};
+		}
 		
 		# process template and include it
 		%args = (template_file => $include_file,
