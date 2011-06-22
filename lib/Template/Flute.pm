@@ -781,6 +781,8 @@ Other attributes for value elements are:
 Processes the template file named in this attribute. This implies
 the hook operation.
 
+=back
+
 =item input
 
 =item filter
