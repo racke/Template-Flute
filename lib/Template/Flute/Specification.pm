@@ -226,6 +226,11 @@ sub value_add {
 	
 	$value_name = $new_valueref->{value}->{name};
 
+	if (exists $new_valueref->{value}->{include}) {
+		# include implies hooking resulting value
+		$new_valueref->{value}->{op} = 'hook';
+	}
+	
 	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
 	
 	if ($id = $new_valueref->{value}->{id}) {
