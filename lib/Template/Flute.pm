@@ -768,6 +768,15 @@ Only shows corresponding HTML element if value is set.
 
 =back
 
+Other attributes for value elements are:
+
+=over 4
+
+=item include
+
+Processes the template file named in this attribute. This implies
+the hook operation.
+
 =item input
 
 =item filter
@@ -794,6 +803,19 @@ L<Template::Flute::List>
 =head1 FORMS
 
 L<Template::Flute::Form>
+
+=head1 INCLUDES
+
+Files, especially components for web pages can be processed and included
+through value elements with the include attribute:
+
+    <value name="sidebar" include="component.html"/>
+
+The result replaces the inner HTML of the following C<div> tag:
+
+    <div class="sidebar">
+        Sample content
+    </div>
 
 =head1 AUTHOR
 
