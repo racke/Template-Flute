@@ -612,13 +612,17 @@ sub value {
 	}
 
 	if (exists $value->{include}) {
-		my ($flute, $out);
+		my (%args, $include_file);
+
+		$include_file = Template::Flute::Utils::derive_filename
+			($self->{template_file}, $value->{include}, 1,
+			 pass_absolute => 1);
 		
 		# process template and include it
-		$flute = Template::Flute->new(template_file => $value->{include},
-									  values => $self->{values});
+		%args = (template_file => $include_file,
+				 values => $self->{values});
 		
-		$raw_value = $flute->process();		
+		$raw_value = Template::Flute->new(%args)->process();
 	}
 	elsif (exists $value->{field}) {
 		$raw_value = $ref_value->{$value->{field}};
