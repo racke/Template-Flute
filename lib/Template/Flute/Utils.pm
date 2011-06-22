@@ -12,7 +12,7 @@ Template::Flute::Utils - Template::Flute utility functions
 
 =head1 FUNCTIONS
 
-=head2 derive_filename FILENAME SUFFIX [FULL]
+=head2 derive_filename FILENAME SUFFIX [FULL] [ARGS]
 
 Derives a filename with a different SUFFIX from FILENAME, e.g.
 
@@ -32,12 +32,29 @@ returns
 
     templates/foobar.png
 
+Also, with the C<pass_absolute> argument a SUFFIX containing
+an absolute file path will be returned verbatim, e.g.
+
+    derive_filename('templates/helloword.html',
+                    '/home/racke/components/login.html',
+                    1,
+                    pass_absolute => 1)
+
+produces
+
+   /home/racke/components/login.html
+
 =cut
 
 sub derive_filename {
-	my ($orig_filename, $suffix, $full) = @_;
+	my ($orig_filename, $suffix, $full, %args) = @_;
 	my ($orig_dir, @frags);
 
+	if ($args{pass_absolute} && File::Spec->file_name_is_absolute($suffix)) {
+		# pass through suffixes with absolute file paths
+		return $suffix;
+	}
+	
 	@frags = fileparse($orig_filename, qr/\.[^.]*/);
 
 	if ($full) {
