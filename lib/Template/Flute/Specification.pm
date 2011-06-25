@@ -265,7 +265,7 @@ sub i18n_add {
 	else {
 		$class = $new_i18nref->{value}->{class} || $i18n_name;
 
-		push @{$self->{classes}->{$class}}, [{%{$new_i18nref->{value}}, type => 'i18n'}];
+		push @{$self->{classes}->{$class}}, {%{$new_i18nref->{value}}, type => 'i18n'};
 	}
 	
 	return $i18nref;
