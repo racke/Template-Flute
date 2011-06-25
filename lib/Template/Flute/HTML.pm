@@ -182,7 +182,8 @@ the I18NOBJECT.
 
 sub translate {
 	my ($self, $i18n) = @_;
-	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n);
+	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n,
+	    %parents);
 
 	$root = $self->root();
 
@@ -203,6 +204,15 @@ sub translate {
 		}
 
 		$elt->set_text($i18n_ret);
+	}
+
+	# cleanup
+	if ($self->{_i18n_key_elts}) {
+	    for my $elt (@{$self->{_i18n_key_elts}}) {
+		$elt->del_att('i18n-key');
+	    }
+
+	    delete $self->{_i18n_key_elts};
 	}
 
 	return;
@@ -454,6 +464,7 @@ sub _elt_handler {
 	} elsif ($sob->{type} eq 'i18n') {
 
 		$elt->set_att('i18n-key', $sob->{'key'});
+		push(@{$self->{_i18n_key_elts}}, $elt);
 	} else {
 		return $self;
 	}
