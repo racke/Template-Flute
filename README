@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0009
+    Version 0.0010
 
 SYNOPSIS
         use Template::Flute;
@@ -202,10 +202,18 @@ SPECIFICATION
     Possible elements in the specification are:
 
     container
-        This container is only shown in the output if the value
-        billing_address is set:
+        The first container is only shown in the output if the value
+        `billing_address' is set:
 
           <container name="billing" value="billing_address" class="billingWrapper">
+          </container>
+
+        The second container is shown if the value `warnings' or the value
+        `errors' is set:
+
+          <container name="account_errors" value="warnings|errors" class="infobox">
+          <value name="warnings"/>
+          <value name="errors"/>
           </container>
 
     list
@@ -223,6 +231,12 @@ SPECIFICATION
 
         toggle
             Only shows corresponding HTML element if value is set.
+
+        Other attributes for value elements are:
+
+        include
+            Processes the template file named in this attribute. This
+            implies the hook operation.
 
     input
     filter
@@ -242,6 +256,18 @@ LIST
 
 FORMS
     Template::Flute::Form
+
+INCLUDES
+    Files, especially components for web pages can be processed and included
+    through value elements with the include attribute:
+
+        <value name="sidebar" include="component.html"/>
+
+    The result replaces the inner HTML of the following `div' tag:
+
+        <div class="sidebar">
+            Sample content
+        </div>
 
 AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>

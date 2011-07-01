@@ -1,5 +1,25 @@
 Revision history for Template::Flute
 
+0.0010 Fri Jul  1 15:33:01 2011 CEST
+
+    [ENHANCEMENTS]
+
+    * Add include feature.
+    * Add expression feature for containers which offers a better control
+      on their visibility (e.g. container value="warnings|errors" for
+      message areas)
+
+    [BUG FIXES]
+
+    * Fix crash on i18n elements with key attribute.
+    * Prevent warning on i18n elements without name attribute.
+    * Clean up added i18n-key HTML attributes after translation has
+      been finished.
+
+    [TESTS]
+
+    * Add test for i18n elements with key attribute.
+
 0.0009 Tue Jun 21 14:24:57 2011 CEST
 
     [ENHANCEMENTS]
