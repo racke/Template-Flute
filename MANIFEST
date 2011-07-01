@@ -15,6 +15,7 @@ lib/Template/Flute/Container.pm
 lib/Template/Flute/List.pm
 lib/Template/Flute/HTML/Table.pm
 lib/Template/Flute/Database/Rose.pm
+lib/Template/Flute/Expression.pm
 lib/Template/Flute/Form.pm
 lib/Template/Flute/I18N.pm
 lib/Template/Flute/Iterator.pm
@@ -36,6 +37,7 @@ t/07-from-file.t
 t/08-utf8-html.t
 t/09-iso-html.t
 t/10-include.t
+t/12-container.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml

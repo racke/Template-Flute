@@ -15,6 +15,8 @@ Creates Template::Flute::Container object.
 
 =cut
 
+use Template::Flute::Expression;
+
 # Constructor
 sub new {
 	my ($class, $sob, $spec, $name) = @_;
@@ -77,9 +79,11 @@ Determines whether the container is visible. Possible return values are 1 (visib
 # visible
 sub visible {
 	my ($self) = @_;
-	my ($key);
+	my ($key, $ret);
 	
 	if ($key = $self->{sob}->{value}) {
+	    # check whether this is an expression or a simple value
+	    if ($key =~ /^\w[0-9\w_-]*$/) {
 		if (exists $self->{values}) {
 			if ($self->{values}->{$key}) {
 				return 1;
@@ -88,6 +92,17 @@ sub visible {
 		}
 
 		return undef;
+	    }
+	    else {
+		$self->{_expr_parser} ||= Template::Flute::Expression->new($key);
+		$ret = $self->{_expr_parser}->evaluate($self->{values});
+
+		if ($ret) {
+		    return 1;
+		}
+
+		return 0;
+	    }
 	}
 
 	# container is visible if no value is specified

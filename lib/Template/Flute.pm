@@ -747,9 +747,16 @@ Possible elements in the specification are:
 
 =item container
 
-This container is only shown in the output if the value billing_address is set:
+The first container is only shown in the output if the value C<billing_address> is set:
 
   <container name="billing" value="billing_address" class="billingWrapper">
+  </container>
+
+The second container is shown if the value C<warnings> or the value C<errors> is set:
+
+  <container name="account_errors" value="warnings|errors" class="infobox">
+  <value name="warnings"/>
+  <value name="errors"/>
   </container>
 
 =item list

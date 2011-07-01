@@ -16,6 +16,7 @@ WriteMakefile(
         'File::Slurp' => 0,
         'XML::Twig' => 0,
         'HTML::TreeBuilder' => 0,
+        'Parse::RecDescent' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-*' },
