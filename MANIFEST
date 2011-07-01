@@ -35,6 +35,9 @@ t/06-from-string.t
 t/07-from-file.t
 t/08-utf8-html.t
 t/09-iso-html.t
+t/10-include.t
+t/files/component.html
+t/files/component.xml
 t/files/iso.xml
 t/files/iso.html
 t/files/test.html
