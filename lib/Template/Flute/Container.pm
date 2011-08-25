@@ -57,16 +57,16 @@ sub set_values {
 	$self->{values} = $values;
 }
 
-=head2 elt
+=head2 elts
 
-Returns corresponding HTML template element of the list.
+Returns corresponding HTML template elements for this container.
 
 =cut
 
-sub elt {
+sub elts {
 	my ($self) = @_;
 
-	return $self->{sob}->{elts}->[0];
+	return $self->{sob}->{elts};
 }
 
 =head2 visible

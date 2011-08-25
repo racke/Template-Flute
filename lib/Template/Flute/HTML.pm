@@ -353,9 +353,15 @@ sub _elt_handler {
 	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
 	if ($sob->{type} eq 'container') {
+	    if (exists $self->{containers}->{$name}) {
+		push @{$self->{containers}->{$name}->{sob}->{elts}}, $elt;
+	    }
+	    else {
 		$sob->{elts} = [$elt];
 		$self->{containers}->{$name} = new Template::Flute::Container ($sob, $spec_object, $name);
-		return $self;
+	    }
+
+	    return $self;
 	}
 	
 	if ($sob->{type} eq 'list') {

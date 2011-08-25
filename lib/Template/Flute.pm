@@ -359,7 +359,9 @@ sub process {
 		}
 		
 		unless ($container->visible()) {
-			$container->elt()->cut();
+		    for my $elt (@{$container->elts()}) {
+			$elt->cut();
+		    }
 		}
 	}
 	

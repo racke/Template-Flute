@@ -35,7 +35,7 @@ my (@tests, $html, $flute, $out);
 	   {foo => 1, bar => 1}, 1],
     );
 
-plan tests => scalar @tests;   
+plan tests => scalar @tests + 1;   
 
 $html = q{<div class="box">USER</div>};
 
@@ -57,3 +57,14 @@ for my $t (@tests) {
 	ok($out !~ m%<div class="box">USER</div>%, "$i: $out");
     }
 }
+
+# test for a bug where only the first <div> block was removed from the HTML output
+$html .= $html;
+
+$flute = Template::Flute->new(specification => q{<container name="box" value="!username"/>},
+			      template => $html,
+			      values => {username => 'racke'});
+
+$out = $flute->process();
+
+ok ($out !~  m%<div class="box">USER</div>%, "Duplicate container: $out.");
