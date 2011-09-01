@@ -47,6 +47,7 @@ t/files/test.xml
 t/files/utf8.xml
 t/files/utf8.html
 t/i18n/01-simple.t
+t/forms/01-name.t
 t/forms/05-textarea.t
 t/forms/06-select.t
 t/iterators/00-load.t
