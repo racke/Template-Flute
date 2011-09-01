@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Template::Flute;
+use Template::Flute::Iterator;
 use Template::Flute::Utils;
 
 use base 'Dancer::Template::Abstract';
@@ -100,6 +101,31 @@ sub render ($$$) {
 		}
 	}
 
+	# check for forms
+	my (@forms, $iter, $action);
+	
+	if (@forms = $flute->template->forms()) {
+	    if (@forms == 1) {
+		unless ($tokens->{form}) {
+		    die "Missing form parameters for form " . $forms[0]->name;
+		}
+		    
+		for my $name ($forms[0]->iterators) {
+		    if (ref($tokens->{$name}) eq 'ARRAY') {
+			$iter = Template::Flute::Iterator->new($tokens->{$name});
+			$flute->specification->set_iterator($name, $iter);
+		    }
+		}
+
+		$forms[0]->set_action($tokens->{form}->action());
+		$tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
+		$forms[0]->fill($tokens->{form}->fill());
+	    }
+	    else {
+		die "Got multiple (", scalar(@forms), ") forms.";
+	    }
+	}
+	
 	$html = $flute->process();
 
 	return $html;
