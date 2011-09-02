@@ -423,7 +423,9 @@ sub align {
 			# skip over text elements (align only applies to grand children)
 			next if $child->{elt}->is_text();
 			
-			if ($textprops = $child->property('text')) {
+			if (($textprops = $child->property('text'))
+			    || $child->{gi} eq 'center') {
+			   
 				if ($child->property('width')) {
 					$avail_width = $child->property('width');
 				}
@@ -435,6 +437,13 @@ sub align {
 				}
 				else {
 					$avail_width = $child->{box}->{width};
+				}
+
+				if ($child->{gi} eq 'center') {
+				    if ($avail_width > $self->{box}->{width}) {
+					$child->{hoff} += ($avail_width - $self->{box}->{width}) / 2;
+				    }
+				    next;
 				}
 
 				for (my $cpos = 0; $cpos < @{$child->{eltstack}}; $cpos++) {
@@ -585,6 +594,8 @@ sub render {
 	my ($self, %parms) = @_;
 	my ($child, $pos, $page_before, $page_cur);
 
+	$self->{hoff} ||= 0;
+
 #	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
 
 	if (exists $parms{page}
@@ -616,7 +627,7 @@ sub render {
 			$page_before = $page_cur;
 		}
 		
-		$child->render(hpos => $parms{hpos} + $self->{specs}->{offset}->{left} + $pos->{hpos},
+		$child->render(hpos => $parms{hpos} + $self->{specs}->{offset}->{left} + $pos->{hpos} + $self->{hoff},
 					   vpos => $parms{vpos} - $self->{specs}->{offset}->{top} + $pos->{vpos},
 					   page => $pos->{page} || $self->{page},
 					   );
@@ -659,7 +670,7 @@ sub render {
 		$margins = $self->{specs}->{margins};
 
 		# adjust border dimensions by margins
-		$hpos = $parms{hpos} + $margins->{left};
+		$hpos = $parms{hpos} + $margins->{left} + $self->{hoff};
 		$vpos = $parms{vpos} - $margins->{top};
 		$width = $self->{box}->{width} - $margins->{left} - $margins->{right};
 		$height = $self->{box}->{height} - $margins->{top} - $margins->{bottom};
