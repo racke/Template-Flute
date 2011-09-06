@@ -783,6 +783,25 @@ The second container is shown if the value C<warnings> or the value C<errors> is
 
 =item list
 
+=item separator
+
+Separator elements for list are added after any list item in the output with
+the exception of the last one.
+
+Example specification, HTML template and output:
+
+  <specification>
+  <list name="list" iterator="tokens">
+  <param name="key"/>
+  <separator name="sep"/>
+  </list>
+  </specification>
+
+  <div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>
+
+  <div class="list"><span class="key">FOO</span></div><span class="sep"> | </span>
+  <div class="list"><span class="key">BAR</span></div>
+
 =item param
 
 =item value
