@@ -396,6 +396,7 @@ sub _elt_handler {
 		
 		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
 		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
 			
 		if (exists $sob->{iterator}) {
@@ -409,6 +410,19 @@ sub _elt_handler {
 		}
 		
 		return $self;
+	}
+
+	if ($sob->{type} eq 'separator') {
+		push (@{$sob->{elts}}, $elt);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+
+		if (exists $self->{lists}->{$sob->{list}}) {
+		    $self->{lists}->{$sob->{list}}->separators_add([$sob]);
+		}
+		else {
+		    $self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
+		    push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
+		}
 	}
 
 	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
@@ -443,6 +457,12 @@ sub _elt_handler {
 
 		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
+	} elsif ($sob->{type} eq 'separator') {
+		push (@{$sob->{elts}}, $elt);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+
+		$self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
+		push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 

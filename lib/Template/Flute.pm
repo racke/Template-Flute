@@ -427,7 +427,7 @@ sub process {
 		
 		$lel->cut();
 
-		my ($row,);
+		my ($row, $sep_copy);
 		my $row_pos = 0;
 		
 		while ($row = $iter->next()) {
@@ -437,7 +437,27 @@ sub process {
 				$row_pos++;
 
 				$list->increment();
+
+				if ($list->separators()) {
+				    for my $sep (@{$list->separators}) {
+					for my $elt (@{$sep->{elts}}) {
+					    $sep_copy = $elt->copy();
+					    $sep_copy->paste(%paste_pos);
+					}
+				    }
+				}
 			}
+		}
+
+		if ($sep_copy) {
+		    # remove last separator and original one(s) in the template
+		    $sep_copy->cut();
+		    
+		    for my $sep (@{$list->separators}) {
+			for my $elt (@{$sep->{elts}}) {
+			    $elt->cut();
+			}
+		    }
 		}
 	}
 

@@ -143,6 +143,16 @@ sub list_add {
 		$listref->{sort}->{$sort->{name}} = $sort;
 	}
 	
+	# loop through separators for this list
+	for my $separator (@{$new_listref->{separator}}) {
+	        $class = $separator->{class} || $separator->{name};
+		unless ($class) {
+			die "Neither class nor name for separator within list $list_name.\n";
+		}
+		$listref->{separator}->{$separator->{name}} = $separator;
+		push @{$self->{classes}->{$class}}, {%{$separator}, type => 'separator', list => $list_name};
+	}
+
 	# loop through params for this list
 	for my $param (@{$new_listref->{param}}) {
 		$class = $param->{class} || $param->{name};

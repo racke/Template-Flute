@@ -108,6 +108,7 @@ sub _initialize {
 				 list => sub {$self->_list_handler($_[1])},
 				 paging => sub {$self->_stash_handler($_[1])},
  				 filter => sub {$self->_stash_handler($_[1])},
+ 				 separator => sub {$self->_stash_handler($_[1])},		     
 				 form => sub {$self->_form_handler($_[1])},
 				 param => sub {$self->_stash_handler($_[1])},
 				 value => sub {$self->_value_handler($_[1])},

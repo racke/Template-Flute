@@ -55,6 +55,18 @@ sub params_add {
 	$self->{params} = $params || [];
 }
 
+=head2 separators_add SEPARATORS
+
+Add separators from SEPARATORS to list:
+
+=cut
+
+sub separators_add {
+    my ($self, $separators) = @_;
+
+    $self->{separators} = $separators || [];
+}
+
 =head2 inputs_add INPUTS
 
 Add inputs from INPUTS to list.
@@ -210,6 +222,18 @@ sub params {
 	my ($self) = @_;
 
 	return $self->{params};
+}
+
+=head2 separators
+
+Return list separators.
+
+=cut
+
+sub separators {
+    my ($self) = @_;
+
+    return $self->{separators};
 }
 
 =head2 input PARAMS

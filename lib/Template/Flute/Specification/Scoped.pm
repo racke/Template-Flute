@@ -112,10 +112,10 @@ sub create_specification {
 		$list{$key} = $value;
 	}
 
-	# adding list tokens: params, inputs and filters
+	# adding list tokens: params, separators, inputs and filters
 	my ($list);
 
-	for my $cname (qw/param input filter/) {
+	for my $cname (qw/param input filter separator/) {
 		while (($key, $value) = each %{$config->{$cname}}) {
 			$list = delete $value->{list};
 			$value->{name} = $key;
@@ -150,9 +150,11 @@ sub create_specification {
 
 	while (($key, $value) = each %{$config->{list}}) {
 		$spec->list_add({list => $value,
-								 param => $value->{param},
-								 input => $value->{input},
-								 filter => $value->{filter}});
+				 param => $value->{param},
+				 separator => $value->{separator},
+				 input => $value->{input},
+				 filter => $value->{filter},
+				});
 	}
 
 	return $spec;
