@@ -571,6 +571,15 @@ sub _replace_record {
 			$rep_str = $param->{subref}->($record);
 		}
 				
+		if ($param->{value}) {
+		    if ($rep_str) {
+			$rep_str = $param->{value};
+		    }
+		    else {
+			$rep_str = '';
+		    }
+		}
+
 		if ($param->{filter}) {
 			$rep_str = $self->filter($param->{filter}, $rep_str);
 		}
