@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 
 use Template::Flute;
 
@@ -75,4 +75,27 @@ $flute = Template::Flute->new(specification => $spec_xml,
 $output = $flute->process();
 
 ok($output =~ m%href="$link_value"%, $output);
+ok($output =~ m%>$link_descriptions[1]<%, $output);
+
+# op=append
+$spec_xml = <<'EOF';
+<specification name="link">
+<list name="links" class="linklist" iterator="links">
+<param name="link" target="href" op="append"/>
+<param name="description" class="link"/>
+</list>
+</specification>
+EOF
+
+$template = qq{<div class="linklist"><a href="/" class="link">$link_descriptions[0]</a></div>};
+
+
+$flute = Template::Flute->new(specification => $spec_xml,
+							  template => $template,
+							  iterators => {links => [{link => $link_value,
+													   description => $link_descriptions[1]}]});
+
+$output = $flute->process();
+
+ok($output =~ m%href="/$link_value"%, $output);
 ok($output =~ m%>$link_descriptions[1]<%, $output);
