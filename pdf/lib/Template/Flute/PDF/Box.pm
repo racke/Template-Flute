@@ -367,10 +367,6 @@ sub calculate {
 
 		$clear_after = $child->{box}->{clear}->{after};
 	}
-	
-	# add offsets
-	$max_width += $self->{specs}->{offset}->{left} + $self->{specs}->{offset}->{right};
-	$max_height += $self->{specs}->{offset}->{top} + $self->{specs}->{offset}->{bottom};
 
 	# apply fixed dimensions
 	if ($self->{specs}->{props}->{width} > $max_width) {
@@ -380,6 +376,10 @@ sub calculate {
 	if ($self->{specs}->{props}->{height} > $max_height) {
 		$max_height = $self->{specs}->{props}->{height};
 	}
+	
+	# add offsets
+	$max_width += $self->{specs}->{offset}->{left} + $self->{specs}->{offset}->{right};
+	$max_height += $self->{specs}->{offset}->{top} + $self->{specs}->{offset}->{bottom};
 
 	# set up clear properties
 	my $clear = {after => 0, before => 0};
