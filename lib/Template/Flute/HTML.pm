@@ -270,7 +270,8 @@ sub _parse_template {
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
-	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
+	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}},
+	    output_html_doctype => 1);
 
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
