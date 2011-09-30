@@ -41,6 +41,16 @@ engines:
         class: JSON
         file: fruits.json
 
+=head2 FILTER OPTIONS
+
+Filter options can be specified in the configuration file as below.
+
+engines:
+  template_flute:
+    filter_options:
+      currency:
+        int_curr_symbol: "$"
+
 =head1 METHODS
 
 =head2 default_tmpl_ext
@@ -62,10 +72,11 @@ sub render ($$$) {
 	my ($flute, $html, $name, $value, %parms, %template_iterators, %iterators, $class);
 
 	$flute = new Template::Flute(template_file => $template,
-								 scopes => 1,
-								 auto_iterators => 1,
-								 values => $tokens,
-								);
+				     scopes => 1,
+				     auto_iterators => 1,
+				     filter_options => $self->config->{filter_options},
+				     values => $tokens,
+	    );
 
 	# process HTML template to determine iterators used by template
 	$flute->process_template();
