@@ -611,15 +611,33 @@ Runs the filter named FILTER on VALUE and returns the result.
 
 sub filter {
 	my ($self, $filter, $value) = @_;
-	my ($rep_str);
+	my ($rep_str, $class, $filter_obj);
 
 	if (exists $self->{filters}->{$filter}) {
-		$filter = $self->{filters}->{$filter};
-		$rep_str = $filter->($value);
+	    $filter = $self->{filters}->{$filter};
 	}
 	else {
-		die "Missing filter $filter\n";
+	    # try to bootstrap filter
+	    $class = 'Template::Flute::Filter::' . ucfirst($filter);
+
+	    eval "require $class";
+
+	    if ($@) {
+		die "Missing filter $filter: $@\n";
+	    }
+
+	    eval {
+		$filter_obj = $class->new(%{$self->{filter_options}->{$filter} || {}});
+	    };
+
+	    if ($@) {
+		die "Failed to instantiate filter class $class: $@\n";
+	    }
+
+	    $filter = sub {$filter_obj->filter(@_)};
 	}
+
+	$rep_str = $filter->($value);
 
 	return $rep_str;
 }
