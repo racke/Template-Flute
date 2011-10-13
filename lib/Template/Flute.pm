@@ -738,6 +738,10 @@ sub _replace_values {
 			$rep_str = $self->value($value);
 		}
 
+		unless (defined $rep_str) {
+			$rep_str = '';
+		}
+		
 		$self->_replace_within_elts($value, $rep_str);
 	}
 }
