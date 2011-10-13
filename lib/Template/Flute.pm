@@ -706,7 +706,7 @@ sub _replace_values {
 	for my $value ($self->{template}->values()) {
 		@elts = @{$value->{elts}};
 
-		if (exists $value->{op}) {
+		if (exists $value->{op} && $value->{op} ne 'append') {
 			if ($value->{op} eq 'toggle') {
 				my $raw;
 
