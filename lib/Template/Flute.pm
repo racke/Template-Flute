@@ -762,7 +762,8 @@ sub set_values {
 
 =head2 template
 
-Returns HTML template object.
+Returns HTML template object, see L<Template::Flute::HTML> for
+details.
 
 =cut
 
@@ -774,7 +775,8 @@ sub template {
 
 =head2 specification
 
-Returns specification object.
+Returns specification object, see L<Template::Flute::Specification> for
+details.
 
 =cut
 
@@ -886,13 +888,33 @@ references and an iterator class with a next and a count method. For your
 convenience you can create an iterator from L<Template::Flute::Iterator>
 class very easily.
 
-=head1 LIST
+=head1 LISTS
 
-L<Template::Flute::List>
+Lists can be accessed after parsing the specification and the HTML template
+through the HTML template object:
+
+    $flute->template->lists();
+
+    $flute->template->list('cart');
+
+Only lists present in the specification and the HTML template can be
+addressed in this way.
+
+See L<Template::Flute::List> for details about lists.
 
 =head1 FORMS
 
-L<Template::Flute::Form>
+Forms can be accessed after parsing the specification and the HTML template
+through the HTML template object:
+
+    $flute->template->forms();
+
+    $flute->template->form('edit_content');
+
+Only forms present in the specification and the HTML template can be
+addressed in this way.
+
+See L<Template::Flute::Form> for details about lists.
 
 =head1 INCLUDES
 
