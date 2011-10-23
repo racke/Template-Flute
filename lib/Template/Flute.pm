@@ -674,7 +674,8 @@ sub value {
 		
 		# process template and include it
 		%args = (template_file => $include_file,
-				 values => $self->{values});
+			 auto_iterators => $self->{auto_iterators},
+			 values => $self->{values});
 		
 		$raw_value = Template::Flute->new(%args)->process();
 	}
