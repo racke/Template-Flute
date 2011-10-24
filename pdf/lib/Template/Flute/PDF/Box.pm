@@ -236,7 +236,8 @@ sub calculate {
 
 	# processed all childs, now determine my size itself
 
-	my ($max_width, $max_height, $vpos, $hpos, $max_stripe_height, $child) = (0,0,0,0);
+	my ($max_width, $max_height, $vpos, $hpos, 
+	    $max_stripe_height, $max_stripe_width, $child) = (0,0,0,0,0);
 	my ($hpos_next, $vpos_next, @stripes, $stripe_pos, $stripe_base, $clear_after);
 
 	$stripe_base = 0;
@@ -278,6 +279,7 @@ sub calculate {
 		
 		if ($hpos_next > 0) {
 #			print "HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}\n";
+			$max_stripe_width = $hpos_next;
 
 			if ($child->property('float') eq 'right'
 				&& $self->property('float') ne 'right') {
@@ -293,9 +295,9 @@ sub calculate {
 				$hpos = $max_width - $child->{box}->{width};
 				$hpos_next = $max_width;
 			}
-			else {
+			elsif ($max_stripe_width > $max_width) {
 				# add to current width
-				$max_width += $child->{box}->{width};
+				$max_width = $max_stripe_width;
 			}
 
 			# check whether we need to extend the height
@@ -312,12 +314,14 @@ sub calculate {
 			# starting new stripe now
 			$stripe_pos++;
 			$max_stripe_height = 0;
-			
+			$max_stripe_width = 0;
+
 			# stripe base moves to max_height
 			$stripe_base = $max_height;
 		
 			if ($child->{box}->{width} > $max_width) {
 				$max_width = $child->{box}->{width};
+				$max_stripe_width = $max_width;
 			}
 
 			# add to current height
@@ -347,6 +351,7 @@ sub calculate {
 				
 #			print "NEW HPOS from GI $child->{gi} CLASS $child->{class}: $child->{box}->{width}, VPOS $vpos\n";
 			$hpos_next = $child->{box}->{width};
+			$max_stripe_width = $hpos_next;
 		}
 
 		$self->{eltpos}->[$i] = {hpos => $hpos, vpos => -$vpos};
