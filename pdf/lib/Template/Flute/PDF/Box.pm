@@ -742,6 +742,36 @@ sub setup_specs {
 	return;
 }
 
+sub _description {
+    my $self = shift;
+    my ($desc, $text, $max_length);
+
+    $max_length = 20;
+
+    $desc = "GI $self->{gi}";
+
+    if ($self->{gi} eq '#PCDATA') {
+	$text = $self->{elt}->text();
+
+	if (length $text > $max_length) {
+	    $text = substr($text, 0, $max_length - 1) . ' ...';
+	}
+
+	$desc .= ", TEXT $text";
+	return $desc;
+    }
+    
+    if ($self->{class}) {
+	$desc .= ", CLASS $self->{class}";
+    }
+
+    if ($self->{id}) {
+	$desc .= ", ID $self->{id}";
+    }
+
+    return $desc;
+};
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
