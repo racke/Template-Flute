@@ -581,7 +581,7 @@ sub _replace_record {
 		}
 
 		if ($param->{filter}) {
-			$rep_str = $self->filter($param->{filter}, $rep_str);
+			$rep_str = $self->filter($param, $rep_str);
 		}
 
 		unless (defined $rep_str) {
@@ -603,15 +603,17 @@ sub _replace_record {
 	$subtree->paste(%$paste_pos);
 }
 
-=head2 filter FILTER VALUE
+=head2 filter ELEMENT VALUE
 
-Runs the filter named FILTER on VALUE and returns the result.
+Runs the filter used by ELEMENT on VALUE and returns the result.
 
 =cut
 
 sub filter {
-	my ($self, $filter, $value) = @_;
-	my ($rep_str, $class, $filter_obj);
+	my ($self, $element, $value) = @_;
+	my ($filter, $rep_str, $class, $filter_obj, $filter_sub);
+
+	$filter = $element->{filter};
 
 	if (exists $self->{filters}->{$filter}) {
 	    $filter = $self->{filters}->{$filter};
@@ -634,7 +636,12 @@ sub filter {
 		die "Failed to instantiate filter class $class: $@\n";
 	    }
 
-	    $filter = sub {$filter_obj->filter(@_)};
+	    if ($filter_obj->can('twig')) {
+		$element->{op} = sub {$filter_obj->twig(@_)};
+	    }
+
+	    $filter_sub = sub {$filter_obj->filter(@_)};
+	    $filter = $self->{filters}->{$filter} = $filter_sub;
 	}
 
 	$rep_str = $filter->($value);
@@ -687,7 +694,7 @@ sub value {
 	}
 
 	if ($value->{filter}) {
-		$rep_str = $self->filter($value->{filter}, $raw_value);
+		$rep_str = $self->filter($value, $raw_value);
 	}
 	else {
 		$rep_str = $raw_value;
@@ -702,38 +709,43 @@ sub value {
 
 sub _replace_values {
 	my ($self) = @_;
-	my ($value, $rep_str, @elts);
+	my ($value, $raw, $rep_str, @elts);
 	
 	for my $value ($self->{template}->values()) {
 		@elts = @{$value->{elts}};
 
+		# determine value used for replacements
+		($raw, $rep_str) = $self->value($value);
+
 		if (exists $value->{op} && $value->{op} ne 'append') {
-			if ($value->{op} eq 'toggle') {
-				my $raw;
-
-				($raw, $rep_str) = $self->value($value);
-
-				if (exists $value->{args} && $value->{args} eq 'static') {
-					if ($rep_str) {
-						# preserve static text
-						next;
-					}
-				}
-			
-				unless ($raw) {
-					# remove corresponding HTML elements from tree
-					for my $elt (@elts) {
-						$elt->cut();
-					}
-					next;
-				}
-			}
-			elsif ($value->{op} eq 'hook') {
-				for my $elt (@elts) {
-					Template::Flute::HTML::hook_html($elt, $self->value($value));
-				}
+		    if ($value->{op} eq 'toggle') {
+			if (exists $value->{args} && $value->{args} eq 'static') {
+			    if ($rep_str) {
+				# preserve static text
 				next;
+			    }
 			}
+			
+			unless ($raw) {
+			    # remove corresponding HTML elements from tree
+			    for my $elt (@elts) {
+				$elt->cut();
+			    }
+			    next;
+			}
+		    }
+		    elsif ($value->{op} eq 'hook') {
+			for my $elt (@elts) {
+			    Template::Flute::HTML::hook_html($elt, $rep_str);
+			}
+			next;
+		    }
+		    elsif (ref($value->{op}) eq 'CODE') {
+			for my $elt (@elts) {
+			    $value->{op}->($elt, $rep_str);
+			}
+			next;
+		    }
 		}
 		else {
 			$rep_str = $self->value($value);
