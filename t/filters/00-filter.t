@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 use Template::Flute;
 
@@ -122,3 +122,51 @@ $flute = Template::Flute->new(specification => $xml,
 $ret = $flute->process();
 
 ok($ret =~ m%div class="text">One line<br /></div>%, "Output: $ret");
+
+# nbsp_single filter (empty text)
+$xml = <<EOF;
+<specification name="filters">
+<value name="text" filter="nobreak_single"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(specification => $xml,
+			      template => $html,
+			      values => {text => q{}
+});
+
+$ret = $flute->process();
+
+ok($ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret");
+
+# nbsp_single filter (white space only)
+$xml = <<EOF;
+<specification name="filters">
+<value name="text" filter="nobreak_single"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(specification => $xml,
+			      template => $html,
+			      values => {text => q{          }
+});
+
+$ret = $flute->process();
+
+ok($ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret");
+
+# nbsp_single filter (text)
+$xml = <<EOF;
+<specification name="filters">
+<value name="text" filter="nobreak_single"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(specification => $xml,
+			      template => $html,
+			      values => {text => q{ Some text }
+});
+
+$ret = $flute->process();
+
+ok($ret =~ m%div class="text"> Some text </div>%, "Output: $ret");
