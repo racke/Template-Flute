@@ -504,10 +504,15 @@ sub process {
 }
 
 sub _replace_within_elts {
-	my ($self, $param, $rep_str) = @_;
+	my ($self, $param, $rep_str, $elt_handler) = @_;
 	my ($name, $zref);
 
 	for my $elt (@{$param->{elts}}) {
+	    if ($elt_handler) {
+		$elt_handler->($elt, $rep_str);
+		next;
+	    }
+
 		$name = $param->{name};
 		$zref = $elt->{"flute_$name"};
 			
@@ -555,7 +560,7 @@ sub process_template {
 sub _replace_record {
 	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
 	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt);
+		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt, $elt_handler);
 
 	# now fill in params
 	for $param (@{$container->params}) {
@@ -587,8 +592,13 @@ sub _replace_record {
 		unless (defined $rep_str) {
 			$rep_str = '';
 		}
-		
-		$self->_replace_within_elts($param, $rep_str);	
+
+		if (ref($param->{op}) eq 'CODE') {
+		    $self->_replace_within_elts($param, $rep_str, $param->{op});
+		}
+		else {
+		    $self->_replace_within_elts($param, $rep_str);
+		}
 	}
 			
 	# now add to the template
@@ -611,7 +621,7 @@ Runs the filter used by ELEMENT on VALUE and returns the result.
 
 sub filter {
 	my ($self, $element, $value) = @_;
-	my ($filter, $rep_str, $class, $filter_obj, $filter_sub);
+	my ($filter, $rep_str, $name, $class, $filter_obj, $filter_sub);
 
 	$filter = $element->{filter};
 
@@ -620,7 +630,8 @@ sub filter {
 	}
 	else {
 	    # try to bootstrap filter
-	    $class = 'Template::Flute::Filter::' . ucfirst($filter);
+	    $name = join('', map {ucfirst($_)} split(/_/, $filter));
+	    $class = "Template::Flute::Filter::$name";
 
 	    eval "require $class";
 
@@ -709,7 +720,7 @@ sub value {
 
 sub _replace_values {
 	my ($self) = @_;
-	my ($value, $raw, $rep_str, @elts);
+	my ($value, $raw, $rep_str, @elts, $elt_handler);
 	
 	for my $value ($self->{template}->values()) {
 		@elts = @{$value->{elts}};
@@ -741,10 +752,7 @@ sub _replace_values {
 			next;
 		    }
 		    elsif (ref($value->{op}) eq 'CODE') {
-			for my $elt (@elts) {
-			    $value->{op}->($elt, $rep_str);
-			}
-			next;
+			$elt_handler = $value->{op};
 		    }
 		}
 		else {
@@ -755,7 +763,7 @@ sub _replace_values {
 			$rep_str = '';
 		}
 		
-		$self->_replace_within_elts($value, $rep_str);
+		$self->_replace_within_elts($value, $rep_str, $elt_handler);
 	}
 }
 
