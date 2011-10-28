@@ -8,6 +8,10 @@ lib/Template/Flute.pm
 lib/Template/Flute/Increment.pm
 lib/Template/Flute/Iterator/Rose.pm
 lib/Template/Flute/Config.pm
+lib/Template/Flute/Filter.pm
+lib/Template/Flute/Filter/Currency.pm
+lib/Template/Flute/Filter/Eol.pm
+lib/Template/Flute/Filter/Upper.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
@@ -47,6 +51,7 @@ t/files/test.html
 t/files/test.xml
 t/files/utf8.xml
 t/files/utf8.html
+t/filters/00-filter.t
 t/i18n/01-simple.t
 t/forms/01-name.t
 t/forms/05-textarea.t
