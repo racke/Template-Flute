@@ -34,22 +34,22 @@ The default template extension is ".html".
 
 Iterators can be specified explicitly in the configuration file as below.
 
-engines:
-  template_flute:
-    iterators:
-      fruits:
-        class: JSON
-        file: fruits.json
+  engines:
+    template_flute:
+      iterators:
+        fruits:
+          class: JSON
+          file: fruits.json
 
 =head2 FILTER OPTIONS
 
 Filter options can be specified in the configuration file as below.
 
-engines:
-  template_flute:
-    filter_options:
-      currency:
-        int_curr_symbol: "$"
+  engines:
+    template_flute:
+      filter_options:
+        currency:
+          int_curr_symbol: "$"
 
 =head1 METHODS
 
