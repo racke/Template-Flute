@@ -9,6 +9,8 @@ use Template::Flute::Utils;
 
 use base 'Dancer::Template::Abstract';
 
+use Dancer qw/config/;
+
 our $VERSION = '0.0003';
 
 =head1 NAME
@@ -131,6 +133,10 @@ sub render ($$$) {
 		$forms[0]->set_action($tokens->{form}->action());
 		$tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
 		$forms[0]->fill($tokens->{form}->fill());
+
+		if (config->{session}) {
+		    $tokens->{form}->to_session;
+		}
 	    }
 	    else {
 		die "Got multiple (", scalar(@forms), ") forms.";
