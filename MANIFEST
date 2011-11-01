@@ -55,6 +55,7 @@ t/files/utf8.html
 t/filters/currency.t
 t/filters/eol.t
 t/filters/nobreak_single.t
+t/filters/subs.t
 t/filters/upper.t
 t/i18n/01-simple.t
 t/forms/01-name.t

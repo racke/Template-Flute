@@ -209,11 +209,17 @@ Builds iterators automatically from values.
 # Constructor
 
 sub new {
-	my ($class, $self);
+	my ($class, $self, $filter_subs, $filter_opts);
 
 	$class = shift;
 
-	$self = {iterators => {}, @_};
+	$filter_subs = {};
+	$filter_opts = {};
+
+	$self = {iterators => {}, @_, 
+		 _filter_subs => $filter_subs,
+		 _filter_opts => $filter_opts,
+	};
 
 	bless $self, $class;
 	
@@ -228,7 +234,23 @@ sub new {
 		&& ref($self->{specification})) {
 		$self->_bootstrap_template('string', delete $self->{template});
 	}
-	
+
+	if (exists $self->{filters}) {
+	    my ($name, $value);
+
+	    while (($name, $value) = each %{$self->{filters}}) {
+		if (ref($value) eq 'CODE') {
+		    # passing subroutine
+		    $filter_subs->{$name} = $value;
+		    next;
+		}
+		if (exists($value->{options})) {
+		    # record filter options
+		    $filter_opts->{$name} = $value->{options};
+		}
+	    }
+	}
+
 	return $self;
 }
 
@@ -621,26 +643,26 @@ Runs the filter used by ELEMENT on VALUE and returns the result.
 
 sub filter {
 	my ($self, $element, $value) = @_;
-	my ($filter, $rep_str, $name, $class, $filter_obj, $filter_sub);
+	my ($filter, $rep_str, $name, $mod_name, $class, $filter_obj, $filter_sub);
 
-	$filter = $element->{filter};
+	$name = $element->{filter};
 
-	if (exists $self->{filters}->{$filter}) {
-	    $filter = $self->{filters}->{$filter};
+	if (exists $self->{_filter_subs}->{$name}) {
+	    $filter = $self->{_filter_subs}->{$name};
 	}
 	else {
 	    # try to bootstrap filter
-	    $name = join('', map {ucfirst($_)} split(/_/, $filter));
-	    $class = "Template::Flute::Filter::$name";
+	    $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
+	    $class = "Template::Flute::Filter::$mod_name";
 
 	    eval "require $class";
 
 	    if ($@) {
-		die "Missing filter $filter: $@\n";
+		die "Missing filter $name: $@\n";
 	    }
 
 	    eval {
-		$filter_obj = $class->new(%{$self->{filter_options}->{$filter} || {}});
+		$filter_obj = $class->new(options => $self->{_filter_opts}->{$name});
 	    };
 
 	    if ($@) {
@@ -652,7 +674,7 @@ sub filter {
 	    }
 
 	    $filter_sub = sub {$filter_obj->filter(@_)};
-	    $filter = $self->{filters}->{$filter} = $filter_sub;
+	    $filter = $self->{_filter_subs}->{$name} = $filter_sub;
 	}
 
 	$rep_str = $filter->($value);
