@@ -10,6 +10,7 @@ lib/Template/Flute/Iterator/Rose.pm
 lib/Template/Flute/Config.pm
 lib/Template/Flute/Filter.pm
 lib/Template/Flute/Filter/Currency.pm
+lib/Template/Flute/Filter/Date.pm
 lib/Template/Flute/Filter/Eol.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Upper.pm
@@ -53,6 +54,7 @@ t/files/test.xml
 t/files/utf8.xml
 t/files/utf8.html
 t/filters/currency.t
+t/filters/date.t
 t/filters/eol.t
 t/filters/nobreak_single.t
 t/filters/subs.t
