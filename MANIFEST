@@ -52,7 +52,10 @@ t/files/test.html
 t/files/test.xml
 t/files/utf8.xml
 t/files/utf8.html
-t/filters/00-filter.t
+t/filters/currency.t
+t/filters/eol.t
+t/filters/nobreak_single.t
+t/filters/upper.t
 t/i18n/01-simple.t
 t/forms/01-name.t
 t/forms/05-textarea.t
