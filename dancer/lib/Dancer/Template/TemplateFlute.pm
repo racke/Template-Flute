@@ -7,9 +7,9 @@ use Template::Flute;
 use Template::Flute::Iterator;
 use Template::Flute::Utils;
 
-use base 'Dancer::Template::Abstract';
+use Dancer::Config;
 
-use Dancer qw/config/;
+use base 'Dancer::Template::Abstract';
 
 our $VERSION = '0.0003';
 
@@ -49,9 +49,10 @@ Filter options can be specified in the configuration file as below.
 
   engines:
     template_flute:
-      filter_options:
+      filters:
         currency:
-          int_curr_symbol: "$"
+          options:
+            int_curr_symbol: "$"
 
 =head1 METHODS
 
@@ -71,14 +72,16 @@ sub default_tmpl_ext {
 
 sub render ($$$) {
 	my ($self, $template, $tokens) = @_;
-	my ($flute, $html, $name, $value, %parms, %template_iterators, %iterators, $class);
+	my (%args, $flute, $html, $name, $value, %parms, %template_iterators, %iterators, $class);
 
-	$flute = new Template::Flute(template_file => $template,
-				     scopes => 1,
-				     auto_iterators => 1,
-				     filter_options => $self->config->{filter_options},
-				     values => $tokens,
+	%args = (template_file => $template,
+		 scopes => 1,
+		 auto_iterators => 1,
+		 values => $tokens,
+		 filters => $self->config->{filters},
 	    );
+
+	$flute = Template::Flute->new(%args);
 
 	# process HTML template to determine iterators used by template
 	$flute->process_template();
@@ -134,7 +137,7 @@ sub render ($$$) {
 		$tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
 		$forms[0]->fill($tokens->{form}->fill());
 
-		if (config->{session}) {
+		if (Dancer::Config::settings->{session}) {
 		    $tokens->{form}->to_session;
 		}
 	    }
