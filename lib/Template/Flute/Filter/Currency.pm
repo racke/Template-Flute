@@ -23,10 +23,8 @@ Currency filter based on L<Number::Format>.
 
 sub init {
     my ($self, %args) = @_;
-    
-    delete $args{options};
 
-    $self->{format} = Number::Format->new(%args);
+    $self->{format} = Number::Format->new(%{$args{options} || {}});
 }
 
 =head2 filter

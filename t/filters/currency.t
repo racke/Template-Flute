@@ -14,7 +14,7 @@ if ($@) {
     plan skip_all => "Missing Number::Format module.";
 }
 
-plan tests => 1;
+plan tests => 2;
 
 my ($xml, $html, $flute, $ret);
 
@@ -36,3 +36,19 @@ $flute = Template::Flute->new(specification => $xml,
 $ret = $flute->process();
 
 ok($ret =~ m%<div class="text">USD 30.00</div>%, "Output: $ret");
+
+# currency filter (options: int_curr_symbol)
+$xml = <<EOF;
+<specification name="filters">
+<value name="text" filter="currency"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(specification => $xml,
+			      template => $html,
+			      filters => {currency => {options => {int_curr_symbol => '$'}}},
+			      values => {text => '30'});
+
+$ret = $flute->process();
+
+ok($ret =~ m%<div class="text">\$30.00</div>%, "Output: $ret");
