@@ -35,6 +35,14 @@ Evaluates to value C<foo> or value C<bar>.
 
 Evaluates to value C<foo> and value C<bar>.
 
+=item foo|bar
+
+Evaluates to value C<foo> or reverse of value C<bar>.
+
+=item foo&bar
+
+Evaluates to value C<foo> and reverse of value C<bar>.
+
 =back
     
 =cut
