@@ -266,12 +266,17 @@ sub parse_file {
 
 sub _parse_template {
 	my ($self, $template, $spec_object) = @_;
-	my ($twig, $xml, $object, $list, $html_content, $encoding);
+	my ($twig, %twig_args, $xml, $object, $list, $html_content, $encoding);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
 		
-	$twig = new XML::Twig (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}},
-	    output_html_doctype => 1);
+	%twig_args = (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
+
+	if ($XML::Twig::VERSION > 3.39) {
+	    $twig_args{output_html_doctype} = 1;
+	}
+	
+	$twig = new XML::Twig (%twig_args);
 
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
