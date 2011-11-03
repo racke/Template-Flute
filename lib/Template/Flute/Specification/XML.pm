@@ -159,10 +159,13 @@ sub _list_handler {
 	$name = $elt->att('name');
 
 	$list{list} = $elt->atts();
-	
+warn "Flushing stash for list $name.\n";	
 	# flush elements from stash into list hash
 	$self->_stash_flush($elt, \%list);
 
+	# put list onto stash for sublists
+	$self->_stash_handler($elt);
+	
 	# add list to specification object
 	$self->{spec}->list_add(\%list);
 }
@@ -194,7 +197,8 @@ sub _sort_handler {
 
 sub _stash_handler {
 	my ($self, $elt) = @_;
-
+	use Data::Dumper;
+	warn "Stashing ", $elt->gi(), ' :', Dumper($elt->atts);
 	push @{$self->{stash}}, $elt;
 }
 
@@ -232,23 +236,25 @@ sub _i18n_handler {
 }
 
 sub _stash_flush {
-	my ($self, $elt, $hashref) = @_;
-
-	# examine stash
-	for my $item_elt (@{$self->{stash}}) {
-		# check whether we are really the parent
-		if ($item_elt->parent() eq $elt) {
-			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
-		}
-		else {
-			warn "Misplace item in stash (" . $item_elt->gi() . "\n";
-		}
+    my ($self, $elt, $hashref) = @_;
+    my @other;
+    use Data::Dumper;
+    #warn "Stash: ", Dumper($self->{stash});
+    # examine stash
+    for my $item_elt (@{$self->{stash}}) {
+	# check whether we are really the parent, otherwise keep it on the stash
+	if ($item_elt->parent() eq $elt) {
+	    push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
 	}
-
-	# clear stash
-	$self->{stash} = [];
-
-	return;
+	else {
+	    push (@other, $item_elt);
+	}
+    }
+    
+    # clear stash
+    $self->{stash} = \@other;
+    
+    return;
 }
 
 =head2 error

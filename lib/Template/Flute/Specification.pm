@@ -119,7 +119,9 @@ sub list_add {
 	$list_name = $new_listref->{list}->{name};
 
 	$listref = $self->{lists}->{$new_listref->{list}->{name}} = {input => {}};
-
+	warn "Adding list $list_name with params: ", join(',', map {$_->{name}} @{$new_listref->{param}}), "\n";
+	use Data::Dumper;
+	warn "Adding list $list_name: ", Dumper($new_listref);
 	$class = $new_listref->{list}->{class} || $list_name;
 
 	$self->{classes}->{$class} = [{%{$new_listref->{list}}, type => 'list'}];
@@ -171,7 +173,13 @@ sub list_add {
 		$class = $paging->{class} || $paging->{name};
 		$self->{classes}->{$class} = [{%{$paging}, type => 'paging', list => $list_name}];
 	}
-	
+
+	# loop through sublists
+#	for my $sublist (@{$new_listref->{list}}) {
+#	    use Data::Dumper;
+#	    warn "Sublist found: ", Dumper($sublist);
+#	}
+
 	return $listref;
 }
 

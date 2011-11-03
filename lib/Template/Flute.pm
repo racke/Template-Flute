@@ -723,8 +723,16 @@ sub value {
 		# process template and include it
 		%args = (template_file => $include_file,
 			 auto_iterators => $self->{auto_iterators},
-			 values => $self->{values});
-		
+			 values => $self->{values},
+			 filters => $self->{filters},
+		    );
+
+		Dancer::Logger::debug("Values: ", join(',', keys %{$self->{values}}));
+
+		if (exists $self->{values}->{cart_items}) {
+		    Dancer::Logger::debug("Items: ", $self->{values}->{cart_items});
+		}
+
 		$raw_value = Template::Flute->new(%args)->process();
 	}
 	elsif (exists $value->{field}) {
