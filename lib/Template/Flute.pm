@@ -209,16 +209,18 @@ Builds iterators automatically from values.
 # Constructor
 
 sub new {
-	my ($class, $self, $filter_subs, $filter_opts);
+	my ($class, $self, $filter_subs, $filter_opts, $filter_class);
 
 	$class = shift;
 
 	$filter_subs = {};
 	$filter_opts = {};
+	$filter_class = {};
 
 	$self = {iterators => {}, @_, 
 		 _filter_subs => $filter_subs,
 		 _filter_opts => $filter_opts,
+		 _filter_class => $filter_class,
 	};
 
 	bless $self, $class;
@@ -243,6 +245,10 @@ sub new {
 		    # passing subroutine
 		    $filter_subs->{$name} = $value;
 		    next;
+		}
+		if (exists($value->{class})) {
+		    # record filter class
+		    $filter_class->{$name} = $value->{class};
 		}
 		if (exists($value->{options})) {
 		    # record filter options
@@ -652,8 +658,10 @@ sub filter {
 	}
 	else {
 	    # try to bootstrap filter
-	    $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
-	    $class = "Template::Flute::Filter::$mod_name";
+	    unless ($class = $self->{_filter_class}->{$name}) {
+		$mod_name = join('', map {ucfirst($_)} split(/_/, $name));
+		$class = "Template::Flute::Filter::$mod_name";
+	    }
 
 	    eval "require $class";
 
