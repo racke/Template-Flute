@@ -1,5 +1,30 @@
 Revision history for Template::Flute
 
+0.0020 Thu Nov  3 23:32:33 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Allow filter options to be passed in the constructor.
+    * Add filter base class and loader for filter classes.
+    * Add currency, date, eol, nobreak_single and upper filter.
+    * Add foo|!bar and foo&!bar to the possible expressions for container visibility.
+    * Add separator element for lists.
+
+    [BUG FIXES]
+
+    * Fix replacement for value elements with op append.
+    * Pass through auto_iterators setting to included templates.
+    * Prevent Perl warning on undefined values for value elements.
+    * Add output_html_doctype to XML::Twig constructor for upcoming XML::Twig release.
+
+    [TESTS]
+
+    * Add form name test.
+
+    [DOCUMENTATION]
+
+    * Expand Template::Flute's POD on specification, template, forms and lists.
+
 0.0011 Thu Aug 25 10:33:21 2011 CEST
 
     [BUG FIXES]

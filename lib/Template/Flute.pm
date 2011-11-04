@@ -14,11 +14,11 @@ Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
-Version 0.0011
+Version 0.0020
 
 =cut
 
-our $VERSION = '0.0011';
+our $VERSION = '0.0020';
 
 =head1 SYNOPSIS
 
@@ -974,6 +974,42 @@ Only forms present in the specification and the HTML template can be
 addressed in this way.
 
 See L<Template::Flute::Form> for details about lists.
+
+=head1 FILTERS
+
+Filters are used to change the display of value and param elements in
+the resulting HTML output:
+
+    <value name="billing_address" filter="eol"/>
+
+    <param name="price" filter="currency"/>
+
+The following filters are included:
+
+=over 4
+
+=item upper
+
+Uppercase filter, see L<Template::Flute::Filter::Upper>.
+
+=item eol
+
+Filter preserving line breaks, see L<Template::Flute::Filter::Eol>.
+
+=item nobreak_single
+
+Filter replacing missing text with no-break space,
+see L<Template::Flute::Filter::NobreakSingle>.
+
+=item currency
+
+Currency filter, see L<Template::Flute::Filter::Currency>.
+
+=item date
+
+Date filter, see L<Template::Flute::Filter::Date>.
+
+=back
 
 =head1 INCLUDES
 

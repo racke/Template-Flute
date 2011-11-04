@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0011
+    Version 0.0020
 
 SYNOPSIS
         use Template::Flute;
@@ -173,8 +173,8 @@ METHODS
   process_template
     Processes HTML template and returns Template::Flute::HTML object.
 
-  filter FILTER VALUE
-    Runs the filter named FILTER on VALUE and returns the result.
+  filter ELEMENT VALUE
+    Runs the filter used by ELEMENT on VALUE and returns the result.
 
   value NAME
     Returns the value for NAME.
@@ -184,10 +184,11 @@ METHODS
     passing the hash reference as values argument to the constructor.
 
   template
-    Returns HTML template object.
+    Returns HTML template object, see Template::Flute::HTML for details.
 
   specification
-    Returns specification object.
+    Returns specification object, see Template::Flute::Specification for
+    details.
 
 SPECIFICATION
     The specification ties the elements in the HTML template to the data
@@ -217,6 +218,24 @@ SPECIFICATION
           </container>
 
     list
+    separator
+        Separator elements for list are added after any list item in the
+        output with the exception of the last one.
+
+        Example specification, HTML template and output:
+
+          <specification>
+          <list name="list" iterator="tokens">
+          <param name="key"/>
+          <separator name="sep"/>
+          </list>
+          </specification>
+
+          <div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>
+
+          <div class="list"><span class="key">FOO</span></div><span class="sep"> | </span>
+          <div class="list"><span class="key">BAR</span></div>
+
     param
     value
         Value elements are replaced with a single value present in the
@@ -251,11 +270,56 @@ ITERATORS
     For your convenience you can create an iterator from
     Template::Flute::Iterator class very easily.
 
-LIST
-    Template::Flute::List
+LISTS
+    Lists can be accessed after parsing the specification and the HTML
+    template through the HTML template object:
+
+        $flute->template->lists();
+
+        $flute->template->list('cart');
+
+    Only lists present in the specification and the HTML template can be
+    addressed in this way.
+
+    See Template::Flute::List for details about lists.
 
 FORMS
-    Template::Flute::Form
+    Forms can be accessed after parsing the specification and the HTML
+    template through the HTML template object:
+
+        $flute->template->forms();
+
+        $flute->template->form('edit_content');
+
+    Only forms present in the specification and the HTML template can be
+    addressed in this way.
+
+    See Template::Flute::Form for details about lists.
+
+FILTERS
+    Filters are used to change the display of value and param elements in
+    the resulting HTML output:
+
+        <value name="billing_address" filter="eol"/>
+
+        <param name="price" filter="currency"/>
+
+    The following filters are included:
+
+    upper
+        Uppercase filter, see Template::Flute::Filter::Upper.
+
+    eol Filter preserving line breaks, see Template::Flute::Filter::Eol.
+
+    nobreak_single
+        Filter replacing missing text with no-break space, see
+        Template::Flute::Filter::NobreakSingle.
+
+    currency
+        Currency filter, see Template::Flute::Filter::Currency.
+
+    date
+        Date filter, see Template::Flute::Filter::Date.
 
 INCLUDES
     Files, especially components for web pages can be processed and included
