@@ -183,6 +183,16 @@ sub iterators {
 	return keys(%{$self->{iterators}});
 }
 
+=head2 lists
+
+No-op, as forms have no sub lists yet.
+
+=cut
+
+sub lists {
+    return [];
+}
+
 =head2 action
 
 Returns current form action.

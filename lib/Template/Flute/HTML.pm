@@ -399,21 +399,8 @@ sub _elt_handler {
 
 			$p->{elts} = \@p_new;
 		}
-		
-		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
-		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
-		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
-		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
-			
-		if (exists $sob->{iterator}) {
-			if ($iter = $spec_object->iterator($sob->{iterator})) {
-				$self->{lists}->{$name}->set_iterator($iter);
-			}
-		}
 
-		if (exists $sob->{filter}) {
-			$self->{lists}->{$name}->set_filter($sob->{filter});
-		}
+		$self->_create_list($sob, $static_classes, $spec_object, $name);
 		
 		return $self;
 	}
@@ -450,7 +437,6 @@ sub _elt_handler {
 	
 	if ($sob->{type} eq 'param') {
 		push (@{$sob->{elts}}, $elt);
-
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 
 		if ($sob->{increment}) {
@@ -469,6 +455,14 @@ sub _elt_handler {
 
 		$self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
 		push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
+	} elsif ($sob->{type} eq 'sublist') {
+	    my $new_list;
+	    push (@{$sob->{elts}}, $elt);
+	    $self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+	    $new_list = $self->_create_list($sob, undef, $spec_object, $name);
+	    $sob->{list_object} = $new_list;
+	    $self->{sublists}->{$sob->{list}}->{hash}->{$name} = $sob;
+	    push(@{$self->{sublists}->{$sob->{list}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 
@@ -500,6 +494,35 @@ sub _elt_handler {
 	} else {
 		return $self;
 	}
+}
+
+# _create_list
+#
+# Creates Template::Flute::List object with the given name.
+
+sub _create_list {
+    my ($self, $sob, $static_classes, $spec_object, $name) = @_;
+    my ($new_list, $iter);
+
+    $new_list = new Template::Flute::List ($sob, [join(' ', @{$static_classes || []})], $spec_object, $name);
+    $new_list->params_add($self->{params}->{$name}->{array});
+    $new_list->separators_add($self->{separators}->{$name}->{array});
+    $new_list->increments_add($self->{increments}->{$name}->{array});
+    $new_list->sublists_add($self->{sublists}->{$name}->{array});
+			
+    if (exists $sob->{iterator}) {
+	if ($iter = $spec_object->iterator($sob->{iterator})) {
+	    $new_list->set_iterator($iter);
+	}
+    }
+
+    if (exists $sob->{filter}) {
+	$new_list->set_filter($sob->{filter});
+    }
+
+    $self->{lists}->{$name} = $new_list;
+
+    return $self->{lists}->{$name};
 }
 
 # _elt_indicate_replacements - indicate location of replacements

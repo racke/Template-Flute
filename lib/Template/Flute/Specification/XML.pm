@@ -158,8 +158,8 @@ sub _list_handler {
 	
 	$name = $elt->att('name');
 
-	$list{list} = $elt->atts();
-warn "Flushing stash for list $name.\n";	
+	$list{container} = $elt->atts();
+
 	# flush elements from stash into list hash
 	$self->_stash_flush($elt, \%list);
 
@@ -197,8 +197,7 @@ sub _sort_handler {
 
 sub _stash_handler {
 	my ($self, $elt) = @_;
-	use Data::Dumper;
-	warn "Stashing ", $elt->gi(), ' :', Dumper($elt->atts);
+
 	push @{$self->{stash}}, $elt;
 }
 
@@ -238,8 +237,7 @@ sub _i18n_handler {
 sub _stash_flush {
     my ($self, $elt, $hashref) = @_;
     my @other;
-    use Data::Dumper;
-    #warn "Stash: ", Dumper($self->{stash});
+
     # examine stash
     for my $item_elt (@{$self->{stash}}) {
 	# check whether we are really the parent, otherwise keep it on the stash

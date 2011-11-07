@@ -367,7 +367,6 @@ Returns HTML output.
 
 sub process {
 	my ($self, $params) = @_;
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 
 	unless ($self->{template}) {
 		$self->_bootstrap();
@@ -393,149 +392,189 @@ sub process {
 		}
 	}
 	
-	# determine database queries
+	# replace within lists
 	for my $list ($self->{template}->lists()) {
-		my $name;
-		
-		# check for (required) input
-		unless ($list->input($params)) {
-			die "Input missing for " . $list->name . "\n";
-		}
-
-		unless ($iter = $list->iterator()) {
-			if ($name = $list->iterator('name')) {
-				# resolve iterator name to object
-				if ($iter = $self->{specification}->iterator($name)) {
-					$list->set_iterator($iter);
-				}
-				elsif (exists $self->{iterators}->{$name}) {
-					# iterator name from method parameters
-					$iter = $list->set_iterator($self->{iterators}->{$name});
-				}
-				elsif ($self->{auto_iterators}) {
-					if (ref($self->{values}->{$name}) eq 'ARRAY') {
-						$iter = Template::Flute::Iterator->new($self->{values}->{$name});
-					}
-					else {
-						$iter = Template::Flute::Iterator->new([]);
-					}
-					$list->set_iterator($iter);
-				}
-				else {
-					die "Missing iterator object for list " . $list->name . " and iterator name $name";
-				}
-			}
-			elsif ($self->{database}) {
-				if ($query = $list->query()) {
-					$iter = $self->{database}->build($query);
-					$iter->run();
-				}
-				else {
-					die "List " . $list->name . " without iterator and database query.\n";
-				}
-			}
-			else {
-				die "List " . $list->name . " without iterator and database object.\n";
-			}
-		}
-		
-		# process template
-		$lel = $list->elt();
-
-		if ($lel->is_last_child()) {			
-			%paste_pos = (last_child => $lel->parent());
-		}
-		elsif ($lel->next_sibling()) {
-			%paste_pos = (before => $lel->next_sibling());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $self->{template}->{xml});
-		}
-		
-		$lel->cut();
-
-		my ($row, $sep_copy);
-		my $row_pos = 0;
-		
-		while ($row = $iter->next()) {
-			if ($row = $list->filter($self, $row)) {
-				$self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
-			
-				$row_pos++;
-
-				$list->increment();
-
-				if ($list->separators()) {
-				    for my $sep (@{$list->separators}) {
-					for my $elt (@{$sep->{elts}}) {
-					    $sep_copy = $elt->copy();
-					    $sep_copy->paste(%paste_pos);
-					}
-				    }
-				}
-			}
-		}
-
-		if ($sep_copy) {
-		    # remove last separator and original one(s) in the template
-		    $sep_copy->cut();
-		    
-		    for my $sep (@{$list->separators}) {
-			for my $elt (@{$sep->{elts}}) {
-			    $elt->cut();
-			}
-		    }
-		}
+	    $self->_replace_list($list, $params);
 	}
 
+	# replace within forms
 	for my $form ($self->{template}->forms()) {
-		$lel = $form->elt();
-
-		if ($lel->is_last_child()) {			
-			%paste_pos = (last_child => $lel->parent());
-		}
-		elsif ($lel->next_sibling()) {
-			%paste_pos = (before => $lel->next_sibling());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $self->{template}->{xml});
-		}
-		
-		$lel->cut();
-
-		if ($self->{auto_iterators}) {
-			for my $iter_name ($form->iterators()) {
-				if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
-					$iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
-				}
-				else {
-					$iter = Template::Flute::Iterator->new([]);
-				}
-
-				$self->{specification}->set_iterator($iter_name, $iter);
-			}
-		}
-		
-		if (keys(%{$form->inputs()}) && $form->input()) {
-			$iter = $dbobj->build($form->query());
-
-			$self->_replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
-		}		
-		else {
-			$self->_replace_record($form, 'form', $lel, \%paste_pos, {});
-		}
+	    $self->_replace_form($form, $params);
 	}
 
 	return $self->{template}->{xml}->sprint;
 }
 
+sub _replace_list {
+    my ($self, $list, $params, $sublist) = @_;
+    my ($lel, $lel_copy, %paste_pos, $name, $iter, $query);
+    
+    # check for (required) input
+    unless ($list->input($params)) {
+	die "Input missing for " . $list->name . "\n";
+    }
+
+    unless ($iter = $list->iterator()) {
+	if ($name = $list->iterator('name')) {
+	    # resolve iterator name to object
+	    if ($iter = $self->{specification}->iterator($name)) {
+		$list->set_iterator($iter);
+	    }
+	    elsif (exists $self->{iterators}->{$name}) {
+		# iterator name from method parameters
+		$iter = $list->set_iterator($self->{iterators}->{$name});
+	    }
+	    elsif ($self->{auto_iterators}) {
+		if (ref($self->{values}->{$name}) eq 'ARRAY') {
+		    $iter = Template::Flute::Iterator->new($self->{values}->{$name});
+		}
+		else {
+		    $iter = Template::Flute::Iterator->new([]);
+		}
+		$list->set_iterator($iter);
+	    }
+	    else {
+		die "Missing iterator object for list " . $list->name . " and iterator name $name";
+	    }
+	}
+	elsif ($self->{database}) {
+	    if ($query = $list->query()) {
+		$iter = $self->{database}->build($query);
+		$iter->run();
+	    }
+	    else {
+		die "List " . $list->name . " without iterator and database query.\n";
+	    }
+	}
+	else {
+	    die "List " . $list->name . " without iterator and database object.\n";
+	}
+    }
+
+    unless (defined $sublist) {
+	for my $sublist_obj (@{$list->lists}) {	
+	    $sublist_obj->elt->cut();
+	}
+    }
+
+    # process template
+    $lel = $list->elt();
+
+    if (defined $sublist) {
+	# get paste position from former parent/sibling
+	if ($lel->former_parent()) {
+	    %paste_pos = (last_child => $lel->former_parent());
+	}
+	elsif ($lel->former_next_sibling()) {
+	    %paste_pos = (before => $lel->former_next_sibling());
+	}
+    }
+    elsif ($lel->is_last_child()) {			
+	%paste_pos = (last_child => $lel->parent());
+    }
+    elsif ($lel->next_sibling()) {
+	%paste_pos = (before => $lel->next_sibling());
+    }
+    else {
+	# list is root element in the template
+	%paste_pos = (last_child => $self->{template}->{xml});
+    }
+
+    if (defined $sublist) {
+	$lel->former_parent()->cut_children();
+    }
+
+    $lel->cut();
+  
+    my ($row, $sep_copy);
+    my $row_pos = 0;
+    
+    while ($row = $iter->next()) {
+	if ($row = $list->filter($self, $row)) {
+	    $self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+
+	    $row_pos++;
+
+	    $list->increment();
+
+	    if ($list->separators()) {
+		for my $sep (@{$list->separators}) {
+		    for my $elt (@{$sep->{elts}}) {
+			$sep_copy = $elt->copy();
+			$sep_copy->paste(%paste_pos);
+		    }
+		}
+	    }
+	}
+    }
+
+    if ($sep_copy) {
+	# remove last separator and original one(s) in the template
+	$sep_copy->cut();
+	
+	for my $sep (@{$list->separators}) {
+	    for my $elt (@{$sep->{elts}}) {
+		$elt->cut();
+	    }
+	}
+    }
+}
+
+sub _replace_form {
+    my ($self, $form, $params) = @_;
+    my ($lel, %paste_pos, $iter, $dbobj);
+
+    $lel = $form->elt();
+
+    if ($lel->is_last_child()) {			
+	%paste_pos = (last_child => $lel->parent());
+    }
+    elsif ($lel->next_sibling()) {
+	%paste_pos = (before => $lel->next_sibling());
+    }
+    else {
+	# list is root element in the template
+	%paste_pos = (last_child => $self->{template}->{xml});
+    }
+    
+    $lel->cut();
+
+    if ($self->{auto_iterators}) {
+	for my $iter_name ($form->iterators()) {
+	    if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+		$iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+	    }
+	    else {
+		$iter = Template::Flute::Iterator->new([]);
+	    }
+
+	    $self->{specification}->set_iterator($iter_name, $iter);
+	}
+    }
+    
+    if (keys(%{$form->inputs()}) && $form->input()) {
+	$iter = $dbobj->build($form->query());
+
+	$self->_replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
+    }		
+    else {
+	$self->_replace_record($form, 'form', $lel, \%paste_pos, {});
+    }
+}
+
 sub _replace_within_elts {
 	my ($self, $param, $rep_str, $elt_handler) = @_;
-	my ($name, $zref);
+	my ($name, $zref, $rep_elts, $purge_new);
 
-	for my $elt (@{$param->{elts}}) {
+	if (exists $param->{new_elts} && @{$param->{new_elts}}) {
+	    $rep_elts = $param->{new_elts};
+	    $purge_new = 1;
+	}
+	else {
+	    $rep_elts = $param->{elts};
+	}
+
+	for my $elt (@$rep_elts) {
 	    if ($elt_handler) {
 		$elt_handler->($elt, $rep_str);
 		next;
@@ -566,6 +605,10 @@ sub _replace_within_elts {
 		} else {
 			$elt->set_text($rep_str);
 		}
+	}
+
+	if ($purge_new) {
+	    $param->{new_elts} = [];
 	}
 }
 
@@ -628,14 +671,25 @@ sub _replace_record {
 		    $self->_replace_within_elts($param, $rep_str);
 		}
 	}
-			
+
+	for my $sublist (@{$container->lists}) {
+	    my $iter_name = $sublist->iterator('name');
+
+	    # determine iterator for sublist
+	    if (ref($record->{$iter_name}) eq 'ARRAY') {
+		$sublist->set_iterator(Template::Flute::Iterator->new($record->{$iter_name}));
+	    }
+
+	    $self->_replace_list($sublist, {}, $row_pos); 
+	}
+
 	# now add to the template
 	my $subtree = $lel->copy();
 
 	# alternate classes?
 	if ($type eq 'list'
 		&& ($class_alt = $container->static_class($row_pos))) {
-		$subtree->set_att('class', $class_alt);
+		$lel->set_att('class', $class_alt);
 	}
 
 	$subtree->paste(%$paste_pos);
@@ -726,12 +780,6 @@ sub value {
 			 values => $self->{values},
 			 filters => $self->{filters},
 		    );
-
-		Dancer::Logger::debug("Values: ", join(',', keys %{$self->{values}}));
-
-		if (exists $self->{values}->{cart_items}) {
-		    Dancer::Logger::debug("Items: ", $self->{values}->{cart_items});
-		}
 
 		$raw_value = Template::Flute->new(%args)->process();
 	}

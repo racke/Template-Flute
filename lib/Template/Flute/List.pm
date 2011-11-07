@@ -23,7 +23,9 @@ sub new {
 	$class = shift;
 	$static ||= [];
 	
-	$self = {sob => $sob, static => $static, valid_input => undef};
+	$self = {sob => $sob, static => $static, valid_input => undef,
+		 elt_map => {},
+	};
 
 	if (exists $sob->{iterator}) {
 		$self->{iterator} = {name => $sob->{iterator}};
@@ -50,9 +52,9 @@ Add parameters from PARAMS to list.
 =cut
 	
 sub params_add {
-	my ($self, $params) = @_;
+    my ($self, $params) = @_;
 
-	$self->{params} = $params || [];
+    $self->{params} = $params || [];
 }
 
 =head2 separators_add SEPARATORS
@@ -65,6 +67,23 @@ sub separators_add {
     my ($self, $separators) = @_;
 
     $self->{separators} = $separators || [];
+}
+
+=head2 sublists_add SUBLISTS
+
+Add sublists from SUBLISTS to list.
+
+=cut
+
+sub sublists_add {
+    my ($self, $sublists) = @_;
+    my (@lists, $elt_list);
+
+    for my $href (@{$sublists || []}) {
+	push (@lists, $href->{list_object});
+    }
+
+    $self->{sublists} = \@lists;
 }
 
 =head2 inputs_add INPUTS
@@ -234,6 +253,18 @@ sub separators {
     my ($self) = @_;
 
     return $self->{separators};
+}
+
+=head2 lists
+
+Returns sublists in a tree.
+
+=cut
+
+sub lists {
+    my ($self) = @_;
+
+    return $self->{sublists};
 }
 
 =head2 input PARAMS

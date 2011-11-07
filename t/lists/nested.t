@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 use Template::Flute;
 
@@ -37,18 +37,28 @@ $iter = [{number => 'TF0001',
 	 },
 	 {number => 'TF0002',
 	  items => [{sku => 'GHI', quantity => 5},
+		    {sku => 'KLM', quantity => 6},
 	      ],
-	 }
+	 },
     ];
 
 $tf = Template::Flute->new(template => $html,
 			   specification => $spec,
 			   iterators => {orders => $iter,
-					 items => $iter->[0]->{items}},
+					 items => $iter->[0]->{items},
+			   }
     );
 
-warn "Names: ", join(',', map {ref($_), $_->name} $tf->template->lists), "\n";
+isa_ok($tf->template->list('orders'), 'Template::Flute::List');
 
 $out = $tf->process();
 
-ok($out =~ /XXX/, "HTML output for nested lists: $out");
+ok($out =~ m%div class="orders"><div class="details">
+SKU: <span class="sku">ABC</span><br />
+QTY: <span class="quantity">2</span><br /></div><div class="details">
+SKU: <span class="sku">DEF</span><br />
+QTY: <span class="quantity">1</span><br /></div></div><div class="orders"><div class="details">
+SKU: <span class="sku">GHI</span><br />
+QTY: <span class="quantity">5</span><br /></div><div class="details">
+SKU: <span class="sku">KLM</span><br />
+QTY: <span class="quantity">6</span><br /></div></div>%, "HTML output for nested lists: $out");

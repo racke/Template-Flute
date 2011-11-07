@@ -116,18 +116,16 @@ sub list_add {
 	my ($self, $new_listref) = @_;
 	my ($listref, $list_name, $class);
 
-	$list_name = $new_listref->{list}->{name};
+	$list_name = $new_listref->{container}->{name};
 
-	$listref = $self->{lists}->{$new_listref->{list}->{name}} = {input => {}};
-	warn "Adding list $list_name with params: ", join(',', map {$_->{name}} @{$new_listref->{param}}), "\n";
-	use Data::Dumper;
-	warn "Adding list $list_name: ", Dumper($new_listref);
-	$class = $new_listref->{list}->{class} || $list_name;
+	$listref = $self->{lists}->{$new_listref->{container}->{name}} = {input => {}};
 
-	$self->{classes}->{$class} = [{%{$new_listref->{list}}, type => 'list'}];
+	$class = $new_listref->{container}->{class} || $list_name;
 
-	if (exists $new_listref->{list}->{iterator}) {
-		$listref->{iterator} = $new_listref->{list}->{iterator};
+	$self->{classes}->{$class} = [{%{$new_listref->{container}}, type => 'list'}];
+
+	if (exists $new_listref->{container}->{iterator}) {
+		$listref->{iterator} = $new_listref->{container}->{iterator};
 	}
 
 	# loop through filters for this list
@@ -175,10 +173,10 @@ sub list_add {
 	}
 
 	# loop through sublists
-#	for my $sublist (@{$new_listref->{list}}) {
-#	    use Data::Dumper;
-#	    warn "Sublist found: ", Dumper($sublist);
-#	}
+	for my $sublist (@{$new_listref->{list}}) {
+	    $class = $sublist->{class} || $sublist->{name};
+	    push @{$self->{classes}->{$class}}, {%{$sublist}, type => 'sublist', list => $list_name};
+	}
 
 	return $listref;
 }
