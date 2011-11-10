@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0021 Thu Nov 10 18:36:22 2011 CET
+
+    [BUG FIXES]
+
+    * Add check for DateTime::Format::ISO8601 module to date filter test.
+
+    [DOCUMENTATION]
+
+    * Add documentation on filter prerequisites.
+
 0.0020 Thu Nov  3 23:32:33 2011 CET
 
     [ENHANCEMENTS]

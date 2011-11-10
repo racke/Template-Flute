@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0020
+    Version 0.0021
 
 SYNOPSIS
         use Template::Flute;
@@ -316,10 +316,17 @@ FILTERS
         Template::Flute::Filter::NobreakSingle.
 
     currency
-        Currency filter, see Template::Flute::Filter::Currency.
+        Currency filter, see Template::Flute::Filter::Currency. Requires
+        Number::Format module.
 
     date
-        Date filter, see Template::Flute::Filter::Date.
+        Date filter, see Template::Flute::Filter::Date. Requires DateTime
+        and DateTime::Format::ISO8601 modules.
+
+    Filter classes are loaded at runtime for efficiency and to keep the
+    number of dependencies for Template::Flute as small as possible.
+
+    See above for prerequisites needed by the included filter classes.
 
 INCLUDES
     Files, especially components for web pages can be processed and included
