@@ -16,6 +16,10 @@ Template::Flute::Filter::Date - Date filter
 
 Date filter based on L<DateTime>.
 
+=head1 PREREQUSITES
+
+L<DateTime> and L<DateTime::Format::ISO8601> modules.
+
 =head1 METHODS
 
 =head2 init

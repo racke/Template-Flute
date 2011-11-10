@@ -996,12 +996,19 @@ see L<Template::Flute::Filter::NobreakSingle>.
 =item currency
 
 Currency filter, see L<Template::Flute::Filter::Currency>.
+Requires L<Number::Format> module.
 
 =item date
 
 Date filter, see L<Template::Flute::Filter::Date>.
+Requires L<DateTime> and L<DateTime::Format::ISO8601> modules.
 
 =back
+
+Filter classes are loaded at runtime for efficiency and to keep the
+number of dependencies for Template::Flute as small as possible.
+
+See above for prerequisites needed by the included filter classes.
 
 =head1 INCLUDES
 

@@ -15,6 +15,10 @@ Template::Flute::Filter::Currency - Currency filter
 
 Currency filter based on L<Number::Format>.
 
+=head1 PREREQUISITES
+
+L<Number::Format> module.
+
 =head1 METHODS
 
 =head2 init
