@@ -14,6 +14,12 @@ if ($@) {
     plan skip_all => "Missing DateTime module.";
 }
 
+eval "use DateTime::Format::ISO8601";
+
+if ($@) {
+    plan skip_all => "Missing DateTime::Format::ISO8601 module.";
+}
+
 plan tests => 1;
 
 my ($xml, $html, $flute, $ret);
