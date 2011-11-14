@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0022 Mon Nov 14 08:35:40 2011 CET
+
+    [BUG FIXES]
+
+    * Use standard locale for currency filter test.
+
 0.0021 Thu Nov 10 18:36:22 2011 CET
 
     [BUG FIXES]
