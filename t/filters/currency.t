@@ -5,6 +5,7 @@
 use strict;
 use warnings;
 
+use POSIX;
 use Test::More;
 use Template::Flute;
 
@@ -15,6 +16,8 @@ if ($@) {
 }
 
 plan tests => 2;
+
+POSIX::setlocale(&POSIX::LC_ALL, 'C');
 
 my ($xml, $html, $flute, $ret);
 
@@ -51,4 +54,4 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">\$30.00</div>%, "Output: $ret");
+ok($ret =~ m%<div class="text">\$ 30.00</div>%, "Output: $ret");
