@@ -93,7 +93,7 @@ Add container specified by hash reference CONTAINER.
 
 sub container_add {
 	my ($self, $new_containerref) = @_;
-	my ($containerref, $container_name, $class);
+	my ($containerref, $container_name, $id, $class);
 
 	$container_name = $new_containerref->{container}->{name};
 
@@ -101,7 +101,12 @@ sub container_add {
 
 	$class = $new_containerref->{container}->{class} || $container_name;
 
-	$self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
+	if ($id = $new_containerref->{container}->{id}) {
+	    $self->{ids}->{$id} = {%{$new_containerref->{container}}, type => 'container'};
+	}
+	else {
+	    $self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
+	}
 
 	return $containerref;
 }
