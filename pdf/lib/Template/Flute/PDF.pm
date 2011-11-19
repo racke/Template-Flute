@@ -244,10 +244,13 @@ sub process {
 					  hpos => $self->{border_left});
 	
 #	$self->walk_template($self->{xml});
-	
-	$self->{pdf}->saveas($file);
-	
-	return;
+
+	if ($file) {
+	    $self->{pdf}->saveas($file);
+	    return 1;
+	}
+
+	return $self->{pdf}->stringify;
 }
 
 sub template {
