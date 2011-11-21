@@ -3,8 +3,6 @@ package Template::Flute::PDF::Image;
 use strict;
 use warnings;
 
-use File::Basename;
-use File::Spec;
 use File::Temp qw(tempfile);
 use Image::Size;
 use Image::Magick;
@@ -58,24 +56,6 @@ sub new {
 	}
 
 	bless ($self, $class);
-
-	$img_dir = dirname($self->{file});
-
-	if ($img_dir eq '.') {
-		# check whether HTML template is located in another directory
-		$template_dir = dirname($self->{pdf}->template()->file());
-
-		if ($template_dir ne '.') {
-			if ($self->{pdf}->{html_base}) {
-				$self->{file} = File::Spec->catfile($self->{pdf}->{html_base},
-													basename($self->{file}));
-			}
-			else {
-				$self->{file} = File::Spec->catfile($template_dir,
-													basename($self->{file}));
-			}
-		}
-	}
 	
 	# determine width, height, file type
 	@ret = imgsize($self->{file});

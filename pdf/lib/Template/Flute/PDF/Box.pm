@@ -175,10 +175,11 @@ sub calculate {
 	}
 
 	if ($self->{gi} eq 'img') {
-		my (@info, $file, %size);
+		my (@info, $src, $file, %size);
 
-		$file = $self->{elt}->att('src');
-		
+		$src = $self->{elt}->att('src');
+		$file = $self->{pdf}->locate_image($src);
+
 		$self->{object} = new Template::Flute::PDF::Image(file => $file,
 														 pdf => $self->{pdf});
 

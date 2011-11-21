@@ -5,6 +5,9 @@ use warnings;
 
 use Data::Dumper;
 
+use File::Basename;
+use File::Spec;
+
 use PDF::API2;
 use PDF::API2::Util;
 
@@ -851,6 +854,47 @@ sub rect {
 	if ($color) {
 		$gfx->fill();
 	}
+}
+
+=head2 locate_image
+
+Determines location of an image file from the C<src> HTML
+attribute.
+
+    $imgfile = $pdf->locate_image('images/cart.png');
+
+The location is based on the current directory, or on
+the C<html_base> constructor parameter if the C<src> HTML
+attribute contains a single file name only.
+ 
+=cut
+
+sub locate_image {
+    my ($self, $src) = @_;
+    my ($img_dir, $template_dir, $img_file);
+
+    $img_dir = dirname($src);
+
+    if ($img_dir eq '.') {
+	# check whether HTML template is located in another directory
+	$template_dir = dirname($self->template()->file());
+
+	if ($template_dir ne '.') {
+	    if ($self->{html_base}) {
+		$img_file = File::Spec->catfile($self->{pdf}->{html_base},
+					   basename($src));
+	    }
+	    else {
+		$img_file = File::Spec->catfile($template_dir,
+						basename($src));
+	    }
+	}
+    }
+    else {
+	$img_file = $src;
+    }
+
+    return $img_file;
 }
 
 =head2 image OBJECT HPOS VPOS WIDTH HEIGHT
