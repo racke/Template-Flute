@@ -243,6 +243,7 @@ sub _i18n_handler {
 
 sub _stash_flush {
 	my ($self, $elt, $hashref) = @_;
+	my (@stash);
 
 	# examine stash
 	for my $item_elt (@{$self->{stash}}) {
@@ -251,12 +252,12 @@ sub _stash_flush {
 			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
 		}
 		else {
-			warn "Misplace item in stash (" . $item_elt->gi() . "\n";
+		    push (@stash, $item_elt);
 		}
 	}
 
 	# clear stash
-	$self->{stash} = [];
+	$self->{stash} = \@stash;
 
 	return;
 }
