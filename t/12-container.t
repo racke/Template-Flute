@@ -8,7 +8,7 @@ use warnings;
 use Test::More;
 use Template::Flute;
 
-my (@tests, @tests_id, $html, $flute, $out);
+my (@tests, @tests_id, $html, $spec, $flute, $out);
 
 @tests = ([q{<container name="box" value="username"/>}, {}, 0],
 	  [q{<container name="box" value="username"/>}, 
@@ -60,7 +60,7 @@ my (@tests, @tests_id, $html, $flute, $out);
 	      {username => 'racke'}, 0],
     );
 
-plan tests => scalar @tests + @tests_id + 1;   
+plan tests => scalar @tests + @tests_id + 3;   
 
 $html = q{<div class="box">USER</div>};
 
@@ -115,3 +115,29 @@ for my $t (@tests_id) {
 	ok($out !~ m%<div id="box">USER</div>%, "$i: $out");
     }
 }
+
+# add test for container and value sharing same HTML element
+$html = q{<div class="message">MESSAGE</div>};
+$spec = q{<specification>
+<container name="message" value="message">
+<value name="message" field="message"/>
+</container>
+</specification>
+};
+
+$flute = Template::Flute->new(specification => $spec,
+			      template => $html,
+			      values => {message => 'Alright'},
+    );
+
+$out = $flute->process();
+
+ok($out =~ m%<div class="message">Alright</div>%, 'container shares value with value present') || diag $out;
+
+$flute = Template::Flute->new(specification => $spec,
+			      template => $html,
+    );
+
+$out = $flute->process();
+
+ok($out !~ m%<div class="message">.*</div>%, 'container shares value with value not present') || diag $out;
