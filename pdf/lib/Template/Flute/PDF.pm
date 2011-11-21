@@ -873,6 +873,14 @@ sub locate_image {
     my ($self, $src) = @_;
     my ($img_dir, $template_dir, $img_file);
 
+    if ($self->{swap_images}) {
+	for my $href (@{$self->{swap_images}}) {
+	    if ($href->{src} eq $src) {
+		$src = $href->{path};
+	    }
+	}
+    }
+
     $img_dir = dirname($src);
 
     if ($img_dir eq '.') {
