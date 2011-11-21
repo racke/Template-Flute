@@ -111,7 +111,7 @@ sub _initialize {
  				 separator => sub {$self->_stash_handler($_[1])},		     
 				 form => sub {$self->_form_handler($_[1])},
 				 param => sub {$self->_stash_handler($_[1])},
-				 value => sub {$self->_value_handler($_[1])},
+				 value => sub {$self->_stash_handler($_[1])},
  				 field => sub {$self->_stash_handler($_[1])},
 				 i18n => sub {$self->_i18n_handler($_[1])},
 				 input => sub {$self->_stash_handler($_[1])},
@@ -134,6 +134,16 @@ sub _spec_handler {
 
 	if ($value = $elt->att('encoding')) {
 		$self->{spec}->encoding($value);
+	}
+
+	# add values remaining on the stash
+	for my $stash_elt (@{$self->{stash}}) {
+	    if ($stash_elt->gi() eq 'value') {
+		$self->_value_handler($stash_elt);
+	    }
+	    else {
+		die "Unexpected element left on stash: ", $stash_elt->gi;
+	    }
 	}
 }
 

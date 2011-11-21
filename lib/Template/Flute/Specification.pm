@@ -108,6 +108,15 @@ sub container_add {
 	    $self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
 	}
 
+	# loop through values for this container
+	for my $value (@{$new_containerref->{value}}) {
+		$class = $value->{class} || $value->{name};
+		unless ($class) {
+			die "Neither class nor name for value within container $container_name.\n";
+		}
+		push @{$self->{classes}->{$class}}, {%{$value}, type => 'value', container => $container_name};
+	}
+
 	return $containerref;
 }
 
