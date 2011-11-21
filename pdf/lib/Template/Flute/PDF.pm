@@ -114,6 +114,8 @@ sub new {
 	bless ($self, $class);
 }
 
+=head1 METHODS
+
 =head2 process
 
 Processes HTML template and creates PDF file.
