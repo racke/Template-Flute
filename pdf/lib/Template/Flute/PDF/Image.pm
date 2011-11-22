@@ -133,9 +133,11 @@ sub convert {
 	
 	$self->{original_file} = $self->{file};
 
-	# create temporary file
+	# create and register temporary file
 	($tmph, $tmpfile) = tempfile('temzooXXXXXX', SUFFIX => ".$format");
 	
+	$self->{tmpfile} = $tmpfile;
+
 	$magick = new Image::Magick;
 
 	if ($msg = $magick->Read($self->{file})) {
@@ -152,6 +154,15 @@ sub convert {
 	($self->{width}, $self->{height}) = $magick->Get('width', 'height');
 	
 	return 1;
+}
+
+sub DESTROY {
+    my $self = shift;
+
+    if (exists $self->{tmpfile}) {
+	# clean up temporary file generated within convert method
+	unlink $self->{tmpfile};
+    }
 }
 
 =head1 AUTHOR
