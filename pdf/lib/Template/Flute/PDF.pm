@@ -41,6 +41,11 @@ our $VERSION = '0.0004';
 
   $pdf->process();
 
+=head1 DESCRIPTION
+
+Template::Flute::PDF is a PDF generator based on L<Template::Flute>
+and L<PDF::API2>.
+
 =head1 CONSTRUCTOR
 
 =head2 new
