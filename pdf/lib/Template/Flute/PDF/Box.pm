@@ -398,9 +398,15 @@ sub calculate {
 		$clear->{before} = 1;
 	}
 	elsif ($self->{gi} =~ /^h\d$/
-		   || $self->{gi} eq 'p'
-		   || ($self->{gi} eq 'li' && $self->property('list_style') ne 'none')) {
+	       || $self->{gi} eq 'p') {
+	    $clear->{before} = $clear->{after} = 1;
+	}
+	elsif ($self->{gi} eq 'li') {
+	    unless ($self->property('float') eq 'left'
+		    && $self->property('list_style') eq 'none') {
+		# show list elements vertically
 		$clear->{before} = $clear->{after} = 1;
+	    }
 	}
 
 	$self->{box} = {width => $max_width,
