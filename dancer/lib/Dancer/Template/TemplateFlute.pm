@@ -88,15 +88,22 @@ sub render ($$$) {
 
 	# instantiate iterators where object isn't yet available
 	if (%template_iterators = $flute->template()->iterators) {
+	    my $selector;
+
 		for my $name (keys %template_iterators) {
 			if ($value = $self->config->{iterators}->{$name}) {
 				%parms = %$value;
-			
+				
 				$class = "Template::Flute::Iterator::$parms{class}";
 
 				if ($parms{file}) {
 					$parms{file} = Template::Flute::Utils::derive_filename($template,
 																		   $parms{file}, 1);
+				}
+
+				if (($selector = delete $parms{selector})
+				    && $tokens->{$selector}) {
+				    $parms{selector} = {$selector => $tokens->{$selector}};
 				}
 
 				eval "require $class";
