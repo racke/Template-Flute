@@ -56,7 +56,7 @@ sub new {
 		}
 
 		$json_struct = from_json($json);
-		$self->seed($json_struct);
+		$self->_seed_iterator($json_struct);
 		
 		return $self;
 	}
@@ -70,13 +70,40 @@ sub new {
 
 	if ($self->{file}) {
 		$json_struct = $self->_parse_json_from_file($self->{file});
-		$self->seed($json_struct);
+		$self->_seed_iterator($json_struct);
 	}
 	else {
 		die "Missing JSON file.";
 	}
 	
 	return $self;
+}
+
+sub _seed_iterator {
+    my ($self, $json_struct) = @_;
+
+    if (exists $self->{selector}
+	&& ref($self->{selector}) eq 'HASH') {
+	my (@k, $key, $value);
+
+	# loop through top level elements and locate selector
+	if ((@k = keys %{$self->{selector}})) {
+	    $key = $k[0];
+	    $value = $self->{selector}->{$key};
+
+	    for my $record (@$json_struct) {
+		if (exists $record->{$key} 
+		    && $record->{$key} eq $value) {
+		    $self->seed($record->{$self->{children}});
+		    return;
+		}
+	    }
+	}
+
+	return;
+    }
+
+    $self->seed($json_struct);
 }
 
 sub _parse_json_from_file {
