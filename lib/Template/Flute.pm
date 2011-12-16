@@ -640,7 +640,12 @@ sub _replace_record {
 	# alternate classes?
 	if ($type eq 'list'
 		&& ($class_alt = $container->static_class($row_pos))) {
-		$subtree->set_att('class', $class_alt);
+	    if ($att_val = $subtree->att('class')) {
+		$subtree->set_att('class', "$att_val $class_alt");
+	    }
+	    else {
+		$subtree->set_att('class', $class_alt);	    
+	    }
 	}
 
 	$subtree->paste(%$paste_pos);
