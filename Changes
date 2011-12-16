@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0023 Fri Dec 16 16:40:26 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Recognize containers through id attribute.
+    * Allow container values to share the same HTML element with the
+      container.
+    * Use subtree of JSON as iterator through selector and children
+      parameters.
+    * Add joiner attribute to param element.
+
+    [BUG FIXES]
+
+    * Fix alternate classes to append rather than replace list class.
+
 0.0022 Mon Nov 14 08:35:40 2011 CET
 
     [BUG FIXES]
