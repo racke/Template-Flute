@@ -43,8 +43,10 @@ t/07-from-file.t
 t/08-utf8-html.t
 t/09-iso-html.t
 t/10-include.t
+t/11-value.t
 t/12-container.t
 t/13-separator.t
+t/14-alternate-classes.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml
