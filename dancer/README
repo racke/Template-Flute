@@ -2,7 +2,7 @@ NAME
     Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
-    Version 0.0003
+    Version 0.0023
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
@@ -18,9 +18,26 @@ DESCRIPTION
     Iterators can be specified explicitly in the configuration file as
     below.
 
-    engines: template_flute: iterators: fruits: class: JSON file:
-    fruits.json
+      engines:
+        template_flute:
+          iterators:
+            fruits:
+              class: JSON
+              file: fruits.json
 
+  FILTER OPTIONS
+    Filter options and classes can be specified in the configuration file as
+    below.
+
+      engines:
+        template_flute:
+          filters:
+            currency:
+              options:
+                int_curr_symbol: "$"
+            image:
+              class: "Flowers::Filters::Image"
+    
 METHODS
   default_tmpl_ext
     Returns default template extension.

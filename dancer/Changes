@@ -1,5 +1,17 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0023  Sat Dec 17 07:09:26 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Pass through filter options from configuration.
+    * Pass through selector and children parameters to iterators.
+    * Add form handling to Dancer::Template::TemplateFlute.
+
+    [BUG FIXES]
+
+    * Fix error messages for iterator failures in Dancer::Template::TemplateFlute.
+
 0.0003  Sun Apr  3 07:31:18 2011 CEST
 
      [ENHANCEMENTS]
