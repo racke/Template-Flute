@@ -45,7 +45,7 @@ Iterators can be specified explicitly in the configuration file as below.
 
 =head2 FILTER OPTIONS
 
-Filter options can be specified in the configuration file as below.
+Filter options and classes can be specified in the configuration file as below.
 
   engines:
     template_flute:
@@ -53,7 +53,9 @@ Filter options can be specified in the configuration file as below.
         currency:
           options:
             int_curr_symbol: "$"
-
+        image:
+          class: "Flowers::Filters::Image"
+    
 =head1 METHODS
 
 =head2 default_tmpl_ext
