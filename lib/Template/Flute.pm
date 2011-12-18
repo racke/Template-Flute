@@ -930,6 +930,22 @@ the hook operation.
 
 =back
 
+=item form
+
+Form elements are tied through specification to HTML forms.
+Attributes for form elements in addition to C<class> and C<id> are:
+
+=over 4
+
+=item link
+
+The link attribute can only have the value C<name> and allows to
+base the relationship between form specification elements and HTML
+form tags on the name HTML attribute instead of C<class>, which
+is usually more convenient.
+
+=back
+
 =item input
 
 =item filter
