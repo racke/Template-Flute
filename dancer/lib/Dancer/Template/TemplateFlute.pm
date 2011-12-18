@@ -55,6 +55,11 @@ Filter options and classes can be specified in the configuration file as below.
             int_curr_symbol: "$"
         image:
           class: "Flowers::Filters::Image"
+
+=head2 FORMS
+
+Dancer::Template::TemplateFlute includes a form plugin L<Dancer::Plugin::Form>,
+which supports L<Template::Flute> forms.
     
 =head1 METHODS
 

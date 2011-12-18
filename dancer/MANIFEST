@@ -4,6 +4,7 @@ MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 README
+lib/Dancer/Plugin/Form.pm
 lib/Dancer/Template/TemplateFlute.pm
 t/00-load.t
 t/boilerplate.t
