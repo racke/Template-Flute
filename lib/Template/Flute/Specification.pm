@@ -46,6 +46,9 @@ sub new {
 
 	# lookup hash for elements by id
 	$self->{ids} = {};
+
+	# lookup hash for elements by name attribute
+	$self->{names} = {};
 	
 	bless $self;
 }
@@ -197,19 +200,32 @@ Add form specified by hash reference FORM.
 	
 sub form_add {
 	my ($self, $new_formref) = @_;
-	my ($formref, $form_name, $id, $class);
+	my ($formref, $form_name, $form_link, $form_loc, $field_loc, $id, $class);
 
 	$form_name = $new_formref->{form}->{name};
-
+	$form_link = $new_formref->{form}->{link} || '';
+	
 	$formref = $self->{forms}->{$new_formref->{form}->{name}} = {input => {}};
 
+	my @checks = qw/id class/;
+
+	$form_loc = {%{$new_formref->{form}}, type => 'form'};
+	
 	if ($id = $new_formref->{form}->{id}) {
-		$self->{ids}->{$id} = {%{$new_formref->{form}}, type => 'form'};
+	    $self->{ids}->{$id} = $form_loc;
+	}
+	elsif ($class = $new_formref->{form}->{class}) {
+	    $class = $new_formref->{form}->{class};
+
+	    $self->{classes}->{$class} = [$form_loc];
+	}
+	elsif ($form_link eq 'name') {
+	    $self->{names}->{$form_name} = [$form_loc];
 	}
 	else {
-		$class = $new_formref->{form}->{class} || $form_name;
-
-		$self->{classes}->{$class} = [{%{$new_formref->{form}}, type => 'form'}];
+	    $class = $form_name;
+	    
+	    $self->{classes}->{$class} = [$form_loc];
 	}
 	
 	# loop through inputs for this form
@@ -226,13 +242,20 @@ sub form_add {
 
 	# loop through fields for this form
 	for my $field (@{$new_formref->{field}}) {
-		if (exists $field->{id}) {
-			$self->{ids}->{$field->{id}} = {%{$field}, type => 'field', form => $form_name};
-		}
-		else {
-			$class = $field->{class} || $field->{name};
-			push @{$self->{classes}->{$class}}, {%{$field}, type => 'field', form => $form_name};
-		}
+	    $field_loc = {%{$field}, type => 'field', form => $form_name};
+
+	    if (exists $field->{id}) {
+		$self->{ids}->{$field->{id}} = $field_loc;
+	    }
+	    elsif (exists $field->{class}) {
+		push @{$self->{classes}->{$field->{class}}}, $field_loc;
+	    }
+	    elsif ($form_link eq 'name') {
+		push @{$self->{names}->{$field->{name}}}, $field_loc;
+	    }
+	    else {
+		push @{$self->{classes}->{$field->{name}}}, $field_loc;
+	    }
 	}
 	
 	return $formref;
@@ -441,6 +464,22 @@ sub elements_by_class {
 
 	if (exists $self->{classes}->{$class}) {
 		return $self->{classes}->{$class};
+	}
+
+	return;
+}
+
+=head2 elements_by_name NAME
+
+Returns element(s) of the specification tied to HTML attribute name or undef.
+
+=cut
+
+sub elements_by_name {
+	my ($self, $name) = @_;
+
+	if (exists $self->{names}->{$name}) {
+		return $self->{names}->{$name};
 	}
 
 	return;

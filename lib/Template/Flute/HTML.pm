@@ -315,14 +315,15 @@ sub _parse_template {
 
 sub _parse_handler {
 	my ($self, $elt, $spec_object) = @_;
-	my ($gi, @classes, @static_classes, $class_names, $id, $name, $sob, $sob_ref);
+	my ($gi, @classes, @static_classes, $class_names, $id, $elt_name, $name, $sob, $sob_ref);
 
 	$gi = $elt->gi();
 	$class_names = $elt->class();
 	$id = $elt->id();
-	
-	# don't act on elements without class or id
-	return unless $class_names || $id;
+	$elt_name = $elt->att('name');
+
+	# don't act on elements without class, id or name attribute
+	return unless $class_names || $id || $elt_name;
 	
 	# weed out "static" classes
 	if ($class_names) {
@@ -344,6 +345,15 @@ sub _parse_handler {
 		}
 	}
 
+	if ($elt_name) {
+	    $sob_ref = $spec_object->elements_by_name($elt_name);
+	
+	    for my $sob (@$sob_ref) {
+		$name = $sob->{name} || $elt_name;
+		$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
+	    }
+	}
+	
 	for my $class (@classes) {
 		$sob_ref = $spec_object->elements_by_class($class);
 		for my $sob (@$sob_ref) {
