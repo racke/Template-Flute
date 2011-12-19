@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0024 Mon Dec 19 11:53:16 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Add link attribute to form specification element.
+
 0.0023 Fri Dec 16 16:40:26 2011 CET
 
     [ENHANCEMENTS]

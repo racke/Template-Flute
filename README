@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0023
+    Version 0.0024
 
 SYNOPSIS
         use Template::Flute;
@@ -256,6 +256,16 @@ SPECIFICATION
         include
             Processes the template file named in this attribute. This
             implies the hook operation.
+
+    form
+        Form elements are tied through specification to HTML forms.
+        Attributes for form elements in addition to `class' and `id' are:
+
+        link
+            The link attribute can only have the value `name' and allows to
+            base the relationship between form specification elements and
+            HTML form tags on the name HTML attribute instead of `class',
+            which is usually more convenient.
 
     input
     filter
