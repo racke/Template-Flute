@@ -11,7 +11,7 @@ use Dancer::Config;
 
 use base 'Dancer::Template::Abstract';
 
-our $VERSION = '0.0023';
+our $VERSION = '0.0024';
 
 =head1 NAME
 
@@ -19,7 +19,7 @@ Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 =head1 VERSION
 
-Version 0.0023
+Version 0.0024
 
 =head1 DESCRIPTION
 
