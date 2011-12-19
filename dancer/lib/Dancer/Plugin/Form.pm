@@ -22,7 +22,24 @@ our $VERSION = '0.0023';
 
 =head1 SYNOPSIS
 
-    $form = form('checkout');
+Display template with checkout form:
+    
+    get '/checkout' => sub {
+        my $form;
+
+        $form = form('checkout');
+	
+        template 'checkout', {form => $form};
+    };
+
+Retrieve form input from checkout form:
+
+    post '/checkout' => sub {
+        my ($form, $values);
+
+        $form = form('checkout');
+        $values = $form->values();
+    };
 
 =cut
 
@@ -32,6 +49,9 @@ register form => sub {
 
     if (@_ % 2) {
 	$name = shift;
+    }
+    else {
+	$name = 'main';
     }
     
     $object = Dancer::Plugin::Form->new(name => $name, @_);
@@ -45,7 +65,9 @@ register_plugin;
     
 C<Dancer::Plugin::Form> is used for forms with the L<Dancer::Template::TemplateFlute>
 templating engine.    
-    
+
+Form fields, values and errors are stored into and loaded from the session key C<form>.
+
 =head1 METHODS
 
 =head2 new
@@ -68,7 +90,7 @@ sub new {
 	$self->{name} = $params{name};
     }
     else {
-	$self->{name} = '';
+	$self->{name} = 'main';
     }
 
     if (exists $params{action}) {
@@ -168,6 +190,7 @@ sub values {
 
     if ($save) {
 	$self->{values} = \%values;
+	return \%values;
     }
 
     return \%values;
@@ -281,22 +304,16 @@ Returns 1 if session contains data for this form, 0 otherwise.
 
 sub from_session {
     my ($self) = @_;
-    my ($form);
+    my ($forms_ref, $form);
+    
+    if ($forms_ref = session('form')) {
+	$form = $forms_ref->{$self->{name}};
 
-    if ($form = session('form')) {
-	unless (defined $form->{name}) {
-	    $form->{name} = '';
-	}
-
-	if ($form->{name} eq $self->{name}) {
-	    $self->{fields} = $form->{fields};
-	    $self->{errors} = $form->{errors};
-	    $self->{values} = $form->{values};
-
-	    session 'form' => undef;
-	    return 1;
-	} 	
-    }
+	$self->{fields} = $form->{fields} || [];
+	$self->{errors} = $form->{errors} || [];
+	$self->{values} = $form->{values} || {};
+	return 1;
+    } 	
 
     return 0;
 }
@@ -310,13 +327,20 @@ session key 'form'.
 
 sub to_session {
     my ($self) = @_;
+    my ($forms_ref);
 
-    session 'form' => {name => $self->{name}, 
-		       fields => $self->{fields},
-		       errors => $self->{errors},
-		       values => $self->{values},
+    # get current form information from session
+    $forms_ref = session 'form';
+
+    # update our form
+    $forms_ref->{$self->{name}} = {name => $self->{name}, 
+				   fields => $self->{fields},
+				   errors => $self->{errors},
+				   values => $self->{values},
     };
-
+    
+    # update form information
+    session 'form' => $forms_ref;
 }
 
 =head1 AUTHOR
