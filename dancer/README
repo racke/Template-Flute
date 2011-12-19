@@ -2,7 +2,7 @@ NAME
     Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
-    Version 0.0023
+    Version 0.0024
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
@@ -37,7 +37,11 @@ DESCRIPTION
                 int_curr_symbol: "$"
             image:
               class: "Flowers::Filters::Image"
-    
+
+  FORMS
+    Dancer::Template::TemplateFlute includes a form plugin
+    Dancer::Plugin::Form, which supports Template::Flute forms.
+
 METHODS
   default_tmpl_ext
     Returns default template extension.

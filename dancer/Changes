@@ -1,5 +1,11 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0024 Mon Dec 19 12:08:53 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Add form plugin Dancer::Plugin::Form.
+
 0.0023  Sat Dec 17 07:09:26 2011 CET
 
     [ENHANCEMENTS]
