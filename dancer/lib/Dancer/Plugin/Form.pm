@@ -103,6 +103,20 @@ sub new {
     return $self;
 }
 
+=head2 name
+
+Get form name:
+
+    $form->name
+
+=cut
+
+sub name {
+    my $self = shift;
+
+    return $self->{name};
+}
+
 =head2 action
 
 Set form action:
