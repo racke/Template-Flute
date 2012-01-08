@@ -130,7 +130,7 @@ sub form {
 
 =head2 values
 
-Returns list of values for this form.
+Returns list of values for this template.
 
 =cut
 
