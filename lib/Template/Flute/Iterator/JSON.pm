@@ -82,28 +82,54 @@ sub new {
 sub _seed_iterator {
     my ($self, $json_struct) = @_;
 
-    if (exists $self->{selector}
-	&& ref($self->{selector}) eq 'HASH') {
-	my (@k, $key, $value);
+    if (exists $self->{selector}) {
+	if (ref($self->{selector}) eq 'HASH') {
+	    my (@k, $key, $value);
 
-	# loop through top level elements and locate selector
-	if ((@k = keys %{$self->{selector}})) {
-	    $key = $k[0];
-	    $value = $self->{selector}->{$key};
-
-	    for my $record (@$json_struct) {
-		if (exists $record->{$key} 
-		    && $record->{$key} eq $value) {
+	    # loop through top level elements and locate selector
+	    if ((@k = keys %{$self->{selector}})) {
+		$key = $k[0];
+		$value = $self->{selector}->{$key};
+		
+		for my $record (@$json_struct) {
+		    if (exists $record->{$key} 
+			&& $record->{$key} eq $value) {
 		    $self->seed($record->{$self->{children}});
 		    return;
+		    }
 		}
 	    }
+	}
+	elsif ($self->{selector} eq '*') {
+	    # find all elements
+	    $self->seed($self->_tree($json_struct, $self->{children}, $self->{sort}));
+
+	    if ($self->{sort}) {
+		$self->sort($self->{sort}, $self->{unique});
+	    }
+
+	    return;
 	}
 
 	return;
     }
 
     $self->seed($json_struct);
+}
+
+sub _tree {
+    my ($self, $json_struct, $children, $sort) = @_;
+    my (@leaves);
+
+    for my $record (@$json_struct) {
+	if (exists $record->{$children}) {
+	    for my $child (@{$record->{$children}}) {
+		push (@leaves, $child);
+	    }
+	}
+    }
+
+    return \@leaves;
 }
 
 sub _parse_json_from_file {
