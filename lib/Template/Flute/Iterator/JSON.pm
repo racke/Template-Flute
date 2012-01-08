@@ -111,6 +111,8 @@ sub _seed_iterator {
 	    return;
 	}
 
+	# no matches for selector, seed iterator with empty list
+	$self->seed();
 	return;
     }
 
