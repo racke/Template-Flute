@@ -7,6 +7,7 @@ use Data::Dumper;
 
 use File::Basename;
 use File::Spec;
+use Math::Trig;
 
 use PDF::API2;
 use PDF::API2::Util;
@@ -626,6 +627,54 @@ sub calculate {
 		$height = $lines * $specs->{size};
 	}
 	
+	if (exists $specs->{props}->{rotate}) {
+	    my ($radian, $new_height, $new_width);
+
+	    # determine new width and height of box used for rotated text
+	    $radian = deg2rad($specs->{props}->{rotate});
+
+	    $new_width = abs($max_width * cos($radian)) + abs($height * sin($radian));
+	    $new_height = abs($max_width * sin($radian)) + abs($height * cos($radian));
+	    
+	    my $corr_w = abs($max_width * cos($radian)) + abs($height * sin($radian));
+	    my $corr_h = $max_width * sin($radian) + $height * cos($radian);
+
+	    $specs->{props}->{correction} = {width => abs($height * sin($radian)), height => - abs($max_width * cos($radian))};
+	    $specs->{props}->{correction} = {width => 0, height => 0};
+
+	    # width correction
+	    if ($specs->{props}->{rotate} <= 90) {
+		$specs->{props}->{correction}->{width} = $height * sin($radian);
+	    }
+	    elsif ($specs->{props}->{rotate} < 180) {
+		$specs->{props}->{correction}->{width} = abs($max_width * cos($radian)) 
+		    + $height * 0.5 * sin($radian);
+            }
+	    elsif ($specs->{props}->{rotate} < 270) {
+		$specs->{props}->{correction}->{width} = abs($max_width * cos($radian)) ;
+	    }
+	    elsif ($specs->{props}->{rotate}) {
+		$specs->{props}->{correction}->{width} = $height + $height * sin($radian); # + $height * sin($radian);
+            }
+
+	    # height correction
+	    if ($specs->{props}->{rotate} < 90) {
+		$specs->{props}->{correction}->{height} = $height * sin($radian) - $max_width * sin($radian);
+	    }
+	    elsif ($specs->{props}->{rotate} <= 180) {
+		$specs->{props}->{correction}->{height} = $height - $max_width * sin($radian);
+	    }
+	    elsif ($specs->{props}->{rotate} <= 270) {
+		$specs->{props}->{correction}->{height} = abs($height * sin($radian));
+	    }
+	    elsif ($specs->{props}->{rotate} < 360) {
+		$specs->{props}->{correction}->{height} = - $height * sin($radian);
+            }
+
+	    $max_width = $new_width;
+	    $height = $new_height;
+        }
+
 	# adjust to fixed width
 	if ($avail_width) {
 		if ($avail_width < $max_width) {
@@ -752,9 +801,17 @@ sub textbox {
 #print "Add textbox (class " . ($elt->att('class') || "''") . ") with content '$boxtext' at $parms{y} x $parms{x}, border $offset{top}\n";
 
 	if (length($boxtext) && $boxtext =~ /\S/) {
-		# try different approach
+	    # try different approach
+	    if (exists $props->{rotate}) {
+		$txeng->translate($parms{x} + $props->{correction}->{width}, 
+				  $parms{y} + $props->{correction}->{height},);
+		$txeng->transform_rel(-rotate => $props->{rotate});
+	    }
+	    else {
 		$txeng->translate($parms{x}, $parms{y});
-		$txeng->text($boxtext);
+	    }
+
+	    $txeng->text($boxtext);
 	}
 	else {
 		$y_last = $parms{y};
