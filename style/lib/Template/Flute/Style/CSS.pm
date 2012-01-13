@@ -437,6 +437,16 @@ sub _build_properties {
 		$propref->{text}->{transform} = $props_css->{'text-transform'};
 	}
 	
+	# transform
+	for (qw/transform -webkit-transform -moz-transform -o-transform -ms-transform/) {
+            if ($value = $props_css->{$_}) {
+		if ($value =~ s/^\s*rotate\((\d+)\s*deg\)\s*$/$1/) {
+		    $propref->{rotate} = $value;
+		    last;
+                }
+            }
+        }
+
 	# width
 	if ($props_css->{'width'}) {
 		$propref->{width} = $props_css->{width};
