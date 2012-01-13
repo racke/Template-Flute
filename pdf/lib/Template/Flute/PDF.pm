@@ -628,10 +628,13 @@ sub calculate {
 	}
 	
 	if (exists $specs->{props}->{rotate}) {
-	    my ($radian, $new_height, $new_width);
+	    my ($rotate, $radian, $new_height, $new_width);
+
+	    # rotation works other way around compared to CSS
+	    $rotate = 360 - $specs->{props}->{rotate};
 
 	    # determine new width and height of box used for rotated text
-	    $radian = deg2rad($specs->{props}->{rotate});
+	    $radian = deg2rad($rotate);
 
 	    $new_width = abs($max_width * cos($radian)) + abs($height * sin($radian));
 	    $new_height = abs($max_width * sin($radian)) + abs($height * cos($radian));
@@ -643,31 +646,31 @@ sub calculate {
 	    $specs->{props}->{correction} = {width => 0, height => 0};
 
 	    # width correction
-	    if ($specs->{props}->{rotate} <= 90) {
+	    if ($rotate <= 90) {
 		$specs->{props}->{correction}->{width} = $height * sin($radian);
 	    }
-	    elsif ($specs->{props}->{rotate} < 180) {
+	    elsif ($rotate < 180) {
 		$specs->{props}->{correction}->{width} = abs($max_width * cos($radian)) 
 		    + $height * 0.5 * sin($radian);
             }
-	    elsif ($specs->{props}->{rotate} < 270) {
+	    elsif ($rotate < 270) {
 		$specs->{props}->{correction}->{width} = abs($max_width * cos($radian)) ;
 	    }
-	    elsif ($specs->{props}->{rotate}) {
+	    elsif ($rotate) {
 		$specs->{props}->{correction}->{width} = $height + $height * sin($radian); # + $height * sin($radian);
             }
 
 	    # height correction
-	    if ($specs->{props}->{rotate} < 90) {
+	    if ($rotate < 90) {
 		$specs->{props}->{correction}->{height} = $height * sin($radian) - $max_width * sin($radian);
 	    }
-	    elsif ($specs->{props}->{rotate} <= 180) {
+	    elsif ($rotate <= 180) {
 		$specs->{props}->{correction}->{height} = $height - $max_width * sin($radian);
 	    }
-	    elsif ($specs->{props}->{rotate} <= 270) {
+	    elsif ($rotate <= 270) {
 		$specs->{props}->{correction}->{height} = abs($height * sin($radian));
 	    }
-	    elsif ($specs->{props}->{rotate} < 360) {
+	    elsif ($rotate < 360) {
 		$specs->{props}->{correction}->{height} = - $height * sin($radian);
             }
 
@@ -805,7 +808,7 @@ sub textbox {
 	    if (exists $props->{rotate}) {
 		$txeng->translate($parms{x} + $props->{correction}->{width}, 
 				  $parms{y} + $props->{correction}->{height},);
-		$txeng->transform_rel(-rotate => $props->{rotate});
+		$txeng->transform_rel(-rotate => 360 - $props->{rotate});
 	    }
 	    else {
 		$txeng->translate($parms{x}, $parms{y});
