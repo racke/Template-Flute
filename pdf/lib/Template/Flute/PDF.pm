@@ -867,32 +867,33 @@ sub borders {
 	if ($specs->{borders}->{top}) {
 		$gfx->strokecolor($specs->{props}->{border}->{top}->{color});
 		$gfx->linewidth($specs->{borders}->{top});
-		$gfx->move($x_left, $y_top);
-		$gfx->line($x_left + $width, $y_top);
+		$gfx->move($x_left, $y_top - $specs->{borders}->{top} * 0.5);
+		$gfx->line($x_left + $width, $y_top - $specs->{borders}->{top} * 0.5);
 		$gfx->stroke();
 	}
 
 	if ($specs->{borders}->{left}) {
 		$gfx->strokecolor($specs->{props}->{border}->{left}->{color});
 		$gfx->linewidth($specs->{borders}->{left});
-		$gfx->move($x_left, $y_top);
-		$gfx->line($x_left, $y_top - $height);
+		$gfx->move($x_left + 0.5 * $specs->{borders}->{left}, $y_top);
+		$gfx->line($x_left + 0.5 * $specs->{borders}->{left} , $y_top - $height); #- $specs->{borders}->{top});
+	    
 		$gfx->stroke();
 	}
 	
 	if ($specs->{borders}->{bottom}) {
 		$gfx->strokecolor($specs->{props}->{border}->{bottom}->{color});
 		$gfx->linewidth($specs->{borders}->{bottom});
-		$gfx->move($x_left, $y_top - $height + $specs->{borders}->{bottom});
-		$gfx->line($x_left + $width, $y_top - $height + $specs->{borders}->{bottom});
+		$gfx->move($x_left, $y_top - $height - 1 + 0.5 * $specs->{borders}->{bottom} );
+		$gfx->line($x_left + $width, $y_top - $height - 1 +  0.5 * $specs->{borders}->{bottom} );
 		$gfx->stroke();
 	}
 
 	if ($specs->{borders}->{right}) {
 		$gfx->strokecolor($specs->{props}->{border}->{right}->{color});
 		$gfx->linewidth($specs->{borders}->{right});
-		$gfx->move($x_left + $width, $y_top);
-		$gfx->line($x_left + $width, $y_top - $height);
+		$gfx->move($x_left + $width - 0.5 * $specs->{borders}->{right}, $y_top);
+		$gfx->line($x_left + $width  - 0.5 * $specs->{borders}->{right}, $y_top - $height);
 		$gfx->stroke();
 	}
 }
