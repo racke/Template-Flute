@@ -180,6 +180,8 @@ sub properties {
 		$self->_build_properties($props, $parms{selector});
 	}
 	
+	$self->_expand_properties($props);
+
 	return $props;
 }
 
@@ -335,11 +337,6 @@ sub _build_properties {
 				style => $style,
 				color => $color};
 		}
-		else {
-			for my $p (qw/width style color/) {
-				$propref->{border}->{$s}->{$p} ||=  $propref->{border}->{all}->{$p};
-			}
-		}
 
 		for my $p (qw/width style color/) {
 			if ($value = $props_css->{"border-$s-$p"}) {
@@ -453,6 +450,18 @@ sub _build_properties {
 	}
 	
 	return $propref;
+}
+
+sub _expand_properties {
+    my ($self, $props) = @_;
+
+    # border sides		
+    for my $s (SIDE_NAMES) {
+	for my $p (qw/width style color/) {
+	    next if exists $props->{border}->{$s}->{$p};
+	    $props->{border}->{$s}->{$p} =  $props->{border}->{all}->{$p};    
+	}
+    }
 }
 
 sub inherit {
