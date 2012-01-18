@@ -717,14 +717,14 @@ Setup specifications for this box.
 	
 sub setup_specs {
 	my ($self) = @_;
-	my ($inherit);
+	my ($inherit, $selector_map);
 	
 	if ($self->{parent}) {
 		$inherit = $self->{parent}->{specs}->{props};
 	}
 	
 	# lookup ourselves in selector map from ancestors
-	if ($self->{selector_map}) {
+	if ($selector_map = $self->{parent}->{selector_map}) {
 		my (@selectors);
 		
 		if ($self->{class}) {
@@ -738,9 +738,9 @@ sub setup_specs {
 		}
 
 		for my $key (@selectors) {
-			if ($self->{selector_map}->{$key}) {
+			if ($selector_map->{$key}) {
 				$self->{specs} = $self->{pdf}->setup_text_props($self->{elt},
-														 $self->{selector_map}->{$key}, $inherit);
+														 $selector_map->{$key}, $inherit);
 			}
 		}
 	}
