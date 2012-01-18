@@ -397,8 +397,8 @@ sub calculate {
 	elsif ($self->{gi} eq 'br') {
 		$clear->{before} = 1;
 	}
-	elsif ($self->{gi} =~ /^h\d$/
-	       || $self->{gi} eq 'p') {
+	elsif ($self->{specs}->{props}->{display} eq 'block'
+	    && $self->property('float') ne 'left') {
 	    $clear->{before} = $clear->{after} = 1;
 	}
 	elsif ($self->{gi} eq 'li') {
