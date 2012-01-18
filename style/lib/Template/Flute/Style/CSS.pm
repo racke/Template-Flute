@@ -12,6 +12,26 @@ use constant SIDE_NAMES => qw/top right bottom left/;
 
 our $VERSION = '0.0003';
 
+# block elements
+my %block_elements = (address => 1,
+		      blockquote => 1,
+		      div => 1,
+		      dl => 1,
+		      fieldset => 1,
+		      form => 1,
+		      h1 => 1,
+		      h2 => 1,
+		      h3 => 1,
+		      h4 => 1,
+		      h5 => 1,
+		      h6 => 1,
+		      noscript => 1,
+		      ol => 1,
+		      p => 1,
+		      pre => 1,
+		      table => 1,
+		      ul => 1);
+
 =head1 NAME
 
 Template::Flute::Style::CSS - CSS parser class for Template::Flute
@@ -174,6 +194,10 @@ sub properties {
 				$props->{font}->{weight} = 'bold';
 			}
 		}
+
+		if ($props->{display} && exists $block_elements{$tags[0]} ) {
+		    $props->{display} = 'block';
+		}	
 	}
 
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
@@ -356,6 +380,11 @@ sub _build_properties {
 	# color
 	if ($props_css->{color}) {
 		$propref->{color} = $props_css->{color};
+	}
+
+	# display
+	if ($props_css->{display}) {
+	    $propref->{display} = $props_css->{display};
 	}
 
 	# float
