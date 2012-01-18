@@ -164,6 +164,21 @@ sub properties {
 
 	if (defined $parms{tag} && $parms{tag} =~ /\S/) {
 		@tags = split(/\s+/, $parms{tag});
+
+		if (@tags) {
+		    for my $tag (@tags) {
+			$self->_build_properties($props, $tag);
+
+			if (($parms{tag} eq 'strong' || $parms{tag} eq 'b')
+			    && ! exists $props->{font}->{weight}) {
+			    $props->{font}->{weight} = 'bold';
+			}
+		}
+		    
+		    if (! $props->{display} && exists $block_elements{$tags[0]} ) {
+			$props->{display} = 'block';
+		    }	
+		}
 	}
 	
 	if (defined $parms{id} && $parms{id} =~ /\S/) {
@@ -183,21 +198,6 @@ sub properties {
 				$self->_build_properties($props, "$_.$class");
 			}
 		}
-	}
-
-	if (@tags) {
-		for my $tag (@tags) {
-			$self->_build_properties($props, $tag);
-
-			if (($parms{tag} eq 'strong' || $parms{tag} eq 'b')
-				&& ! exists $props->{font}->{weight}) {
-				$props->{font}->{weight} = 'bold';
-			}
-		}
-
-		if (! $props->{display} && exists $block_elements{$tags[0]} ) {
-		    $props->{display} = 'block';
-		}	
 	}
 
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
