@@ -195,7 +195,7 @@ sub properties {
 			}
 		}
 
-		if ($props->{display} && exists $block_elements{$tags[0]} ) {
+		if (! $props->{display} && exists $block_elements{$tags[0]} ) {
 		    $props->{display} = 'block';
 		}	
 	}
@@ -203,7 +203,9 @@ sub properties {
 	if (defined $parms{selector} && $parms{selector} =~ /\S/) {
 		$self->_build_properties($props, $parms{selector});
 	}
-	
+
+	$props->{display} ||= 'inline';
+
 	$self->_expand_properties($props);
 
 	return $props;
