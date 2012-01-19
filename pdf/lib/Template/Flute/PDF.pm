@@ -740,7 +740,7 @@ sub textbox {
 	my ($self, $elt, $boxtext, $boxprops, $box, %atts) = @_;
 	my ($width_last, $y_top, $y_last, $left_over, $text_width, $text_height, $box_height);
 	my (@tb_parms, %parms, $txeng, %offset, %borders, %padding, $props,
-		$paragraph, $specs);
+		$paragraph, $specs, %text_options, $decoration);
 
 	if ($boxprops) {
 		$specs = $boxprops;
@@ -803,6 +803,12 @@ sub textbox {
 
 #print "Add textbox (class " . ($elt->att('class') || "''") . ") with content '$boxtext' at $parms{y} x $parms{x}, border $offset{top}\n";
 
+	if ($decoration = $props->{text}->{decoration}) {
+	    if ($decoration eq 'underline') {
+                $text_options{'-underline'} = 1;
+            }
+	}
+
 	if (length($boxtext) && $boxtext =~ /\S/) {
 	    # try different approach
 	    if (exists $props->{rotate}) {
@@ -814,7 +820,7 @@ sub textbox {
 		$txeng->translate($parms{x}, $parms{y});
 	    }
 
-	    $txeng->text($boxtext);
+	    $txeng->text($boxtext, %text_options);
 	}
 	else {
 		$y_last = $parms{y};
