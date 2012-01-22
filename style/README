@@ -2,7 +2,7 @@ NAME
     Template::Flute::Style::CSS - CSS parser class for Template::Flute
 
 VERSION
-    Version 0.0003
+    Version 0.0024
 
 CONSTRUCTOR
   new
@@ -10,6 +10,10 @@ CONSTRUCTOR
 
     template
         Template::Flute::HTML object.
+
+    prepend_directory
+        Directory which is prepended to the CSS path when the template
+        doesn't reside in a file.
 
 METHODS
   properties

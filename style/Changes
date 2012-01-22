@@ -1,5 +1,19 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0024 Sun Jan 22 14:32:59 2012 CET
+
+    [ENHANCEMENTS]
+
+    * Add support for display property.
+    * Add support for text-decoration property
+    * Add support for the various transform CSS properties.
+
+    [BUG FIXES]
+
+    * Fix CSS specificity of tag selectors.
+    * Fix bug determining border properties triggered by second class
+      overriding specific border property.
+
 0.0003  Wed May 25 11:03:06 2011 CEST
 	
     [BUG FIXES]
@@ -11,7 +25,7 @@ Revision history for Template::Flute::Style::CSS
     [ENHANCEMENTS]
 
     * Add support for list-style CSS property.
-	* Add support for external stylesheets on local file system.
+    * Add support for external stylesheets on local file system.
     * Add test for loading example stylesheet.
 
     [BUG FIXES]
