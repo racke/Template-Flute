@@ -24,11 +24,11 @@ Template::Flute::PDF - PDF generator for HTML templates
 
 =head1 VERSION
 
-Version 0.0004
+Version 0.0024
 
 =cut
 
-our $VERSION = '0.0004';
+our $VERSION = '0.0024';
 
 =head1 SYNOPSIS
 
