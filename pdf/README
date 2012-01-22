@@ -2,7 +2,7 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0004
+    Version 0.0024
 
 SYNOPSIS
       $flute = new Template::Flute (specification_file => 'invoice.xml',
@@ -14,6 +14,10 @@ SYNOPSIS
                                       file => 'invoice.pdf');
 
       $pdf->process();
+
+DESCRIPTION
+    Template::Flute::PDF is a PDF generator based on Template::Flute and
+    PDF::API2.
 
 CONSTRUCTOR
   new
@@ -31,6 +35,7 @@ CONSTRUCTOR
     html_base
         Base directory for HTML resources like images and stylesheets.
 
+METHODS
   process
     Processes HTML template and creates PDF file.
 
@@ -73,6 +78,15 @@ CONSTRUCTOR
 
   rect X_LEFT Y_TOP X_RIGHT Y_BOTTOM COLOR
     Adds rectangle to the PDF.
+
+  locate_image
+    Determines location of an image file from the `src' HTML attribute.
+
+        $imgfile = $pdf->locate_image('images/cart.png');
+
+    The location is based on the current directory, or on the `html_base'
+    constructor parameter if the `src' HTML attribute contains a single file
+    name only.
 
   image OBJECT HPOS VPOS WIDTH HEIGHT
     Add image OBJECT to the PDF.
