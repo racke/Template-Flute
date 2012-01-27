@@ -471,7 +471,7 @@ sub _build_properties {
 	# transform
 	for (qw/transform -webkit-transform -moz-transform -o-transform -ms-transform/) {
             if ($value = $props_css->{$_}) {
-		if ($value =~ s/^\s*rotate\((\d+)\s*deg\)\s*$/$1/) {
+		if ($value =~ s/^\s*rotate\((\d+(\.\d+)?)\s*deg\)\s*$/$1/) {
 		    $propref->{rotate} = $value;
 		    last;
                 }
