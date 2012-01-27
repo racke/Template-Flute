@@ -836,24 +836,25 @@ Add horizontal line to PDF.
 =cut
 	
 sub hline {
-	my ($self, $specs, $hpos, $vpos, $length, $width) = @_;
+	my ($self, $specs, $hpos, $vpos, $width, $height) = @_;
 	my ($gfx);
 
 	$gfx = $self->{page}->gfx;
+
+	$self->begin_transform($gfx, $hpos, $vpos - $height / 2, $width, $height || 1, $specs->{props});
 
 	# set line color
 	$gfx->strokecolor($specs->{props}->{color});
 
 	# set line width
-	$gfx->linewidth($width || 1);
-	
-	# starting point
-	$gfx->move($hpos, $vpos);
+	$gfx->linewidth($height || 1);
 
-	$gfx->line($hpos + $length, $vpos);
+	$gfx->line($width, 0);
 	
 	# draw line
 	$gfx->stroke();
+
+	$self->end_transform($gfx, $hpos, $vpos - $height / 2, $width, $height || 1, $specs->{props});
 
 	return;
 }
@@ -994,6 +995,39 @@ sub image {
 	$image_object = $self->{pdf}->$method($object->{file});
 
 	$gfx->image($image_object, $x_left, $y_top, $width, $height);
+}
+
+=head2 begin_transform
+
+Starts transformation of current content object.
+
+=cut
+
+sub begin_transform {
+    my ($self, $gfx, $hpos, $vpos, $width, $height, $props) = @_;
+
+    $gfx->move(0,0);
+    $gfx->translate($hpos, $vpos);
+    
+    if ($props->{rotate}) {
+	$gfx->rotate(- $props->{rotate});
+    }
+}
+
+=head2 end_transform
+
+Ends transformation of current content object.
+
+=cut
+
+sub end_transform {
+    my ($self, $gfx, $hpos, $vpos, $width, $height, $props) = @_;
+    
+    if ($props->{rotate}) {
+	$gfx->rotate($props->{rotate});
+    }
+
+    $gfx->translate(-$hpos, -$vpos);
 }
 
 =head1 FUNCTIONS
