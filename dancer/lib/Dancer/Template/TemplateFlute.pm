@@ -136,23 +136,24 @@ sub render ($$$) {
 	
 	if (@forms = $flute->template->forms()) {
 	    if (@forms == 1) {
-		unless ($tokens->{form}) {
-		    die "Missing form parameters for form " . $forms[0]->name;
-		}
-		    
-		for my $name ($forms[0]->iterators) {
-		    if (ref($tokens->{$name}) eq 'ARRAY') {
-			$iter = Template::Flute::Iterator->new($tokens->{$name});
-			$flute->specification->set_iterator($name, $iter);
+		if ($tokens->{form}) {
+		    for my $name ($forms[0]->iterators) {
+			if (ref($tokens->{$name}) eq 'ARRAY') {
+			    $iter = Template::Flute::Iterator->new($tokens->{$name});
+			    $flute->specification->set_iterator($name, $iter);
+			}
+		    }
+
+		    $forms[0]->set_action($tokens->{form}->action());
+		    $tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
+		    $forms[0]->fill($tokens->{form}->fill());
+
+		    if (Dancer::Config::settings->{session}) {
+			$tokens->{form}->to_session;
 		    }
 		}
-
-		$forms[0]->set_action($tokens->{form}->action());
-		$tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
-		$forms[0]->fill($tokens->{form}->fill());
-
-		if (Dancer::Config::settings->{session}) {
-		    $tokens->{form}->to_session;
+		else {
+		    Dancer::Logger::debug('Missing form parameters for form ' . $forms[0]->name);
 		}
 	    }
 	    else {
