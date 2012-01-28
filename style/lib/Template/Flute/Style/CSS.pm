@@ -424,7 +424,7 @@ sub _build_properties {
 	}
 	
 	# margin
-	if ($props_css->{'margin'}) {
+	if (exists $props_css->{'margin'}) {
 		$sides = $self->_by_sides($props_css->{'margin'});
 
 		for (SIDE_NAMES) {
