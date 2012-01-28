@@ -470,17 +470,42 @@ sub _build_properties {
 	
 	# transform
 	for (qw/transform -webkit-transform -moz-transform -o-transform -ms-transform/) {
-            if ($value = $props_css->{$_}) {
-		if ($value =~ s/^\s*rotate\(((-?)\d+(\.\d+)?)\s*deg\)\s*$/$1/) {
-		    if ($2) {
-			# negative angle
-			$propref->{rotate} = 360 + $value;
+	    my ($prop_value, @frags);
+
+            if ($prop_value = $props_css->{$_}) {
+		@frags = split(/\s+/, $prop_value);
+
+		for my $value (@frags) {
+		    if ($value =~ s/^\s*rotate\(((-?)\d+(\.\d+)?)\s*deg\)\s*$/$1/) {
+			if ($2) {
+			    # negative angle
+			    $propref->{rotate} = 360 + $value;
+			}
+			else {
+			    $propref->{rotate} = $value;
+			}
 		    }
-		    else {
-			$propref->{rotate} = $value;
+		    elsif ($value =~ /translate([xy])?\((.*?)(,(.*?))?\)/i) {
+			if (lc($1) eq 'x') {
+			    # translateX value
+			    $propref->{translate}->{x} = $2;
+			}
+			elsif (lc($1) eq 'y') {
+			    # translateY value
+			    $propref->{translate}->{y} = $2;
+			}
+			else {
+			    # translate value (x and optionally y)
+			    $propref->{translate}->{x} = $2;
+			    
+			    if ($4) {
+				$propref->{translate}->{y} = $4;
+			    }
+			}
 		    }
-		    last;
-                }
+		}
+
+		last;
             }
         }
 
