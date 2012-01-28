@@ -471,8 +471,14 @@ sub _build_properties {
 	# transform
 	for (qw/transform -webkit-transform -moz-transform -o-transform -ms-transform/) {
             if ($value = $props_css->{$_}) {
-		if ($value =~ s/^\s*rotate\((\d+(\.\d+)?)\s*deg\)\s*$/$1/) {
-		    $propref->{rotate} = $value;
+		if ($value =~ s/^\s*rotate\(((-?)\d+(\.\d+)?)\s*deg\)\s*$/$1/) {
+		    if ($2) {
+			# negative angle
+			$propref->{rotate} = 360 + $value;
+		    }
+		    else {
+			$propref->{rotate} = $value;
+		    }
 		    last;
                 }
             }
