@@ -320,7 +320,8 @@ sub calculate {
 			# stripe base moves to max_height
 			$stripe_base = $max_height;
 		
-			if ($child->{box}->{width} > $max_width) {
+			if ($child->{box}->{width} > $max_width
+			    && $child->{gi} ne 'hr') {
 				$max_width = $child->{box}->{width};
 				$max_stripe_width = $max_width;
 			}
