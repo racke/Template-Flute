@@ -11,11 +11,14 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
-    PREREQ_PM => {
+    BUILD_REQUIRES => {
         'Test::More' => 0,
+        'CAM::PDF' => 0,
+    },
+    PREREQ_PM => {
         'Template::Flute' => 0,
         'Template::Flute::Style::CSS' => 0.0025,
-		'PDF::API2' => 0,
+	'PDF::API2' => 0,
         'Image::Size' => 0,
         'Image::Magick' => 0,
 	},
