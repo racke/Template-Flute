@@ -1007,6 +1007,15 @@ sub begin_transform {
     my ($self, $gfx, $hpos, $vpos, $width, $height, $props) = @_;
 
     $gfx->move(0,0);
+ 
+    if (exists $props->{translate}->{x}) {
+	$hpos += to_points($props->{translate}->{x});
+    }
+
+    if (exists $props->{translate}->{y}) {
+	$vpos -= to_points($props->{translate}->{y});
+    }
+
     $gfx->translate($hpos, $vpos);
     
     if ($props->{rotate}) {
@@ -1025,6 +1034,14 @@ sub end_transform {
     
     if ($props->{rotate}) {
 	$gfx->rotate($props->{rotate});
+    }
+
+    if (exists $props->{translate}->{x}) {
+	$hpos += to_points($props->{translate}->{x});
+    }
+
+    if (exists $props->{translate}->{y}) {
+	$vpos -= to_points($props->{translate}->{y});
     }
 
     $gfx->translate(-$hpos, -$vpos);
