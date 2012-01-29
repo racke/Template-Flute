@@ -2,7 +2,7 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0024
+    Version 0.0025
 
 SYNOPSIS
       $flute = new Template::Flute (specification_file => 'invoice.xml',
@@ -91,6 +91,12 @@ METHODS
   image OBJECT HPOS VPOS WIDTH HEIGHT
     Add image OBJECT to the PDF.
 
+  begin_transform
+    Starts transformation of current content object.
+
+  end_transform
+    Ends transformation of current content object.
+
 FUNCTIONS
   to_points [DEFAULT_UNIT]
     Converts widths to points, default unit is mm.
@@ -99,9 +105,16 @@ AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
 
 BUGS
-    Please report any bugs or feature requests to `bug-template-flute-pdf at
-    rt.cpan.org', or through the web interface at
+    Certainly a lot, as converting from HTML to PDF is quite complicated and
+    challenging.
+
+    Please report any unknown bugs or feature requests to
+    `bug-template-flute-pdf at rt.cpan.org', or through the web interface at
     http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute-PDF.
+
+  KNOWN BUGS
+    Background color
+        Using background color hides text.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.

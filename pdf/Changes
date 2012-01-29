@@ -1,5 +1,23 @@
 Revision history for Template::Flute::PDF
 
+0.0025 Sun Jan 29 15:31:40 2012 CET
+
+    [BUGFIX]
+
+    * Stop horizontal lines from increasing the width of the enclosing box.
+
+    [ENHANCEMENTS]
+
+    * Remove calculation of correction for rotated text
+    * Use translate function in transform property for rendering
+      horizontal lines.
+    * Improve drawing of horizontal lines with the help of
+      transformation methods. 
+
+    [TESTS]
+
+    * Add image test.
+
 0.0024 Sun Jan 22 14:38:26 2012 CET
    
     [ENHANCEMENTS]
