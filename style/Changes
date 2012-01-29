@@ -1,5 +1,17 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0025 Sun Jan 29 15:15:22 2012 CET
+
+    [BUGFIX]
+
+    * Fix bug disregarding zero margin.
+
+    [ENHANCEMENTS]
+
+    * Acknowledge translate function in transform property.
+    * Extend regular expression on transform property to allow real
+      numbers and negative angles for rotate value. 
+
 0.0024 Sun Jan 22 14:32:59 2012 CET
 
     [ENHANCEMENTS]
