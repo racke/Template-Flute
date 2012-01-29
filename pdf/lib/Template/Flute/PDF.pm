@@ -1057,8 +1057,20 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-template-flute-pdf at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute-PDF>.
+Certainly a lot, as converting from HTML to PDF is quite complicated and challenging.
+
+Please report any unknown bugs or feature requests to C<bug-template-flute-pdf at rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute-PDF>.
+
+=head2 KNOWN BUGS
+
+=over 4
+
+=item Background color
+
+Using background color hides text.
+
+=back
 
 =head1 SUPPORT
 
