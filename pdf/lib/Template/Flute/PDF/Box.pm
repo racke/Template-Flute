@@ -272,7 +272,7 @@ sub calculate {
 		else {
 			$hpos = 0;
 			$hpos_next = 0;
-#			print "NO HORIZ FIT for GI $child->{gi} CLASS $child->{class} ID $child->{id}: CLR AFTER $clear_after\n";
+#			print "NO HORIZ FIT for ", $child->_description, ": CLR AFTER $clear_after\n";
 		}
 
 		# keep vertical position
@@ -609,7 +609,7 @@ sub render {
 
 	$self->{hoff} ||= 0;
 
-#	print "RENDER for  GI $self->{gi}, CLASS $self->{class} on PAGE $self->{page}: " . Dumper(\%parms);
+#	print "RENDER ", $self->_description, " on PAGE $self->{page}: " . Dumper(\%parms);
 
 	if (exists $parms{page}
 		&& $parms{page} > $self->{page}) {
