@@ -1039,7 +1039,7 @@ sub to_points {
 		$points = $width;
 	}
 
-	return sprintf("%.0f", $points);
+	return $points;
 }
 
 # auxiliary methods
