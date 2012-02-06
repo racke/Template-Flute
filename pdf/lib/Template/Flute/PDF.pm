@@ -1075,6 +1075,12 @@ or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue
 
 Using background color hides text.
 
+=item Vertical align
+
+We currently support only aligning to top or bottom of the available space.
+This is in contradiction to HTML, where the default vertical align 
+is baseline (of the text).
+
 =back
 
 =head1 SUPPORT
