@@ -469,8 +469,13 @@ sub setup_text_props {
 			
 	$txeng = $self->{page}->text;
 
-	if ($props->{font}->{size} && $props->{font}->{size} =~ s/^(\d+)(pt)?$/$1/) {
+	if ($props->{font}->{size}) {
+	    if ($props->{font}->{size} =~ s/^(\d+)(pt)?$/$1/) {
 		$fontsize =  $props->{font}->{size};
+	    }
+	    else {
+		$fontsize = to_points($props->{font}->{size});
+	    }
 	}
 	else {
 		$fontsize = $self->{fontsize};
