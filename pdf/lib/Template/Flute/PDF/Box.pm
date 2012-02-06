@@ -777,6 +777,10 @@ sub _description {
 	$desc .= ", ID $self->{id}";
     }
 
+    if ($self->{gi} eq 'img') {
+	$desc .= ', SRC ' . $self->{elt}->att('src');
+    }
+
     return $desc;
 };
 
