@@ -509,6 +509,11 @@ sub _build_properties {
             }
         }
 
+	# vertical-align
+	if ($props_css->{'vertical-align'}) {
+	    $propref->{vertical_align} = $props_css->{'vertical-align'};
+	}
+
 	# width
 	if ($props_css->{'width'}) {
 		$propref->{width} = $props_css->{width};
