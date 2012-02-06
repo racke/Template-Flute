@@ -85,6 +85,9 @@ sub new {
 	# Stripes with child elements
 	$self->{stripes} = [];
 	
+	# Height of these stripes
+	$self->{stripe_heights} = [];
+
 	bless ($self, $class);
 
 	# Create selector map
@@ -310,6 +313,8 @@ sub calculate {
 
 			$max_stripe_height += $height_extend;
 			$max_height += $height_extend;
+
+			$self->{stripe_heights}->[$stripe_pos] = $max_stripe_height;
 		}
 		else {
 			# starting new stripe now
@@ -336,6 +341,8 @@ sub calculate {
 		
 			# stripe height is simply height of this child
 			$max_stripe_height = $child->{box}->{height};
+
+			$self->{stripe_heights}->[$stripe_pos] = $max_stripe_height;
 
 			if ($child->property('float') eq 'right'
 				&& $self->property('float') ne 'right') {
@@ -427,7 +434,7 @@ Aligns boxes (center, left, right).
 
 sub align {
 	my ($self, $offset) = @_;
-	my ($avail_width, $avail_width_text, $textprops, $child, $box_pos);
+	my ($avail_width, $avail_width_text, $textprops, $child, $box_pos, $valign, $valign_space);
 
 	$offset ||= 0;
 	
@@ -436,6 +443,17 @@ sub align {
 			# skip over text elements (align only applies to grand children)
 			next if $child->{elt}->is_text();
 			
+			$valign = $child->property('vertical_align') || 'bottom';
+
+			unless ($valign eq 'top') {
+                            # check whether we have space to move 
+			    $valign_space =  $self->{stripe_heights}->[$i] - $child->{box}->{height};
+
+			    if ($valign_space > 0) {
+				$child->{voff} = $valign_space;
+			    }
+			}
+
 			if (($textprops = $child->property('text'))
 			    || $child->{gi} eq 'center') {
 			   
@@ -608,6 +626,7 @@ sub render {
 	my ($child, $pos, $page_before, $page_cur);
 
 	$self->{hoff} ||= 0;
+	$self->{voff} ||= 0;
 
 #	print "RENDER ", $self->_description, " on PAGE $self->{page}: " . Dumper(\%parms);
 
@@ -641,7 +660,7 @@ sub render {
 		}
 		
 		$child->render(hpos => $parms{hpos} + $self->{specs}->{offset}->{left} + $pos->{hpos} + $self->{hoff},
-					   vpos => $parms{vpos} - $self->{specs}->{offset}->{top} + $pos->{vpos},
+					   vpos => $parms{vpos} - $self->{specs}->{offset}->{top} + $pos->{vpos} - $self->{voff},
 					   page => $pos->{page} || $self->{page},
 					   );
 	}
@@ -684,7 +703,7 @@ sub render {
 
 		# adjust border dimensions by margins
 		$hpos = $parms{hpos} + $margins->{left} + $self->{hoff};
-		$vpos = $parms{vpos} - $margins->{top};
+		$vpos = $parms{vpos} - $margins->{top} - $self->{voff};
 		$width = $self->{box}->{width} - $margins->{left} - $margins->{right};
 		$height = $self->{box}->{height} - $margins->{top} - $margins->{bottom};
 		
