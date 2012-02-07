@@ -96,26 +96,48 @@ sub info {
 
 =head2 width
 
-Returns image width.
+Get image width:
+
+    $image->width;
+
+Set image width:
+
+    $image->width(200);
+
+Returns image width in both cases.
 
 =cut
 
 sub width {
-	my $self = shift;
+    my $self = shift;
 
-	return $self->{width};
+    if (@_ > 0 && defined $_[0]) {
+	$self->{width} = shift;
+    }
+    
+    return $self->{width};
 }
 
 =head2 height
 
-Returns image height.
+Get image height:
+
+    $image->height;
+
+Set image height:
+
+    $image->height(100);
 
 =cut
 
 sub height {
-	my $self = shift;
+    my $self = shift;
+ 
+    if (@_ > 0 && defined $_[0]) {
+	$self->{height} = shift;
+    }
 
-	return $self->{height};
+    return $self->{height};
 }
 
 =head2 convert FORMAT
