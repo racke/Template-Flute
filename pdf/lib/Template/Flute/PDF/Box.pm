@@ -146,6 +146,7 @@ From width/height of the image.
 sub calculate {
 	my ($self) = @_;
 	my ($gi, $class, $text, @parms, $childbox, $dim);
+	my ($max_width, $max_height) = (0,0);
 
 	if ($self->{elt}->is_text()) {
 		# simple text box
@@ -183,30 +184,26 @@ sub calculate {
 		$src = $self->{elt}->att('src');
 		$file = $self->{pdf}->locate_image($src);
 
-		$self->{object} = new Template::Flute::PDF::Image(file => $file,
-														 pdf => $self->{pdf});
+		$self->{object} = new Template::Flute::PDF::Image(file => $file, pdf => $self->{pdf});
 
 		for my $extent (qw/width height/) {
 			# size from HTML
 			if ($size{$extent}= $self->{elt}->att($extent)) {
-				next;
+			    $self->{object}->$extent(Template::Flute::PDF::to_points($size{$extent}));
+			    next;
 			}
 
 			# size from CSS
 			if ($size{$extent} = $self->property($extent)) {
-				next;
+			    $self->{object}->$extent($size{$extent});
+			    next;
 			}
 
 			# size from image
 			$size{$extent} = $self->{object}->$extent();
 		}
-
-		$self->{box} = {width => $size{width},
-						height => $size{height},
-						clear => {after => 0, before => 0},
-						size => $self->{specs}->{size}};
-		
-		return;
+		$max_width = $size{width};
+		$max_height = $size{height};
 	}
 	
 	for my $child ($self->{elt}->children()) {
@@ -240,8 +237,7 @@ sub calculate {
 
 	# processed all childs, now determine my size itself
 
-	my ($max_width, $max_height, $vpos, $hpos, 
-	    $max_stripe_height, $max_stripe_width, $child) = (0,0,0,0,0);
+	my ($vpos, $hpos, $max_stripe_height, $max_stripe_width, $child) = (0,0,0,0,0);
 	my ($hpos_next, $vpos_next, @stripes, $stripe_pos, $stripe_base, $clear_after);
 
 	$stripe_base = 0;
@@ -676,39 +672,44 @@ sub render {
 								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
 								  noborder => 1);
 		}
+		return;
 	}
-	elsif ($self->{gi} eq 'img') {
-		# rendering image
-		if ($self->{object}->{type}) {
-			$self->{pdf}->image($self->{object},
-								$parms{hpos},
-								$parms{vpos} - $self->{box}->{height},
-								$self->{box}->{width},
-								$self->{box}->{height},
-								$self->{specs});
-		}
-	}
-	elsif ($self->{gi} eq 'hr') {
-		# rendering horizontal line
 
-		$self->{pdf}->hline($self->{specs}, $parms{hpos},
-							$parms{vpos} - $self->{specs}->{offset}->{top},
-							$self->{box}->{width}, $self->{specs}->{props}->{height});
-	}
-	else {
-		# render borders
-		my ($hpos, $vpos, $width, $height, $margins);
-		
-		$margins = $self->{specs}->{margins};
+	if ($self->{gi} eq 'hr') {
+	    # rendering horizontal line
 
-		# adjust border dimensions by margins
-		$hpos = $parms{hpos} + $margins->{left} + $self->{hoff};
-		$vpos = $parms{vpos} - $margins->{top} - $self->{voff};
-		$width = $self->{box}->{width} - $margins->{left} - $margins->{right};
-		$height = $self->{box}->{height} - $margins->{top} - $margins->{bottom};
-		
-		$self->{pdf}->borders($hpos, $vpos, $width, $height, $self->{specs});
+	    $self->{pdf}->hline($self->{specs}, $parms{hpos},
+				$parms{vpos} - $self->{specs}->{offset}->{top},
+				$self->{box}->{width}, $self->{specs}->{props}->{height});
+	    
+	    return;
 	}
+
+	if ($self->{gi} eq 'img') {
+	    # rendering image
+	    if ($self->{object}->{type}) {
+		$self->{pdf}->image($self->{object},
+				    $parms{hpos} + $self->{specs}->{offset}->{left},
+				    $parms{vpos} - $self->{object}->height - $self->{specs}->{offset}->{top},
+				    $self->{object}->width,
+				    $self->{object}->height,
+				    $self->{specs});
+	    }
+	    # fall through to borders
+	}
+
+	# render borders
+	my ($hpos, $vpos, $width, $height, $margins);
+		
+	$margins = $self->{specs}->{margins};
+
+	# adjust border dimensions by margins
+	$hpos = $parms{hpos} + $margins->{left} + $self->{hoff};
+	$vpos = $parms{vpos} - $margins->{top} - $self->{voff};
+	$width = $self->{box}->{width} - $margins->{left} - $margins->{right};
+	$height = $self->{box}->{height} - $margins->{top} - $margins->{bottom};
+		
+	$self->{pdf}->borders($hpos, $vpos, $width, $height, $self->{specs});
 }
 
 =head2 adjust_page PAGE_NUM
