@@ -418,7 +418,7 @@ sub calculate {
 					clear => $clear,
 					size => $self->{specs}->{size}};
 
-#	print "DIM for GI $self->{gi}, CLASS $self->{class}, ID $self->{id}: " . Dumper($self->{box});
+#	print "DIM for ", $self->_description, ": ",  Dumper($self->{box});
  	return $self->{box};
 }
 
