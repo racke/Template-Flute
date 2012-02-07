@@ -908,6 +908,7 @@ sub locate_image {
     }
 
     $img_dir = dirname($src);
+    $img_file = $src;
 
     if ($img_dir eq '.') {
 	# check whether HTML template is located in another directory
@@ -923,9 +924,6 @@ sub locate_image {
 						basename($src));
 	    }
 	}
-    }
-    else {
-	$img_file = $src;
     }
 
     return $img_file;
