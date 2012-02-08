@@ -844,8 +844,8 @@ sub borders {
 	if ($specs->{borders}->{bottom}) {
 		$gfx->strokecolor($specs->{props}->{border}->{bottom}->{color});
 		$gfx->linewidth($specs->{borders}->{bottom});
-		$gfx->move($x_left, $y_top - $height - 1 + 0.5 * $specs->{borders}->{bottom} );
-		$gfx->line($x_left + $width, $y_top - $height - 1 +  0.5 * $specs->{borders}->{bottom} );
+		$gfx->move($x_left, $y_top - $height + 0.5 * $specs->{borders}->{bottom} );
+		$gfx->line($x_left + $width, $y_top - $height +  0.5 * $specs->{borders}->{bottom} );
 		$gfx->stroke();
 	}
 
