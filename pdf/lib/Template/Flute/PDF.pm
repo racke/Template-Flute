@@ -228,7 +228,12 @@ sub process {
 
 	# move to starting point
 	$self->{page}->text->translate($self->{border_left}, $self->{border_top});
-									
+
+	# page orientation
+	if ($self->{orientation} eq 'landscape') {
+	    $self->{page}->rotate(90);
+	}
+
 	# now walk HTML document and add appropriate parts
 	my ($root_box, @root_parms);
 
