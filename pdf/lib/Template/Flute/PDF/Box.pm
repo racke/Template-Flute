@@ -182,8 +182,13 @@ sub calculate {
 		my (@info, $src, $file, %size);
 
 		$src = $self->{elt}->att('src');
-		$file = $self->{pdf}->locate_image($src);
 
+		unless ($src) {
+		    warn "Missing image: ", $self->_description, "\n";
+		    return $self->{box};
+		}
+
+		$file = $self->{pdf}->locate_image($src);
 		$self->{object} = new Template::Flute::PDF::Image(file => $file, pdf => $self->{pdf});
 
 		for my $extent (qw/width height/) {
