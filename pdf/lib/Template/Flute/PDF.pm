@@ -764,6 +764,10 @@ sub textbox {
 	}
 
 	if (length($boxtext) && $boxtext =~ /\S/) {
+	    if ($props->{line_height}) {
+		# adjust text position accordingly
+		$parms{y} -= (to_points($props->{line_height}) - $specs->{size}) / 2;
+	    }
 	    # try different approach
 	    if (exists $props->{rotate}) {
 		$txeng->translate($parms{x}, $parms{y});
