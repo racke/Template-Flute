@@ -406,9 +406,17 @@ sub calculate {
 	elsif ($self->{gi} eq 'br') {
 		$clear->{before} = 1;
 	}
-	elsif ($self->{specs}->{props}->{display} eq 'block'
-	    && $self->property('float') ne 'left') {
-	    $clear->{before} = $clear->{after} = 1;
+	elsif ($self->{specs}->{props}->{display} eq 'block') {
+	    if ($self->property('float') eq 'left') {
+		# no change
+	    }
+	    elsif ($self->property('float') eq 'right') {
+		$clear->{before} = 0,
+		$clear->{after} = 1;
+	    }
+	    else {
+		$clear->{before} = $clear->{after} = 1;
+	    }
 	}
 	elsif ($self->{gi} eq 'li') {
 	    unless ($self->property('float') eq 'left'
