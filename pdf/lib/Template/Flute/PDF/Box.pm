@@ -444,7 +444,12 @@ sub align {
 			# skip over text elements (align only applies to grand children)
 			next if $child->{elt}->is_text();
 			
-			$valign = $child->property('vertical_align') || 'bottom';
+			if ($child->property('display') eq 'block') {
+			    $valign = $child->property('vertical_align') || 'top';
+			}
+			else {
+			    $valign = $child->property('vertical_align') || 'bottom';
+			}
 
 			unless ($valign eq 'top') {
                             # check whether we have space to move 
