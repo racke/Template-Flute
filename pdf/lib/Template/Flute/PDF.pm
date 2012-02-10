@@ -142,11 +142,11 @@ sub process {
 
 	$self->{cur_page} = 1;
 
-	$self->{border_left} = $self->{margin_left};
-	$self->{border_right} = $self->{page_width} - $self->{margin_right};
+	$self->{border_left} = to_points($self->{margin_left}, 'pt');
+	$self->{border_right} = $self->{page_width} - to_points($self->{margin_right}, 'pt');
 
-	$self->{border_top} = $self->{page_height} - $self->{margin_top};
-	$self->{border_bottom} = $self->{margin_bottom};
+	$self->{border_top} = $self->{page_height} - to_points($self->{margin_top}, 'pt');
+	$self->{border_bottom} = to_points($self->{margin_bottom}, 'pt');
 
 	$self->{vpos_next} = $self->{border_top};
 	
@@ -368,7 +368,8 @@ sub content_width {
 	my ($self) = @_;
 	my ($width);
 	
-	$width = $self->{page_width} - $self->{margin_left} - $self->{margin_right};
+	$width = $self->{page_width} - to_points($self->{margin_left}, 'pt') 
+	    - to_points($self->{margin_right}, 'pt');
 
 	return $width;
 }
