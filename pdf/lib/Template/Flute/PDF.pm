@@ -113,6 +113,11 @@ sub new {
 		$self->set_page_size(PAGE_SIZE);
 	}
 
+	# page orientation
+	unless ($self->{orientation}) {
+	    $self->{orientation} = '';
+	}
+
 	# margins
 	my @sides = qw(top right bottom left);
 	
