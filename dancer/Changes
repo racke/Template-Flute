@@ -1,5 +1,12 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0025 Fri Feb 10 17:49:06 2012 CET
+
+    [ENHANCEMENTS]
+
+    * Add valid method to Dancer::Plugin::Form class.
+    * Add name method to Dancer::Plugin::Form class.
+
 0.0024 Mon Dec 19 12:08:53 2011 CET
 
     [ENHANCEMENTS]

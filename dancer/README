@@ -2,7 +2,7 @@ NAME
     Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
-    Version 0.0024
+    Version 0.0025
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
