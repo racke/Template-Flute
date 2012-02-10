@@ -158,7 +158,7 @@ sub process {
 	}
 
 	my %h = $self->{pdf}->info(
-        'Producer'     => "Template::Flute",
+	    'Producer' => "Template::Flute::PDF $VERSION",
 	);
 
 	if ($self->{import}) {
