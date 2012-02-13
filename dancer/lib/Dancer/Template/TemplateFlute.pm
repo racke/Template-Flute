@@ -136,7 +136,10 @@ sub render ($$$) {
 	
 	if (@forms = $flute->template->forms()) {
 	    if (@forms == 1) {
-		if ($tokens->{form}) {
+		# select correct form
+		if ($tokens->{form} && ($tokens->{form}->name eq 'main' 
+		    || $tokens->{form}->name eq $forms[0]->name)) {
+
 		    for my $name ($forms[0]->iterators) {
 			if (ref($tokens->{$name}) eq 'ARRAY') {
 			    $iter = Template::Flute::Iterator->new($tokens->{$name});
