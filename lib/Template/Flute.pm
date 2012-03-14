@@ -908,6 +908,10 @@ The following operations are supported for value elements:
 
 =over 4
 
+=item append
+
+Appends the value to the text found in the HTML template.
+
 =item hook
 
 Insert HTML residing in value as subtree of the corresponding HTML element.
