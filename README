@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0024
+    Version 0.0025
 
 SYNOPSIS
         use Template::Flute;
@@ -243,6 +243,9 @@ SPECIFICATION
         with the set_values method.
 
         The following operations are supported for value elements:
+
+        append
+            Appends the value to the text found in the HTML template.
 
         hook
             Insert HTML residing in value as subtree of the corresponding
