@@ -66,20 +66,11 @@ sub import {
 	my ($self, %parms) = @_;
 	my ($pdf_import, $pages, $page_in, $page_out, $scale, @mbox, $gfx, $txt, $xo);
 
-	unless ($parms{pdf}) {
-		return;
-	}
-	
-	unless ($parms{file}) {
-		return;
+	unless ($parms{pdf} || $parms{file}) {
+	    return;
 	}
 
-	if ($parms{scale}) {
-		$scale = $parms{scale};
-	}
-	else {
-		$scale = 1;
-	}
+	$scale = $parms{scale} || 1;
 	
 	eval {
 		$pdf_import = PDF::API2->open($parms{file});
