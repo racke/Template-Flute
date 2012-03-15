@@ -1023,12 +1023,13 @@ Converts widths to points, default unit is mm.
 	
 sub to_points {
 	my ($width, $default_unit) = @_;
-	my ($unit, $points);
+	my ($unit, $points, $negative);
 
 	return 0 unless defined $width;
 
-	if ($width =~ s/^(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$1/) {
-		$unit = $3 || $default_unit || 'mm';
+	if ($width =~ s/^(-?)(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$2/) {
+	    $negative = $1;
+	    $unit = $4 || $default_unit || 'mm';
 	}
 	else {
 		warn "Invalid width $width\n";
@@ -1050,6 +1051,10 @@ sub to_points {
 	}
 	elsif ($unit eq 'px') {
 		$points = $width;
+	}
+
+	if ($negative) {
+	    return - $points;
 	}
 
 	return $points;
