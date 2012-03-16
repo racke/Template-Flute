@@ -898,6 +898,30 @@ Example specification, HTML template and output:
 
 =item param
 
+The following operations are supported for param elements:
+
+=over 4
+
+=item append
+ 
+Appends the param value to the text found in the HTML template.
+
+=item toggle
+
+Only shows corresponding HTML element if param value is set.
+
+=back
+
+Other attributes for param elements are:
+
+=over 4
+
+=item filter
+
+Applies filter to param value.
+
+=back
+
 =item value
 
 Value elements are replaced with a single value present in the values hash
@@ -926,6 +950,10 @@ Only shows corresponding HTML element if value is set.
 Other attributes for value elements are:
 
 =over 4
+
+=item filter
+
+Applies filter to value.
 
 =item include
 
