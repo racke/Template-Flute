@@ -47,6 +47,33 @@ our $VERSION = '0.0025';
 Template::Flute::PDF is a PDF generator based on L<Template::Flute>
 and L<PDF::API2>.
 
+=head2 UNITS
+
+Template::Flute::PDF uses the pt unit internally.
+
+In addition, the following units are supported and automatically
+converted by this module:
+
+=over 4
+
+=item in
+
+An inch converts to 72 pt.
+
+=item cm
+
+A centimeter converts to approximately 28.3 pt.
+
+=item mm
+
+A millimeter converts to approximately 2.8 pt.
+
+=item px
+
+A pixel converts to 1 pt.
+
+=back
+
 =head1 CONSTRUCTOR
 
 =head2 new
