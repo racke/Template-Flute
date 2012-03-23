@@ -1,5 +1,34 @@
 Revision history for Template::Flute::PDF
 
+0.0030 Fri Mar 23 12:08:55 2012 CET
+
+    [BUGFIX]
+
+    * Fix bug silently discarding text font sizes using other units than pt.
+    * Return real numbers from to_points function.
+    * Fix failure of locate_image method with template and image in the current directory.
+    * Remove 1pt offset for bottom border from borders method.
+    * Adjust text position accordingly when CSS line-height property is set.
+    * Remove clear after property from block elements with right float
+      property.
+
+    [ENHANCEMENTS]
+
+    * Support images with borders.
+    * Turn Template::Flute::PDF::Image's width and height methods into
+      getters and setters. 
+    * Add rudimentary support for vertical align.
+    * Issue a warning on missing image src attribute instead of crashing PDF
+      generation.
+    * Add orientation parameter.
+    * Convert margin parameters with units.
+    * Change PDF producer string to "Template::Flute::PDF $VERSION".
+    * Allow negative widths and heights.
+
+    [DOCUMENTATION]
+
+    * Add units and margin parameters.
+ 
 0.0025 Sun Jan 29 15:31:40 2012 CET
 
     [BUGFIX]

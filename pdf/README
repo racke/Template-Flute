@@ -2,7 +2,7 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0025
+    Version 0.0030
 
 SYNOPSIS
       $flute = new Template::Flute (specification_file => 'invoice.xml',
@@ -19,6 +19,20 @@ DESCRIPTION
     Template::Flute::PDF is a PDF generator based on Template::Flute and
     PDF::API2.
 
+  UNITS
+    Template::Flute::PDF uses the pt unit internally.
+
+    In addition, the following units are supported and automatically
+    converted by this module:
+
+    in  An inch converts to 72 pt.
+
+    cm  A centimeter converts to approximately 28.3 pt.
+
+    mm  A millimeter converts to approximately 2.8 pt.
+
+    px  A pixel converts to 1 pt.
+
 CONSTRUCTOR
   new
     Create a Template::Flute::PDF object with the following parameters:
@@ -34,6 +48,19 @@ CONSTRUCTOR
 
     html_base
         Base directory for HTML resources like images and stylesheets.
+
+    Margin parameters
+    margin_top
+        Top margin, defaults to 20.
+
+    margin_right
+        Right margin, defaults to 20.
+
+    margin_bottom
+        Bottom margin, defaults to 50.
+
+    margin_left
+        Left margin, defaults to 20.
 
 METHODS
   process
@@ -115,6 +142,11 @@ BUGS
   KNOWN BUGS
     Background color
         Using background color hides text.
+
+    Vertical align
+        We currently support only aligning to top or bottom of the available
+        space. This is in contradiction to HTML, where the default vertical
+        align is baseline (of the text).
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
