@@ -16,12 +16,12 @@ WriteMakefile(
         'CAM::PDF' => 0,
     },
     PREREQ_PM => {
-        'Template::Flute' => 0,
+        'Template::Flute' => 0.0025,
         'Template::Flute::Style::CSS' => 0.0025,
 	'PDF::API2' => 0,
         'Image::Size' => 0,
         'Image::Magick' => 0,
-	},
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-PDF-*' },
 );
