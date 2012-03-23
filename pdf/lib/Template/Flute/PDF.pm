@@ -73,6 +73,28 @@ Base directory for HTML resources like images and stylesheets.
 
 =back
 
+=head3 Margin parameters
+
+=over 4
+
+=item margin_top
+
+Top margin, defaults to 20.
+
+=item margin_right
+
+Right margin, defaults to 20.
+
+=item margin_bottom
+
+Bottom margin, defaults to 50.
+
+=item margin_left
+
+Left margin, defaults to 20.
+
+=back
+
 =cut
 
 # defaults
