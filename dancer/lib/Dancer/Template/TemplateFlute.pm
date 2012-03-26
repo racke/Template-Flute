@@ -212,7 +212,7 @@ L<http://search.cpan.org/dist/Dancer-Template-TemplateFlute/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+Copyright 2011-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
