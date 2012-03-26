@@ -41,6 +41,12 @@ Retrieve form input from checkout form:
         $values = $form->values();
     };
 
+Reset form after completion to prevent old data from
+showing up on new form:
+
+    $form = form('checkout');
+    $form->reset;
+
 =cut
 
 register form => sub {
@@ -347,6 +353,25 @@ sub fields {
     }
 
     return $self->{fields};    
+}
+
+=head2 reset
+
+Reset form information (fields, errors, values, valid) and
+updates session accordingly.
+
+=cut
+
+sub reset {
+    my $self = shift;
+
+    $self->{fields} = [];
+    $self->{errors} = [];
+    $self->{values} = {};
+    $self->{valid} = undef;
+    $self->to_session;
+
+    return 1;
 }
 
 =head2 from_session
