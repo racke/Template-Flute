@@ -1,5 +1,15 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0030 Mon Mar 26 13:29:08 2012 CEST
+
+    [ENHANCEMENTS]
+
+    * Add reset method to Dancer::Plugin::Form.
+
+    [BUG FIXES]
+
+    * Select correct form from tokens when using named forms.
+
 0.0025 Fri Feb 10 17:49:06 2012 CET
 
     [ENHANCEMENTS]
