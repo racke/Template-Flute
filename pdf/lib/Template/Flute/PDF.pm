@@ -186,9 +186,16 @@ Processes HTML template and creates PDF file.
 =cut
 
 sub process {
-	my ($self, $file) = @_;
-	my ($font, $table);
+	my $self = shift;
+	my ($file, $font, $table);
 
+    if (@_) {
+        $file = shift;
+    }
+    else {
+        $file = $self->{file};
+    }
+    
 	$self->{cur_page} = 1;
 
 	$self->{border_left} = to_points($self->{margin_left}, 'pt');
