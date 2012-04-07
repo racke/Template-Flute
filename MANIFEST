@@ -45,8 +45,6 @@ t/09-iso-html.t
 t/10-include.t
 t/11-value.t
 t/12-container.t
-t/13-separator.t
-t/14-alternate-classes.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml
@@ -69,5 +67,7 @@ t/forms/06-select.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
+t/lists/alternate-classes.t
+t/lists/separator.t
 t/targets/01-value.t
 t/targets/02-param.t
