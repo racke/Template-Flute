@@ -82,27 +82,39 @@ sub new {
 sub _seed_iterator {
     my ($self, $json_struct) = @_;
 
-    if (exists $self->{selector}
-	&& ref($self->{selector}) eq 'HASH') {
-	my (@k, $key, $value);
-
-	# loop through top level elements and locate selector
-	if ((@k = keys %{$self->{selector}})) {
-	    $key = $k[0];
-	    $value = $self->{selector}->{$key};
-
-	    for my $record (@$json_struct) {
-		if (exists $record->{$key} 
-		    && $record->{$key} eq $value) {
-		    $self->seed($record->{$self->{children}});
+    if (exists $self->{selector}) {
+        if ($self->{selector} eq '*') {
+            my @records;
+            
+            for my $record (@$json_struct) {
+                push(@records, @{$record->{$self->{children}}});
+            }
+            
+		    $self->seed(\@records);
 		    return;
 		}
-	    }
-	}
+        
+        if (ref($self->{selector}) eq 'HASH') {
+            my (@k, $key, $value);
 
-	return;
+            # loop through top level elements and locate selector
+            if ((@k = keys %{$self->{selector}})) {
+                $key = $k[0];
+                $value = $self->{selector}->{$key};
+
+                for my $record (@$json_struct) {
+                    if (exists $record->{$key} 
+                        && $record->{$key} eq $value) {
+                        $self->seed($record->{$self->{children}});
+                        return;
+                    }
+                }
+            }
+
+            return;
+        }
     }
-
+    
     $self->seed($json_struct);
 }
 
