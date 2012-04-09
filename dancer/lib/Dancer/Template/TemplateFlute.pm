@@ -108,9 +108,13 @@ sub render ($$$) {
 																		   $parms{file}, 1);
 				}
 
-				if (($selector = delete $parms{selector})
-				    && $tokens->{$selector}) {
-				    $parms{selector} = {$selector => $tokens->{$selector}};
+				if ($selector = delete $parms{selector}) {
+				    if ($selector eq '*') {
+					$parms{selector} = '*';
+                                    }
+				    elsif ($tokens->{$selector}) {
+					$parms{selector} = {$selector => $tokens->{$selector}};
+				    }
 				}
 
 				eval "require $class";
