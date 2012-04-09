@@ -543,7 +543,19 @@ sub _replace_within_elts {
 
 		$name = $param->{name};
 		$zref = $elt->{"flute_$name"};
-			
+
+        if (! $elt->parent && $elt->former_parent) {
+            # paste back a formerly cut element
+            my $pos;
+
+            if ($pos = $elt->former_prev_sibling) {
+                $elt->paste(after => $pos);
+            }
+            else {
+                $elt->paste(first_child => $elt->former_parent);
+            }
+        }
+        
 		if ($zref->{rep_sub}) {
 			# call subroutine to handle this element
 			$zref->{rep_sub}->($elt, $rep_str);
