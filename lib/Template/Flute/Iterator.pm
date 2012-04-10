@@ -125,6 +125,48 @@ sub seed {
 	return $self->{COUNT};
 }
 
+=head2 sort
+
+Sorts records of the iterator.
+
+Parameters are:
+
+=over 4
+
+=item $sort
+
+Field used for sorting.
+
+=item $unique
+
+Whether results should be unique (optional).
+
+=back
+
+=cut
+    
+sub sort {
+    my ($self, $sort, $unique) = @_;
+    my (@data, @tmp);
+
+    @data = sort {lc($a->{$sort}) cmp lc($b->{$sort})} @{$self->{DATA}};
+
+    if ($unique) {
+        my $sort_value = '';
+
+        for my $record (@data) {
+            next if $record->{$sort} eq $sort_value;
+            $sort_value = $record->{$sort};
+            push (@tmp, $record);
+        }
+
+        $self->{DATA} = \@tmp;
+    }
+    else {
+        $self->{DATA} = \@data;
+    }
+}
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>

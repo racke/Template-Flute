@@ -83,17 +83,6 @@ sub _seed_iterator {
     my ($self, $json_struct) = @_;
 
     if (exists $self->{selector}) {
-        if ($self->{selector} eq '*') {
-            my @records;
-            
-            for my $record (@$json_struct) {
-                push(@records, @{$record->{$self->{children}}});
-            }
-            
-		    $self->seed(\@records);
-		    return;
-		}
-        
         if (ref($self->{selector}) eq 'HASH') {
             my (@k, $key, $value);
 
@@ -113,9 +102,38 @@ sub _seed_iterator {
 
             return;
         }
+        elsif ($self->{selector} eq '*') {
+            # find all elements
+            $self->seed($self->_tree($json_struct, $self->{children}, $self->{sort}));
+
+            if ($self->{sort}) {
+                $self->sort($self->{sort}, $self->{unique});
+            }
+
+            return;
+        }
+
+        # no matches for selector, seed iterator with empty list
+        $self->seed();
+        return;
     }
     
     $self->seed($json_struct);
+}
+
+sub _tree {
+    my ($self, $json_struct, $children, $sort) = @_;
+    my (@leaves);
+
+    for my $record (@$json_struct) {
+        if (exists $record->{$children}) {
+            for my $child (@{$record->{$children}}) {
+                push (@leaves, $child);
+            }
+        }
+    }
+
+    return \@leaves;
 }
 
 sub _parse_json_from_file {
