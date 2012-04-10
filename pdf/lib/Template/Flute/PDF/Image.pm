@@ -5,7 +5,6 @@ use warnings;
 
 use File::Temp qw(tempfile);
 use Image::Size;
-use Image::Magick;
 
 # map of supported image types
 my %types = (JPG => 'jpeg',
@@ -152,7 +151,10 @@ sub convert {
 	my ($magick, $msg, $tmph, $tmpfile);
 
 	$format ||= 'png';
-	
+
+    eval "require Image::Magick";
+    die "Can't load Image::Magick for format $format: $@" if $@;
+    
 	$self->{original_file} = $self->{file};
 
 	# create and register temporary file
@@ -160,7 +162,7 @@ sub convert {
 	
 	$self->{tmpfile} = $tmpfile;
 
-	$magick = new Image::Magick;
+	$magick = Image::Magick->new;
 
 	if ($msg = $magick->Read($self->{file})) {
 		die "Failed to read picture from $self->{file}: $msg\n";
