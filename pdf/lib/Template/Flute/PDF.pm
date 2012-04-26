@@ -232,7 +232,7 @@ sub process {
 		$obj = new Template::Flute::PDF::Import;
 		
 		unless ($ret = $obj->import(%import_parms)) {
-			die "Failed to import file $self->{import}.\n";
+			die "Failed to import file $import_parms{file}.\n";
 		}
 
 #		if ($self->{verbose} || 1) {
