@@ -45,6 +45,7 @@ t/09-iso-html.t
 t/10-include.t
 t/11-value.t
 t/12-container.t
+t/14-container-value.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml
