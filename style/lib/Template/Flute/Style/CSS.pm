@@ -413,6 +413,11 @@ sub _build_properties {
 		$propref->{height} = $props_css->{height};
 	}
 
+    # min-height
+	if ($props_css->{'min-height'}) {
+		$propref->{min_height} = $props_css->{'min-height'};
+	}
+    
 	# line-height
 	if ($props_css->{'line-height'}) {
 		$propref->{'line_height'} = $props_css->{'line-height'};
@@ -518,7 +523,12 @@ sub _build_properties {
 	if ($props_css->{'width'}) {
 		$propref->{width} = $props_css->{width};
 	}
-	
+
+    # min-width
+    if ($props_css->{'min-width'}) {
+        $propref->{min_width} = $props_css->{'min-width'};
+    }
+    
 	return $propref;
 }
 
