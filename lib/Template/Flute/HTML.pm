@@ -341,7 +341,6 @@ sub _parse_handler {
 		if ($sob = $spec_object->element_by_id($id)) {
 			$name = $sob->{name} || $id;
 			$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
-			return $self;
 		}
 	}
 
