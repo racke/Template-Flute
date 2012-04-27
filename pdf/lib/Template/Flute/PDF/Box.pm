@@ -147,7 +147,8 @@ sub calculate {
 	my ($self) = @_;
 	my ($gi, $class, $text, @parms, $childbox, $dim);
 	my ($max_width, $max_height) = (0,0);
-
+    my ($min_width, $min_height);
+    
 	if ($self->{elt}->is_text()) {
 		# simple text box
 		$text = $self->{elt}->text();
@@ -391,7 +392,20 @@ sub calculate {
 	if ($self->{specs}->{props}->{height} > $max_height) {
 		$max_height = $self->{specs}->{props}->{height};
 	}
-	
+
+	# apply minimum for dimensions
+    $min_width = Template::Flute::PDF::to_points($self->{specs}->{props}->{min_width}) || 0;
+    
+    if ($max_width < $min_width) {
+        $max_width = $min_width;
+    }
+
+    $min_height = Template::Flute::PDF::to_points($self->{specs}->{props}->{min_height}) || 0;
+    
+    if ($max_height < $min_height) {
+        $max_height = $min_height;
+    }
+    
 	# add offsets
 	$max_width += $self->{specs}->{offset}->{left} + $self->{specs}->{offset}->{right};
 	$max_height += $self->{specs}->{offset}->{top} + $self->{specs}->{offset}->{bottom};
