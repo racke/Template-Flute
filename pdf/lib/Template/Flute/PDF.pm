@@ -568,7 +568,7 @@ and INHERIT flag.
 sub setup_text_props {
 	my ($self, $elt, $selector, $inherit) = @_;
 	my ($props, %borders, %padding, %margins, %offset, $fontsize, $fontfamily,
-		$fontweight, $txeng);
+		$fontweight, $fontstyle, $txeng);
 
 	my $class = $elt->att('class') || '';
 	my $id = $elt->att('id') || '';
@@ -611,9 +611,16 @@ sub setup_text_props {
 	else {
 		$fontweight = $self->{fontweight};
 	}
-	
+
+    if ($props->{font}->{style}) {
+        $fontstyle = $props->{font}->{style};
+    }
+    elsif ($gi eq 'i') {
+        $fontstyle = 'Italic';
+    }
+
 	$self->{font} = $self->font($fontfamily, $fontweight,
-	    $props->{font}->{style});
+	    $fontstyle);
 	
 	$txeng->font($self->{font}, $fontsize);
 
