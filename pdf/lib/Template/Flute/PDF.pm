@@ -1187,7 +1187,22 @@ sub _font_select {
 	return $fonts[0];
 }
 
+=head1 SUPPORTED HTML/CSS SYNTAX
 
+This is an incomplete list of supported HTML/CSS syntax.
+
+=head2 HTML tags
+
+<i>
+    
+=head2 font-weight
+
+The values "normal" and "bold" are supported.
+
+=head2 style
+
+The HTML attribute "style" is not supported.
+    
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
