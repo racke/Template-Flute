@@ -10,7 +10,7 @@ use Template::Flute::Utils;
 # names for the sides of a box, as in border-top, border-right, ...
 use constant SIDE_NAMES => qw/top right bottom left/;
 
-our $VERSION = '0.0026';
+our $VERSION = '0.0030';
 
 # block elements
 my %block_elements = (address => 1,
@@ -38,7 +38,7 @@ Template::Flute::Style::CSS - CSS parser class for Template::Flute
 
 =head1 VERSION
 
-Version 0.0026
+Version 0.0030
 
 =head1 CONSTRUCTOR
 
