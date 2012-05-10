@@ -1073,6 +1073,11 @@ Requires L<Number::Format> module.
 Date filter, see L<Template::Flute::Filter::Date>.
 Requires L<DateTime> and L<DateTime::Format::ISO8601> modules.
 
+=item language_name
+
+Language name filter, see L<Template::Flute::Filter::LanguageName>.
+Requires L<Locales> module.
+
 =back
 
 Filter classes are loaded at runtime for efficiency and to keep the
