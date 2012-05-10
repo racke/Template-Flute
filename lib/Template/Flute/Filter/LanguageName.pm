@@ -32,6 +32,9 @@ sub filter {
     my $name = '';
 
     if ($code) {
+        # cut off sub locales
+        $code =~ s/_(\w+)$//;
+
         $name = Locales->new->get_language_from_code($code);
     }
     
