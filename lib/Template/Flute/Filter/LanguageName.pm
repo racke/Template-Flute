@@ -31,6 +31,10 @@ The init method allows you to set the following options:
 
 Locale for language name output.
 
+=item clear_current_locale
+
+Whether to return an empty string for the current locale or not.
+
 =back
 
 =cut
@@ -39,6 +43,7 @@ sub init {
     my ($self, %args) = @_;
 
     $self->{locale} = $args{options}->{locale} || 'en';
+    $self->{clear_current_locale} = $args{options}->{clear_current_locale};
 }
 
 =head2 filter
@@ -55,7 +60,9 @@ sub filter {
         # cut off sub locales
         $code =~ s/_(\w+)$//;
 
-        $name = Locales->new($self->{locale})->get_language_from_code($code);
+        unless ($self->{clear_current_locale} && $code eq $self->{locale}) {
+            $name = Locales->new($self->{locale})->get_language_from_code($code);
+        }
     }
     
     return $name;
