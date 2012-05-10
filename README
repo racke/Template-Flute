@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0025
+    Version 0.0030
 
 SYNOPSIS
         use Template::Flute;
@@ -237,6 +237,19 @@ SPECIFICATION
           <div class="list"><span class="key">BAR</span></div>
 
     param
+        The following operations are supported for param elements:
+
+        append
+            Appends the param value to the text found in the HTML template.
+
+        toggle
+            Only shows corresponding HTML element if param value is set.
+
+        Other attributes for param elements are:
+
+        filter
+            Applies filter to param value.
+
     value
         Value elements are replaced with a single value present in the
         values hash passed to the constructor of this class or later set
@@ -255,6 +268,9 @@ SPECIFICATION
             Only shows corresponding HTML element if value is set.
 
         Other attributes for value elements are:
+
+        filter
+            Applies filter to value.
 
         include
             Processes the template file named in this attribute. This

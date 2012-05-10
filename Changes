@@ -1,5 +1,21 @@
 Revision history for Template::Flute
 
+0.0030 Thu May 10 08:48:01 2012 CEST
+
+    [ENHANCEMENTS]
+
+    * Add toggle tree suboperation.
+    * Add support for sorting to Template::Flute::Iterator.
+    * Add asterisk selector to JSON iterator.
+
+    [BUG FIXES]
+
+    * Fix sharing elements between container and value when using class and id.
+
+    [DOCUMENTATION]
+
+    * Add documentation for param elements and filter attribute.
+
 0.0025 Wed Mar 14 14:39:21 2012 CET
 
     [BUG FIXES]
@@ -8,6 +24,7 @@ Revision history for Template::Flute
 
     [DOCUMENTATION]
 
+    * Add documentation for param elements and filter attribute.
     * Add append operation for values.
     * Fix documentation of Template::Flute::HTML's values method.
 
