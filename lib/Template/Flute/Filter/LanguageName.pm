@@ -21,6 +21,26 @@ L<Locales> module.
 
 =head1 METHODS
 
+=head2 init
+
+The init method allows you to set the following options:
+
+=over 4
+
+=item locale
+
+Locale for language name output.
+
+=back
+
+=cut
+
+sub init {
+    my ($self, %args) = @_;
+
+    $self->{locale} = $args{options}->{locale} || 'en';
+}
+
 =head2 filter
 
 Language name filter.
@@ -35,7 +55,7 @@ sub filter {
         # cut off sub locales
         $code =~ s/_(\w+)$//;
 
-        $name = Locales->new->get_language_from_code($code);
+        $name = Locales->new($self->{locale})->get_language_from_code($code);
     }
     
     return $name;
