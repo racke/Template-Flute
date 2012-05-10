@@ -10,7 +10,9 @@ lib/Template/Flute/PDF/Image.pm
 lib/Template/Flute/PDF/Import.pm
 t/00-load.t
 t/boilerplate.t
+t/files/sample.bmp
 t/files/sample.jpg
+t/fonts.t
 t/images.t
 t/manifest.t
 t/pod.t
