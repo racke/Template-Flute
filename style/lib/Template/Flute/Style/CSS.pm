@@ -402,7 +402,10 @@ sub _build_properties {
 		$propref->{font}->{size} = $props_css->{'font-size'};
 	}
 	if ($props_css->{'font-family'}) {
-		$propref->{font}->{family} = $props_css->{'font-family'};
+	    $propref->{font}->{family} = ucfirst(lc($props_css->{'font-family'}));
+	}
+	if ($props_css->{'font-style'}) {
+	    $propref->{font}->{style} = ucfirst(lc($props_css->{'font-style'}));
 	}
 	if ($props_css->{'font-weight'}) {
 		$propref->{font}->{weight} = $props_css->{'font-weight'};
