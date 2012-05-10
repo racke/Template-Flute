@@ -130,6 +130,38 @@ use constant FONT_SIZE => '12';
 use constant PAGE_SIZE => 'a4';
 use constant MARGINS => (20, 20, 50, 20);
 
+# font map for PDF core fonts (see PDF::API2::Resource::Font::CoreFont)
+our %font_map = (Courier => {Bold => 'Courier-Bold',
+			     BoldItalic => 'Courier-BoldOblique',
+			     Italic => 'Courier-Oblique',
+			     Roman => 'Courier',
+		 },
+		 Georgia => {Bold => 'Georgia,Bold',
+			     BoldItalic => 'Georgia,BoldItalic',
+			     Italic => 'Georgia,Italic',
+			     Roman => 'Georgia',
+		 },
+		 Helvetica => {Bold => 'Helvetica-Bold',
+			       BoldItalic => 'Helvetica-BoldOblique',
+			       Italic => 'Helvetica-Oblique',
+			       Roman => 'Helvetica',
+		 },
+		 Symbol => {},
+		 Times => {Bold => 'Times-Bold',
+			   BoldItalic => 'Times-BoldItalic',
+			   Roman => 'Times',
+			   Italic => 'Times-Italic'
+		 },
+		 Verdana => {Bold => 'Verdana,Bold',
+			     BoldItalic => 'Verdana,BoldItalic',
+			     Italic => 'Verdana,Italic',
+			     Roman => 'Verdana',
+		 },
+		 Webdings => {},
+		 Wingdings => {},
+		 ZapfDingbats => {},
+    );
+
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
@@ -430,19 +462,37 @@ sub content_width {
 	return $width;
 }
 
-=head2 font NAME [weight]
+=head2 font NAME [weight] [style]
 
-Returns PDF::API2 font object for font NAME, WEIGHT is optional.
+Returns PDF::API2 font object for font NAME, WEIGHT and STYLE are optional.
 
 =cut
 	
 sub font {
-	my ($self, $name, $weight) = @_;
+	my ($self, $name, $weight, $style) = @_;
 	my ($key, $obj);
+
+    if ($weight eq 'normal') {
+        # default font weight
+        $weight = '';
+    }
 
 	# determine font name from supplied name and optional weight
 	if ($weight) {
-		$key = "$name-$weight";
+	    if ($style) {
+            $key = "$name-$weight$style";
+        }
+        else {
+            $key = "$name-$weight";
+        }
+	}
+	elsif ($style) {
+	    if (exists $font_map{$name}->{$style}) {
+            $key = $font_map{$name}->{$style};
+	    }
+	    else {
+            $key = "$name-$style";
+	    }
 	}
 	else {
 		$key = $name;
@@ -562,7 +612,8 @@ sub setup_text_props {
 		$fontweight = $self->{fontweight};
 	}
 	
-	$self->{font} = $self->font($fontfamily, $fontweight);
+	$self->{font} = $self->font($fontfamily, $fontweight,
+	    $props->{font}->{style});
 	
 	$txeng->font($self->{font}, $fontsize);
 
