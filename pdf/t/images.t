@@ -8,34 +8,46 @@ use Template::Flute::PDF;
 
 use CAM::PDF;
 
-use Test::More tests => 2;
+use Test::More;
 
-my ($spec, $html, $flute, $flute_pdf, $pdf, $cam);
+my ($spec, $html, $flute, $flute_pdf, $pdf, $cam, @images);
 
-$html = q{<img src="t/files/sample.jpg">};
+@images = qw/sample.jpg/;
+
+eval "use Image::Magick";
+
+unless ($@) {
+    push (@images, 'sample.bmp');
+}
+
+plan tests => 2 * @images;
 
 $spec = q{<specification></specification>};
 
-$flute = Template::Flute->new(template => $html,
-			      specification => $spec,
-    );
+for my $pic (@images) {
+    $html = qq{<img src="t/files/$pic">};
 
-$flute->process();
+    $flute = Template::Flute->new(template => $html,
+                                  specification => $spec,
+        );
 
-$flute_pdf = Template::Flute::PDF->new(template => $flute->template());
+    $flute->process();
 
-$pdf = $flute_pdf->process();
+    $flute_pdf = Template::Flute::PDF->new(template => $flute->template());
 
-$cam = CAM::PDF->new($pdf);
+    $pdf = $flute_pdf->process();
 
-# check whether we got a valid PHP file
-isa_ok($cam, 'CAM::PDF');
+    $cam = CAM::PDF->new($pdf);
 
-# locate images
-my ($ctree, $gs, @nodes);
+    # check whether we got a valid PDF file
+    isa_ok($cam, 'CAM::PDF');
 
-$ctree = $cam->getPageContentTree(1);
-$gs = $ctree->findImages();
-@nodes = @{$gs->{images}};
+    # locate images
+    my ($ctree, $gs, @nodes);
 
-ok(scalar(@nodes) == 1);
+    $ctree = $cam->getPageContentTree(1);
+    $gs = $ctree->findImages();
+    @nodes = @{$gs->{images}};
+
+    ok(scalar(@nodes) == 1);
+}
