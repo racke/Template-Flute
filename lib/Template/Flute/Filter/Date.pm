@@ -24,6 +24,16 @@ L<DateTime> and L<DateTime::Format::ISO8601> modules.
 
 =head2 init
 
+The init method allows you to set the following options:
+
+=over 4
+
+=item format
+
+Format string for L<DateTime>'s strftime method. Defaults to %c.
+    
+=back
+
 =cut
 
 sub init {
