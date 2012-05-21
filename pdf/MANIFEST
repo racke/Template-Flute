@@ -14,6 +14,7 @@ t/files/sample.bmp
 t/files/sample.jpg
 t/fonts.t
 t/images.t
+t/i-tag.t
 t/manifest.t
 t/pod.t
 t/pod-coverage.t
