@@ -17,7 +17,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Template::Flute' => 0.0025,
-        'Template::Flute::Style::CSS' => 0.0025,
+        'Template::Flute::Style::CSS' => 0.0030,
 	'PDF::API2' => 0,
         'Image::Size' => 0,
     },
