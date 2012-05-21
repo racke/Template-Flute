@@ -1,5 +1,23 @@
 Revision history for Template::Flute::PDF
 
+0.0040 Mon May 21 10:48:20 2012 CEST
+
+    [ENHANCEMENTS]
+
+    * Get rid of Image::Magick prerequisite (rt.cpan.org #76005).
+    * Add support for min_width and min_height properties.
+    * Add support for font style properties.
+    * Add support for HTML <i> tag.
+
+    [BUGFIX]
+
+    * Fallback to file parameter from Template::Flute::PDF->new in process
+      method.
+
+    [TESTS]
+ 
+    * Add BMP image to test for PDF images.
+
 0.0030 Fri Mar 23 12:08:55 2012 CET
 
     [BUGFIX]

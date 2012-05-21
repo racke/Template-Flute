@@ -2,7 +2,7 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0030
+    Version 0.0040
 
 SYNOPSIS
       $flute = new Template::Flute (specification_file => 'invoice.xml',
@@ -78,8 +78,9 @@ METHODS
   content_width
     Returns the width of the content part of the page.
 
-  font NAME [weight]
-    Returns PDF::API2 font object for font NAME, WEIGHT is optional.
+  font NAME [weight] [style]
+    Returns PDF::API2 font object for font NAME, WEIGHT and STYLE are
+    optional.
 
   text_filter TEXT
     Adjusts whitespace in TEXT for output in PDF.
@@ -127,6 +128,18 @@ METHODS
 FUNCTIONS
   to_points [DEFAULT_UNIT]
     Converts widths to points, default unit is mm.
+
+SUPPORTED HTML/CSS SYNTAX
+    This is an incomplete list of supported HTML/CSS syntax.
+
+  HTML tags
+    <i>
+
+  font-weight
+    The values "normal" and "bold" are supported.
+
+  style
+    The HTML attribute "style" is not supported.
 
 AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
