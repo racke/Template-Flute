@@ -455,14 +455,56 @@ sub process {
 		
 		$lel->cut();
 
-		my ($row, $sep_copy);
+		my ($row, $sep_copy, $list_elt);
 		my $row_pos = 0;
-		
+        
+		my ($level_last, $level_val, @level_elts, @siblings, @level_stack);
+        $level_last = 0;
+        my $level_collect_sub;
+        
+        if ($list->{sob}->{level}) {
+            # prepare function for flat trees
+            $level_collect_sub = sub {
+                my ($record, $list_elt) = @_;
+                
+                # register as sibling
+                if ($record) {
+                    $level_val =  $row->{$list->{sob}->{level}} || 0;
+                    push (@{$siblings[$level_val]}, $list_elt);
+                }
+                else {
+                    $level_val = 0;
+                }
+                
+                if ($level_val < $level_last) {
+                    # fill stack for tree manipulations
+                    for my $ll ($level_last - 1 .. $level_val) {
+                        unshift (@level_stack,
+                                 {parent => $level_elts[$ll],
+                                  children => [@{$siblings[$ll+1]}],
+                                 });
+                            
+                        $siblings[$ll+1] = [];
+                    }
+                }
+
+                if ($record) {
+                    $level_elts[$level_val] = $list_elt;
+                    $level_last = $level_val;
+                }
+            };
+        }
+        
 		while ($row = $iter->next()) {
+            
 			if ($row = $list->filter($self, $row)) {
-				$self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
-			
-				$row_pos++;
+				$list_elt = $self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+
+                if ($list->{sob}->{level}) {
+                    $level_collect_sub->($row, $list_elt);
+                } 
+
+       		$row_pos++;
 
 				$list->increment();
 
@@ -487,6 +529,22 @@ sub process {
 			}
 		    }
 		}
+
+        # collect last element
+        if ($list->{sob}->{level}) {
+            $level_collect_sub->();
+
+            for my $lref (@level_stack) {
+                # create <ul> element and move inferior elements
+                my $ul = $lref->{parent}->insert_new_elt('last_child', 'ul');
+
+                for my $cref (@{$lref->{children}}) {
+                    $cref->move(last_child => $ul);
+                }
+            }
+        }
+
+        
 	}
 
 	for my $form ($self->{template}->forms()) {
@@ -661,6 +719,7 @@ sub _replace_record {
 	}
 
 	$subtree->paste(%$paste_pos);
+    return $subtree;
 }
 
 =head2 filter ELEMENT VALUE
