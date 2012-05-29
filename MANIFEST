@@ -19,7 +19,6 @@ lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
 lib/Template/Flute/Container.pm
 lib/Template/Flute/List.pm
-lib/Template/Flute/HTML/Table.pm
 lib/Template/Flute/Database/Rose.pm
 lib/Template/Flute/Expression.pm
 lib/Template/Flute/Form.pm
