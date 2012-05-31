@@ -526,7 +526,7 @@ sub _elt_handler {
 
 sub _elt_indicate_replacements {
 	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
-	my ($elt_text);
+	my ($elt_text, $att_orig);
 
 	if (exists $sob->{op}) {
 		if ($sob->{op} eq 'hook') {
@@ -550,7 +550,10 @@ sub _elt_indicate_replacements {
 		if (exists $sob->{op}) {
 			if ($sob->{op} eq 'append') {
 				# keep original value around
-				$elt->{"flute_$name"}->{rep_att_orig} = $elt->att($sob->{target});
+                $att_orig = $elt->att($sob->{target});
+
+				$elt->{"flute_$name"}->{rep_att_orig} =
+                    defined $att_orig ? $att_orig : '';
 			}
 		}
 			
