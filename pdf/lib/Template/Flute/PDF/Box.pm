@@ -420,6 +420,9 @@ sub calculate {
 	elsif ($self->{gi} eq 'br') {
 		$clear->{before} = 1;
 	}
+    elsif ($self->{gi} eq 'tr') {
+        $clear->{before} = $clear->{after} = 1;
+    }
 	elsif ($self->{specs}->{props}->{display} eq 'block') {
 	    if ($self->property('float') eq 'left') {
 		# no change
