@@ -12,7 +12,6 @@ use Math::Trig;
 use PDF::API2;
 use PDF::API2::Util;
 
-use Template::Flute::HTML::Table;
 use Template::Flute::Style::CSS;
 
 use Template::Flute::PDF::Import;
@@ -219,7 +218,7 @@ Processes HTML template and creates PDF file.
 
 sub process {
 	my $self = shift;
-	my ($file, $font, $table);
+	my ($file, $font);
 
     if (@_) {
         $file = shift;

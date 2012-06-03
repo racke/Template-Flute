@@ -6,6 +6,7 @@ use warnings;
 use Data::Dumper;
 
 use Template::Flute::PDF::Image;
+use Template::Flute::PDF::Table;
 
 =head1 NAME
 
