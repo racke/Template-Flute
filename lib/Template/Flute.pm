@@ -209,18 +209,20 @@ Builds iterators automatically from values.
 # Constructor
 
 sub new {
-	my ($class, $self, $filter_subs, $filter_opts, $filter_class);
+	my ($class, $self, $filter_subs, $filter_opts, $filter_class, $filter_objects);
 
 	$class = shift;
 
 	$filter_subs = {};
 	$filter_opts = {};
 	$filter_class = {};
-
+    $filter_objects = {};
+    
 	$self = {iterators => {}, @_, 
-		 _filter_subs => $filter_subs,
-		 _filter_opts => $filter_opts,
-		 _filter_class => $filter_class,
+             _filter_subs => $filter_subs,
+             _filter_opts => $filter_opts,
+             _filter_class => $filter_class,
+             _filter_objects => $filter_objects,
 	};
 
 	bless $self, $class;
@@ -730,45 +732,46 @@ Runs the filter used by ELEMENT on VALUE and returns the result.
 
 sub filter {
 	my ($self, $element, $value) = @_;
-	my ($filter, $rep_str, $name, $mod_name, $class, $filter_obj, $filter_sub);
+	my ($filter, $name, $mod_name, $class, $filter_obj, $filter_sub);
 
 	$name = $element->{filter};
 
-	if (exists $self->{_filter_subs}->{$name}) {
-	    $filter = $self->{_filter_subs}->{$name};
-	}
-	else {
-	    # try to bootstrap filter
+    if (exists $self->{_filter_subs}->{$name}) {
+        $filter = $self->{_filter_subs}->{$name};
+        return $filter->($value);
+    }
+    
+    unless (exists $self->{_filter_objects}->{$name}) {
+        # try to bootstrap filter
 	    unless ($class = $self->{_filter_class}->{$name}) {
-		$mod_name = join('', map {ucfirst($_)} split(/_/, $name));
-		$class = "Template::Flute::Filter::$mod_name";
+            $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
+            $class = "Template::Flute::Filter::$mod_name";
 	    }
 
 	    eval "require $class";
 
 	    if ($@) {
-		die "Missing filter $name: $@\n";
+            die "Missing filter $name: $@\n";
 	    }
 
 	    eval {
-		$filter_obj = $class->new(options => $self->{_filter_opts}->{$name});
+            $filter_obj = $class->new(options => $self->{_filter_opts}->{$name});
 	    };
 
 	    if ($@) {
-		die "Failed to instantiate filter class $class: $@\n";
+            die "Failed to instantiate filter class $class: $@\n";
 	    }
 
-	    if ($filter_obj->can('twig')) {
+        $self->{_filter_objects}->{$name} = $filter_obj;
+    }
+
+    $filter_obj = $self->{_filter_objects}->{$name};
+    
+    if ($filter_obj->can('twig')) {
 		$element->{op} = sub {$filter_obj->twig(@_)};
-	    }
+    }
 
-	    $filter_sub = sub {$filter_obj->filter(@_)};
-	    $filter = $self->{_filter_subs}->{$name} = $filter_sub;
-	}
-
-	$rep_str = $filter->($value);
-
-	return $rep_str;
+    return $filter_obj->filter($value);
 }
 
 =head2 value NAME
