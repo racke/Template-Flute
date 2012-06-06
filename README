@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0030
+    Version 0.0040
 
 SYNOPSIS
         use Template::Flute;
@@ -351,6 +351,10 @@ FILTERS
     date
         Date filter, see Template::Flute::Filter::Date. Requires DateTime
         and DateTime::Format::ISO8601 modules.
+
+    language_name
+        Language name filter, see Template::Flute::Filter::LanguageName.
+        Requires Locales module.
 
     Filter classes are loaded at runtime for efficiency and to keep the
     number of dependencies for Template::Flute as small as possible.

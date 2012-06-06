@@ -1,5 +1,23 @@
 Revision history for Template::Flute
 
+0.0040 Wed Jun  6 18:25:28 2012 CEST
+
+    [ENHANCEMENTS]
+ 
+    * Add language name filter.
+    * Add support for flat trees.
+
+    [BUG FIXES]
+
+    * Prevent Perl warning on undefined values for append operation.
+    * Fix design flaw in filtering where twig method isn't called on second
+      usage of a filter.
+    * Reset twig handler variable to prevent filtering of unrelated elements.
+
+    [DOCUMENTATION]
+
+    * Add documentation of format option to POD for date filter class.
+
 0.0030 Thu May 10 08:48:01 2012 CEST
 
     [ENHANCEMENTS]
