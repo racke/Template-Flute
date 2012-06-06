@@ -838,6 +838,7 @@ sub _replace_values {
 	
 	for my $value ($self->{template}->values()) {
 		@elts = @{$value->{elts}};
+        $elt_handler = undef;
 
 		# determine value used for replacements
 		($raw, $rep_str) = $self->value($value);
