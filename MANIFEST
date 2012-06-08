@@ -71,6 +71,7 @@ t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
 t/lists/alternate-classes.t
+t/lists/params.t
 t/lists/separator.t
 t/targets/01-value.t
 t/targets/02-param.t
