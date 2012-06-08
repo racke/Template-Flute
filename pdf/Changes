@@ -1,5 +1,16 @@
 Revision history for Template::Flute::PDF
 
+0.0041 Fri Jun  8 19:48:47 2012 CEST
+
+    [BUGFIX]
+
+    * Fix inappropriate conditional causing text consisting of a single zero
+      to disappear in the PDF output.
+
+    [TESTS]
+
+    * Add basic text tests
+
 0.0040 Mon May 21 10:48:20 2012 CEST
 
     [ENHANCEMENTS]

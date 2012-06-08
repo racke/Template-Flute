@@ -2,7 +2,7 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0040
+    Version 0.0041
 
 SYNOPSIS
       $flute = new Template::Flute (specification_file => 'invoice.xml',
