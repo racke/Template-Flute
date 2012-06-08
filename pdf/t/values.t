@@ -1,4 +1,6 @@
 #! /usr/bin/env perl
+#
+# Basic text tests.
 
 use strict;
 use warnings;
