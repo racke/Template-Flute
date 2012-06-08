@@ -98,6 +98,10 @@ Page size for the PDF (default: A4).
 
 Base directory for HTML resources like images and stylesheets.
 
+=item import
+
+Import parameters for L<Template::Flute::PDF::Import>.
+
 =back
 
 =head3 Margin parameters
