@@ -61,6 +61,7 @@ t/filters/eol.t
 t/filters/nobreak_single.t
 t/filters/subs.t
 t/filters/upper.t
+t/values/basic.t
 t/i18n/01-simple.t
 t/forms/01-name.t
 t/forms/02-link.t
