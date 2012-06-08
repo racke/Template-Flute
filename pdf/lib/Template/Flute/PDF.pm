@@ -730,7 +730,7 @@ sub calculate {
 			}
 		}
 
-		if ($buf) {
+		if (length($buf)) {
 			push (@chunks, $buf);
 		}
 	}
