@@ -973,6 +973,8 @@ Example specification, HTML template and output:
 
 =item param
 
+Param elements are replaced with the corresponding value from the list iterator.
+
 The following operations are supported for param elements:
 
 =over 4
@@ -994,6 +996,12 @@ Other attributes for param elements are:
 =item filter
 
 Applies filter to param value.
+
+=item increment
+
+Uses value from increment instead of a value from the iterator.
+
+    <param name="pos" increment="1">
 
 =back
 
