@@ -1,36 +1,17 @@
-# Template::Flute::HTML::Table - Flute HTML table class
-#
-# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public
-# License along with this program; if not, write to the Free
-# Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
-
-package Template::Flute::HTML::Table;
+package Template::Flute::PDF::Table;
 
 use strict;
 use warnings;
 
 =head1 NAME
 
-Template::Flute::HTML::Table - Class for examining HTML tables
+Template::Flute::PDF::Table - Class for examining HTML tables for PDF
 
 =head1 CONSTRUCTOR
 
 =head2 new
 
-Creates Template::Flute::HTML::Table object.
+Creates Template::Flute::PDF::Table object.
 
 =cut
 
@@ -98,7 +79,7 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
+Copyright 2011-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
