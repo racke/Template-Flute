@@ -192,8 +192,9 @@ sub translate {
 	for my $elt (@text_elts) {
 		$parent_gi = $elt->parent->gi();
 
-		next if $parent_gi eq 'style';
-
+		next if $parent_gi eq 'style'
+            || $parent_gi eq 'script';
+        
 		$parent_i18n = $elt->parent->att('i18n-key');
 		
 		if ($parent_i18n) {
