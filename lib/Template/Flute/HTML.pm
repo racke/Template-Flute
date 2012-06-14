@@ -183,7 +183,7 @@ the I18NOBJECT.
 sub translate {
 	my ($self, $i18n) = @_;
 	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n,
-	    %parents);
+	    %parents, $text, $ws_before, $ws_after);
 
 	$root = $self->root();
 
@@ -201,7 +201,28 @@ sub translate {
 			$i18n_ret = $i18n->localize($parent_i18n);
 		}
 		else {
-			$i18n_ret = $i18n->localize($elt->text());
+            $text = $elt->text;
+
+            # remove surrounding whitespace before passing
+            # to translation function
+            if ($text =~ s/^(\s+)//s) {
+                $ws_before = $1;
+            }
+            else {
+                $ws_before = '';
+            }
+
+            if ($text =~ s/(\s+)$//s) {
+                $ws_after = $1;
+            }
+            else {
+                $ws_after = '';
+            }
+
+            # skip empty text
+            next unless $text;
+            
+			$i18n_ret = $ws_before . $i18n->localize($text) . $ws_after;
 		}
 
 		$elt->set_text($i18n_ret);
