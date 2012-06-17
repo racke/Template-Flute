@@ -1198,7 +1198,11 @@ This is an incomplete list of supported HTML/CSS syntax.
 =head2 HTML tags
 
 <i>
-    
+
+=head2 display
+
+The CSS attribute "display" is not supported.
+
 =head2 font-weight
 
 The values "normal" and "bold" are supported.
