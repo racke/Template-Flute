@@ -6,6 +6,7 @@ use warnings;
 use Data::Dumper;
 
 use Template::Flute::PDF::Image;
+use Template::Flute::PDF::Table;
 
 =head1 NAME
 
@@ -100,7 +101,7 @@ sub new {
 	}
 
 	# Determine our window from bounding box
-	%{$self->{window}} = %{$self->{bounding}};
+	%{$self->{window}} = %{$self->{bounding} || $self->{pdf}->bounding};
 
 	if ($self->{specs}->{props}->{width}) {
 #		print "Reducing WINDOW width to GI $self->{gi} CLASS $self->{class} to $self->{specs}->{props}->{width}\n";
@@ -179,6 +180,14 @@ sub calculate {
 		return $self->{box};
 	}
 
+    if ($self->{gi} eq 'table') {
+        # walk table
+        my ($table);
+        
+        $table = Template::Flute::PDF::Table->new(pdf => $self->{pdf});
+        $table->walk($self);
+    }
+    
 	if ($self->{gi} eq 'img') {
 		my (@info, $src, $file, %size);
 
@@ -237,8 +246,10 @@ sub calculate {
 			
 			push (@{$self->{eltstack}}, $childbox);
 		}
-
-		$dim = $self->{eltmap}->{$child}->calculate();
+        
+        unless (exists $self->{eltmap}->{$child}->{box}) {
+            $dim = $self->{eltmap}->{$child}->calculate();
+        }
 	}
 
 	# processed all childs, now determine my size itself
@@ -420,6 +431,9 @@ sub calculate {
 	elsif ($self->{gi} eq 'br') {
 		$clear->{before} = 1;
 	}
+    elsif ($self->{gi} eq 'tr') {
+        $clear->{before} = $clear->{after} = 1;
+    }
 	elsif ($self->{specs}->{props}->{display} eq 'block') {
 	    if ($self->property('float') eq 'left') {
 		# no change

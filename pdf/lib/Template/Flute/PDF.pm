@@ -12,7 +12,6 @@ use Math::Trig;
 use PDF::API2;
 use PDF::API2::Util;
 
-use Template::Flute::HTML::Table;
 use Template::Flute::Style::CSS;
 
 use Template::Flute::PDF::Import;
@@ -223,7 +222,7 @@ Processes HTML template and creates PDF file.
 
 sub process {
 	my $self = shift;
-	my ($file, $font, $table);
+	my ($file, $font);
 
     if (@_) {
         $file = shift;
@@ -464,6 +463,16 @@ sub content_width {
 	    - to_points($self->{margin_right}, 'pt');
 
 	return $width;
+}
+
+sub bounding {
+    my $self = shift;
+    
+    return {vpos => $self->{border_top},
+            hpos => $self->{border_left},
+            max_w => $self->{border_right} - $self->{border_left},
+            max_h => $self->{border_top} - $self->{border_bottom},
+    };
 }
 
 =head2 font NAME [weight] [style]
