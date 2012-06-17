@@ -461,6 +461,16 @@ sub content_width {
 	return $width;
 }
 
+sub bounding {
+    my $self = shift;
+    
+    return {vpos => $self->{border_top},
+            hpos => $self->{border_left},
+            max_w => $self->{border_right} - $self->{border_left},
+            max_h => $self->{border_top} - $self->{border_bottom},
+    };
+}
+
 =head2 font NAME [weight] [style]
 
 Returns PDF::API2 font object for font NAME, WEIGHT and STYLE are optional.
