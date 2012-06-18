@@ -163,8 +163,13 @@ sub properties {
 	}
 	
 	# defaults
-	$props->{color} = 'black';
-    $props->{font}->{size} = FONT_SIZE;
+    unless (exists $props->{color}) {
+        $props->{color} = 'black';
+    }
+    
+    unless (exists $props->{font}->{size}) {
+        $props->{font}->{size} = FONT_SIZE;
+    }
 
 	if (defined $parms{tag} && $parms{tag} =~ /\S/) {
 		@tags = split(/\s+/, $parms{tag});
