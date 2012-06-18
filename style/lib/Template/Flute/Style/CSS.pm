@@ -188,7 +188,11 @@ sub properties {
                 # add automagic margin of 1em
                 for (qw/top bottom/) {
                     unless ($props->{margin}->{$_}) {
-                        $props->{margin}->{$_} = $props->{font}->{size} . 'pt';
+                        $props->{margin}->{$_} = $props->{font}->{size};
+
+                        if ($props->{font}->{size} =~ /^[0-9.]+$/) {
+                            $props->{margin}->{$_} .= 'pt';
+                        }
                     }
                 }
             }
