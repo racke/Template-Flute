@@ -44,19 +44,24 @@ Returns number of pages.
     
 sub pages {
     my $self = shift;
-    my $count;
+    my ($count, $pages);
     
     $count = $self->iterator->count;
 
     if ($self->page_size > 0) {
-        return int($count / $self->page_size);
+        $pages = int($count / $self->page_size);
+        if ($count % $self->page_size) {
+            $pages++;
+        }
     }
     elsif ($count > 0) {
-        return 1;
+        $pages = 1;
     }
     else {
-        return 0;
+        $pages = 0;
     }
+
+    return $pages;
 }
 
 =head2 current_page
