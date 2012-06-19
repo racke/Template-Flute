@@ -61,7 +61,7 @@ sub walk {
 				# table cell
 				if ($gi eq 'th' || $gi eq 'td') {
                     # create box
-                    my ($cell_box);
+                    my ($cell_box, $colspan);
 
                     $args{pdf} = $self->{pdf};
                     $args{elt} = $elt_cell;
@@ -71,19 +71,26 @@ sub walk {
                     $cell_box = Template::Flute::PDF::Box->new(%args);
                     $cell_box->calculate;
 
-                    if (@{$self->{cell_widths}} == $j
-                        || ($cell_box->{box}->{width} > $self->{cell_widths}->[$j])) {
-                        $self->{cell_widths}->[$j] = $cell_box->{box}->{width};
-					}                    				
+                    # determine colspan for table cell
+                    $colspan = $elt_cell->att('colspan') || 1;
 
+                    if ($colspan == 1) {
+                        if (@{$self->{cell_widths}} == $j
+                            || ($cell_box->{box}->{width} > $self->{cell_widths}->[$j])) {
+                            $self->{cell_widths}->[$j] = $cell_box->{box}->{width};
+                        }                    				
+                    }
+                    
                     if ($cell_box->{box}->{height} > $max_h) {
                         # adjust maximum row height
                         $max_h = $cell_box->{box}->{height};
                     }
                         
-					$data[$i][$j++] = {text => $elt_cell->text(),
+					$data[$i][$j] = {text => $elt_cell->text(),
                                        box => $cell_box};
 
+                    $j += $colspan;
+                    
                     $row_box->{eltmap}->{$elt_cell} = $cell_box;
                     push @{$row_box->{eltstack}}, $cell_box;
 				}
