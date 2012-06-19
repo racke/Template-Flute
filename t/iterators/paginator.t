@@ -8,7 +8,8 @@ use Test::More;
 
 use Template::Flute::Paginator;
 
-my @test_specs = ({count => 50, page_size => 10});
+my @test_specs = ({count => 50, page_size => 10},
+    {count => 31, page_size => 10});
 
 plan tests => 4 + 3 * scalar @test_specs;
 
@@ -47,6 +48,9 @@ for my $spec (@test_specs) {
     # test calculation of page count
     $count = $iter->pages;
     $expected = int($spec->{count} / $spec->{page_size});
+    if ($spec->{count} % $spec->{page_size}) {
+        $expected++;
+    }
     
     ok($count == $expected, 
        "Page count with $spec->{count} items and $spec->{page_size} per page.")
