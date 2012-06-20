@@ -80,6 +80,33 @@ sub current_page {
     return $self->{current_page};
 }
 
+=head2 position_first
+
+=cut
+
+sub position_first {
+    my $self = shift;
+    
+    return ($self->current_page - 1) * $self->page_size + 1;
+}
+
+=head2 position_last
+
+=cut
+
+sub position_last {
+    my $self = shift;
+    my $position;
+
+    $position = $self->current_page * $self->page_size;
+
+    if ($position > $self->count) {
+        $position = $self->count;
+    }
+
+    return $position;
+}
+
 =head2 next
 
 Returns next record or undef.
