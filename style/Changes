@@ -1,5 +1,18 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0031 Wed Jun 20 18:17:50 2012 CEST
+
+    [BUG FIXES]
+ 
+    * Prevent inherited properties from being overridden by global
+      defaults.
+    * Only add pt unit for numbers when adding automatic margin for p
+      elements.
+
+    [ENHANCEMENTS]
+
+    * Use 1em as default margin for p tags.
+
 0.0030 Thu May 10 23:20:56 2012 CEST
 
     [ENHANCEMENTS]
