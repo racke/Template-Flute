@@ -14,6 +14,21 @@ Template::Flute::Paginator - Generic paginator class for Template::Flute
 
 =head1 SYNOPSIS
 
+    $paginator = Template::Flute::Paginator->new;
+
+    # set page size
+    $paginator->page_size(10);
+
+    # retrieve number of pages
+    $paginator->pages;
+
+    # retrieve current page (starting with 1)
+    $paginator->current_page;
+
+    # retrieve global position numbers for current page
+    $paginator->position_first;
+    $paginator->position_last;
+
 =cut
 
 has iterator => (
