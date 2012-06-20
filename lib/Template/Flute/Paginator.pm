@@ -10,7 +10,7 @@ use Template::Flute::Iterator;
 
 =head1 NAME
 
-Template::Flute::Paginator - Generice paginator class for Template::Flute
+Template::Flute::Paginator - Generic paginator class for Template::Flute
 
 =head1 SYNOPSIS
 
