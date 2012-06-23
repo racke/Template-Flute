@@ -1204,22 +1204,29 @@ sub _font_select {
 
 This is an incomplete list of supported HTML/CSS syntax.
 
-=head2 HTML tags
+=head2 HTML tags and attributes
 
 <i>
 
-=head2 display
+=head3 style
 
-The CSS attribute "display" is not supported.
+The HTML attribute "style" is not supported.
 
-=head2 font-weight
+=head2 CSS properties
+
+=head3 display
+
+The CSS property "display" is not supported.
+
+=head3 font-weight
 
 The values "normal" and "bold" are supported.
 
-=head2 style
+=head3 text-transformation
 
-The HTML attribute "style" is not supported.
-    
+The CSS property "text-transformation" is supported with
+the exception of the value "inherit".
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
