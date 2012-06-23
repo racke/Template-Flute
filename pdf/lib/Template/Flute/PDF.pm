@@ -563,7 +563,7 @@ sub text_filter {
 		elsif ($transform eq 'capitalize') {
 			$text =~ s/\b(\w)/\u$1/g;
 		}
-		else {
+		elsif ($transform ne 'none') {
 			die "Unknown transformation $transform\n";
 		}
 	}
