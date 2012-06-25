@@ -1222,6 +1222,14 @@ The CSS property "display" is not supported.
 
 The values "normal" and "bold" are supported.
 
+=head3 min-height
+
+The CSS property "min-height" is supported.
+
+=head3 min-width
+
+The CSS property "min-width" is supported.
+    
 =head3 text-transformation
 
 The CSS property "text-transformation" is supported with
