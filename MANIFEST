@@ -12,6 +12,7 @@ lib/Template/Flute/Filter.pm
 lib/Template/Flute/Filter/Currency.pm
 lib/Template/Flute/Filter/Date.pm
 lib/Template/Flute/Filter/Eol.pm
+lib/Template/Flute/Filter/CountryName.pm
 lib/Template/Flute/Filter/LanguageName.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Upper.pm

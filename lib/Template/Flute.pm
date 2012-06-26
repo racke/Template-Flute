@@ -1144,6 +1144,11 @@ Requires L<Number::Format> module.
 Date filter, see L<Template::Flute::Filter::Date>.
 Requires L<DateTime> and L<DateTime::Format::ISO8601> modules.
 
+=item country_name
+
+Country name filter, see L<Template::Flute::Filter::CountryName>.
+Requires L<Locales> module.
+
 =item language_name
 
 Language name filter, see L<Template::Flute::Filter::LanguageName>.
