@@ -44,6 +44,10 @@ sub init {
 
     $self->{locale} = $args{options}->{locale} || 'en';
     $self->{clear_current_locale} = $args{options}->{clear_current_locale};
+
+    unless ($self->{object} = Locales->new($self->{locale})) {
+        die $@;
+    }
 }
 
 =head2 filter
@@ -61,7 +65,7 @@ sub filter {
         $code =~ s/_(\w+)$//;
 
         unless ($self->{clear_current_locale} && $code eq $self->{locale}) {
-            $name = Locales->new($self->{locale})->get_territory_from_code($code);
+            $name = $self->{object}->get_territory_from_code($code);
         }
     }
     
