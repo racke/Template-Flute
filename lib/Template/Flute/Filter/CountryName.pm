@@ -61,9 +61,6 @@ sub filter {
     my $name = '';
 
     if ($code) {
-        # cut off sub locales
-        $code =~ s/_(\w+)$//;
-
         unless ($self->{clear_current_locale} && $code eq $self->{locale}) {
             $name = $self->{object}->get_territory_from_code($code);
         }
