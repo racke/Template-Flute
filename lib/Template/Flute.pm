@@ -1106,7 +1106,7 @@ through the HTML template object:
 Only forms present in the specification and the HTML template can be
 addressed in this way.
 
-See L<Template::Flute::Form> for details about lists.
+See L<Template::Flute::Form> for details about forms.
 
 =head1 FILTERS
 
