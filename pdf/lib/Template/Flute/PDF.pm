@@ -31,13 +31,13 @@ our $VERSION = '0.0041';
 
 =head1 SYNOPSIS
 
-  $flute = new Template::Flute (specification_file => 'invoice.xml',
-                              template_file => 'invoice.html',
-                              values => \%values);
+  $flute = Template::Flute->new (specification_file => 'invoice.xml',
+                                 template_file => 'invoice.html',
+                                 values => \%values);
   $flute->process();
 
-  $pdf = new Template::Flute::PDF (template => $flute->template(),
-                                  file => 'invoice.pdf');
+  $pdf = Template::Flute::PDF->new (template => $flute->template(),
+                                    file => 'invoice.pdf');
 
   $pdf->process();
 
@@ -52,8 +52,8 @@ To obtain the PDF as a string instead of writing it to a file,
 please simply leave out the file parameter when creating the Template::Flute::PDF
 object:
 
-   $pdf = new Template::Flute::PDF (template => $flute->template(),
-                                  file => 'invoice.pdf');
+   $pdf = Template::Flute::PDF->new (template => $flute->template(),
+                                     file => 'invoice.pdf');
 
    $pdf_as_string = $pdf->process();
 
