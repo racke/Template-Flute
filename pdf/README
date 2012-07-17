@@ -2,22 +2,32 @@ NAME
     Template::Flute::PDF - PDF generator for HTML templates
 
 VERSION
-    Version 0.0041
+    Version 0.0042
 
 SYNOPSIS
-      $flute = new Template::Flute (specification_file => 'invoice.xml',
-                                  template_file => 'invoice.html',
-                                  values => \%values);
+      $flute = Template::Flute->new (specification_file => 'invoice.xml',
+                                     template_file => 'invoice.html',
+                                     values => \%values);
       $flute->process();
 
-      $pdf = new Template::Flute::PDF (template => $flute->template(),
-                                      file => 'invoice.pdf');
+      $pdf = Template::Flute::PDF->new (template => $flute->template(),
+                                        file => 'invoice.pdf');
 
       $pdf->process();
 
 DESCRIPTION
     Template::Flute::PDF is a PDF generator based on Template::Flute and
     PDF::API2.
+
+  OUTPUT
+    To obtain the PDF as a string instead of writing it to a file, please
+    simply leave out the file parameter when creating the
+    Template::Flute::PDF object:
+
+       $pdf = Template::Flute::PDF->new (template => $flute->template(),
+                                         file => 'invoice.pdf');
+
+       $pdf_as_string = $pdf->process();
 
   UNITS
     Template::Flute::PDF uses the pt unit internally.
@@ -49,6 +59,9 @@ CONSTRUCTOR
     html_base
         Base directory for HTML resources like images and stylesheets.
 
+    import
+        Import parameters for Template::Flute::PDF::Import.
+
     Margin parameters
     margin_top
         Top margin, defaults to 20.
@@ -77,6 +90,23 @@ METHODS
 
   content_width
     Returns the width of the content part of the page.
+
+  bounding
+    Returns the bounding box for the PDF as a hash reference with the
+    following key/value pairs:
+
+    vpos
+        Top vertical position.
+
+    pos Left horizonal position.
+
+    max_w
+        Maximum width.
+
+    max_h
+        Maximum height.
+
+    The bounding box defines the available space without the borders.
 
   font NAME [weight] [style]
     Returns PDF::API2 font object for font NAME, WEIGHT and STYLE are
@@ -132,14 +162,28 @@ FUNCTIONS
 SUPPORTED HTML/CSS SYNTAX
     This is an incomplete list of supported HTML/CSS syntax.
 
-  HTML tags
+  HTML tags and attributes
     <i>
 
-  font-weight
+    style
+    The HTML attribute "style" is not supported.
+
+  CSS properties
+    display
+    The CSS property "display" is not supported.
+
+    font-weight
     The values "normal" and "bold" are supported.
 
-  style
-    The HTML attribute "style" is not supported.
+    min-height
+    The CSS property "min-height" is supported.
+
+    min-width
+    The CSS property "min-width" is supported.
+
+    text-transformation
+    The CSS property "text-transformation" is supported with the exception
+    of the value "inherit".
 
 AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>

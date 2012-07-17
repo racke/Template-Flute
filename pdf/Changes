@@ -1,5 +1,25 @@
 Revision history for Template::Flute::PDF
 
+0.0042 Tue Jul 17 19:34:06 2012 CEST
+
+    [BUGFIX]
+
+    * Accept "none" as valid value for text transformations.
+    * Fix bug in locate_image method caused by using wrong variable for html base.
+
+    [DOCUMENTATION]
+
+    * Add import parameter for Template::Flute::PDF.
+    * Add note about missing support for CSS display property.
+    * Add note about support for CSS properties min-height, min-width and
+      text-transformation.
+    * Add output section to Template::Flute::PDF's POD and use ->new.
+    * Add documentation for Template::Flute::PDF's bounding method.
+
+    [TESTS]
+
+    * Add tests for locate_image method.
+
 0.0041 Fri Jun  8 19:48:47 2012 CEST
 
     [BUGFIX]
