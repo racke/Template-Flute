@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0040
+    Version 0.0050
 
 SYNOPSIS
         use Template::Flute;
@@ -237,6 +237,9 @@ SPECIFICATION
           <div class="list"><span class="key">BAR</span></div>
 
     param
+        Param elements are replaced with the corresponding value from the
+        list iterator.
+
         The following operations are supported for param elements:
 
         append
@@ -249,6 +252,11 @@ SPECIFICATION
 
         filter
             Applies filter to param value.
+
+        increment
+            Uses value from increment instead of a value from the iterator.
+
+                <param name="pos" increment="1">
 
     value
         Value elements are replaced with a single value present in the
@@ -323,8 +331,34 @@ FORMS
     Only forms present in the specification and the HTML template can be
     addressed in this way.
 
-    See Template::Flute::Form for details about lists.
+    See Template::Flute::Form for details about forms.
 
+  Example form
+    HTML template
+      <form id="account-edit">
+        <ul>
+          <li>
+            <label for="first_name">First Name</label>
+            <input name="first_name" id="first_name">
+          </li>
+          <li>
+            <label for="last_name">Last Name</label>
+            <input name="last_name" id="last_name">
+          </li>
+          <li>
+            <label for="email">Email</label>
+            <input name="email" id="email">
+          </li>
+          <li>
+            <label for="country">Country</label>
+            <select name="country" id="country">
+              <option value="">Please select country</option>
+            </select>
+          </li>
+          </ul>
+      </form>
+
+    XML specification
 FILTERS
     Filters are used to change the display of value and param elements in
     the resulting HTML output:
@@ -351,6 +385,10 @@ FILTERS
     date
         Date filter, see Template::Flute::Filter::Date. Requires DateTime
         and DateTime::Format::ISO8601 modules.
+
+    country_name
+        Country name filter, see Template::Flute::Filter::CountryName.
+        Requires Locales module.
 
     language_name
         Language name filter, see Template::Flute::Filter::LanguageName.
