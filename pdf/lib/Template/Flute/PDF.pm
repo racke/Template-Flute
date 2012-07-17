@@ -46,6 +46,17 @@ our $VERSION = '0.0041';
 Template::Flute::PDF is a PDF generator based on L<Template::Flute>
 and L<PDF::API2>.
 
+=head2 OUTPUT
+
+To obtain the PDF as a string instead of writing it to a file,
+please simply leave out the file parameter when creating the Template::Flute::PDF
+object:
+
+   $pdf = new Template::Flute::PDF (template => $flute->template(),
+                                  file => 'invoice.pdf');
+
+   $pdf_as_string = $pdf->process();
+
 =head2 UNITS
 
 Template::Flute::PDF uses the pt unit internally.
