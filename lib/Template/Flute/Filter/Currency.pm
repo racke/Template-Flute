@@ -9,11 +9,15 @@ use base 'Template::Flute::Filter';
 
 =head1 NAME
 
-Template::Flute::Filter::Currency - Currency filter
+Template::Flute::Filter::Currency - Currency filter for prices
 
 =head1 DESCRIPTION
 
-Currency filter based on L<Number::Format>.
+Filters prices to be displayed according to the locale and
+displayed with a currency symbol.
+
+This filter is based on L<Number::Format>. Any options are
+passed through to the L<Number::Format> object.
 
 =head1 PREREQUISITES
 
