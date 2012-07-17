@@ -476,6 +476,36 @@ sub content_width {
 	return $width;
 }
 
+=head2 bounding
+
+Returns the bounding box for the PDF as a hash reference
+with the following key/value pairs:
+
+=over 4
+
+=item vpos
+
+Top vertical position.
+
+=item pos
+
+Left horizonal position.
+
+=item max_w
+
+Maximum width.
+
+=item max_h
+
+Maximum height.
+
+=back
+
+The bounding box defines the available space without
+the borders.
+
+=cut
+
 sub bounding {
     my $self = shift;
     
