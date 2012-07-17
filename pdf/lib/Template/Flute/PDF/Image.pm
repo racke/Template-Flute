@@ -54,6 +54,10 @@ sub new {
 		die "Missing file name for image object.\n";
 	}
 
+    unless (-f $self->{file}) {
+        die "File for image object not found: $self->{file}.\n";
+    }
+
 	bless ($self, $class);
 	
 	# determine width, height, file type
