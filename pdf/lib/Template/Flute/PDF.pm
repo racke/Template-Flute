@@ -1069,7 +1069,7 @@ sub locate_image {
 
 	if ($template_dir ne '.') {
 	    if ($self->{html_base}) {
-		$img_file = File::Spec->catfile($self->{pdf}->{html_base},
+		$img_file = File::Spec->catfile($self->{html_base},
 					   basename($src));
 	    }
 	    else {
