@@ -710,12 +710,18 @@ sub render {
 	if ($self->{elt}->is_text()) {
 		# render text
 		my $chunks = $self->{box}->{chunks};
+        my $line_offset;
 
-#		print "Chunks: " . Dumper($chunks) . "\n";
-		
+        if ($self->{specs}->{props}->{line_height}) {
+            $line_offset = $self->{pdf}->to_points($self->{specs}->{props}->{line_height});
+        }
+        else {
+            $line_offset = $self->{specs}->{size};
+        }
+
 		for (my $i = 0; $i < @$chunks; $i++) {
 			$self->{pdf}->textbox($self->{elt}, $chunks->[$i],
-								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $self->{specs}->{size})},
+								  $self->{specs}, {%parms, hpos => $parms{hpos} + ($self->{hoff} || 0), vpos => $parms{vpos} - ($i * $line_offset)},
 								  noborder => 1);
 		}
 		return;
