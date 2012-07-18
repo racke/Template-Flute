@@ -219,7 +219,9 @@ sub new {
 	my @sides = qw(top right bottom left);
 	
 	for (my $i = 0; $i < @sides; $i++) {
-	    $self->{'margin_' . $sides[$i]} ||= (MARGINS)[$i];
+        unless (exists $self->{'margin_' . $sides[$i]}) {
+            $self->{'margin_' . $sides[$i]} = (MARGINS)[$i];
+        }
 	}
 	
 	bless ($self, $class);
