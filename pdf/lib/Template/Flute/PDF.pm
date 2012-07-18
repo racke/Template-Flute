@@ -246,11 +246,11 @@ sub process {
     
 	$self->{cur_page} = 1;
 
-	$self->{border_left} = to_points($self->{margin_left}, 'pt');
-	$self->{border_right} = $self->{page_width} - to_points($self->{margin_right}, 'pt');
+	$self->{border_left} = $self->to_points($self->{margin_left}, 'pt');
+	$self->{border_right} = $self->{page_width} - $self->to_points($self->{margin_right}, 'pt');
 
-	$self->{border_top} = $self->{page_height} - to_points($self->{margin_top}, 'pt');
-	$self->{border_bottom} = to_points($self->{margin_bottom}, 'pt');
+	$self->{border_top} = $self->{page_height} - $self->to_points($self->{margin_top}, 'pt');
+	$self->{border_bottom} = $self->to_points($self->{margin_bottom}, 'pt');
 
 	$self->{vpos_next} = $self->{border_top};
 	
@@ -318,7 +318,7 @@ sub process {
 	}
 	
 	if ($css_defaults->{font}->{size}) {
-		$self->{fontsize} = to_points($css_defaults->{font}->{size});
+		$self->{fontsize} = $self->to_points($css_defaults->{font}->{size});
 	}
 	else {
 		$self->{fontsize} = FONT_SIZE;
@@ -400,7 +400,7 @@ sub set_page_size {
 	
 	if (@args > 1) {
 		# passing page size as numbers
-		@ps = map {to_points($_, 'pt')} @args;
+		@ps = map {$self->to_points($_, 'pt')} @args;
 		($self->{page_width}, $self->{page_height}) = @ps;
 	}
 	else {
@@ -472,8 +472,8 @@ sub content_width {
 	my ($self) = @_;
 	my ($width);
 	
-	$width = $self->{page_width} - to_points($self->{margin_left}, 'pt') 
-	    - to_points($self->{margin_right}, 'pt');
+	$width = $self->{page_width} - $self->to_points($self->{margin_left}, 'pt') 
+	    - $self->to_points($self->{margin_right}, 'pt');
 
 	return $width;
 }
@@ -647,7 +647,7 @@ sub setup_text_props {
 		$fontsize =  $props->{font}->{size};
 	    }
 	    else {
-		$fontsize = to_points($props->{font}->{size});
+		$fontsize = $self->to_points($props->{font}->{size});
 	    }
 	}
 	else {
@@ -694,16 +694,16 @@ sub setup_text_props {
 				
 	# offsets from border, padding etc.
 	for my $s (qw/top right bottom left/) {
-		$borders{$s} = to_points($props->{border}->{$s}->{width});
-		$margins{$s} = to_points($props->{margin}->{$s});
-		$padding{$s} = to_points($props->{padding}->{$s});
+		$borders{$s} = $self->to_points($props->{border}->{$s}->{width});
+		$margins{$s} = $self->to_points($props->{margin}->{$s});
+		$padding{$s} = $self->to_points($props->{padding}->{$s});
 
 		$offset{$s} += $margins{$s} + $borders{$s} + $padding{$s};
 	}
 
 	# height and width
-	$props->{width} = to_points($props->{width});
-	$props->{height} = to_points($props->{height});
+	$props->{width} = $self->to_points($props->{width});
+	$props->{height} = $self->to_points($props->{height});
 	
 	return {font => $self->{font}, size => $fontsize, offset => \%offset,
 			borders => \%borders, margins => \%margins, padding => \%padding, props => $props,
@@ -807,7 +807,7 @@ sub calculate {
 
 	# line height
 	if (exists $specs->{props}->{line_height}) {
-		$height = $lines * to_points($specs->{props}->{line_height});
+		$height = $lines * $self->to_points($specs->{props}->{line_height});
 	}
 	else {
 		$height = $lines * $specs->{size};
@@ -928,7 +928,7 @@ sub textbox {
 	%parms = (x => $self->{hpos},
 			  y => $self->{y} - $specs->{size},
 			  w => $self->content_width(),
-			  h => to_points(100),
+			  h => $self->to_points(100),
 			  lead => $specs->{size},
 #			  align => $props->{text}->{align} || 'left',
 			  align => 'left',
@@ -947,7 +947,7 @@ sub textbox {
 	if (length($boxtext) && $boxtext =~ /\S/) {
 	    if ($props->{line_height}) {
 		# adjust text position accordingly
-		$parms{y} -= (to_points($props->{line_height}) - $specs->{size}) / 2;
+		$parms{y} -= ($self->to_points($props->{line_height}) - $specs->{size}) / 2;
 	    }
 	    # try different approach
 	    if (exists $props->{rotate}) {
@@ -1145,11 +1145,11 @@ sub begin_transform {
     $gfx->move(0,0);
  
     if (exists $props->{translate}->{x}) {
-	$hpos += to_points($props->{translate}->{x});
+	$hpos += $self->to_points($props->{translate}->{x});
     }
 
     if (exists $props->{translate}->{y}) {
-	$vpos -= to_points($props->{translate}->{y});
+	$vpos -= $self->to_points($props->{translate}->{y});
     }
 
     $gfx->translate($hpos, $vpos);
@@ -1173,31 +1173,29 @@ sub end_transform {
     }
 
     if (exists $props->{translate}->{x}) {
-	$hpos += to_points($props->{translate}->{x});
+	$hpos += $self->to_points($props->{translate}->{x});
     }
 
     if (exists $props->{translate}->{y}) {
-	$vpos -= to_points($props->{translate}->{y});
+	$vpos -= $self->to_points($props->{translate}->{y});
     }
 
     $gfx->translate(-$hpos, -$vpos);
 }
-
-=head1 FUNCTIONS
 
 =head2 to_points [DEFAULT_UNIT]
 	
 Converts widths to points, default unit is mm.
 
 =cut
-	
+
 sub to_points {
-	my ($width, $default_unit) = @_;
+	my ($self, $width, $default_unit) = @_;
 	my ($unit, $points, $negative);
 
 	return 0 unless defined $width;
 
-	if ($width =~ s/^(-?)(\d+(\.\d+)?)\s?(in|px|pt|cm|mm)?$/$2/) {
+	if ($width =~ s/^(-?)(\d+(\.\d+)?)\s?(in|px|pt|cm|mm|em)?$/$2/) {
 	    $negative = $1;
 	    $unit = $4 || $default_unit || 'mm';
 	}
@@ -1222,7 +1220,9 @@ sub to_points {
 	elsif ($unit eq 'px') {
 		$points = $width;
 	}
-
+    elsif ($unit eq 'em') {
+        $points = $self->{fontsize} * $width;
+    }
 	if ($negative) {
 	    return - $points;
 	}

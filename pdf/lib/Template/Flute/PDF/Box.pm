@@ -204,7 +204,7 @@ sub calculate {
 		for my $extent (qw/width height/) {
 			# size from HTML
 			if ($size{$extent}= $self->{elt}->att($extent)) {
-			    $self->{object}->$extent(Template::Flute::PDF::to_points($size{$extent}));
+			    $self->{object}->$extent($self->{pdf}->to_points($size{$extent}));
 			    next;
 			}
 
@@ -405,13 +405,13 @@ sub calculate {
 	}
 
 	# apply minimum for dimensions
-    $min_width = Template::Flute::PDF::to_points($self->{specs}->{props}->{min_width}) || 0;
+    $min_width = $self->{pdf}->to_points($self->{specs}->{props}->{min_width}) || 0;
     
     if ($max_width < $min_width) {
         $max_width = $min_width;
     }
 
-    $min_height = Template::Flute::PDF::to_points($self->{specs}->{props}->{min_height}) || 0;
+    $min_height = $self->{pdf}->to_points($self->{specs}->{props}->{min_height}) || 0;
     
     if ($max_height < $min_height) {
         $max_height = $min_height;
