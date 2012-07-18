@@ -1267,6 +1267,10 @@ The CSS property "display" is not supported.
 
 The values "normal" and "bold" are supported.
 
+=head3 line-height
+
+The CSS property "line-height" is supported.
+
 =head3 min-height
 
 The CSS property "min-height" is supported.
