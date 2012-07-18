@@ -102,7 +102,9 @@ PDF output file.
 
 =item page_size
 
-Page size for the PDF (default: A4).
+Page size for the PDF. This can be a literal paper size like
+A4, Letter or the actual page dimensions as an array reference.
+Default is A4.
 
 =item html_base
 
