@@ -155,7 +155,10 @@ sub calculate {
 		$text = $self->{elt}->text();
 
 		# filter text and break into chunks to remove unnecessary whitespace
-		$text = $self->{pdf}->text_filter($text, $self->property('text', 'transform'));
+		$text = $self->{pdf}->text_filter($text,
+                                          $self->property('text', 'transform') || 'none',
+                                          $self->{parent}->property('display'),
+                                         );
 		
 		# break text first
 		my @frags;
