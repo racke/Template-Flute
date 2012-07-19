@@ -576,7 +576,7 @@ Adjusts whitespace in TEXT for output in PDF.
 =cut
 	
 sub text_filter {
-	my ($self, $text, $transform) = @_;
+	my ($self, $text, $transform, $display) = @_;
 	my ($orig);
 	
 	# fall back to empty string
@@ -592,6 +592,11 @@ sub text_filter {
 	# collapse blanks
 	$text =~ s/\s+/ /g;
 
+    # remove leading blanks
+    if ($display eq 'block') {
+        $text =~ s/^\s+//;
+    }
+    
 	if (length $orig && ! length $text) {
 		# reduce not further than a single whitespace
 		return ' ';
