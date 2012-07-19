@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0050
+    Version 0.0051
 
 SYNOPSIS
         use Template::Flute;
@@ -333,32 +333,6 @@ FORMS
 
     See Template::Flute::Form for details about forms.
 
-  Example form
-    HTML template
-      <form id="account-edit">
-        <ul>
-          <li>
-            <label for="first_name">First Name</label>
-            <input name="first_name" id="first_name">
-          </li>
-          <li>
-            <label for="last_name">Last Name</label>
-            <input name="last_name" id="last_name">
-          </li>
-          <li>
-            <label for="email">Email</label>
-            <input name="email" id="email">
-          </li>
-          <li>
-            <label for="country">Country</label>
-            <select name="country" id="country">
-              <option value="">Please select country</option>
-            </select>
-          </li>
-          </ul>
-      </form>
-
-    XML specification
 FILTERS
     Filters are used to change the display of value and param elements in
     the resulting HTML output:

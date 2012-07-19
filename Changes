@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0051 Thu Jul 19 15:28:09 2012 CEST
+
+    [BUG FIXES]
+
+    * Exclude Moo method BUILDARGS from POD coverage test.
+
 0.0050 Tue Jul 17 19:10:39 2012 CEST
 
     [ENHANCEMENTS]
