@@ -882,7 +882,7 @@ sub textbox {
 	my ($self, $elt, $boxtext, $boxprops, $box, %atts) = @_;
 	my ($width_last, $y_top, $y_last, $left_over, $text_width, $text_height, $box_height);
 	my (@tb_parms, %parms, $txeng, %offset, %borders, %padding, $props,
-		$paragraph, $specs, %text_options, $decoration);
+		$paragraph, $specs, %text_options, $decoration, $gfx);
 
 	if ($boxprops) {
 		$specs = $boxprops;
@@ -909,6 +909,9 @@ sub textbox {
 		$self->{y} = $box->{vpos};
 	}
 
+    # instantiate graphics object first in order to show text on top of the background color
+    $gfx = $self->{page}->gfx;
+    
 	$txeng = $self->{page}->text;
 	$txeng->font($specs->{font}, $specs->{size});
 	
@@ -919,12 +922,13 @@ sub textbox {
 	$text_width = $txeng->advancewidth($boxtext);
 #print "Hpos after: " . $text_width . "\n";
 
-	# now draw the background for text box
+ 	# now draw the background for text box
 	if ($props->{background}->{color}) {
 #		print "Background for text box: $props->{background}->{color}\n";
 		$self->rect($self->{hpos}, $self->{y},
 					$self->{hpos} + $text_width, $self->{y} - $padding{top} - $specs->{size} - $padding{bottom},
-					$props->{background}->{color});
+					$props->{background}->{color},
+                   $gfx);
 	}
 
 	# colors
@@ -1058,10 +1062,9 @@ Adds rectangle to the PDF.
 
 # primitives
 sub rect {
-	my ($self, $x_left, $y_top, $x_right, $y_bottom, $color) = @_;
-	my ($gfx);
+	my ($self, $x_left, $y_top, $x_right, $y_bottom, $color, $gfx) = @_;
 
-	$gfx = $self->{page}->gfx;
+	$gfx ||= $self->{page}->gfx;
 
 	if ($color) {
 		$gfx->fillcolor($color);
