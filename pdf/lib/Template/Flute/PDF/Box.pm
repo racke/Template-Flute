@@ -668,7 +668,7 @@ Renders box.
 
 sub render {
 	my ($self, %parms) = @_;
-	my ($child, $pos, $page_before, $page_cur);
+	my ($child, $pos, $page_before, $page_cur, $gfx);
 
 	$self->{hoff} ||= 0;
 	$self->{voff} ||= 0;
@@ -684,7 +684,10 @@ sub render {
 	}
 
 	$page_before = $self->{page};
-	
+
+    # instantiate graphics object first in order to show text on top of the background color
+    $gfx = $self->{pdf}->{page}->gfx;
+
 	# loop through our stack
 	for (my $i = 0; $i < @{$self->{eltstack}};  $i++) {
 		$child = $self->{eltstack}->[$i];
@@ -709,7 +712,17 @@ sub render {
 					   page => $pos->{page} || $self->{page},
 					   );
 	}
-	
+
+	if ($self->{specs}->{props}->{background}->{color}) {
+        # fill with background color
+        $self->{pdf}->rect($parms{hpos},
+                           $parms{vpos} - $self->{specs}->{offset}->{top},
+                           $parms{hpos} + $self->{box}->{width},
+                           $parms{vpos} - $self->{box}->{height},
+                           $self->{specs}->{props}->{background}->{color},
+                           $gfx);
+    }
+    
 	if ($self->{elt}->is_text()) {
 		# render text
 		my $chunks = $self->{box}->{chunks};
