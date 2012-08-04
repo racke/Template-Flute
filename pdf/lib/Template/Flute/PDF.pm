@@ -44,7 +44,8 @@ our $VERSION = '0.0042';
 =head1 DESCRIPTION
 
 Template::Flute::PDF is a PDF generator based on L<Template::Flute>
-and L<PDF::API2>.
+and L<PDF::API2>. It converts a HTML object from L<Template::Flute::HTML>
+to PDF in three steps (calculation, partitioning, rendering).
 
 =head2 OUTPUT
 
