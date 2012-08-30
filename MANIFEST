@@ -15,6 +15,7 @@ lib/Template/Flute/Filter/Eol.pm
 lib/Template/Flute/Filter/CountryName.pm
 lib/Template/Flute/Filter/LanguageName.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
+lib/Template/Flute/Filter/Replace.pm
 lib/Template/Flute/Filter/Upper.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
