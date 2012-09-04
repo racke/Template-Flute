@@ -843,8 +843,15 @@ sub _replace_values {
 		# determine value used for replacements
 		($raw, $rep_str) = $self->value($value);
 
-		if (exists $value->{op} && $value->{op} ne 'append') {
-		    if ($value->{op} eq 'toggle') {
+		if (exists $value->{op}) {
+            if ($value->{op} eq 'append' && ! $value->{target}) {
+                $elt_handler = sub {
+                    my ($elt, $str) = @_;
+
+                    $elt->set_text($elt->text_only . $str);
+                };
+            }
+		    elsif ($value->{op} eq 'toggle') {
                 if (exists $value->{args} && $value->{args} eq 'static') {
                     if ($rep_str) {
                         # preserve static text
