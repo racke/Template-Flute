@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0052 Tue Sep  4 20:08:34 2012 CEST
+
+    [BUG FIXES]
+
+    * Fix append operation without target on value elements.
+
 0.0051 Thu Jul 19 15:28:09 2012 CEST
 
     [BUG FIXES]
