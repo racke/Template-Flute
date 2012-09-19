@@ -19,12 +19,10 @@ EOF
 my $spec = new Template::Flute::Specification::XML;
 my $ret;
 
-eval {
-	$ret = $spec->parse($conf);
-};
+eval { $ret = $spec->parse($conf); };
 
 diag("Failure parsing specification: $@") if $@;
-isa_ok($ret, 'Template::Flute::Specification');
+isa_ok( $ret, 'Template::Flute::Specification' );
 
 # check for list
-ok(exists($ret->{lists}->{test}->{input}));
+ok( exists( $ret->{lists}->{test}->{input} ) );

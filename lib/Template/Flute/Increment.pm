@@ -25,39 +25,39 @@ Start value for the increment. Defaults to 1.
 
 =item increment INT
 
-Value added to the increment with each call of the increment method.
-Defaults to 1.
+Value added to the increment with each call of the increment method. Defaults
+to 1.
 
 =back
 
 =cut
 
 sub new {
-	my ($class, $self);
-	my (%params);
-	
-	$class = shift;
-	%params = @_;
+    my ( $class, $self );
+    my (%params);
 
-	# initial value
-	if (exists $params{start}) {
-		$self->{value} = $params{start};
-	}
-	else {
-		$self->{value} = 1;
-	}
+    $class  = shift;
+    %params = @_;
 
-	# increment
-	if (exists $params{increment}) {
-		$self->{increment} = $params{increment};
-	}
-	else {
-		$self->{increment} = 1;
-	}
-	
-	bless $self;
+    # initial value
+    if ( exists $params{start} ) {
+        $self->{value} = $params{start};
+    }
+    else {
+        $self->{value} = 1;
+    }
 
-	return $self;
+    # increment
+    if ( exists $params{increment} ) {
+        $self->{increment} = $params{increment};
+    }
+    else {
+        $self->{increment} = 1;
+    }
+
+    bless $self, $class;
+
+    return $self;
 }
 
 =head1 METHODS
@@ -69,9 +69,9 @@ Returns current value of the increment.
 =cut
 
 sub value {
-	my $self = shift;
+    my $self = shift;
 
-	return $self->{value};
+    return $self->{value};
 }
 
 =head2 increment
@@ -81,10 +81,10 @@ Applies increment to value of the increment.
 =cut
 
 sub increment {
-	my $self = shift;
+    my $self = shift;
 
-	$self->{value} += $self->{increment};
-	return $self->{value};
+    $self->{value} += $self->{increment};
+    return $self->{value};
 }
 
 =head1 AUTHOR
@@ -95,9 +95,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

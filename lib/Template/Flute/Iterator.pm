@@ -35,26 +35,26 @@ Template::Flute::Iterator - Generic iterator class for Template::Flute
 
 =head2 new
 
-Creates a Template::Flute::Iterator object. The elements of the
-iterator are hash references. They can be passed to the constructor
-as array or array reference.
+Creates a Template::Flute::Iterator object. The elements of the iterator are
+hash references. They can be passed to the constructor as array or array
+reference.
 
 =cut
 
 # Constructor
 sub new {
-	my ($proto, @args) = @_;
-	my ($class, $self);
-	
-	$class = ref($proto) || $proto;
+    my ( $proto, @args ) = @_;
+    my ( $class, $self );
 
-	$self = {};
-	
-	bless $self, $class;
+    $class = ref($proto) || $proto;
 
-	$self->seed(@args);
+    $self = {};
 
-	return $self;
+    bless $self, $class;
+
+    $self->seed(@args);
+
+    return $self;
 }
 
 =head1 METHODS
@@ -66,26 +66,25 @@ Returns next record or undef.
 =cut
 
 sub next {
-	my ($self) = @_;
+    my ($self) = @_;
 
+    if ( $self->{INDEX} <= $self->{COUNT} ) {
+        return $self->{DATA}->[ $self->{INDEX}++ ];
+    }
 
-	if ($self->{INDEX} <= $self->{COUNT}) {
-		return $self->{DATA}->[$self->{INDEX}++];
-	}
-	
-	return;
-};
+    return;
+}
 
 =head2 count
 
 Returns number of elements.
 
 =cut
-	
-sub count {
-	my ($self) = @_;
 
-	return $self->{COUNT};
+sub count {
+    my ($self) = @_;
+
+    return $self->{COUNT};
 }
 
 =head2 reset
@@ -96,11 +95,11 @@ Resets iterator.
 
 # Reset method - rewind index of iterator
 sub reset {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	$self->{INDEX} = 0;
+    $self->{INDEX} = 0;
 
-	return $self;
+    return $self;
 }
 
 =head2 seed
@@ -110,19 +109,19 @@ Seeds iterator.
 =cut
 
 sub seed {
-	my ($self, @args) = @_;
+    my ( $self, @args ) = @_;
 
-	if (ref($args[0]) eq 'ARRAY') {
-		$self->{DATA} = $args[0];
-	}
-	else {
-		$self->{DATA} = \@args;
-	}
+    if ( ref( $args[0] ) eq 'ARRAY' ) {
+        $self->{DATA} = $args[0];
+    }
+    else {
+        $self->{DATA} = \@args;
+    }
 
-	$self->{INDEX} = 0;
-	$self->{COUNT} = scalar(@{$self->{DATA}});
+    $self->{INDEX} = 0;
+    $self->{COUNT} = scalar( @{ $self->{DATA} } );
 
-	return $self->{COUNT};
+    return $self->{COUNT};
 }
 
 =head2 sort
@@ -144,12 +143,12 @@ Whether results should be unique (optional).
 =back
 
 =cut
-    
-sub sort {
-    my ($self, $sort, $unique) = @_;
-    my (@data, @tmp);
 
-    @data = sort {lc($a->{$sort}) cmp lc($b->{$sort})} @{$self->{DATA}};
+sub sort {
+    my ( $self, $sort, $unique ) = @_;
+    my ( @data, @tmp );
+
+    @data = sort { lc( $a->{$sort} ) cmp lc( $b->{$sort} ) } @{ $self->{DATA} };
 
     if ($unique) {
         my $sort_value = '';
@@ -157,7 +156,7 @@ sub sort {
         for my $record (@data) {
             next if $record->{$sort} eq $sort_value;
             $sort_value = $record->{$sort};
-            push (@tmp, $record);
+            push( @tmp, $record );
         }
 
         $self->{DATA} = \@tmp;
@@ -175,9 +174,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

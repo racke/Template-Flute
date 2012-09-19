@@ -8,7 +8,7 @@ use warnings;
 use Test::More tests => 4;
 use Template::Flute;
 
-my ($html_outside, $html_inside, $spec, $tf, $out, $iter);
+my ( $html_outside, $html_inside, $spec, $tf, $out, $iter );
 
 $spec = q{<specification>
 <list name="list" iterator="tokens">
@@ -18,31 +18,43 @@ $spec = q{<specification>
 </specification>
 };
 
-$iter = [{key => 'FOO'}, {key => 'BAR'}];
+$iter = [ { key => 'FOO' }, { key => 'BAR' } ];
 
 # first test: separator outside the list
-$html_outside = q{<div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>};
+$html_outside =
+  q{<div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>};
 
-$tf = Template::Flute->new(template => $html_outside,
-			   specification => $spec,
-			   iterators => {tokens => $iter},
-    );
+$tf = Template::Flute->new(
+    template      => $html_outside,
+    specification => $spec,
+    iterators     => { tokens => $iter },
+);
 
 $out = $tf->process();
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+ok(
+    $out =~
+      m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%,
+    "Out: $out."
+);
 
 # second test: separator inside the list
-$html_inside = q{<div class="list"><span class="key">KEY</span><span class="sep"> | </span></div>};
+$html_inside =
+  q{<div class="list"><span class="key">KEY</span><span class="sep"> | </span></div>};
 
-$tf = Template::Flute->new(template => $html_inside,
-			   specification => $spec,
-			   iterators => {tokens => $iter},
-    );
+$tf = Template::Flute->new(
+    template      => $html_inside,
+    specification => $spec,
+    iterators     => { tokens => $iter },
+);
 
 $out = $tf->process();
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+ok(
+    $out =~
+      m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%,
+    "Out: $out."
+);
 
 # repeat tests with Config::Scoped specification parser
 
@@ -51,7 +63,7 @@ SKIP: {
 
     skip "No Config::Scoped module", 2 if $@;
 
-$spec = <<EOF;
+    $spec = <<EOF;
 list list {
     iterator = tokens
 }
@@ -63,24 +75,34 @@ separator sep {
 }
 EOF
 
-$tf = Template::Flute->new(template => $html_outside,
-			   specification => $spec,
-			   specification_parser => 'Scoped',
-			   iterators => {tokens => $iter},
+    $tf = Template::Flute->new(
+        template             => $html_outside,
+        specification        => $spec,
+        specification_parser => 'Scoped',
+        iterators            => { tokens => $iter },
     );
 
-$out = $tf->process();
+    $out = $tf->process();
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
-
-$tf = Template::Flute->new(template => $html_inside,
-			   specification => $spec,
-			   specification_parser => 'Scoped',
-			   iterators => {tokens => $iter},
+    ok(
+        $out =~
+          m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%,
+        "Out: $out."
     );
 
-$out = $tf->process();
+    $tf = Template::Flute->new(
+        template             => $html_inside,
+        specification        => $spec,
+        specification_parser => 'Scoped',
+        iterators            => { tokens => $iter },
+    );
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+    $out = $tf->process();
+
+    ok(
+        $out =~
+          m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%,
+        "Out: $out."
+    );
 
 }

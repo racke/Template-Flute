@@ -33,71 +33,69 @@ my $html = <<EOF;
 EOF
 
 # parse XML specifications
-my ($spec_cut, $spec_keep, $ret_cut, $ret_keep);
+my ( $spec_cut, $spec_keep, $ret_cut, $ret_keep );
 
 $spec_cut = new Template::Flute::Specification::XML;
 
 $ret_cut = $spec_cut->parse($xml_cut);
 
-isa_ok($ret_cut, 'Template::Flute::Specification');
+isa_ok( $ret_cut, 'Template::Flute::Specification' );
 
 $spec_keep = new Template::Flute::Specification::XML;
 
 $ret_keep = $spec_keep->parse($xml_keep);
 
-isa_ok($ret_keep, 'Template::Flute::Specification');
+isa_ok( $ret_keep, 'Template::Flute::Specification' );
 
 # add iterator
-$ret_cut->set_iterator('regions',
-					   Template::Flute::Iterator->new([{value => 'EUR'},
-													   {value => 'AF'}]));
-$ret_keep->set_iterator('regions',
-						Template::Flute::Iterator->new([{value => 'EUR'},
-													   {value => 'AF'}]));
+$ret_cut->set_iterator( 'regions',
+    Template::Flute::Iterator->new( [ { value => 'EUR' }, { value => 'AF' } ] )
+);
+$ret_keep->set_iterator( 'regions',
+    Template::Flute::Iterator->new( [ { value => 'EUR' }, { value => 'AF' } ] )
+);
 
 # parse HTML template
-my ($html_object_cut, $html_object_keep, $form, $flute, $ret);
+my ( $html_object_cut, $html_object_keep, $form, $flute, $ret );
 
 $html_object_cut = new Template::Flute::HTML;
 
-$html_object_cut->parse($html, $ret_cut);
+$html_object_cut->parse( $html, $ret_cut );
 
 # locate form
 $form = $html_object_cut->form('select');
 
-isa_ok ($form, 'Template::Flute::Form');
+isa_ok( $form, 'Template::Flute::Form' );
 
-$form->fill({});
+$form->fill( {} );
 
-$flute = new Template::Flute(specification => $ret_cut,
-							  template => $html_object_cut,
+$flute = new Template::Flute(
+    specification => $ret_cut,
+    template      => $html_object_cut,
 );
 
-eval {
-	$ret = $flute->process();
-};
+eval { $ret = $flute->process(); };
 
-ok($ret !~ /Your Region/, $ret);
-ok($ret =~ /AF/, $ret);
+ok( $ret !~ /Your Region/, $ret );
+ok( $ret =~ /AF/, $ret );
 
 $html_object_keep = new Template::Flute::HTML;
 
-$html_object_keep->parse($html, $ret_keep);
+$html_object_keep->parse( $html, $ret_keep );
 
 # locate form
 $form = $html_object_keep->form('select');
 
-isa_ok ($form, 'Template::Flute::Form');
+isa_ok( $form, 'Template::Flute::Form' );
 
-$form->fill({});
+$form->fill( {} );
 
-$flute = new Template::Flute(specification => $ret_keep,
-							 template => $html_object_keep,
+$flute = new Template::Flute(
+    specification => $ret_keep,
+    template      => $html_object_keep,
 );
 
-eval {
-	$ret = $flute->process();
-};
+eval { $ret = $flute->process(); };
 
-ok($ret =~ /Your Region/, $ret);
-ok($ret =~ /AF/, $ret);
+ok( $ret =~ /Your Region/, $ret );
+ok( $ret =~ /AF/,          $ret );

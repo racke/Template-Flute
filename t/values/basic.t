@@ -8,7 +8,7 @@ use warnings;
 use Test::More tests => 6;
 use Template::Flute;
 
-my ($spec, $html, $flute, $out);
+my ( $spec, $html, $flute, $out );
 
 $spec = q{<specification>
 <value name="test"/>
@@ -17,17 +17,18 @@ $spec = q{<specification>
 
 $html = q{<div class="test">TEST</div>};
 
-for my $value (0, 1, ' ', 'test') {
-    $flute = Template::Flute->new(template => $html,
-                                  specification => $spec,
-                                  values => {test => $value},
+for my $value ( 0, 1, ' ', 'test' ) {
+    $flute = Template::Flute->new(
+        template      => $html,
+        specification => $spec,
+        values        => { test => $value },
     );
 
     $out = $flute->process();
 
-    ok ($out =~ m%<div class="test">$value</div>%,
-        "basic value test with: $value")
-        || diag $out;
+    ok( $out =~ m%<div class="test">$value</div>%,
+        "basic value test with: $value" )
+      || diag $out;
 }
 
 # test targets in values
@@ -38,15 +39,17 @@ $spec = q{<specification>
 
 $html = q{<iframe class="test" src="test">};
 
-$flute = Template::Flute->new(template => $html,
-                              specification => $spec,
-                              values => {test => '/test.html'},
-    );
+$flute = Template::Flute->new(
+    template      => $html,
+    specification => $spec,
+    values        => { test => '/test.html' },
+);
 
 $out = $flute->process();
 
-ok($out =~ m%<iframe class="test" src="/test.html">%, 'basic value target test by class')
-    || diag $out;
+ok( $out =~ m%<iframe class="test" src="/test.html">%,
+    'basic value target test by class' )
+  || diag $out;
 
 $spec = q{<specification>
 <value name="test" id="test" target="src"/>
@@ -55,12 +58,15 @@ $spec = q{<specification>
 
 $html = q{<iframe id="test" src="test">};
 
-$flute = Template::Flute->new(template => $html,
-                              specification => $spec,
-                              values => {test => '/test.html'});
+$flute = Template::Flute->new(
+    template      => $html,
+    specification => $spec,
+    values        => { test => '/test.html' }
+);
 
 $out = $flute->process();
 
-ok($out =~ m%<iframe id="test" src="/test.html">%, 'basic value target test by id')
-    || diag $out;
+ok( $out =~ m%<iframe id="test" src="/test.html">%,
+    'basic value target test by id' )
+  || diag $out;
 

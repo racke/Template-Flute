@@ -9,7 +9,7 @@ use Test::More tests => 3;
 
 use Template::Flute;
 
-my ($xml, $html, $flute, $spec, $template, $output);
+my ( $xml, $html, $flute, $spec, $template, $output );
 
 $xml = <<'EOF';
 <specification name="test" description="test">
@@ -21,17 +21,17 @@ $html = <<'EOF';
 <span class="email"></span>
 EOF
 
-$flute = Template::Flute->new(specification => $xml, template => $html);
+$flute = Template::Flute->new( specification => $xml, template => $html );
 $spec = $flute->specification();
 
-isa_ok($spec, 'Template::Flute::Specification');
+isa_ok( $spec, 'Template::Flute::Specification' );
 
 $template = $flute->template();
 
-isa_ok($template, 'Template::Flute::HTML');
+isa_ok( $template, 'Template::Flute::HTML' );
 
-$flute->set_values({email => 'racke@linuxia.de'});
+$flute->set_values( { email => 'racke@linuxia.de' } );
 
 $output = $flute->process();
 
-ok($output =~ m%>racke\@linuxia.de<%, $output);
+ok( $output =~ m%>racke\@linuxia.de<%, $output );

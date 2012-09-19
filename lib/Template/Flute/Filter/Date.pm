@@ -31,14 +31,14 @@ The init method allows you to set the following options:
 =item format
 
 Format string for L<DateTime>'s strftime method. Defaults to %c.
-    
+
 =back
 
 =cut
 
 sub init {
-    my ($self, %args) = @_;
-    
+    my ( $self, %args ) = @_;
+
     $self->{format} = $args{options}->{format} || '%c';
 }
 
@@ -49,14 +49,14 @@ Date filter.
 =cut
 
 sub filter {
-    my ($self, $date, %args) = @_;
-    my ($dt, $fmt);
+    my ( $self, $date, %args ) = @_;
+    my ( $dt, $fmt );
 
-    if ($args{format}) {
-	$fmt = $args{format};
+    if ( $args{format} ) {
+        $fmt = $args{format};
     }
     else {
-	$fmt = $self->{format};
+        $fmt = $self->{format};
     }
 
     # parsing date
@@ -64,7 +64,6 @@ sub filter {
 
     return $dt->strftime($fmt);
 }
-
 
 =head1 AUTHOR
 
@@ -74,9 +73,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

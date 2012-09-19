@@ -20,8 +20,8 @@ Template::Flute::Filter::Replace - Substitutes literal text in a string.
 
 =head1 DESCRIPTION
 
-The replace filter locates a substring within a string and substitutes
-each occurence with another string.
+The replace filter locates a substring within a string and substitutes each
+occurence with another string.
 
 =head1 METHODS
 
@@ -32,7 +32,7 @@ Initializes object with replace options.
 =cut
 
 sub init {
-    my ($self, %args) = @_;
+    my ( $self, %args ) = @_;
 
     for (qw/from to/) {
         $self->{$_} = $args{options}->{$_};
@@ -41,19 +41,19 @@ sub init {
 
 =head2 filter
 
-Carries out the actual substitution and returns
-the filtered value.
+Carries out the actual substitution and returns the filtered value.
 
 =cut
 
 sub filter {
-    my ($self, $value) = @_;
+    my ( $self, $value ) = @_;
     my ($qtd);
 
-    return $value unless defined $self->{from}
-        && length $self->{from};
+    return $value
+      unless defined $self->{from}
+      && length $self->{from};
 
-    $qtd = quotemeta($self->{from});
+    $qtd = quotemeta( $self->{from} );
 
     $value =~ s/$qtd/$self->{to}/g;
 
@@ -68,9 +68,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

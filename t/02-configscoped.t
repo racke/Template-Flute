@@ -9,7 +9,7 @@ use Test::More;
 eval "use Config::Scoped";
 
 if ($@) {
-	plan skip_all => "No Config::Scoped module.";
+    plan skip_all => "No Config::Scoped module.";
 }
 
 plan tests => 3;
@@ -31,15 +31,13 @@ EOF
 my $spec = new Template::Flute::Specification::Scoped;
 my $ret;
 
-eval {
-	$ret = $spec->parse($conf);
-};
+eval { $ret = $spec->parse($conf); };
 
 diag("Failure parsing specification: $@") if $@;
-isa_ok($ret, 'Template::Flute::Specification');
+isa_ok( $ret, 'Template::Flute::Specification' );
 
 # check for proper encoding
-ok($ret->encoding() eq 'iso8859-1', 'get encoding from specification');
+ok( $ret->encoding() eq 'iso8859-1', 'get encoding from specification' );
 
 # check for list
-ok(exists($ret->{lists}->{test}->{input}));
+ok( exists( $ret->{lists}->{test}->{input} ) );

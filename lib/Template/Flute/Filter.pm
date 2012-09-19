@@ -16,14 +16,14 @@ Creates Template::Flute::Filter object.
 =cut
 
 sub new {
-    my ($class, $self);
+    my ( $class, $self );
 
     $class = shift;
-    $self = {};
+    $self  = {};
     bless $self, $class;
     $self->init(@_);
     return $self;
-};
+}
 
 =head2 init
 
@@ -32,7 +32,7 @@ No-op initializer, may be overridden in subclass.
 =cut
 
 sub init {
-};
+}
 
 =head2 filter
 
@@ -41,7 +41,7 @@ No-op filter, supposed to be overriden in subclass.
 =cut
 
 sub filter {
-    my ($self, $value) = @_;
+    my ( $self, $value ) = @_;
 
     return $value;
 }
@@ -54,9 +54,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

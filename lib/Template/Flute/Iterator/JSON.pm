@@ -39,62 +39,64 @@ The JSON string can be either passed as such or as scalar reference.
 =cut
 
 sub new {
-	my ($class, @args) = @_;
-	my ($json, $json_struct, $self, $key, $value);
+    my ( $class, @args ) = @_;
+    my ( $json, $json_struct, $self, $key, $value );
 
-	$self = {};
-	
-	bless ($self, $class);
+    $self = {};
 
-	if (@args == 1) {
-		# single parameter => JSON is passed as string or scalar reference
-		if (ref($args[0]) eq 'SCALAR') {
-			$json = ${$args[0]};
-		}
-		else {
-			$json = $args[0];
-		}
+    bless( $self, $class );
 
-		$json_struct = from_json($json);
-		$self->_seed_iterator($json_struct);
-		
-		return $self;
-	}
-	
-	while (@args) {
-		$key = shift(@args);
-		$value = shift(@args);
-		
-		$self->{$key} = $value;
-	}
+    if ( @args == 1 ) {
 
-	if ($self->{file}) {
-		$json_struct = $self->_parse_json_from_file($self->{file});
-		$self->_seed_iterator($json_struct);
-	}
-	else {
-		die "Missing JSON file.";
-	}
-	
-	return $self;
+        # single parameter => JSON is passed as string or scalar reference
+        if ( ref( $args[0] ) eq 'SCALAR' ) {
+            $json = ${ $args[0] };
+        }
+        else {
+            $json = $args[0];
+        }
+
+        $json_struct = from_json($json);
+        $self->_seed_iterator($json_struct);
+
+        return $self;
+    }
+
+    while (@args) {
+        $key   = shift(@args);
+        $value = shift(@args);
+
+        $self->{$key} = $value;
+    }
+
+    if ( $self->{file} ) {
+        $json_struct = $self->_parse_json_from_file( $self->{file} );
+        $self->_seed_iterator($json_struct);
+    }
+    else {
+        die "Missing JSON file.";
+    }
+
+    return $self;
 }
 
 sub _seed_iterator {
-    my ($self, $json_struct) = @_;
+    my ( $self, $json_struct ) = @_;
 
-    if (exists $self->{selector}) {
-        if (ref($self->{selector}) eq 'HASH') {
-            my (@k, $key, $value);
+    if ( exists $self->{selector} ) {
+        if ( ref( $self->{selector} ) eq 'HASH' ) {
+            my ( @k, $key, $value );
 
             # loop through top level elements and locate selector
-            if ((@k = keys %{$self->{selector}})) {
-                $key = $k[0];
+            if ( ( @k = keys %{ $self->{selector} } ) ) {
+                $key   = $k[0];
                 $value = $self->{selector}->{$key};
 
                 for my $record (@$json_struct) {
-                    if (exists $record->{$key} 
-                        && $record->{$key} eq $value) {
-                        $self->seed($record->{$self->{children}});
+                    if ( exists $record->{$key}
+                        && $record->{$key} eq $value )
+                    {
+                        $self->seed( $record->{ $self->{children} } );
                         return;
                     }
                 }
@@ -102,12 +104,15 @@ sub _seed_iterator {
 
             return;
         }
-        elsif ($self->{selector} eq '*') {
-            # find all elements
-            $self->seed($self->_tree($json_struct, $self->{children}, $self->{sort}));
+        elsif ( $self->{selector} eq '*' ) {
 
-            if ($self->{sort}) {
-                $self->sort($self->{sort}, $self->{unique});
+            # find all elements
+            $self->seed(
+                $self->_tree( $json_struct, $self->{children}, $self->{sort} )
+            );
+
+            if ( $self->{sort} ) {
+                $self->sort( $self->{sort}, $self->{unique} );
             }
 
             return;
@@ -117,18 +122,18 @@ sub _seed_iterator {
         $self->seed();
         return;
     }
-    
+
     $self->seed($json_struct);
 }
 
 sub _tree {
-    my ($self, $json_struct, $children, $sort) = @_;
+    my ( $self, $json_struct, $children, $sort ) = @_;
     my (@leaves);
 
     for my $record (@$json_struct) {
-        if (exists $record->{$children}) {
-            for my $child (@{$record->{$children}}) {
-                push (@leaves, $child);
+        if ( exists $record->{$children} ) {
+            for my $child ( @{ $record->{$children} } ) {
+                push( @leaves, $child );
             }
         }
     }
@@ -137,24 +142,24 @@ sub _tree {
 }
 
 sub _parse_json_from_file {
-	my ($self, $file) = @_;
-	my ($json_fh, $json_struct, $json_txt);
-	
-	# read from JSON file
-	unless (open $json_fh, '<', $file) {
-		die "$0: failed to open JSON file $file: $!\n";
-	}
+    my ( $self, $file ) = @_;
+    my ( $json_fh, $json_struct, $json_txt );
 
-	while (<$json_fh>) {
-		$json_txt .= $_;
-	}
+    # read from JSON file
+    unless ( open $json_fh, '<', $file ) {
+        die "$0: failed to open JSON file $file: $!\n";
+    }
 
-	close $json_fh;
+    while (<$json_fh>) {
+        $json_txt .= $_;
+    }
 
-	# parse JSON
-	$json_struct = from_json($json_txt);
+    close $json_fh;
 
-	return $json_struct;
+    # parse JSON
+    $json_struct = from_json($json_txt);
+
+    return $json_struct;
 }
 
 =head1 AUTHOR
@@ -165,9 +170,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

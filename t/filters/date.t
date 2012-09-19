@@ -22,9 +22,9 @@ if ($@) {
 
 plan tests => 1;
 
-my ($xml, $html, $flute, $ret);
+my ( $xml, $html, $flute, $ret );
 
-$html =  <<EOF;
+$html = <<EOF;
 <div class="text">foo</div>
 EOF
 
@@ -35,11 +35,13 @@ $xml = <<EOF;
 </specification>
 EOF
 
-$flute = Template::Flute->new(specification => $xml,
-			      template => $html,
-			      filters => {date => {options => {format => '%m/%d/%Y'}}},
-			      values => {text => '2011-10-30T06:07:07'});
+$flute = Template::Flute->new(
+    specification => $xml,
+    template      => $html,
+    filters       => { date => { options => { format => '%m/%d/%Y' } } },
+    values => { text => '2011-10-30T06:07:07' }
+);
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">10/30/2011</div>%, "Output: $ret");
+ok( $ret =~ m%<div class="text">10/30/2011</div>%, "Output: $ret" );

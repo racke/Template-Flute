@@ -10,9 +10,9 @@ use Template::Flute;
 
 plan tests => 1;
 
-my ($xml, $html, $flute, $ret, $sub);
+my ( $xml, $html, $flute, $ret, $sub );
 
-$html =  <<EOF;
+$html = <<EOF;
 <div class="text">nevairbe</div>
 EOF
 
@@ -22,13 +22,15 @@ $xml = <<EOF;
 </specification>
 EOF
 
-$sub = sub {ucfirst(shift)};
+$sub = sub { ucfirst(shift) };
 
-$flute = Template::Flute->new(specification => $xml,
-			      template => $html,
-			      filters => {ucfirst => $sub},
-			      values => {text => 'upper'});
+$flute = Template::Flute->new(
+    specification => $xml,
+    template      => $html,
+    filters       => { ucfirst => $sub },
+    values        => { text => 'upper' }
+);
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">Upper</div>%, "Output: $ret");
+ok( $ret =~ m%<div class="text">Upper</div>%, "Output: $ret" );

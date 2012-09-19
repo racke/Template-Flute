@@ -1,0 +1,9 @@
+verbose  = [%p] %m at %f line %l, near '%r'\n
+severity = 5
+
+# Template::Flute uses eval strings for dynamic loading
+[-BuiltinFunctions::ProhibitStringyEval] 
+
+# No CVS
+[-Miscellanea::RequireRcsKeywords]
+

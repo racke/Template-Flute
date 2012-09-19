@@ -11,43 +11,43 @@ Template::Flute::Filter::Eol - Preserving line breaks in HTML output
 
 =head1 DESCRIPTION
 
-The EOL (end-of-line) filter turns line breaks into HTML <br>
-elements.
+The EOL (end-of-line) filter turns line breaks into HTML <br> elements.
 
 =head1 METHODS
 
 =head2 twig
 
-Replaces the content of given L<XML::Twig::Elt> element with
-the text value, preserving line breaks.
+Replaces the content of given L<XML::Twig::Elt> element with the text value,
+preserving line breaks.
 
 =cut
 
 sub twig {
-    my ($self, $elt, $value) = @_;
-    my (@lines, @elts);
+    my ( $self, $elt, $value ) = @_;
+    my ( @lines, @elts );
 
     # cut text into lines (set split limit to -1 to catch trailing linebreaks)
-    @lines = split(/\r?\n/, $value, -1);
+    @lines = split( /\r?\n/, $value, -1 );
 
-    for (my $i = 0; $i < @lines; $i++) {
-	# add text element
-	if (length($lines[$i])) {
-	    push (@elts, $lines[$i]);
-	}
+    for ( my $i = 0 ; $i < @lines ; $i++ ) {
 
-	# add HTML linebreak
-	push (@elts, XML::Twig::Elt->new('br'));
+        # add text element
+        if ( length( $lines[$i] ) ) {
+            push( @elts, $lines[$i] );
+        }
+
+        # add HTML linebreak
+        push( @elts, XML::Twig::Elt->new('br') );
     }
 
     # pop last HTML linebreak
-    pop (@elts);
+    pop(@elts);
 
     if (@elts) {
-	$elt->set_content(@elts);
+        $elt->set_content(@elts);
     }
     else {
-	$elt->cut_children();
+        $elt->cut_children();
     }
 
     return $elt;
@@ -61,9 +61,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

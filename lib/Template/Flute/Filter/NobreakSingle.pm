@@ -7,31 +7,31 @@ use base 'Template::Flute::Filter';
 
 =head1 NAME
 
-Template::Flute::Filter::NobreakSingle - Replaces missing text with no-break space.
+Template::Flute::Filter::NobreakSingle - Replaces missing text with no-break
+space.
 
 =head1 DESCRIPTION
 
-The nobreak_single filter replaces missing text with no-break space UTF8 character
-(U+00A0).
+The nobreak_single filter replaces missing text with no-break space UTF8
+character (U+00A0).
 
 =head1 METHODS
 
 =head2 twig
 
-Replaces the content of given L<XML::Twig::Elt> element with
-no-break space UTF8 character if found to be empty or consisting
-of white space only.
+Replaces the content of given L<XML::Twig::Elt> element with no-break space
+UTF8 character if found to be empty or consisting of white space only.
 
 =cut
 
 sub twig {
-    my ($self, $elt, $value) = @_;
+    my ( $self, $elt, $value ) = @_;
 
-    if ($value =~ /\S/) {
-	$elt->set_text($value);
+    if ( $value =~ /\S/ ) {
+        $elt->set_text($value);
     }
     else {
-	$elt->set_content("\x{a0}");
+        $elt->set_content("\x{a0}");
     }
 
     return $elt;
@@ -45,9 +45,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

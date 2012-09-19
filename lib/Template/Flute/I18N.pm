@@ -27,51 +27,51 @@ Template::Flute::I18N - Localization class for Template::Flute
 
 =head2 new [CODEREF]
 
-Create a new Template::Flute::I18N object. CODEREF is used by
-localize method for the text translation.
+Create a new Template::Flute::I18N object. CODEREF is used by localize method
+for the text translation.
 
 =cut
 
 sub new {
-	my ($proto, @args) = @_;
-	my ($class, $self);
+    my ( $proto, @args ) = @_;
+    my ( $class, $self );
 
-	$class = ref($proto) || $proto;
-	$self = {};
-	
-	if (ref($args[0]) eq 'CODE') {
-		# use first parameter as localization function
-		$self->{func} = shift(@args);
-	}
-	else {
-		# noop translation
-		$self->{func} = sub {return;}
-	}
+    $class = ref($proto) || $proto;
+    $self = {};
 
-	bless ($self, $class);
+    if ( ref( $args[0] ) eq 'CODE' ) {
+
+        # use first parameter as localization function
+        $self->{func} = shift(@args);
+    }
+    else {
+        # noop translation
+        $self->{func} = sub { return; }
+    }
+
+    bless( $self, $class );
 }
 
 =head1 METHODS
 
 =head2 localize STRING
 
-Calls localize function with provided STRING. The result is
-returned if it contains non blank characters. Otherwise the
-original STRING is returned.
+Calls localize function with provided STRING. The result is returned if it
+contains non blank characters. Otherwise the original STRING is returned.
 
 =cut
 
 sub localize {
-	my ($self, $text) = @_;
-	my ($trans);
-	
-	$trans = $self->{func}->($text);
+    my ( $self, $text ) = @_;
+    my ($trans);
 
-	if (defined $trans && $trans =~ /\S/) {
-		return $trans;
-	}
+    $trans = $self->{func}->($text);
 
-	return $text;
+    if ( defined $trans && $trans =~ /\S/ ) {
+        return $trans;
+    }
+
+    return $text;
 }
 
 =head1 AUTHOR
@@ -82,9 +82,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

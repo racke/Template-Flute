@@ -13,16 +13,16 @@ use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 
 # parse XML specification
-my ($spec, $ret);
+my ( $spec, $ret );
 
 $spec = new Template::Flute::Specification::XML;
 
-$ret = $spec->parse_file(dirname(__FILE__) . '/files/utf8.xml');
+$ret = $spec->parse_file( dirname(__FILE__) . '/files/utf8.xml' );
 
-isa_ok($ret, 'Template::Flute::Specification');
+isa_ok( $ret, 'Template::Flute::Specification' );
 
 # check whether encoding was read correctly
-ok($ret->encoding() eq 'utf8');
+ok( $ret->encoding() eq 'utf8' );
 
 # parse HTML template
 my ($html_object);
@@ -30,14 +30,13 @@ my ($html_object);
 $html_object = new Template::Flute::HTML;
 
 eval {
-	$html_object->parse_file(dirname(__FILE__) . '/files/utf8.html', $ret);
+    $html_object->parse_file( dirname(__FILE__) . '/files/utf8.html', $ret );
 };
 
 if ($@) {
-	fail("Crashed while parsing HTML: $@");
+    fail("Crashed while parsing HTML: $@");
 }
 else {
-	pass("Parsing HTML was successful.");
+    pass("Parsing HTML was successful.");
 }
-
 

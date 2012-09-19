@@ -18,8 +18,8 @@ Template::Flute::Database::Rose - Database abstraction for Template::Flute
 
 =head2 new
 
-Create a Template::Flute::Database::Rose object with either a DBI handle
-passed as dbh parameter or the following parameters:
+Create a Template::Flute::Database::Rose object with either a DBI handle passed
+as dbh parameter or the following parameters:
 
 =over 4
 
@@ -41,41 +41,43 @@ Database password.
 
 # Constructor
 sub new {
-	my ($class, @args) = @_;
-	my ($self);
-	
-	$class = shift;
-	$self = {@args};
+    my ( $class, @args ) = @_;
+    my ($self);
 
-	bless $self, $class;
-	
-	$self->_initialize();
-	
-	return $self;
+    $class = shift;
+    $self  = {@args};
+
+    bless $self, $class;
+
+    $self->_initialize();
+
+    return $self;
 }
 
 # Initialization routine
 sub _initialize {
-	my ($self) = @_;
-	
-	my %rose_parms;
-	
-	if ($self->{dbh}) {
-		# database handle exist already
-	}
-	else {
-		%rose_parms = (domain => 'default',
-					   type => 'default',
-					   driver => $self->{dbtype},
-					   database => $self->{dbname},
-					   username => $self->{dbuser},
-					   password => $self->{dbpass},
-					  );
-		
-		Rose::DB->register_db(%rose_parms);
-		$self->{rose} = new Rose::DB;
-		$self->{dbh} = $self->{rose}->dbh();
-	}
+    my ($self) = @_;
+
+    my %rose_parms;
+
+    if ( $self->{dbh} ) {
+
+        # database handle exist already
+    }
+    else {
+        %rose_parms = (
+            domain   => 'default',
+            type     => 'default',
+            driver   => $self->{dbtype},
+            database => $self->{dbname},
+            username => $self->{dbuser},
+            password => $self->{dbpass},
+        );
+
+        Rose::DB->register_db(%rose_parms);
+        $self->{rose} = new Rose::DB;
+        $self->{dbh}  = $self->{rose}->dbh();
+    }
 }
 
 =head2 METHODS
@@ -88,14 +90,16 @@ Returns iterator from query.
 
 # Build query and return iterator
 sub build {
-	my ($self, $query) = @_;
-	my ($iter);
+    my ( $self, $query ) = @_;
+    my ($iter);
 
-	$iter = new Template::Flute::Iterator::Rose(dbh => $self->{dbh},
-											   query => $query);
-	$iter->build();
+    $iter = new Template::Flute::Iterator::Rose(
+        dbh   => $self->{dbh},
+        query => $query
+    );
+    $iter->build();
 
-	return $iter;
+    return $iter;
 }
 
 =head1 AUTHOR
@@ -106,9 +110,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

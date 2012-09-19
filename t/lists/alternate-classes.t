@@ -8,7 +8,7 @@ use warnings;
 use Test::More tests => 2;
 use Template::Flute;
 
-my ($spec, $html, $flute, $out, $products);
+my ( $spec, $html, $flute, $out, $products );
 
 $spec = q{<specification>
 <list name="products" iterator="products">
@@ -22,35 +22,41 @@ $html = q{
 <div class="products even"><span class="sku">SKU</span></div>
 };
 
-$products = [{sku => 'ABC'}, {sku => 'DEF'}, {sku => 'GHI'}];
+$products = [ { sku => 'ABC' }, { sku => 'DEF' }, { sku => 'GHI' } ];
 
-$flute = Template::Flute->new(template => $html,
-			      specification => $spec,
-			      auto_iterators => 1,
-			      values => {products => $products},
-    );
+$flute = Template::Flute->new(
+    template       => $html,
+    specification  => $spec,
+    auto_iterators => 1,
+    values         => { products => $products },
+);
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="products">.*?</div><div class="products even">.*?</div><div class="products">.*?</div>%,
-    'list with alternate classes')
-    || diag $out;
+ok(
+    $out =~
+      m%<div class="products">.*?</div><div class="products even">.*?</div><div class="products">.*?</div>%,
+    'list with alternate classes'
+) || diag $out;
 
 $html = q{
 <div class="products odd"><span class="sku">SKU</span></div>
 <div class="products even"><span class="sku">SKU</span></div>
 };
 
-$products = [{sku => 'ABC'}, {sku => 'DEF'}, {sku => 'GHI'}];
+$products = [ { sku => 'ABC' }, { sku => 'DEF' }, { sku => 'GHI' } ];
 
-$flute = Template::Flute->new(template => $html,
-			      specification => $spec,
-			      auto_iterators => 1,
-			      values => {products => $products},
-    );
+$flute = Template::Flute->new(
+    template       => $html,
+    specification  => $spec,
+    auto_iterators => 1,
+    values         => { products => $products },
+);
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="products odd">.*?</div><div class="products even">.*?</div><div class="products odd">.*?</div>%,
-    'list with alternate classes')
-    || diag $out;
+ok(
+    $out =~
+      m%<div class="products odd">.*?</div><div class="products even">.*?</div><div class="products odd">.*?</div>%,
+    'list with alternate classes'
+) || diag $out;

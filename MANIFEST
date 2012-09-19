@@ -1,3 +1,4 @@
+.perlcriticrc
 Changes
 LICENSE
 MANIFEST
@@ -31,6 +32,7 @@ lib/Template/Flute/Iterator/JSON.pm
 lib/Template/Flute/Paginator.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
+tidyall.ini
 t/boilerplate.t
 t/manifest.t
 t/pod-coverage.t
@@ -63,6 +65,7 @@ t/filters/eol.t
 t/filters/nobreak_single.t
 t/filters/subs.t
 t/filters/upper.t
+t/tidyall.t
 t/values/append.t
 t/values/basic.t
 t/i18n/01-simple.t

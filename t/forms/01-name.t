@@ -24,28 +24,27 @@ my $html = <<EOF;
 EOF
 
 # parse XML specification
-my ($spec, $ret);
+my ( $spec, $ret );
 
 $spec = new Template::Flute::Specification::XML;
 
 $ret = $spec->parse($xml);
 
-isa_ok($ret, 'Template::Flute::Specification');
+isa_ok( $ret, 'Template::Flute::Specification' );
 
 # parse HTML template
 my ($html_object);
 
 $html_object = new Template::Flute::HTML;
 
-$html_object->parse($html, $ret);
+$html_object->parse( $html, $ret );
 
 # locate form
 my ($form);
 
 $form = $html_object->form('test');
 
-isa_ok ($form, 'Template::Flute::Form');
+isa_ok( $form, 'Template::Flute::Form' );
 
-ok ($form->name, 'test');
-
+ok( $form->name, 'test' );
 

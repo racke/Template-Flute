@@ -22,7 +22,7 @@ Uppercase filter.
 =cut
 
 sub filter {
-    my ($self, $value) = @_;
+    my ( $self, $value ) = @_;
 
     return uc($value);
 }
@@ -35,9 +35,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

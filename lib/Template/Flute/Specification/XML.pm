@@ -29,237 +29,244 @@ Create a Template::Flute::Specification::XML object.
 # Constructor
 
 sub new {
-	my ($class, $self);
-	my (%params);
+    my ( $class, $self );
+    my (%params);
 
-	$class = shift;
-	%params = @_;
+    $class  = shift;
+    %params = @_;
 
-	$self = \%params;
-	bless $self;
+    $self = \%params;
+    bless $self, $class;
 }
 
 =head1 METHODS
 
 =head2 parse [ STRING | SCALARREF ]
 
-Parses text from STRING or SCALARREF and returns L<Template::Flute::Specification>
-object in case of success.
+Parses text from STRING or SCALARREF and returns
+L<Template::Flute::Specification> object in case of success.
 
 =cut
 
 sub parse {
-	my ($self, $text) = @_;
-	my ($twig, $xml);
+    my ( $self, $text ) = @_;
+    my ( $twig, $xml );
 
-	$twig = $self->_initialize;
+    $twig = $self->_initialize;
 
-	if (ref($text) eq 'SCALAR') {
-		$xml = $twig->safe_parse($$text);
-	}
-	else {
-		$xml = $twig->parse($text);
-	}
+    if ( ref($text) eq 'SCALAR' ) {
+        $xml = $twig->safe_parse($$text);
+    }
+    else {
+        $xml = $twig->parse($text);
+    }
 
-	unless ($xml) {
-		$self->_add_error(error => $@);
-		return;
-	}
+    unless ($xml) {
+        $self->_add_error( error => $@ );
+        return;
+    }
 
-	return $self->{spec};
+    return $self->{spec};
 }
 
 =head2 parse_file STRING
 
-Parses file and returns L<Template::Flute::Specification> object in
-case of success.
+Parses file and returns L<Template::Flute::Specification> object in case of
+success.
 
 =cut
-	
+
 sub parse_file {
-	my ($self, $file) = @_;
-	my ($twig, $xml);
+    my ( $self, $file ) = @_;
+    my ( $twig, $xml );
 
-	$twig = $self->_initialize;
-	
-	$xml = $twig->safe_parsefile($file);
+    $twig = $self->_initialize;
 
-	unless ($xml) {
-		$self->_add_error(file => $file, error => $@);
-		return;
-	}
+    $xml = $twig->safe_parsefile($file);
 
-	return $self->{spec};
+    unless ($xml) {
+        $self->_add_error( file => $file, error => $@ );
+        return;
+    }
+
+    return $self->{spec};
 }
 
 sub _initialize {
-	my $self = shift;
-	my (%handlers, $twig);
-	
-	# initialize stash
-	$self->{stash} = [];
-	
-	# specification object
-	$self->{spec} = new Template::Flute::Specification;
+    my $self = shift;
+    my ( %handlers, $twig );
 
-	# twig handlers
-	%handlers = (specification => sub {$self->_spec_handler($_[1])},
- 				 container => sub {$self->_container_handler($_[1])},
-				 list => sub {$self->_list_handler($_[1])},
-				 paging => sub {$self->_stash_handler($_[1])},
- 				 filter => sub {$self->_stash_handler($_[1])},
- 				 separator => sub {$self->_stash_handler($_[1])},		     
-				 form => sub {$self->_form_handler($_[1])},
-				 param => sub {$self->_stash_handler($_[1])},
-				 value => sub {$self->_stash_handler($_[1])},
- 				 field => sub {$self->_stash_handler($_[1])},
-				 i18n => sub {$self->_i18n_handler($_[1])},
-				 input => sub {$self->_stash_handler($_[1])},
-				 sort => sub {$self->_sort_handler($_[1])},
-				 );
-	
-	# twig parser object
-	$twig = new XML::Twig (twig_handlers => \%handlers);
+    # initialize stash
+    $self->{stash} = [];
 
-	return $twig;
+    # specification object
+    $self->{spec} = new Template::Flute::Specification;
+
+    # twig handlers
+    %handlers = (
+        specification => sub { $self->_spec_handler( $_[1] ) },
+        container     => sub { $self->_container_handler( $_[1] ) },
+        list          => sub { $self->_list_handler( $_[1] ) },
+        paging        => sub { $self->_stash_handler( $_[1] ) },
+        filter        => sub { $self->_stash_handler( $_[1] ) },
+        separator     => sub { $self->_stash_handler( $_[1] ) },
+        form          => sub { $self->_form_handler( $_[1] ) },
+        param         => sub { $self->_stash_handler( $_[1] ) },
+        value         => sub { $self->_stash_handler( $_[1] ) },
+        field         => sub { $self->_stash_handler( $_[1] ) },
+        i18n          => sub { $self->_i18n_handler( $_[1] ) },
+        input         => sub { $self->_stash_handler( $_[1] ) },
+        sort          => sub { $self->_sort_handler( $_[1] ) },
+    );
+
+    # twig parser object
+    $twig = new XML::Twig( twig_handlers => \%handlers );
+
+    return $twig;
 }
 
 sub _spec_handler {
-	my ($self, $elt) = @_;
-	my ($value);
+    my ( $self, $elt ) = @_;
+    my ($value);
 
-	if ($value = $elt->att('name')) {
-		$self->{spec}->name($value);
-	}
+    if ( $value = $elt->att('name') ) {
+        $self->{spec}->name($value);
+    }
 
-	if ($value = $elt->att('encoding')) {
-		$self->{spec}->encoding($value);
-	}
+    if ( $value = $elt->att('encoding') ) {
+        $self->{spec}->encoding($value);
+    }
 
-	# add values remaining on the stash
-	for my $stash_elt (@{$self->{stash}}) {
-	    if ($stash_elt->gi() eq 'value') {
-		$self->_value_handler($stash_elt);
-	    }
-	    else {
-		die "Unexpected element left on stash: ", $stash_elt->gi;
-	    }
-	}
+    # add values remaining on the stash
+    for my $stash_elt ( @{ $self->{stash} } ) {
+        if ( $stash_elt->gi() eq 'value' ) {
+            $self->_value_handler($stash_elt);
+        }
+        else {
+            die "Unexpected element left on stash: ", $stash_elt->gi;
+        }
+    }
 }
 
 sub _container_handler {
-	my ($self, $elt) = @_;
-	my ($name, %container);
-	
-	$name = $elt->att('name');
+    my ( $self, $elt ) = @_;
+    my ( $name, %container );
 
-	$container{container} = $elt->atts();
-	
-	# flush elements from stash into container hash
-	$self->_stash_flush($elt, \%container);
+    $name = $elt->att('name');
 
-	# add container to specification object
-	$self->{spec}->container_add(\%container);
+    $container{container} = $elt->atts();
+
+    # flush elements from stash into container hash
+    $self->_stash_flush( $elt, \%container );
+
+    # add container to specification object
+    $self->{spec}->container_add( \%container );
 }
 
 sub _list_handler {
-	my ($self, $elt) = @_;
-	my ($name, %list);
-	
-	$name = $elt->att('name');
+    my ( $self, $elt ) = @_;
+    my ( $name, %list );
 
-	$list{list} = $elt->atts();
-	
-	# flush elements from stash into list hash
-	$self->_stash_flush($elt, \%list);
+    $name = $elt->att('name');
 
-	# add list to specification object
-	$self->{spec}->list_add(\%list);
+    $list{list} = $elt->atts();
+
+    # flush elements from stash into list hash
+    $self->_stash_flush( $elt, \%list );
+
+    # add list to specification object
+    $self->{spec}->list_add( \%list );
 }
 
 sub _sort_handler {
-	my ($self, $elt) = @_;
-	my (@ops, $name);
+    my ( $self, $elt ) = @_;
+    my ( @ops, $name );
 
-	$name = $elt->att('name');
-	
-	for my $child ($elt->children()) {
-		if ($child->gi() eq 'field') {
-			push (@ops, {type => 'field',
-						 name => $child->att('name'),
-						 direction => $child->att('direction')});
-		}
-		else {
-			die "Invalid child for sort $name.\n";
-		}
-	}
+    $name = $elt->att('name');
 
-	unless (@ops) {
-		die "Empty sort $name.\n";
-	}
-	
-	$elt->set_att('ops', \@ops);
-	push @{$self->{stash}}, $elt;	
+    for my $child ( $elt->children() ) {
+        if ( $child->gi() eq 'field' ) {
+            push(
+                @ops,
+                {
+                    type      => 'field',
+                    name      => $child->att('name'),
+                    direction => $child->att('direction')
+                }
+            );
+        }
+        else {
+            die "Invalid child for sort $name.\n";
+        }
+    }
+
+    unless (@ops) {
+        die "Empty sort $name.\n";
+    }
+
+    $elt->set_att( 'ops', \@ops );
+    push @{ $self->{stash} }, $elt;
 }
 
 sub _stash_handler {
-	my ($self, $elt) = @_;
+    my ( $self, $elt ) = @_;
 
-	push @{$self->{stash}}, $elt;
+    push @{ $self->{stash} }, $elt;
 }
 
 sub _form_handler {
-	my ($self, $elt) = @_;
-	my ($name, %form);
-	
-	$name = $elt->att('name');
-	
-	$form{form} = $elt->atts();
+    my ( $self, $elt ) = @_;
+    my ( $name, %form );
 
-	# flush elements from stash into form hash
-	$self->_stash_flush($elt, \%form);
-		
-	# add form to specification object
-	$self->{spec}->form_add(\%form);
+    $name = $elt->att('name');
+
+    $form{form} = $elt->atts();
+
+    # flush elements from stash into form hash
+    $self->_stash_flush( $elt, \%form );
+
+    # add form to specification object
+    $self->{spec}->form_add( \%form );
 }
 
 sub _value_handler {
-	my ($self, $elt) = @_;
-	my (%value);
+    my ( $self, $elt ) = @_;
+    my (%value);
 
-	$value{value} = $elt->atts();
-	
-	$self->{spec}->value_add(\%value);
+    $value{value} = $elt->atts();
+
+    $self->{spec}->value_add( \%value );
 }
 
 sub _i18n_handler {
-	my ($self, $elt) = @_;
-	my (%i18n);
+    my ( $self, $elt ) = @_;
+    my (%i18n);
 
-	$i18n{value} = $elt->atts();
-	
-	$self->{spec}->i18n_add(\%i18n);
+    $i18n{value} = $elt->atts();
+
+    $self->{spec}->i18n_add( \%i18n );
 }
 
 sub _stash_flush {
-	my ($self, $elt, $hashref) = @_;
-	my (@stash);
+    my ( $self, $elt, $hashref ) = @_;
+    my (@stash);
 
-	# examine stash
-	for my $item_elt (@{$self->{stash}}) {
-		# check whether we are really the parent
-		if ($item_elt->parent() eq $elt) {
-			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
-		}
-		else {
-		    push (@stash, $item_elt);
-		}
-	}
+    # examine stash
+    for my $item_elt ( @{ $self->{stash} } ) {
 
-	# clear stash
-	$self->{stash} = \@stash;
+        # check whether we are really the parent
+        if ( $item_elt->parent() eq $elt ) {
+            push( @{ $hashref->{ $item_elt->gi() } }, $item_elt->atts() );
+        }
+        else {
+            push( @stash, $item_elt );
+        }
+    }
 
-	return;
+    # clear stash
+    $self->{stash} = \@stash;
+
+    return;
 }
 
 =head2 error
@@ -269,20 +276,20 @@ Returns last error.
 =cut
 
 sub error {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	if (@{$self->{errors}}) {
-		return $self->{errors}->[0]->{error};
-	}
+    if ( @{ $self->{errors} } ) {
+        return $self->{errors}->[0]->{error};
+    }
 }
 
 sub _add_error {
-	my ($self, @args) = @_;
-	my (%error);
+    my ( $self, @args ) = @_;
+    my (%error);
 
-	%error = @args;
-	
-	unshift (@{$self->{errors}}, \%error);
+    %error = @args;
+
+    unshift( @{ $self->{errors} }, \%error );
 }
 
 =head1 AUTHOR
@@ -293,9 +300,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

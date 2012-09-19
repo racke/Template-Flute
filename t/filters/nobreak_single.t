@@ -8,7 +8,7 @@ use warnings;
 use Test::More tests => 3;
 use Template::Flute;
 
-my ($xml, $html, $flute, $ret);
+my ( $xml, $html, $flute, $ret );
 
 $html = <<EOF;
 <div class="text">foo</div>
@@ -21,14 +21,15 @@ $xml = <<EOF;
 </specification>
 EOF
 
-$flute = Template::Flute->new(specification => $xml,
-			      template => $html,
-			      values => {text => q{}
-});
+$flute = Template::Flute->new(
+    specification => $xml,
+    template      => $html,
+    values        => { text => q{} }
+);
 
 $ret = $flute->process();
 
-ok($ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret");
+ok( $ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret" );
 
 # nobreak_single filter (white space only)
 $xml = <<EOF;
@@ -37,14 +38,15 @@ $xml = <<EOF;
 </specification>
 EOF
 
-$flute = Template::Flute->new(specification => $xml,
-			      template => $html,
-			      values => {text => q{          }
-});
+$flute = Template::Flute->new(
+    specification => $xml,
+    template      => $html,
+    values        => { text => q{          } }
+);
 
 $ret = $flute->process();
 
-ok($ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret");
+ok( $ret =~ m%div class="text">\x{a0}</div>%, "Output: $ret" );
 
 # nobreak_single filter (text)
 $xml = <<EOF;
@@ -53,11 +55,12 @@ $xml = <<EOF;
 </specification>
 EOF
 
-$flute = Template::Flute->new(specification => $xml,
-			      template => $html,
-			      values => {text => q{ Some text }
-});
+$flute = Template::Flute->new(
+    specification => $xml,
+    template      => $html,
+    values        => { text => q{ Some text } }
+);
 
 $ret = $flute->process();
 
-ok($ret =~ m%div class="text"> Some text </div>%, "Output: $ret");
+ok( $ret =~ m%div class="text"> Some text </div>%, "Output: $ret" );

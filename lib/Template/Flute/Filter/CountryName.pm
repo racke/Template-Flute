@@ -40,12 +40,12 @@ Whether to return an empty string for the current locale or not.
 =cut
 
 sub init {
-    my ($self, %args) = @_;
+    my ( $self, %args ) = @_;
 
     $self->{locale} = $args{options}->{locale} || 'en';
     $self->{clear_current_locale} = $args{options}->{clear_current_locale};
 
-    unless ($self->{object} = Locales->new($self->{locale})) {
+    unless ( $self->{object} = Locales->new( $self->{locale} ) ) {
         die $@;
     }
 }
@@ -57,15 +57,15 @@ Country name filter.
 =cut
 
 sub filter {
-    my ($self, $code) = @_;
+    my ( $self, $code ) = @_;
     my $name = '';
 
     if ($code) {
-        unless ($self->{clear_current_locale} && $code eq $self->{locale}) {
+        unless ( $self->{clear_current_locale} && $code eq $self->{locale} ) {
             $name = $self->{object}->get_territory_from_code($code);
         }
     }
-    
+
     return $name;
 }
 
@@ -77,9 +77,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

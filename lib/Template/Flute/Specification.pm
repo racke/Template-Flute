@@ -33,24 +33,24 @@ Creates Template::Flute::Specification object.
 # Constructor
 
 sub new {
-	my ($class, $self);
-	my (%params);
+    my ( $class, $self );
+    my (%params);
 
-	$class = shift;
-	%params = (encoding => 'utf8', @_);
+    $class = shift;
+    %params = ( encoding => 'utf8', @_ );
 
-	$self = \%params;
+    $self = \%params;
 
-	# lookup hash for elements by class
-	$self->{classes} = {};
+    # lookup hash for elements by class
+    $self->{classes} = {};
 
-	# lookup hash for elements by id
-	$self->{ids} = {};
+    # lookup hash for elements by id
+    $self->{ids} = {};
 
-	# lookup hash for elements by name attribute
-	$self->{names} = {};
-	
-	bless $self;
+    # lookup hash for elements by name attribute
+    $self->{names} = {};
+
+    bless $self, $class;
 }
 
 =head1 METHODS
@@ -62,30 +62,30 @@ Set or get the name of the specification.
 =cut
 
 sub name {
-	my $self = shift;
+    my $self = shift;
 
-	if (scalar @_ > 0) {
-		$self->{name} = shift;
-	}
+    if ( scalar @_ > 0 ) {
+        $self->{name} = shift;
+    }
 
-	return $self->{name};
+    return $self->{name};
 }
 
 =head2 encoding ENCODING
 
-Set or get the encoding of the HTML template
-which is parsed according to this specification.
+Set or get the encoding of the HTML template which is parsed according to this
+specification.
 
 =cut
-	
+
 sub encoding {
-	my $self = shift;
+    my $self = shift;
 
-	if (scalar @_ > 0) {
-		$self->{encoding} = shift;
-	}
+    if ( scalar @_ > 0 ) {
+        $self->{encoding} = shift;
+    }
 
-	return $self->{encoding};
+    return $self->{encoding};
 }
 
 =head2 container_add CONTAINER
@@ -95,32 +95,38 @@ Add container specified by hash reference CONTAINER.
 =cut
 
 sub container_add {
-	my ($self, $new_containerref) = @_;
-	my ($containerref, $container_name, $id, $class);
+    my ( $self, $new_containerref ) = @_;
+    my ( $containerref, $container_name, $id, $class );
 
-	$container_name = $new_containerref->{container}->{name};
+    $container_name = $new_containerref->{container}->{name};
 
-	$containerref = $self->{containers}->{$new_containerref->{container}->{name}} = {input => {}};
+    $containerref =
+      $self->{containers}->{ $new_containerref->{container}->{name} } =
+      { input => {} };
 
-	$class = $new_containerref->{container}->{class} || $container_name;
+    $class = $new_containerref->{container}->{class} || $container_name;
 
-	if ($id = $new_containerref->{container}->{id}) {
-	    $self->{ids}->{$id} = {%{$new_containerref->{container}}, type => 'container'};
-	}
-	else {
-	    $self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
-	}
+    if ( $id = $new_containerref->{container}->{id} ) {
+        $self->{ids}->{$id} =
+          { %{ $new_containerref->{container} }, type => 'container' };
+    }
+    else {
+        $self->{classes}->{$class} =
+          [ { %{ $new_containerref->{container} }, type => 'container' } ];
+    }
 
-	# loop through values for this container
-	for my $value (@{$new_containerref->{value}}) {
-		$class = $value->{class} || $value->{name};
-		unless ($class) {
-			die "Neither class nor name for value within container $container_name.\n";
-		}
-		push @{$self->{classes}->{$class}}, {%{$value}, type => 'value', container => $container_name};
-	}
+    # loop through values for this container
+    for my $value ( @{ $new_containerref->{value} } ) {
+        $class = $value->{class} || $value->{name};
+        unless ($class) {
+            die
+              "Neither class nor name for value within container $container_name.\n";
+        }
+        push @{ $self->{classes}->{$class} },
+          { %{$value}, type => 'value', container => $container_name };
+    }
 
-	return $containerref;
+    return $containerref;
 }
 
 =head2 list_add LIST
@@ -128,68 +134,74 @@ sub container_add {
 Add list specified by hash reference LIST.
 
 =cut
-	
+
 sub list_add {
-	my ($self, $new_listref) = @_;
-	my ($listref, $list_name, $class);
+    my ( $self, $new_listref ) = @_;
+    my ( $listref, $list_name, $class );
 
-	$list_name = $new_listref->{list}->{name};
+    $list_name = $new_listref->{list}->{name};
 
-	$listref = $self->{lists}->{$new_listref->{list}->{name}} = {input => {}};
+    $listref = $self->{lists}->{ $new_listref->{list}->{name} } =
+      { input => {} };
 
-	$class = $new_listref->{list}->{class} || $list_name;
+    $class = $new_listref->{list}->{class} || $list_name;
 
-	$self->{classes}->{$class} = [{%{$new_listref->{list}}, type => 'list'}];
+    $self->{classes}->{$class} =
+      [ { %{ $new_listref->{list} }, type => 'list' } ];
 
-	if (exists $new_listref->{list}->{iterator}) {
-		$listref->{iterator} = $new_listref->{list}->{iterator};
-	}
+    if ( exists $new_listref->{list}->{iterator} ) {
+        $listref->{iterator} = $new_listref->{list}->{iterator};
+    }
 
-	# loop through filters for this list
-	for my $filter (@{$new_listref->{filter}}) {
-		$listref->{filter}->{$filter->{name}} = $filter;
-	}
+    # loop through filters for this list
+    for my $filter ( @{ $new_listref->{filter} } ) {
+        $listref->{filter}->{ $filter->{name} } = $filter;
+    }
 
-	# loop through inputs for this list
-	for my $input (@{$new_listref->{input}}) {
-		$listref->{input}->{$input->{name}} = $input;
-	}
+    # loop through inputs for this list
+    for my $input ( @{ $new_listref->{input} } ) {
+        $listref->{input}->{ $input->{name} } = $input;
+    }
 
-	# loop through sorts for this list
-	for my $sort (@{$new_listref->{sort}}) {
-		$listref->{sort}->{$sort->{name}} = $sort;
-	}
-	
-	# loop through separators for this list
-	for my $separator (@{$new_listref->{separator}}) {
-	        $class = $separator->{class} || $separator->{name};
-		unless ($class) {
-			die "Neither class nor name for separator within list $list_name.\n";
-		}
-		$listref->{separator}->{$separator->{name}} = $separator;
-		push @{$self->{classes}->{$class}}, {%{$separator}, type => 'separator', list => $list_name};
-	}
+    # loop through sorts for this list
+    for my $sort ( @{ $new_listref->{sort} } ) {
+        $listref->{sort}->{ $sort->{name} } = $sort;
+    }
 
-	# loop through params for this list
-	for my $param (@{$new_listref->{param}}) {
-		$class = $param->{class} || $param->{name};
-		unless ($class) {
-			die "Neither class nor name for param within list $list_name.\n";
-		}
-		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', list => $list_name};
-	}
+    # loop through separators for this list
+    for my $separator ( @{ $new_listref->{separator} } ) {
+        $class = $separator->{class} || $separator->{name};
+        unless ($class) {
+            die
+              "Neither class nor name for separator within list $list_name.\n";
+        }
+        $listref->{separator}->{ $separator->{name} } = $separator;
+        push @{ $self->{classes}->{$class} },
+          { %{$separator}, type => 'separator', list => $list_name };
+    }
 
-	# loop through paging for this list
-	for my $paging (@{$new_listref->{paging}}) {
-		if (exists $listref->{paging}) {
-			die "Only one paging allowed per list\n";
-		}
-		$listref->{paging} = $paging;
-		$class = $paging->{class} || $paging->{name};
-		$self->{classes}->{$class} = [{%{$paging}, type => 'paging', list => $list_name}];
-	}
-	
-	return $listref;
+    # loop through params for this list
+    for my $param ( @{ $new_listref->{param} } ) {
+        $class = $param->{class} || $param->{name};
+        unless ($class) {
+            die "Neither class nor name for param within list $list_name.\n";
+        }
+        push @{ $self->{classes}->{$class} },
+          { %{$param}, type => 'param', list => $list_name };
+    }
+
+    # loop through paging for this list
+    for my $paging ( @{ $new_listref->{paging} } ) {
+        if ( exists $listref->{paging} ) {
+            die "Only one paging allowed per list\n";
+        }
+        $listref->{paging} = $paging;
+        $class = $paging->{class} || $paging->{name};
+        $self->{classes}->{$class} =
+          [ { %{$paging}, type => 'paging', list => $list_name } ];
+    }
+
+    return $listref;
 }
 
 =head2 form_add FORM
@@ -197,68 +209,70 @@ sub list_add {
 Add form specified by hash reference FORM.
 
 =cut
-	
+
 sub form_add {
-	my ($self, $new_formref) = @_;
-	my ($formref, $form_name, $form_link, $form_loc, $field_loc, $id, $class);
+    my ( $self, $new_formref ) = @_;
+    my ( $formref, $form_name, $form_link, $form_loc, $field_loc, $id, $class );
 
-	$form_name = $new_formref->{form}->{name};
-	$form_link = $new_formref->{form}->{link} || '';
-	
-	$formref = $self->{forms}->{$new_formref->{form}->{name}} = {input => {}};
+    $form_name = $new_formref->{form}->{name};
+    $form_link = $new_formref->{form}->{link} || '';
 
-	my @checks = qw/id class/;
+    $formref = $self->{forms}->{ $new_formref->{form}->{name} } =
+      { input => {} };
 
-	$form_loc = {%{$new_formref->{form}}, type => 'form'};
-	
-	if ($id = $new_formref->{form}->{id}) {
-	    $self->{ids}->{$id} = $form_loc;
-	}
-	elsif ($class = $new_formref->{form}->{class}) {
-	    $class = $new_formref->{form}->{class};
+    my @checks = qw/id class/;
 
-	    $self->{classes}->{$class} = [$form_loc];
-	}
-	elsif ($form_link eq 'name') {
-	    $self->{names}->{$form_name} = [$form_loc];
-	}
-	else {
-	    $class = $form_name;
-	    
-	    $self->{classes}->{$class} = [$form_loc];
-	}
-	
-	# loop through inputs for this form
-	for my $input (@{$new_formref->{input}}) {
-		$formref->{input}->{$input->{name}} = $input;
-	}
-	
-	# loop through params for this form
-	for my $param (@{$new_formref->{param}}) {
-		$class = $param->{class} || $param->{name};
+    $form_loc = { %{ $new_formref->{form} }, type => 'form' };
 
-		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', form => $form_name};	
-	}
+    if ( $id = $new_formref->{form}->{id} ) {
+        $self->{ids}->{$id} = $form_loc;
+    }
+    elsif ( $class = $new_formref->{form}->{class} ) {
+        $class = $new_formref->{form}->{class};
 
-	# loop through fields for this form
-	for my $field (@{$new_formref->{field}}) {
-	    $field_loc = {%{$field}, type => 'field', form => $form_name};
+        $self->{classes}->{$class} = [$form_loc];
+    }
+    elsif ( $form_link eq 'name' ) {
+        $self->{names}->{$form_name} = [$form_loc];
+    }
+    else {
+        $class = $form_name;
 
-	    if (exists $field->{id}) {
-		$self->{ids}->{$field->{id}} = $field_loc;
-	    }
-	    elsif (exists $field->{class}) {
-		push @{$self->{classes}->{$field->{class}}}, $field_loc;
-	    }
-	    elsif ($form_link eq 'name') {
-		push @{$self->{names}->{$field->{name}}}, $field_loc;
-	    }
-	    else {
-		push @{$self->{classes}->{$field->{name}}}, $field_loc;
-	    }
-	}
-	
-	return $formref;
+        $self->{classes}->{$class} = [$form_loc];
+    }
+
+    # loop through inputs for this form
+    for my $input ( @{ $new_formref->{input} } ) {
+        $formref->{input}->{ $input->{name} } = $input;
+    }
+
+    # loop through params for this form
+    for my $param ( @{ $new_formref->{param} } ) {
+        $class = $param->{class} || $param->{name};
+
+        push @{ $self->{classes}->{$class} },
+          { %{$param}, type => 'param', form => $form_name };
+    }
+
+    # loop through fields for this form
+    for my $field ( @{ $new_formref->{field} } ) {
+        $field_loc = { %{$field}, type => 'field', form => $form_name };
+
+        if ( exists $field->{id} ) {
+            $self->{ids}->{ $field->{id} } = $field_loc;
+        }
+        elsif ( exists $field->{class} ) {
+            push @{ $self->{classes}->{ $field->{class} } }, $field_loc;
+        }
+        elsif ( $form_link eq 'name' ) {
+            push @{ $self->{names}->{ $field->{name} } }, $field_loc;
+        }
+        else {
+            push @{ $self->{classes}->{ $field->{name} } }, $field_loc;
+        }
+    }
+
+    return $formref;
 }
 
 =head2 value_add VALUE
@@ -266,57 +280,60 @@ sub form_add {
 Add value specified by hash reference VALUE.
 
 =cut
-	
+
 sub value_add {
-	my ($self, $new_valueref) = @_;
-	my ($valueref, $value_name, $id, $class);
-	
-	$value_name = $new_valueref->{value}->{name};
+    my ( $self, $new_valueref ) = @_;
+    my ( $valueref, $value_name, $id, $class );
 
-	if (exists $new_valueref->{value}->{include}) {
-		# include implies hooking resulting value
-		$new_valueref->{value}->{op} = 'hook';
-	}
-	
-	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
-	
-	if ($id = $new_valueref->{value}->{id}) {
-		$self->{ids}->{$id} = {%{$new_valueref->{value}}, type => 'value'};
-	}
-	else {
-		$class = $new_valueref->{value}->{class} || $value_name;
+    $value_name = $new_valueref->{value}->{name};
 
-		push @{$self->{classes}->{$class}}, {%{$new_valueref->{value}}, type => 'value'};
-	}
+    if ( exists $new_valueref->{value}->{include} ) {
 
-	return $valueref;
-}	
+        # include implies hooking resulting value
+        $new_valueref->{value}->{op} = 'hook';
+    }
+
+    $valueref = $self->{values}->{ $new_valueref->{value}->{name} } = {};
+
+    if ( $id = $new_valueref->{value}->{id} ) {
+        $self->{ids}->{$id} = { %{ $new_valueref->{value} }, type => 'value' };
+    }
+    else {
+        $class = $new_valueref->{value}->{class} || $value_name;
+
+        push @{ $self->{classes}->{$class} },
+          { %{ $new_valueref->{value} }, type => 'value' };
+    }
+
+    return $valueref;
+}
 
 =head2 i18n_add I18N
 
 Add i18n specified by hash reference I18N.
 
 =cut
-	
+
 sub i18n_add {
-	my ($self, $new_i18nref) = @_;
-	my ($i18nref, $i18n_name, $id, $class);
+    my ( $self, $new_i18nref ) = @_;
+    my ( $i18nref, $i18n_name, $id, $class );
 
-	$i18n_name = $new_i18nref->{value}->{name}
-	  || $new_i18nref->{value}->{class};
-	
-	$i18nref = $self->{i18n}->{$i18n_name} = {};
-	
-	if ($id = $new_i18nref->{value}->{id}) {
-		$self->{ids}->{$id} = {%{$new_i18nref->{value}}, type => 'i18n'};
-	}
-	else {
-		$class = $new_i18nref->{value}->{class} || $i18n_name;
+    $i18n_name = $new_i18nref->{value}->{name}
+      || $new_i18nref->{value}->{class};
 
-		push @{$self->{classes}->{$class}}, {%{$new_i18nref->{value}}, type => 'i18n'};
-	}
-	
-	return $i18nref;
+    $i18nref = $self->{i18n}->{$i18n_name} = {};
+
+    if ( $id = $new_i18nref->{value}->{id} ) {
+        $self->{ids}->{$id} = { %{ $new_i18nref->{value} }, type => 'i18n' };
+    }
+    else {
+        $class = $new_i18nref->{value}->{class} || $i18n_name;
+
+        push @{ $self->{classes}->{$class} },
+          { %{ $new_i18nref->{value} }, type => 'i18n' };
+    }
+
+    return $i18nref;
 }
 
 =head2 list_iterator NAME
@@ -326,11 +343,11 @@ Returns iterator for list named NAME or undef.
 =cut
 
 sub list_iterator {
-	my ($self, $list_name) = @_;
+    my ( $self, $list_name ) = @_;
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{iterator};
-	}
+    if ( exists $self->{lists}->{$list_name} ) {
+        return $self->{lists}->{$list_name}->{iterator};
+    }
 }
 
 =head2 list_inputs NAME
@@ -338,13 +355,13 @@ sub list_iterator {
 Returns inputs for list named NAME or undef.
 
 =cut
-	
-sub list_inputs {
-	my ($self, $list_name) = @_;
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{input};
-	}
+sub list_inputs {
+    my ( $self, $list_name ) = @_;
+
+    if ( exists $self->{lists}->{$list_name} ) {
+        return $self->{lists}->{$list_name}->{input};
+    }
 }
 
 =head2 list_sorts NAME
@@ -354,11 +371,11 @@ Return sorts for list named NAME or undef.
 =cut
 
 sub list_sorts {
-	my ($self, $list_name) = @_;
+    my ( $self, $list_name ) = @_;
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{sort};
-	}
+    if ( exists $self->{lists}->{$list_name} ) {
+        return $self->{lists}->{$list_name}->{sort};
+    }
 }
 
 =head2 list_filters NAME
@@ -368,11 +385,11 @@ Return filters for list named NAME or undef.
 =cut
 
 sub list_filters {
-	my ($self, $list_name) = @_;
+    my ( $self, $list_name ) = @_;
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{filter};
-	}
+    if ( exists $self->{lists}->{$list_name} ) {
+        return $self->{lists}->{$list_name}->{filter};
+    }
 }
 
 =head2 form_inputs NAME
@@ -382,11 +399,11 @@ Return inputs for form named NAME or undef.
 =cut
 
 sub form_inputs {
-	my ($self, $form_name) = @_;
+    my ( $self, $form_name ) = @_;
 
-	if (exists $self->{forms}->{$form_name}) {
-		return $self->{forms}->{$form_name}->{input};
-	}
+    if ( exists $self->{forms}->{$form_name} ) {
+        return $self->{forms}->{$form_name}->{input};
+    }
 }
 
 =head2 iterator NAME
@@ -396,32 +413,32 @@ Returns iterator identified by NAME.
 =cut
 
 sub iterator {
-	my ($self, $name) = @_;
+    my ( $self, $name ) = @_;
 
-	if (exists $self->{iters}->{$name}) {
-		return $self->{iters}->{$name};
-	}
+    if ( exists $self->{iters}->{$name} ) {
+        return $self->{iters}->{$name};
+    }
 }
 
 =head2 set_iterator NAME ITER
 
-Sets iterator for NAME to ITER. ITER can be a iterator
-object like L<Template::Flute::Iterator> or a reference
-to an array containing hash references.
+Sets iterator for NAME to ITER. ITER can be a iterator object like
+L<Template::Flute::Iterator> or a reference to an array containing hash
+references.
 
 =cut
 
 sub set_iterator {
-	my ($self, $name, $iter) = @_;
-	my ($iter_ref);
+    my ( $self, $name, $iter ) = @_;
+    my ($iter_ref);
 
-	$iter_ref = ref($iter);
+    $iter_ref = ref($iter);
 
-	if ($iter_ref eq 'ARRAY') {
-		$iter = new Template::Flute::Iterator($iter);
-	}
-	
-	$self->{iters}->{$name} = $iter;
+    if ( $iter_ref eq 'ARRAY' ) {
+        $iter = new Template::Flute::Iterator($iter);
+    }
+
+    $self->{iters}->{$name} = $iter;
 }
 
 =head2 resolve_iterator INPUT
@@ -431,26 +448,27 @@ Resolves iterator INPUT.
 =cut
 
 sub resolve_iterator {
-	my ($self, $input) = @_;
-	my ($input_ref, $iter);
+    my ( $self, $input ) = @_;
+    my ( $input_ref, $iter );
 
-	$input_ref = ref($input);
+    $input_ref = ref($input);
 
-	if ($input_ref eq 'ARRAY') {
-		$iter = new Template::Flute::Iterator($input);
-	}
-	elsif ($input_ref) {
-		# iterator already resolved
-		$iter = $input_ref;
-	}
-	elsif (exists $self->{iters}->{$input}) {
-		$iter = $self->{iters}->{$input};
-	}
-	else {
-		die "Failed to resolve iterator $input.";
-	}
+    if ( $input_ref eq 'ARRAY' ) {
+        $iter = new Template::Flute::Iterator($input);
+    }
+    elsif ($input_ref) {
 
-	return $iter;
+        # iterator already resolved
+        $iter = $input_ref;
+    }
+    elsif ( exists $self->{iters}->{$input} ) {
+        $iter = $self->{iters}->{$input};
+    }
+    else {
+        die "Failed to resolve iterator $input.";
+    }
+
+    return $iter;
 }
 
 =head2 elements_by_class NAME
@@ -460,13 +478,13 @@ Returns element(s) of the specification tied to HTML class NAME or undef.
 =cut
 
 sub elements_by_class {
-	my ($self, $class) = @_;
+    my ( $self, $class ) = @_;
 
-	if (exists $self->{classes}->{$class}) {
-		return $self->{classes}->{$class};
-	}
+    if ( exists $self->{classes}->{$class} ) {
+        return $self->{classes}->{$class};
+    }
 
-	return;
+    return;
 }
 
 =head2 elements_by_name NAME
@@ -476,13 +494,13 @@ Returns element(s) of the specification tied to HTML attribute name or undef.
 =cut
 
 sub elements_by_name {
-	my ($self, $name) = @_;
+    my ( $self, $name ) = @_;
 
-	if (exists $self->{names}->{$name}) {
-		return $self->{names}->{$name};
-	}
+    if ( exists $self->{names}->{$name} ) {
+        return $self->{names}->{$name};
+    }
 
-	return;
+    return;
 }
 
 =head2 element_by_id NAME
@@ -492,13 +510,13 @@ Returns element of the specification tied to HTML id NAME or undef.
 =cut
 
 sub element_by_id {
-	my ($self, $id) = @_;
+    my ( $self, $id ) = @_;
 
-	if (exists $self->{ids}->{$id}) {
-		return $self->{ids}->{$id};
-	}
+    if ( exists $self->{ids}->{$id} ) {
+        return $self->{ids}->{$id};
+    }
 
-	return;
+    return;
 }
 
 =head2 list_paging NAME
@@ -506,13 +524,13 @@ sub element_by_id {
 Returns paging for list NAME.
 
 =cut
-	
-sub list_paging {
-	my ($self, $list_name) = @_;
 
-	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{paging};
-	}	
+sub list_paging {
+    my ( $self, $list_name ) = @_;
+
+    if ( exists $self->{lists}->{$list_name} ) {
+        return $self->{lists}->{$list_name}->{paging};
+    }
 }
 
 =head1 AUTHOR
@@ -521,19 +539,20 @@ Stefan Hornburg (Racke), C<< <racke at linuxia.de> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-template-flute at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute>.
+Please report any bugs or feature requests to C<bug-template-flute at
+rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute>.
 
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2010-2012 Stefan Hornburg (Racke).
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
-	
+
 1;

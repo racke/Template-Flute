@@ -8,7 +8,7 @@ use warnings;
 use Test::More tests => 2;
 use Template::Flute;
 
-my ($spec, $html, $flute, $out);
+my ( $spec, $html, $flute, $out );
 
 # value with op=hook, using class
 $spec = q{<specification>
@@ -18,16 +18,17 @@ $spec = q{<specification>
 
 $html = q{<div class="content">CONTENT</div>};
 
-$flute = Template::Flute->new(template => $html,
-			      specification => $spec,
-			      values => {content => q{<p>Enter <b>dancefloor</b></p>}},
-    );
+$flute = Template::Flute->new(
+    template      => $html,
+    specification => $spec,
+    values        => { content => q{<p>Enter <b>dancefloor</b></p>} },
+);
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="content"><p>Enter <b>dancefloor</b></p></div>%,
-    'value op=hook test with class')
-    || diag $out;
+ok( $out =~ m%<div class="content"><p>Enter <b>dancefloor</b></p></div>%,
+    'value op=hook test with class' )
+  || diag $out;
 
 # value with op=hook, using id
 $spec = q{<specification>
@@ -37,14 +38,15 @@ $spec = q{<specification>
 
 $html = q{<div id="content">CONTENT</div>};
 
-$flute = Template::Flute->new(template => $html,
-			      specification => $spec,
-			      values => {content => q{<p>Enter <b>dancefloor</b></p>}},
-    );
+$flute = Template::Flute->new(
+    template      => $html,
+    specification => $spec,
+    values        => { content => q{<p>Enter <b>dancefloor</b></p>} },
+);
 
 $out = $flute->process();
 
-ok ($out =~ m%<div id="content"><p>Enter <b>dancefloor</b></p></div>%,
-    'value op=hook test with id')
-    || diag $out;
+ok( $out =~ m%<div id="content"><p>Enter <b>dancefloor</b></p></div>%,
+    'value op=hook test with id' )
+  || diag $out;
 

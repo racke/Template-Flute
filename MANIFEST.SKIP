@@ -7,4 +7,5 @@
 ^style
 \.bak$
 \.old$
+^.tidyall.d
 ^lib/Template/Flute/PDF

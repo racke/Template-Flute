@@ -50,13 +50,14 @@ Evaluates to value C<foo> and reverse of value C<bar>.
 use Parse::RecDescent;
 
 sub new {
-    my ($class, $self);
+    my ( $class, $self );
 
     $class = shift;
-    $self = {expression => shift};
+    $self = { expression => shift };
     bless $self, $class;
 
-    $self->{_rd} = Parse::RecDescent->new(q{
+    $self->{_rd} = Parse::RecDescent->new(
+        q{
 <autoaction: { [@item] } >
 
 var : /\w[a-z0-9_]*/
@@ -68,10 +69,11 @@ notvar: '!' var
 term: var | notvar
 
 expression : andor | notvar
-});
+}
+    );
 
     return $self;
-};
+}
 
 =head1 METHODS
 
@@ -79,15 +81,15 @@ expression : andor | notvar
 
     $expr->evaluate({foo => 'bar'});
 
-Evaluates the expression with a hash reference of values
-and returns the result.
+Evaluates the expression with a hash reference of values and returns the
+result.
 
 =cut
 
 sub evaluate {
-    my ($self, $value_ref) = @_;
+    my ( $self, $value_ref ) = @_;
     my ($tree);
-    
+
     $self->{values} = $value_ref;
     $tree = $self->_build();
     $self->_walk($tree);
@@ -97,60 +99,63 @@ sub _build {
     my ($self) = @_;
     my ($tree);
 
-    $tree = $self->{_rd}->expression($self->{expression});
+    $tree = $self->{_rd}->expression( $self->{expression} );
 
     return $tree;
 }
 
 sub _walk {
-    my ($self, $tree) = @_;
+    my ( $self, $tree ) = @_;
 
-    if ($tree->[0] eq 'expression') {
-	return $self->_walk($tree->[1]);
+    if ( $tree->[0] eq 'expression' ) {
+        return $self->_walk( $tree->[1] );
     }
-    elsif ($tree->[0] eq 'term') {
-	return $self->_walk($tree->[1]);
+    elsif ( $tree->[0] eq 'term' ) {
+        return $self->_walk( $tree->[1] );
     }
-    elsif ($tree->[0] eq 'andor') {
-	my ($val_one, $val_two, $op);
+    elsif ( $tree->[0] eq 'andor' ) {
+        my ( $val_one, $val_two, $op );
 
-	$val_one = $self->_walk($tree->[1]);
-	$op = $tree->[2];
-	$val_two = $self->_walk($tree->[3]);
+        $val_one = $self->_walk( $tree->[1] );
+        $op      = $tree->[2];
+        $val_two = $self->_walk( $tree->[3] );
 
-	if ($op eq '&') {
-	    return $val_one && $val_two;
+        if ( $op eq '&' ) {
+            return $val_one && $val_two;
         }
-	elsif ($op eq '|') {
-	    return $val_one || $val_two;
-	}
+        elsif ( $op eq '|' ) {
+            return $val_one || $val_two;
+        }
     }
-    elsif ($tree->[0] eq 'notvar') {
-	# do reverse
-	if ($self->_walk($tree->[2])) {
-	    return 0;
-	}
-	return 1;
+    elsif ( $tree->[0] eq 'notvar' ) {
+
+        # do reverse
+        if ( $self->_walk( $tree->[2] ) ) {
+            return 0;
+        }
+        return 1;
     }
-    elsif ($tree->[0] eq 'var') {
-	# just the value
-	return $self->_value($tree->[1]);
+    elsif ( $tree->[0] eq 'var' ) {
+
+        # just the value
+        return $self->_value( $tree->[1] );
     }
 }
 
 sub _value {
-    my ($self, $name) = @_;
-    my ($value, $values_ref);
+    my ( $self, $name ) = @_;
+    my ( $value, $values_ref );
 
     $values_ref = $self->{values};
 
-    if (exists($values_ref->{$name}) 
-	&& defined($values_ref->{$name})
-	&& $values_ref->{$name} =~ /\S/) {
-	$value = $values_ref->{$name};
+    if (   exists( $values_ref->{$name} )
+        && defined( $values_ref->{$name} )
+        && $values_ref->{$name} =~ /\S/ )
+    {
+        $value = $values_ref->{$name};
     }
     else {
-	$value = '';
+        $value = '';
     }
 
     return $value;

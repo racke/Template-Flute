@@ -28,43 +28,43 @@ Create a Template::Flute::Specification::Scoped object.
 # Constructor
 
 sub new {
-	my ($class, $self);
-	my (%params);
+    my ( $class, $self );
+    my (%params);
 
-	$class = shift;
-	%params = @_;
+    $class  = shift;
+    %params = @_;
 
-	$self = \%params;
+    $self = \%params;
 
-	bless ($self, $class);
+    bless( $self, $class );
 }
 
 =head1 METHODS
 
 =head2 parse [ STRING | SCALARREF ]
 
-Parses text from STRING or SCALARREF and returns L<Template::Flute::Specification>
-object in case of success.
+Parses text from STRING or SCALARREF and returns
+L<Template::Flute::Specification> object in case of success.
 
 =cut
-	
+
 sub parse {
-	my ($self, $text) = @_;
-	my ($scoped, $config);
-	
-	# create Config::Scoped parser and parse text
-	$scoped = new Config::Scoped;
+    my ( $self, $text ) = @_;
+    my ( $scoped, $config );
 
-	if (ref($text) eq 'SCALAR') {
-		$config = $scoped->parse(text => $$text);
-	}
-	else {
-		$config = $scoped->parse(text => $text);
-	}
+    # create Config::Scoped parser and parse text
+    $scoped = new Config::Scoped;
 
-	$self->{spec} = $self->create_specification($config);
+    if ( ref($text) eq 'SCALAR' ) {
+        $config = $scoped->parse( text => $$text );
+    }
+    else {
+        $config = $scoped->parse( text => $text );
+    }
 
-	return $self->{spec};
+    $self->{spec} = $self->create_specification($config);
+
+    return $self->{spec};
 }
 
 =head2 parse_file FILENAME
@@ -75,16 +75,16 @@ object in case of success.
 =cut
 
 sub parse_file {
-	my ($self, $file) = @_;
-	my ($scoped, $config, $key, $value, %list);
+    my ( $self, $file ) = @_;
+    my ( $scoped, $config, $key, $value, %list );
 
-	# create Config::Scoped parser and parse file
-	$scoped = new Config::Scoped(file => $file);
-	$config = $scoped->parse();
+    # create Config::Scoped parser and parse file
+    $scoped = new Config::Scoped( file => $file );
+    $config = $scoped->parse();
 
-	$self->{spec} = $self->create_specification($config);
+    $self->{spec} = $self->create_specification($config);
 
-	return $self->{spec};
+    return $self->{spec};
 }
 
 =head2 create_specification [ HASHREF ]
@@ -96,68 +96,71 @@ parse_file methods.
 =cut
 
 sub create_specification {
-	my ($self, $config) = @_;
-	my ($spec, $scoped, $key, $value, %list, $encoding);
+    my ( $self, $config ) = @_;
+    my ( $spec, $scoped, $key, $value, %list, $encoding );
 
-	# specification object
-	$spec = new Template::Flute::Specification;
+    # specification object
+    $spec = new Template::Flute::Specification;
 
-	if ($encoding = $config->{specification}->{encoding}) {
-		$spec->encoding($encoding);
-	}
-	
-	# lists
-	while (($key, $value) = each %{$config->{list}}) {
-		$value->{name} = $key;
-		$list{$key} = $value;
-	}
+    if ( $encoding = $config->{specification}->{encoding} ) {
+        $spec->encoding($encoding);
+    }
 
-	# adding list tokens: params, separators, inputs and filters
-	my ($list);
+    # lists
+    while ( ( $key, $value ) = each %{ $config->{list} } ) {
+        $value->{name} = $key;
+        $list{$key} = $value;
+    }
 
-	for my $cname (qw/param input filter separator/) {
-		while (($key, $value) = each %{$config->{$cname}}) {
-			$list = delete $value->{list};
-			$value->{name} = $key;
-		
-			if ($list) {
-				if (exists $list{$list}) {
-					push @{$list{$list}->{$cname}}, {%$value};
-				}
-				else {
-					die "List missing for $cname $key.";
-				}
-			}
-			else {
-				die "No list assigned to $cname $key.";
-			}
-		}
-	}
+    # adding list tokens: params, separators, inputs and filters
+    my ($list);
 
-	# adding other tokens: values and i18n
-	for my $cname (qw/value i18n/) {
-		while (($key, $value) = each %{$config->{$cname}}) {
-			$value->{name} = $key;
+    for my $cname (qw/param input filter separator/) {
+        while ( ( $key, $value ) = each %{ $config->{$cname} } ) {
+            $list = delete $value->{list};
+            $value->{name} = $key;
 
-			if ($cname eq 'value') {
-				$spec->value_add({value => $value});
-			}
-			elsif ($cname eq 'i18n') {
-				$spec->i18n_add({i18n => $value});
-			}
-		}
-	}
+            if ($list) {
+                if ( exists $list{$list} ) {
+                    push @{ $list{$list}->{$cname} }, {%$value};
+                }
+                else {
+                    die "List missing for $cname $key.";
+                }
+            }
+            else {
+                die "No list assigned to $cname $key.";
+            }
+        }
+    }
 
-	while (($key, $value) = each %{$config->{list}}) {
-		$spec->list_add({list => $value,
-				 param => $value->{param},
-				 separator => $value->{separator},
-				 input => $value->{input},
-				 filter => $value->{filter},
-				});
-	}
+    # adding other tokens: values and i18n
+    for my $cname (qw/value i18n/) {
+        while ( ( $key, $value ) = each %{ $config->{$cname} } ) {
+            $value->{name} = $key;
 
-	return $spec;
+            if ( $cname eq 'value' ) {
+                $spec->value_add( { value => $value } );
+            }
+            elsif ( $cname eq 'i18n' ) {
+                $spec->i18n_add( { i18n => $value } );
+            }
+        }
+    }
+
+    while ( ( $key, $value ) = each %{ $config->{list} } ) {
+        $spec->list_add(
+            {
+                list      => $value,
+                param     => $value->{param},
+                separator => $value->{separator},
+                input     => $value->{input},
+                filter    => $value->{filter},
+            }
+        );
+    }
+
+    return $spec;
 }
 
 =head2 error
@@ -167,20 +170,20 @@ Returns last error.
 =cut
 
 sub error {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	if (@{$self->{errors}}) {
-		return $self->{errors}->[0]->{error};
-	}
+    if ( @{ $self->{errors} } ) {
+        return $self->{errors}->[0]->{error};
+    }
 }
 
 sub _add_error {
-	my ($self, @args) = @_;
-	my (%error);
+    my ( $self, @args ) = @_;
+    my (%error);
 
-	%error = @args;
-	
-	unshift (@{$self->{errors}}, \%error);
+    %error = @args;
+
+    unshift( @{ $self->{errors} }, \%error );
 }
 
 =head1 AUTHOR
@@ -191,9 +194,9 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 
