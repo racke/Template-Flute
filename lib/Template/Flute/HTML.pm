@@ -38,7 +38,7 @@ sub new {
 
 	$class = shift;
 
-	$self = {containers => {}, lists => {}, forms => {},
+	$self = {containers => {}, lists => {}, pagings => {}, forms => {},
 			 params => {}, values => {}, query => {}, file => undef};
 	
 	bless $self;
@@ -444,6 +444,7 @@ sub _elt_handler {
 		
 		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+        $self->{lists}->{$name}->paging_add($self->{paging}->{$name});
 		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
 		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
 			
@@ -472,7 +473,25 @@ sub _elt_handler {
 		    push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
 		}
 	}
+    elsif ($sob->{type} eq 'paging') {
+        # go through paging elements and record corresponding HTML elements
+        for my $element_ref (CORE::values %{$sob->{elements}}) {
+            if (exists $self->{paging_elements}->{$name}->{$element_ref->{type}}) {
+                $element_ref->{elts} = $self->{paging_elements}->{$name}->{$element_ref->{type}}->{elts};
+            }
+        }
 
+        push (@{$sob->{elts}}, $elt);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+
+        if (exists $self->{lists}->{$sob->{list}}) {
+            $self->{lists}->{$sob->{list}}->paging_add($sob);
+        }
+        else {
+		    $self->{paging}->{$sob->{list}} = $sob;
+        }
+    }
+    
 	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
 		return $self;
 	}
@@ -511,6 +530,10 @@ sub _elt_handler {
 
 		$self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
 		push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
+    } elsif ($sob->{type} eq 'element') {
+        push (@{$sob->{elts}}, $elt);
+		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
+        $self->{paging_elements}->{$sob->{paging}}->{$sob->{element_type}} = $sob;
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 
@@ -549,7 +572,7 @@ sub _elt_handler {
 sub _elt_indicate_replacements {
 	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
 	my ($elt_text, $att_orig);
-
+    
 	if (exists $sob->{op}) {
 		if ($sob->{op} eq 'hook') {
 			$elt->{"flute_$name"}->{rep_sub} = \&hook_html;
@@ -602,7 +625,7 @@ sub _elt_indicate_replacements {
 	} elsif (! $elt->contains_only_text()) {
 		# contains real elements, so we have to be careful with
 		# set text and apply it only to the first PCDATA element
-		if ($elt_text = $elt->first_child('#PCDATA')) {
+		if ($elt_text = $elt->first_descendant('#PCDATA')) {
 			$elt->{"flute_$name"}->{rep_elt} = $elt_text;
 		}
 	}

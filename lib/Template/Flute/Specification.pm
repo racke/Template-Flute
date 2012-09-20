@@ -49,7 +49,9 @@ sub new {
 
 	# lookup hash for elements by name attribute
 	$self->{names} = {};
-	
+
+	$self->{pagings} = {};
+
 	bless $self;
 }
 
@@ -190,6 +192,31 @@ sub list_add {
 	}
 	
 	return $listref;
+}
+
+=head2 paging_add PAGING
+
+=cut
+
+sub paging_add {
+    my ($self, $new_pagingref) = @_;
+    my ($name, $class, $pagingref);
+
+	$name = $new_pagingref->{paging}->{name};
+
+	$pagingref = $self->{pagings}->{$name} = {elements => $new_pagingref->{paging}->{elements}};
+
+    # loop through paging elements
+    for my $element (values %{$new_pagingref->{paging}->{elements}}) {
+        $class = $element->{class} || $element->{name};
+        push @{$self->{classes}->{$class}}, {%{$element}, element_type => $element->{type}, type => 'element', list => $new_pagingref->{paging}->{list}, paging => $name};
+    }
+    
+	$class = $new_pagingref->{paging}->{class} || $name;
+
+	push @{$self->{classes}->{$class}}, {%{$new_pagingref->{paging}}, type => 'paging'};
+
+    return $pagingref;
 }
 
 =head2 form_add FORM
@@ -509,9 +536,14 @@ Returns paging for list NAME.
 	
 sub list_paging {
 	my ($self, $list_name) = @_;
+    my ($name, $paging_ref);
 
 	if (exists $self->{lists}->{$list_name}) {
-		return $self->{lists}->{$list_name}->{paging};
+        while (($name, $paging_ref) = each %{$self->{pagings}}) {
+            if ($paging_ref->{list} eq $list_name) {
+                return $paging_ref;
+            }
+        }
 	}	
 }
 
