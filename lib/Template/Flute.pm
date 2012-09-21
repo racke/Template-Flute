@@ -500,8 +500,10 @@ sub process {
 
         if ($list->{paging}) {
             # turn iterator into paginator
+            my $page_size = $list->{paging}->{page_size} || 20;
+
             $iter = Template::Flute::Paginator->new(iterator => $iter,
-                                                    page_size => 20);
+                                                    page_size => $page_size);
 
             if ($iter->pages > 1) {
                 my ($element_orig, $element_copy, %element_pos, $element_link,
