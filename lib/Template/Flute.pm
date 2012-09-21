@@ -503,7 +503,7 @@ sub process {
             $iter = Template::Flute::Paginator->new(iterator => $iter,
                                                     page_size => 20);
 
-            if ($iter->pages) {
+            if ($iter->pages > 1) {
                 my ($element_orig, $element_copy, %element_pos, $element_link,
                     $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
