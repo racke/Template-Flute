@@ -109,9 +109,9 @@ sub select_page {
     my ($new_position, $distance);
     
     # calculate number of entries
-    $new_position = ($page  - 1) * $self->page_size + 1;
+    $new_position = ($page  - 1) * $self->page_size;
 
-    $distance = $new_position - $self->page_position;
+    $distance = $new_position - $self->page_position + $page - 2;
 
     if ($distance > 1) {
         for (0 .. $distance) {
