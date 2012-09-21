@@ -505,10 +505,28 @@ sub process {
 
             if ($iter->pages) {
                 my ($element_orig, $element_copy, %element_pos, $element_link,
-                    $paging_page, $paging_link, $element, $element_active);
+                    $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
                 $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
                 $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+
+                $slide_length = $list->{paging}->{slide_length};
+
+                $paging_min = 1;
+                $paging_max = $iter->pages;
+
+                if ($slide_length > 0) {
+                    # determine the page numbers to show up
+                    if ($iter->pages > $slide_length) {
+                        $paging_min = int($paging_page - $slide_length / 2);
+
+                        if ($paging_min < 1) {
+                            $paging_min = 1;
+                        }
+
+                        $paging_max = $paging_min + $slide_length - 1;
+                    }
+                }
 
                 $iter->select_page($paging_page);
 
@@ -532,12 +550,14 @@ sub process {
                     else {
                         die "Neither last child nor next sibling.";
                     }
-                    
+                   
                     if ($element->{type} eq 'active') {
                         $element_active = $element_orig;
                     }
                     elsif ($element->{type} eq 'standard') {
                         for (1 .. $iter->pages) {
+                            next if $_ < $paging_min || $_ > $paging_max;
+
                             if ($_ == $paging_page) {
                                 # Move active element here
                                 if ($element_active->{"flute_active"}->{rep_elt}) {
