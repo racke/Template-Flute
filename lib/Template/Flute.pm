@@ -584,7 +584,7 @@ sub process {
 
                             # Adjust link
                             if ($element_link = $element_orig->first_descendant('a')) {
-                                $element_link->set_att(href => "/$paging_link/$_");
+                                $self->_paging_link($element_link, $paging_link, $_);
                             }
 
                             # Copy HTML element
@@ -598,7 +598,7 @@ sub process {
                         if ($paging_page < $iter->pages) {
                             # Adjust link
                             if ($element_link = $element_orig->first_descendant('a')) {
-                                $element_link->set_att(href => "/$paging_link/" . ($paging_page + 1));
+                                $self->_paging_link($element_link, $paging_link, $paging_page + 1);
                             }
                         }
                         else {
@@ -609,7 +609,7 @@ sub process {
                         if ($paging_page > 1) {
                             # Adjust link
                             if ($element_link = $element_orig->first_descendant('a')) {
-                                $element_link->set_att(href => "/$paging_link/" . ($paging_page - 1));
+                                $self->_paging_link($element_link, $paging_link, $paging_page - 1);
                             }
                         }
                         else {
@@ -717,6 +717,23 @@ sub process {
 	}
 
 	return $self->{template}->{xml}->sprint;
+}
+
+sub _paging_link {
+    my ($self, $elt, $paging_link, $paging_page) = @_;
+    my ($path, $uri);
+
+    if (ref($paging_link) =~ /^URI::/) {
+        # add to path
+        $uri = $paging_link->clone;
+        $uri->path(join('/', $paging_link->path, $paging_page));
+        $path = $uri->as_string;
+    }
+    else {
+        $path = "/$paging_link/$paging_page";
+    }
+
+    $elt->set_att(href => $path);
 }
 
 sub _replace_within_elts {
