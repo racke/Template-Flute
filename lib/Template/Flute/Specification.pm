@@ -204,7 +204,7 @@ sub paging_add {
 
 	$name = $new_pagingref->{paging}->{name};
 
-	$pagingref = $self->{pagings}->{$name} = {elements => $new_pagingref->{paging}->{elements}};
+	$pagingref = $self->{pagings}->{$name} = {elements => $new_pagingref->{paging}->{elements}, list => $new_pagingref->{paging}->{list}};
 
     # loop through paging elements
     for my $element (values %{$new_pagingref->{paging}->{elements}}) {
