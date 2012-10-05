@@ -3,13 +3,24 @@ package Dancer::Template::TemplateFlute;
 use strict;
 use warnings;
 
+use Moo;
+use Dancer::Moo::Types;
+
 use Template::Flute;
 use Template::Flute::Iterator;
 use Template::Flute::Utils;
 
 use Dancer::Config;
 
-use base 'Dancer::Template::Abstract';
+with 'Dancer::Core::Role::Template';
+
+has engine => (
+    is      => 'rw',
+    isa     => ObjectOf('Template::Flute'),
+    default => sub { Template::Flute->new },
+);
+
+sub _build_name {'TemplateFlute'}
 
 our $VERSION = '0.0030';
 
