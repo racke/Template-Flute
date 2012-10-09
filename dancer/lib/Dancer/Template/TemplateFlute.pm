@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Moo;
-use Dancer::Moo::Types;
+use Dancer::Core::Types;
 
 use Template::Flute;
 use Template::Flute::Iterator;
@@ -14,10 +14,8 @@ use Dancer::Config;
 
 with 'Dancer::Core::Role::Template';
 
-has engine => (
-    is      => 'rw',
-    isa     => ObjectOf('Template::Flute'),
-    default => sub { Template::Flute->new },
+has '+engine' => (
+    isa => InstanceOf['Template'],
 );
 
 sub _build_name {'TemplateFlute'}
