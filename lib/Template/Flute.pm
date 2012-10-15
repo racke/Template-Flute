@@ -532,7 +532,7 @@ sub process {
 
                 $iter->select_page($paging_page);
 
-                for my $type (qw/previous next active standard/) {
+                for my $type (qw/first previous next last active standard/) {
                     if ($element = $list->{paging}->{elements}->{$type}) {
                         $element_orig = shift @{$element->{elts}};
                         next unless $element_orig;
@@ -593,6 +593,28 @@ sub process {
                         }
 
                         $element_orig->cut;
+                    }
+                    elsif ($element->{type} eq 'first') {
+                        if ($paging_page > 1) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, 1);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
+                    }
+                    elsif ($element->{type} eq 'last') {
+                        if ($paging_page < $iter->pages) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, $iter->pages);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
                     }
                     elsif ($element->{type} eq 'next') {
                         if ($paging_page < $iter->pages) {
