@@ -748,11 +748,21 @@ sub _paging_link {
     if (ref($paging_link) =~ /^URI::/) {
         # add to path
         $uri = $paging_link->clone;
-        $uri->path(join('/', $paging_link->path, $paging_page));
+        if ($paging_page == 1) {
+            $uri->path(join('/', $paging_link->path));
+        }
+        else {
+            $uri->path(join('/', $paging_link->path, $paging_page));
+        }
         $path = $uri->as_string;
     }
     else {
-        $path = "/$paging_link/$paging_page";
+        if ($paging_page == 1) {
+            $path = "/$paging_link";
+        }
+        else {
+            $path = "/$paging_link/$paging_page";
+        }
     }
 
     $elt->set_att(href => $path);
