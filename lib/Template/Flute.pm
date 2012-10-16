@@ -912,9 +912,28 @@ Runs the filter used by ELEMENT on VALUE and returns the result.
 
 sub filter {
 	my ($self, $element, $value) = @_;
-	my ($filter, $name, $mod_name, $class, $filter_obj, $filter_sub);
+	my ($name, @filters);
 
 	$name = $element->{filter};
+
+    @filters = grep {/\S/} split(/\s+/, $name);
+
+    if (@filters > 1) {
+        # chain filters
+        for my $f_name (@filters) {
+            $value = $self->_filter($f_name, $element, $value);
+        }
+
+        return $value;
+    }
+    else {
+        return $self->_filter($name, $element, $value);
+    }
+}
+
+sub _filter {
+    my ($self, $name, $element, $value) = @_;
+	my ($filter, $mod_name, $class, $filter_obj, $filter_sub);
 
     if (exists $self->{_filter_subs}->{$name}) {
         $filter = $self->{_filter_subs}->{$name};
