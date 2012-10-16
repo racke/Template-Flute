@@ -542,6 +542,9 @@ sub process {
                             $sf->cut;
                         }
                     }
+                    else {
+                        next;
+                    }
 
                     if ($element_orig->is_last_child()) {			
                         %element_pos = (last_child => $element_orig->parent());
