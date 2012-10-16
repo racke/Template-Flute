@@ -1367,6 +1367,30 @@ number of dependencies for Template::Flute as small as possible.
 
 See above for prerequisites needed by the included filter classes.
 
+=head2 Chained Filters
+
+Filters can also be chained:
+
+    <value name="note" filter="upper eol"/>
+
+Example template:
+
+    <div class="note">
+        This is a note.
+    </div>
+
+With the following value:
+
+    Update now!
+    Avoid security hazards!
+
+The HTML output would look like:
+
+    <div class="note">
+    UPDATE NOW!<br />
+    AVOID SECURITY HAZARDS!
+    </div>
+
 =head1 INCLUDES
 
 Files, especially components for web pages can be processed and included
