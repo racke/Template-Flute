@@ -60,6 +60,7 @@ t/files/utf8.html
 t/filters/currency.t
 t/filters/date.t
 t/filters/eol.t
+t/filters/multi.t
 t/filters/nobreak_single.t
 t/filters/subs.t
 t/filters/upper.t
