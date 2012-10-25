@@ -821,7 +821,14 @@ sub _replace_within_elts {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
 		} else {
-			$elt->set_text($rep_str);
+            if (exists $param->{op} && $param->{op} eq 'toggle') {
+                unless ($rep_str) {
+                    $elt->cut;
+                }
+            }
+            else {
+                $elt->set_text($rep_str);
+            }
 		}
 	}
 }
