@@ -788,7 +788,7 @@ sub _replace_within_elts {
             # paste back a formerly cut element
             my $pos;
 
-            if ($pos = $elt->former_prev_sibling) {
+            if (($pos = $elt->former_prev_sibling) && $pos->parent) {
                 $elt->paste(after => $pos);
             }
             else {
