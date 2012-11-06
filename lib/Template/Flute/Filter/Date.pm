@@ -40,6 +40,7 @@ sub init {
     my ($self, %args) = @_;
     
     $self->{format} = $args{options}->{format} || '%c';
+    $self->{strict} = $args{options}->{strict} || {empty => 1};
 }
 
 =head2 filter
@@ -57,6 +58,13 @@ sub filter {
     }
     else {
 	$fmt = $self->{format};
+    }
+
+    if (! defined $date || $date !~ /\S/) {
+        if (! $self->{strict}->{empty}) {
+            # accept empty strings for dates
+            return '';
+        }
     }
 
     # parsing date
