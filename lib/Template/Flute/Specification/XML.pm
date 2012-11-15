@@ -227,6 +227,10 @@ sub _sort_handler {
 	}
 	
 	$elt->set_att('ops', \@ops);
+
+    # flush elements from stash
+	$self->_stash_flush($elt, {});
+    
 	push @{$self->{stash}}, $elt;	
 }
 
