@@ -68,6 +68,7 @@ t/filters/subs.t
 t/filters/upper.t
 t/values/append.t
 t/values/basic.t
+t/values/toggle.t
 t/i18n/01-simple.t
 t/forms/01-name.t
 t/forms/02-link.t
