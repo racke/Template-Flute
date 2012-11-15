@@ -1064,6 +1064,12 @@ sub _replace_values {
                         next;
                     }
                 }
+                elsif ($rep_str) {
+                    for my $elt (@elts) {
+                        $elt->set_text($rep_str);
+                        next;
+                    }
+                }
 
                 unless ($raw) {
                     # remove corresponding HTML elements from tree
