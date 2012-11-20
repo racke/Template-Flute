@@ -151,7 +151,10 @@ sub render ($$$) {
 			}
 		    }
 
-		    $forms[0]->set_action($tokens->{form}->action());
+            if ($action = $tokens->{form}->action()) {
+                $forms[0]->set_action($action);
+            }
+
 		    $tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
 		    $forms[0]->fill($tokens->{form}->fill());
 
