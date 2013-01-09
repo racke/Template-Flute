@@ -1373,6 +1373,11 @@ Requires L<Locales> module.
 Language name filter, see L<Template::Flute::Filter::LanguageName>.
 Requires L<Locales> module.
 
+=item json_var
+
+JSON to Javascript variable filter, see L<Template::Flute::Filter::JsonVar>.
+Requires L<JSON> module.
+
 =back
 
 Filter classes are loaded at runtime for efficiency and to keep the
