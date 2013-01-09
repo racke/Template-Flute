@@ -31,7 +31,19 @@ The init method allows you to set the following options:
 =item format
 
 Format string for L<DateTime>'s strftime method. Defaults to %c.
-    
+
+=item strict
+
+Determines how strict the filter is with empty resp. invalid
+dates. The default setting is to throw an error on both.
+
+You can override this setting for empty and invalid dates
+separately resulting in returning an empty string instead.
+
+Example for accepting empty dates:
+
+    options => {empty => 0}
+
 =back
 
 =cut
@@ -40,7 +52,8 @@ sub init {
     my ($self, %args) = @_;
     
     $self->{format} = $args{options}->{format} || '%c';
-    $self->{strict} = $args{options}->{strict} || {empty => 1};
+    $self->{strict} = $args{options}->{strict} || {empty => 1,
+                                                   invalid => 1};
 }
 
 =head2 filter
@@ -54,10 +67,10 @@ sub filter {
     my ($dt, $fmt);
 
     if ($args{format}) {
-	$fmt = $args{format};
+        $fmt = $args{format};
     }
     else {
-	$fmt = $self->{format};
+        $fmt = $self->{format};
     }
 
     if (! defined $date || $date !~ /\S/) {
@@ -65,10 +78,25 @@ sub filter {
             # accept empty strings for dates
             return '';
         }
+        else {
+            die "Empty date.";
+        }
     }
 
     # parsing date
-    $dt = DateTime::Format::ISO8601->parse_datetime($date);
+    eval {
+        $dt = DateTime::Format::ISO8601->parse_datetime($date);
+    };
+
+    if ($@) {
+        if ($self->{strict}->{invalid}) {
+            die $@;
+        }
+        else {
+            # replace invalid dates with empty string
+            return '';
+        }
+    }
 
     return $dt->strftime($fmt);
 }
