@@ -304,7 +304,11 @@ sub value_add {
 		# include implies hooking resulting value
 		$new_valueref->{value}->{op} = 'hook';
 	}
-	
+	elsif (exists $new_valueref->{value}->{field}
+           && $new_valueref->{value}->{field} =~ /\./) {
+        $new_valueref->{value}->{field} = [split /\./, $new_valueref->{value}->{field}];
+    }
+
 	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
 	
 	if ($id = $new_valueref->{value}->{id}) {

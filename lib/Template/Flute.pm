@@ -1018,7 +1018,30 @@ sub value {
 		$raw_value = Template::Flute->new(%args)->process();
 	}
 	elsif (exists $value->{field}) {
-		$raw_value = $ref_value->{$value->{field}};
+        if (ref($value->{field}) eq 'ARRAY') {
+            my $lookup;
+
+            $raw_value = $ref_value;
+
+            for $lookup (@{$value->{field}}) {
+                if (ref($raw_value)
+                    && exists $raw_value->{$lookup}) {
+                    $raw_value = $raw_value->{$lookup};
+                }
+                else {
+                    $raw_value = '';
+                    last;
+                }
+            }
+
+            if (ref $raw_value) {
+                # second case: don't pass back stringified reference
+                $raw_value = '';
+            }
+        }
+        else {
+            $raw_value = $ref_value->{$value->{field}};
+        }
 	}
 	else {
 		$raw_value = $ref_value->{$value->{name}};
