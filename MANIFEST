@@ -17,6 +17,7 @@ lib/Template/Flute/Filter/JsonVar.pm
 lib/Template/Flute/Filter/LanguageName.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Replace.pm
+lib/Template/Flute/Filter/Strip.pm
 lib/Template/Flute/Filter/Upper.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
@@ -64,6 +65,7 @@ t/filters/eol.t
 t/filters/json.t
 t/filters/multi.t
 t/filters/nobreak_single.t
+t/filters/strip.t
 t/filters/subs.t
 t/filters/upper.t
 t/values/append.t
