@@ -1367,6 +1367,11 @@ The following filters are included:
 
 Uppercase filter, see L<Template::Flute::Filter::Upper>.
 
+=item strip
+
+Strips whitespace at the beginning at the end,
+see L<Template::Flute::Filter::Strip>.
+
 =item eol
 
 Filter preserving line breaks, see L<Template::Flute::Filter::Eol>.
