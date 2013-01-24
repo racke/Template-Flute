@@ -1,5 +1,24 @@
 Revision history for Template::Flute
 
+0.0060 Thu Jan 24 14:30:26 2013 CET
+
+    [BUG FIXES]
+
+    * Ensure that a formerly cut element is pasted back only when a
+      parent element is present for the previous sibling.
+    * Fix toggle operation on value elements.
+    * Fix crash "Unexpected element left on stash: field" caused by sort element.
+
+    [ENHANCEMENTS]
+
+    * Add support for chained filters.
+    * Add json_var filter.
+    * Add strip filter.
+    * Add strict option to date filter.
+    * Apply toggle operation to params without target as well.
+    * Add paging elements.
+    * Allow deeper lookups into values hash with dotted values for field attribute.
+
 0.0052 Tue Sep  4 20:08:34 2012 CEST
 
     [BUG FIXES]

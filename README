@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0052
+    Version 0.0060
 
 SYNOPSIS
         use Template::Flute;
@@ -346,6 +346,10 @@ FILTERS
     upper
         Uppercase filter, see Template::Flute::Filter::Upper.
 
+    strip
+        Strips whitespace at the beginning at the end, see
+        Template::Flute::Filter::Strip.
+
     eol Filter preserving line breaks, see Template::Flute::Filter::Eol.
 
     nobreak_single
@@ -368,10 +372,37 @@ FILTERS
         Language name filter, see Template::Flute::Filter::LanguageName.
         Requires Locales module.
 
+    json_var
+        JSON to Javascript variable filter, see
+        Template::Flute::Filter::JsonVar. Requires JSON module.
+
     Filter classes are loaded at runtime for efficiency and to keep the
     number of dependencies for Template::Flute as small as possible.
 
     See above for prerequisites needed by the included filter classes.
+
+  Chained Filters
+    Filters can also be chained:
+
+        <value name="note" filter="upper eol"/>
+
+    Example template:
+
+        <div class="note">
+            This is a note.
+        </div>
+
+    With the following value:
+
+        Update now!
+        Avoid security hazards!
+
+    The HTML output would look like:
+
+        <div class="note">
+        UPDATE NOW!<br />
+        AVOID SECURITY HAZARDS!
+        </div>
 
 INCLUDES
     Files, especially components for web pages can be processed and included
@@ -427,7 +458,7 @@ HISTORY
     module.
 
 LICENSE AND COPYRIGHT
-    Copyright 2010-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
+    Copyright 2010-2013 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of either: the GNU General Public License as published
