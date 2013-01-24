@@ -1,5 +1,13 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0060 Thu Jan 24 15:00:33 2013 CET
+
+    * Bump up Template::Flute prerequisite to 0.0060.
+
+    [BUG FIXES]
+
+    * Set form action only if form object carries one.
+
 0.0030 Mon Mar 26 13:29:08 2012 CEST
 
     [ENHANCEMENTS]
