@@ -1,7 +1,7 @@
 package Template::Flute::Filter::JsonVar;
 
 use base 'Template::Flute::Filter';
-use Dancer ':syntax';
+use JSON;
 
 =head1 NAME
 
@@ -20,6 +20,10 @@ Example:
 results in the following JavaScript:
 
     var json = $.parseJSON('{"post":"Vienna","username":"shopper@nitesi.biz"}');
+
+=head1 PREREQUISITES
+
+L<JSON> module.
 
 =head1 METHODS
 

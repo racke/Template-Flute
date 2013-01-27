@@ -7,6 +7,13 @@ use warnings;
 
 use Test::More;
 use Template::Flute;
+
+eval "use JSON";
+
+if ($@) {
+    plan skip_all => "Missing JSON module.";
+}
+
 plan tests => 2;
 
 my ($xml, $html, $flute, $ret);
