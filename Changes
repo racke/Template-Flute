@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0061 Sun Jan 27 11:25:30 2013 CET
+
+    [BUG FIXES]
+
+    * Fix json_var filter by using JSON module.
+    
 0.0060 Thu Jan 24 14:30:26 2013 CET
 
     [BUG FIXES]
