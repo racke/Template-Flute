@@ -60,7 +60,7 @@ my (@tests, @tests_id, $html, $spec, $flute, $out);
 	      {username => 'racke'}, 0],
     );
 
-plan tests => scalar @tests + @tests_id + 3;   
+plan tests => scalar @tests + @tests_id + 5;
 
 $html = q{<div class="box">USER</div>};
 
@@ -141,3 +141,29 @@ $flute = Template::Flute->new(specification => $spec,
 $out = $flute->process();
 
 ok($out !~ m%<div class="message">.*</div>%, 'container shares value with value not present') || diag $out;
+
+# add test for container and value sharing same HTML element through ID
+$html = q{<div id="message">MESSAGE</div>};
+$spec = q{<specification>
+<container name="message" value="message" id="message">
+<value name="message" field="message" id="message"/>
+</container>
+</specification>
+};
+
+$flute = Template::Flute->new(specification => $spec,
+			      template => $html,
+			      values => {message => 'Alright'},
+    );
+
+$out = $flute->process();
+
+ok($out =~ m%<div id="message">Alright</div>%, 'container shares value with value present using HTML id attribute') || diag $out;
+
+$flute = Template::Flute->new(specification => $spec,
+			      template => $html,
+    );
+
+$out = $flute->process();
+
+ok($out !~ m%<div id="message">.*</div>%, 'container shares value with value not present using HTML id attribute') || diag $out;
