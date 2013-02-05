@@ -13,13 +13,28 @@ Takes a Perl structure or a JSON string and returns Javascript
 which parses the JSON string with Jquery and assigns it to
 the variable C<json>.
 
-Example:
+The following example shows you how to inject the JSON variable
+into the template:
 
-    {username => 'shopper@nitesi.biz', city => 'Vienna'};
+HTML Template:
 
-results in the following JavaScript:
+    <script type="text/javascript" id="vars"></script>
 
+XML Specification:
+
+    <value name="jsvars" id="vars" filter="json_var"/>
+
+Values for L<Template::Flute>:
+
+    Template::Flute->new(...,
+        values => {username => 'shopper@nitesi.biz', city => 'Vienna'},
+    );
+
+This results in the following JavaScript:
+
+    <script type="text/javascript" id="vars">
     var json = $.parseJSON('{"post":"Vienna","username":"shopper@nitesi.biz"}');
+    </script>
 
 =head1 PREREQUISITES
 
