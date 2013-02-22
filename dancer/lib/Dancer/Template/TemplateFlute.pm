@@ -32,6 +32,23 @@ In order to use this engine, use the template setting:
 
 The default template extension is ".html".
 
+=head2 LAYOUT
+
+Each layout needs a specification file and a template file. To embed
+the content of your current view into the layout, put the following
+into your specification file, e.g. F<views/layouts/main.xml>:
+
+    <specification>
+    <value name="content" id="content" op="hook"/>
+    </specification>
+
+This replaces the contents of the following block in your HTML
+template, e.g. F<views/layouts/main.html>:
+
+    <div id="content">
+    Your content
+    </div>
+
 =head2 ITERATORS
 
 Iterators can be specified explicitly in the configuration file as below.
