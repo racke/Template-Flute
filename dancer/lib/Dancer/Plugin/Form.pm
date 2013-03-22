@@ -309,9 +309,23 @@ Indicates form failure by passing form errors.
 
     $form->failure(errors => {username => 'Minimum 8 characters',
                               email => 'Invalid email address'});
-                  
+
+You can also set a route for redirection:
+
+    return $form->failure(errors => {username => 'Minimum 8 characters'},
+        route => '/account');
+
+Passing parameters for the redirection URL is also possible:
+
+    return $form->failure(errors => {username => 'Minimum 8 characters'},
+        route => '/account',
+        params => {layout => 'mobile'});
+
+Please ensure that you validate input submitted by an user before
+adding them to the C<params> hash.
+
 =cut
-    
+
 sub failure {
     my ($self, %args) = @_;
 
@@ -325,7 +339,7 @@ sub failure {
     session(form_data => $args{data});
 
     if ($args{route}) {
-	redirect $args{route};
+        redirect uri_for($args{route}, $args{params});
     }
 
     return;
