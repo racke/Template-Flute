@@ -8,6 +8,10 @@ lib/Dancer/Plugin/Form.pm
 lib/Dancer/Template/TemplateFlute.pm
 t/00-load.t
 t/boilerplate.t
+t/lib/MyTestApp.pm
 t/manifest.t
 t/pod.t
 t/pod-coverage.t
+t/template.t
+t/views/index.html
+t/views/index.xml
