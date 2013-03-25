@@ -14,11 +14,11 @@ Dancer::Plugin::Form - Dancer form handler for Template::Flute template engine
 
 =head1 VERSION
 
-Version 0.0060
+Version 0.0061
 
 =cut
 
-our $VERSION = '0.0060';
+our $VERSION = '0.0061';
 
 =head1 SYNOPSIS
 
