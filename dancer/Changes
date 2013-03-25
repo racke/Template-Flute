@@ -1,5 +1,20 @@
 Revision history for Dancer::Template::TemplateFlute
 
+0.0061 Mon Mar 25 10:54:39 2013 CET
+
+    [ENHANCEMENTS]
+
+    * Allow URI parameters to be passed into failure method of 
+      Dancer::Plugin::Form.
+
+    [TESTS]
+
+    * Add simple template test.
+
+    [DOCUMENTATION]
+
+    * Add layout section.
+
 0.0060 Thu Jan 24 15:00:33 2013 CET
 
     * Bump up Template::Flute prerequisite to 0.0060.
