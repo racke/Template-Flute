@@ -1313,6 +1313,31 @@ is usually more convenient.
 
 =back
 
+=head1 CONDITIONALS
+
+=head2 Display image only if present
+
+In this example we want to show an image only on
+a certain condition:
+
+HTML:
+
+    <span class="banner-box">
+        <img class="banner" src=""/>
+    </span>
+
+XML:
+
+    <container name="banner-box" value="banner">
+        <value name="banner" target="src"/>
+    </container>
+
+Source code:
+
+    if ($organization eq 'Big One') {
+        $values{banner} = 'banners/big_one.png';
+    }
+
 =head1 ITERATORS
 
 Template::Flute uses iterators to retrieve list elements and insert them into
