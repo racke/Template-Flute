@@ -176,10 +176,14 @@ Get form values as hash reference:
 
     $values = $form->values;
 
+Set form values from a hash reference:
+
+    $values => $form->values(ref => \%input);
+
 =cut
     
 sub values {
-    my ($self, $scope) = @_;
+    my ($self, $scope, $data) = @_;
     my (%values, $params, $save);
 
 
@@ -193,6 +197,10 @@ sub values {
     elsif ($scope eq 'body' || $scope eq 'query' ) {
         $params = params($scope);
 	$save = 1;
+    }
+    elsif ($scope eq 'ref') {
+        $params = $data;
+        $save = 1;
     }
     else {
 	$params = '';
