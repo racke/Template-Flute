@@ -1338,6 +1338,43 @@ Source code:
         $values{banner} = 'banners/big_one.png';
     }
 
+=head2 Display link in a list only if present
+
+In this example we want so show a link only if
+an URL is available:
+
+HTML:
+
+    <div class="linklist">
+        <span class="name">Name</span>
+        <div class="link">
+            <a href="#" class="url">Goto ...</a>
+        </div>
+    </div>
+
+XML:
+
+    <specification name="link">
+        <list name="links" class="linklist" iterator="links">
+            <param name="name"/>
+            <param name="url" target="href"/>
+            <param name="link" field="url" op="toggle" args="tree"/>
+        </list>
+    </specification>
+
+Source code:
+
+   @records = ({name => 'Link', url => 'http://localhost/'},
+               {name => 'No Link'},
+               {name => 'Another Link', url => 'http://localhost/'},
+              );
+
+   $flute = Template::Flute->new(specification => $spec_xml,
+                                 template => $template,
+                                 iterators => {links => \@records});
+
+   $output = $flute->process();
+
 =head1 ITERATORS
 
 Template::Flute uses iterators to retrieve list elements and insert them into
