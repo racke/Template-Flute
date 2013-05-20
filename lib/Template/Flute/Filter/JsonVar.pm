@@ -27,13 +27,15 @@ XML Specification:
 Values for L<Template::Flute>:
 
     Template::Flute->new(...,
-        values => {username => 'shopper@nitesi.biz', city => 'Vienna'},
+        values => {jsvars =>
+          {username => 'shopper@nitesi.biz', city => 'Vienna'},
+        },
     );
 
 This results in the following JavaScript:
 
     <script type="text/javascript" id="vars">
-    var json = $.parseJSON('{"post":"Vienna","username":"shopper@nitesi.biz"}');
+    var json = $.parseJSON('{"city":"Vienna","username":"shopper@nitesi.biz"}');
     </script>
 
 =head1 PREREQUISITES
