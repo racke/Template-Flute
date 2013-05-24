@@ -1,5 +1,23 @@
 Revision history for Template::Flute
 
+0.0062 Sat May 25 19:56:51 2013 CEST
+
+    [BUG FIXES]
+
+    * Fix bug causing problems with container values sharing HTML element
+      through ID with container.
+    * Execute POD tests only for release testing (GH #3).
+
+    [DOCUMENTATION]
+
+    * Add example for "Display image only if present" to documentation.
+    * Add example for "Display link in a list only if present" to documentation.
+    * Fix example in Template::Flute::Filters::JsonVar module.
+
+    [TESTS]
+
+    * Add test for UTF-8 string in values hash.
+
 0.0061 Sun Jan 27 11:25:30 2013 CET
 
     [BUG FIXES]
