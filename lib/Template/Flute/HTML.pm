@@ -360,7 +360,8 @@ sub _parse_handler {
 	}
 	
 	if ($id) {
-		if ($sob = $spec_object->element_by_id($id)) {
+        $sob_ref = $spec_object->elements_by_id($id);
+        for my $sob (@$sob_ref) {
 			$name = $sob->{name} || $id;
 			$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
 		}

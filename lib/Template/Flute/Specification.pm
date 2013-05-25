@@ -107,7 +107,7 @@ sub container_add {
 	$class = $new_containerref->{container}->{class} || $container_name;
 
 	if ($id = $new_containerref->{container}->{id}) {
-	    $self->{ids}->{$id} = {%{$new_containerref->{container}}, type => 'container'};
+	    push @{$self->{ids}->{$id}}, {%{$new_containerref->{container}}, type => 'container'};
 	}
 	else {
 	    $self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
@@ -115,11 +115,16 @@ sub container_add {
 
 	# loop through values for this container
 	for my $value (@{$new_containerref->{value}}) {
-		$class = $value->{class} || $value->{name};
-		unless ($class) {
-			die "Neither class nor name for value within container $container_name.\n";
-		}
-		push @{$self->{classes}->{$class}}, {%{$value}, type => 'value', container => $container_name};
+        if ($value->{id}) {
+            push @{$self->{ids}->{$value->{id}}}, {%{$value}, type => 'value', container => $container_name};
+        }
+        else {
+            $class = $value->{class} || $value->{name};
+            unless ($class) {
+                die "Neither class nor name for value within container $container_name.\n";
+            }
+            push @{$self->{classes}->{$class}}, {%{$value}, type => 'value', container => $container_name};
+        }
 	}
 
 	return $containerref;
@@ -239,7 +244,7 @@ sub form_add {
 	$form_loc = {%{$new_formref->{form}}, type => 'form'};
 	
 	if ($id = $new_formref->{form}->{id}) {
-	    $self->{ids}->{$id} = $form_loc;
+	    $self->{ids}->{$id} = [$form_loc];
 	}
 	elsif ($class = $new_formref->{form}->{class}) {
 	    $class = $new_formref->{form}->{class};
@@ -272,7 +277,7 @@ sub form_add {
 	    $field_loc = {%{$field}, type => 'field', form => $form_name};
 
 	    if (exists $field->{id}) {
-		$self->{ids}->{$field->{id}} = $field_loc;
+		push @{$self->{ids}->{$field->{id}}}, $field_loc;
 	    }
 	    elsif (exists $field->{class}) {
 		push @{$self->{classes}->{$field->{class}}}, $field_loc;
@@ -312,7 +317,7 @@ sub value_add {
 	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
 	
 	if ($id = $new_valueref->{value}->{id}) {
-		$self->{ids}->{$id} = {%{$new_valueref->{value}}, type => 'value'};
+		push @{$self->{ids}->{$id}}, {%{$new_valueref->{value}}, type => 'value'};
 	}
 	else {
 		$class = $new_valueref->{value}->{class} || $value_name;
@@ -339,7 +344,7 @@ sub i18n_add {
 	$i18nref = $self->{i18n}->{$i18n_name} = {};
 	
 	if ($id = $new_i18nref->{value}->{id}) {
-		$self->{ids}->{$id} = {%{$new_i18nref->{value}}, type => 'i18n'};
+		push @{$self->{ids}->{$id}}, {%{$new_i18nref->{value}}, type => 'i18n'};
 	}
 	else {
 		$class = $new_i18nref->{value}->{class} || $i18n_name;
@@ -516,13 +521,13 @@ sub elements_by_name {
 	return;
 }
 
-=head2 element_by_id NAME
+=head2 elements_by_id NAME
 
-Returns element of the specification tied to HTML id NAME or undef.
+Returns element(s) of the specification tied to HTML id NAME or undef.
 
 =cut
 
-sub element_by_id {
+sub elements_by_id {
 	my ($self, $id) = @_;
 
 	if (exists $self->{ids}->{$id}) {
