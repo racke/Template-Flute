@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 4;
 use Template::Flute;
 
 my ($spec, $html, @colors, $flute, $out);
@@ -41,4 +41,32 @@ $out = $flute->process();
 
 ok ($out =~ m%<option>red</option><option selected="selected">black</option>%,
     "Test value with HTML dropdown and selected value.")
+    || diag "HTML: $out.\n";
+
+@colors = ({value => 'red', label => 'Red'},
+           {value => 'black', label => 'Black'},
+          );
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              iterators => {colors => \@colors},
+                             );
+
+$out = $flute->process();
+
+ok ($out =~ m%<option value="red">Red</option><option value="black">Black</option>%,
+    "Test value with HTML dropdown and labels.")
+    || diag "HTML: $out.\n";
+
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              iterators => {colors => \@colors},
+                              values => {test => 'black'},
+                             );
+
+$out = $flute->process();
+
+ok ($out =~ m%<option value="red">Red</option><option selected="selected" value="black">Black</option>%,
+    "Test value with HTML dropdown, labels and selected value.")
     || diag "HTML: $out.\n";
