@@ -1264,7 +1264,7 @@ Appends the value to the text found in the HTML template.
 =item hook
 
 Insert HTML residing in value as subtree of the corresponding HTML element.
-HTML will be parsed with L<XML::Twig>.
+HTML will be parsed with L<XML::Twig>. See L</INSERT HTML> for an example.
 
 =item toggle
 
@@ -1529,7 +1529,22 @@ The HTML output would look like:
     AVOID SECURITY HAZARDS!
     </div>
 
-=head1 INCLUDES
+=head1 INSERT HTML AND INCLUDE FILES
+
+=head2 INSERT HTML
+
+HTML can be generated in the code or retrieved from a database
+and inserted into the template through the C<hook> operation:
+
+    <value name="description" op="hook"/>
+
+The result replaces the inner HTML of the following C<div> tag:
+
+    <div class="description">
+        Sample content
+    </div>
+
+=head2 INCLUDE FILES
 
 Files, especially components for web pages can be processed and included
 through value elements with the include attribute:
