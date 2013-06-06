@@ -1384,6 +1384,36 @@ references and an iterator class with a next and a count method. For your
 convenience you can create an iterator from L<Template::Flute::Iterator>
 class very easily.
 
+=head2 DROPDOWNS
+
+Iterators can be used for dropdowns (HTML <select> elements) as well.
+
+Template:
+
+    <select class="color"></select>
+
+Specification:
+
+    <value name="color" iterator="colors"/>
+
+Code:
+
+    @colors = ({value => 'red', label => 'Red'},
+               {value => 'black', label => 'Black'});
+
+    $flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              iterators => {colors => \@colors},
+                              values => {color => 'black'},
+                             );
+
+HTML output:
+
+      <select class="color">
+      <option value="red">Red</option>
+      <option value="black" selected="selected">Black</option>
+      </select>
+
 =head1 LISTS
 
 Lists can be accessed after parsing the specification and the HTML template
