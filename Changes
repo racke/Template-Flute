@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0063 Wed Jun 12 14:57:48 2013 CEST
+
+    [BUG FIXES]
+
+    * Pass through filters setting to included templates.
+
+    [DOCUMENTATION]
+
+    * Add documentation about dropdowns.
+    * Add section about inserting html to the documentation.
+
+    [TESTS]
+
+    * Add dropdown (select) tests for values.
+
 0.0062 Sat May 25 19:56:51 2013 CEST
 
     [BUG FIXES]
