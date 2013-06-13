@@ -77,6 +77,7 @@ t/forms/01-name.t
 t/forms/02-link.t
 t/forms/05-textarea.t
 t/forms/06-select.t
+t/forms/checkbox.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
