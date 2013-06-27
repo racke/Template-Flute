@@ -803,7 +803,9 @@ sub _replace_within_elts {
 			# replace attribute instead of embedded text (e.g. for <input>)
 			if (exists $param->{op} && $param->{op} eq 'append') {
 			    if (exists $param->{joiner}) {
-				$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $param->{joiner} . $rep_str);
+                    if ($rep_str) {
+                        $elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $param->{joiner} . $rep_str);
+                    }
 			    }
 			    else {
 				$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
