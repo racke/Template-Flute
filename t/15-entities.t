@@ -11,7 +11,7 @@ if ($XML::Twig::VERSION > 3.39) {
     plan skip_all => "WARNING! Your XML::Twig version probably contains a bug when parsing entities!. Skipping test";
 }
 else {
-    plan tests => 2;
+    plan tests => 3;
 }
 
 my $layout_html = << 'HTML';
@@ -40,7 +40,8 @@ my $flute = Template::Flute->new(specification => $template_spec,
 
 my $out = $flute->process();
 
-ok(index($out, q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>}));
+ok(index($out, q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>}),
+   "body rendered");
 
 my $layout = Template::Flute->new(specification => $layout_spec,
                                   template => $layout_html,
