@@ -13,22 +13,26 @@ else {
     plan tests => 3;
 }
 
-my $parser = new XML::Twig;
+my $parser = XML::Twig->new();
 
 my $value =<< 'EOF';
 <h1>Here&amp;there</h1>
 EOF
 
 my $html = $parser->safe_parse_html($value);
-print $@ if $@;
-ok($html, "default ok");
+if ($@) {
+    diag $@;
+}
+ok($html, "Entities parsed without errors");
 
 $value =<< 'EOF';
 <h1 style="display:none">Here &amp; there</h1>
 EOF
 
 $html = $parser->safe_parse_html($value);
-print $@ if $@;
+if ($@) {
+    diag $@;
+}
 ok($html);
 
 $html = $parser->safe_parse_html($value);
