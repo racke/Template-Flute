@@ -23,6 +23,7 @@ my $layout_html = << 'HTML';
 <div id="content">
 This is the default page.
 </div>
+<div id="test">&nbsp;</div>
 </body>
 </html>
 HTML
@@ -40,16 +41,14 @@ my $flute = Template::Flute->new(specification => $template_spec,
 
 my $out = $flute->process();
 
-ok(index($out, q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>}),
-   "body rendered");
+my $expected = q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>};
+ok((index($out, $expected) >= 0),
+  "body rendered");
 
 my $layout = Template::Flute->new(specification => $layout_spec,
                                   template => $layout_html,
                                   values => {content => $out});
 
 my $final = $layout->process;
-ok index($final, $out), "the layout contains the body";
-ok index($final, q{<span id="spanning" style="display:none"> </span>}), "the layout has the decoded &nbsp;";
-
-
-
+ok ((index($final, $expected) >= 0), "the layout contains the body");
+ok ((index($final, q{<div id="test"> </div>}) >= 0), "the layout has the decoded &nbsp;");
