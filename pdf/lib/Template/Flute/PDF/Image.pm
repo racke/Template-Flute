@@ -11,7 +11,7 @@ my %types = (JPG => 'jpeg',
 			 TIF => 'tiff',
 #			'pnm',
 			 PNG => 'png',
-			 GIF => 'gif',
+#			 GIF => 'gif',
 			);
 
 =head1 NAME
