@@ -1072,6 +1072,24 @@ sub _replace_values {
 		@elts = @{$value->{elts}};
         $elt_handler = undef;
 
+        # check if we need an iterator for this value
+    	if ($self->{auto_iterators} && $value->{iterator}) {
+            my ($iter_name, $iter);
+
+            $iter_name = $value->{iterator};
+
+            unless ($self->{specification}->iterator($iter_name)) {
+                if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+                    $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                }
+                else {
+                    $iter = Template::Flute::Iterator->new([]);
+                }
+
+                $self->{specification}->set_iterator($iter_name, $iter);
+            }
+        }
+
 		# determine value used for replacements
 		($raw, $rep_str) = $self->value($value);
 
