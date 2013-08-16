@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0064 Fri Aug 16 12:31:54 2013 CEST
+
+    [BUG FIXES]
+
+    * Add support for auto_iterators to values.
+
+    [TESTS]
+
+    * Add tests for checkboxes.
+    * Add tests for HTML entities and XML::Twig version.
+
 0.0063 Wed Jun 12 14:57:48 2013 CEST
 
     [BUG FIXES]
