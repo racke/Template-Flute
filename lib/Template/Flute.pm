@@ -15,11 +15,11 @@ Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
-Version 0.0063
+Version 0.0064
 
 =cut
 
-our $VERSION = '0.0063';
+our $VERSION = '0.0064';
 
 =head1 SYNOPSIS
 
