@@ -51,6 +51,7 @@ t/10-include.t
 t/11-value.t
 t/12-container.t
 t/14-container-value.t
+t/15-entities.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml
@@ -88,3 +89,4 @@ t/lists/params.t
 t/lists/separator.t
 t/targets/01-value.t
 t/targets/02-param.t
+t/test-twig.t
