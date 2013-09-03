@@ -59,7 +59,7 @@ and the following specification:
 
    <specification name="example" description="Example">
         <value name="customer_name" />
-        <value name="email" field="customer_email" />
+        <value name="email" class="customer_email" />
     </specification>
 
 Processing the above as follows:
