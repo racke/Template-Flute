@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0065 
+      
+    [DOCUMENTATION]
+
+    * Fix wrong specification in first example of the description 
+      (GH #12, Grega Pompe). 
+
 0.0064 Fri Aug 16 12:31:54 2013 CEST
 
     [BUG FIXES]
