@@ -2,6 +2,7 @@ package Template::Flute;
 
 use strict;
 use warnings;
+use Dancer ':syntax';
 
 use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
@@ -329,6 +330,7 @@ sub _bootstrap_specification {
 	my ($name, $iter);
 	
 	while (($name, $iter) = each %{$self->{iterators}}) {
+		debug "bootstrap spec $name iterator";
 		$self->{specification}->set_iterator($name, $iter);
 	}
 	
@@ -369,6 +371,7 @@ Returns HTML output.
 =cut
 
 sub process {
+	debug "-----------------------Flute Process-----------------------------------";
 	my ($self, $params) = @_;
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 
@@ -395,311 +398,10 @@ sub process {
 		    }
 		}
 	}
-	
-	# determine database queries
+
+	# List
 	for my $list ($self->{template}->lists()) {
-		my $name;
-		
-		# check for (required) input
-		unless ($list->input($params)) {
-			die "Input missing for " . $list->name . "\n";
-		}
-
-		unless ($iter = $list->iterator()) {
-			if ($name = $list->iterator('name')) {
-				# resolve iterator name to object
-				if ($iter = $self->{specification}->iterator($name)) {
-					$list->set_iterator($iter);
-				}
-				elsif (exists $self->{iterators}->{$name}) {
-					# iterator name from method parameters
-					$iter = $list->set_iterator($self->{iterators}->{$name});
-				}
-				elsif ($self->{auto_iterators}) {
-					if (ref($self->{values}->{$name}) eq 'ARRAY') {
-						$iter = Template::Flute::Iterator->new($self->{values}->{$name});
-					}
-					else {
-						$iter = Template::Flute::Iterator->new([]);
-					}
-					$list->set_iterator($iter);
-				}
-				else {
-					die "Missing iterator object for list " . $list->name . " and iterator name $name";
-				}
-			}
-			elsif ($self->{database}) {
-				if ($query = $list->query()) {
-					$iter = $self->{database}->build($query);
-					$iter->run();
-				}
-				else {
-					die "List " . $list->name . " without iterator and database query.\n";
-				}
-			}
-			else {
-				die "List " . $list->name . " without iterator and database object.\n";
-			}
-		}
-		
-		# process template
-		$lel = $list->elt();
-
-		if ($lel->is_last_child()) {			
-			%paste_pos = (last_child => $lel->parent());
-		}
-		elsif ($lel->next_sibling()) {
-			%paste_pos = (before => $lel->next_sibling());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $self->{template}->{xml});
-		}
-		
-		$lel->cut();
-
-		my ($row, $sep_copy, $list_elt);
-		my $row_pos = 0;
-        
-		my ($level_last, $level_val, @level_elts, @siblings, @level_stack);
-        $level_last = 0;
-        my $level_collect_sub;
-        
-        if ($list->{sob}->{level}) {
-            # prepare function for flat trees
-            $level_collect_sub = sub {
-                my ($record, $list_elt) = @_;
-                
-                # register as sibling
-                if ($record) {
-                    $level_val =  $row->{$list->{sob}->{level}} || 0;
-                    push (@{$siblings[$level_val]}, $list_elt);
-                }
-                else {
-                    $level_val = 0;
-                }
-                
-                if ($level_val < $level_last) {
-                    # fill stack for tree manipulations
-                    for my $ll ($level_last - 1 .. $level_val) {
-                        unshift (@level_stack,
-                                 {parent => $level_elts[$ll],
-                                  children => [@{$siblings[$ll+1]}],
-                                 });
-                            
-                        $siblings[$ll+1] = [];
-                    }
-                }
-
-                if ($record) {
-                    $level_elts[$level_val] = $list_elt;
-                    $level_last = $level_val;
-                }
-            };
-        }
-
-        if ($list->{paging}) {
-            # turn iterator into paginator
-            my $page_size = $list->{paging}->{page_size} || 20;
-
-            $iter = Template::Flute::Paginator->new(iterator => $iter,
-                                                    page_size => $page_size);
-
-            if ($iter->pages > 1) {
-                my ($element_orig, $element_copy, %element_pos, $element_link,
-                    $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
-
-                $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
-                $paging_link = $self->{values}->{$list->{paging}->{link_value}};
-
-                $slide_length = $list->{paging}->{slide_length};
-
-                $paging_min = 1;
-                $paging_max = $iter->pages;
-
-                if ($slide_length > 0) {
-                    # determine the page numbers to show up
-                    if ($iter->pages > $slide_length) {
-                        $paging_min = int($paging_page - $slide_length / 2);
-
-                        if ($paging_min < 1) {
-                            $paging_min = 1;
-                        }
-
-                        $paging_max = $paging_min + $slide_length - 1;
-                    }
-                }
-
-                $iter->select_page($paging_page);
-
-                for my $type (qw/first previous next last active standard/) {
-                    if ($element = $list->{paging}->{elements}->{$type}) {
-                        $element_orig = shift @{$element->{elts}};
-                        next unless $element_orig;
-
-                        # cut any other elements
-                        for my $sf (@{$element->{elts}}) {
-                            $sf->cut;
-                        }
-                    }
-                    else {
-                        next;
-                    }
-
-                    if ($element_orig->is_last_child()) {			
-                        %element_pos = (last_child => $element_orig->parent());
-                    }
-                    elsif ($element_orig->next_sibling()) {
-                        %element_pos = (before => $element_orig->next_sibling());
-                    }
-                    else {
-                        die "Neither last child nor next sibling.";
-                    }
-                   
-                    if ($element->{type} eq 'active') {
-                        $element_active = $element_orig;
-                    }
-                    elsif ($element->{type} eq 'standard') {
-                        for (1 .. $iter->pages) {
-                            next if $_ < $paging_min || $_ > $paging_max;
-
-                            if ($_ == $paging_page) {
-                                # Move active element here
-                                if ($element_active->{"flute_active"}->{rep_elt}) {
-                                    $element_active->{"flute_active"}->{rep_elt}->set_text($_);
-                                }
-                                else {
-                                    $element_active->set_text($_);
-                                }
-
-                                $element_copy = $element_active->cut;
-                                $element_copy->paste(%element_pos);
-                                next;
-                            }
-
-                            # Adjust text
-                            if ($element_orig->{"flute_$element->{name}"}->{rep_elt}) {
-                                $element_orig->{"flute_$element->{name}"}->{rep_elt}->set_text($_);
-                            }
-                            else {
-                                $element_orig->set_text($_);
-                            }
-
-                            # Adjust link
-                            if ($element_link = $element_orig->first_descendant('a')) {
-                                $self->_paging_link($element_link, $paging_link, $_);
-                            }
-
-                            # Copy HTML element
-                            $element_copy = $element_orig->copy;
-                            $element_copy->paste(%element_pos);
-                        }
-
-                        $element_orig->cut;
-                    }
-                    elsif ($element->{type} eq 'first') {
-                        if ($paging_page > 1) {
-                            # Adjust link
-                            if ($element_link = $element_orig->first_descendant('a')) {
-                                $self->_paging_link($element_link, $paging_link, 1);
-                            }
-                        }
-                        else {
-                            $element_orig->cut;
-                        }
-                    }
-                    elsif ($element->{type} eq 'last') {
-                        if ($paging_page < $iter->pages) {
-                            # Adjust link
-                            if ($element_link = $element_orig->first_descendant('a')) {
-                                $self->_paging_link($element_link, $paging_link, $iter->pages);
-                            }
-                        }
-                        else {
-                            $element_orig->cut;
-                        }
-                    }
-                    elsif ($element->{type} eq 'next') {
-                        if ($paging_page < $iter->pages) {
-                            # Adjust link
-                            if ($element_link = $element_orig->first_descendant('a')) {
-                                $self->_paging_link($element_link, $paging_link, $paging_page + 1);
-                            }
-                        }
-                        else {
-                            $element_orig->cut;
-                        }
-                    }
-                    elsif ($element->{type} eq 'previous') {
-                        if ($paging_page > 1) {
-                            # Adjust link
-                            if ($element_link = $element_orig->first_descendant('a')) {
-                                $self->_paging_link($element_link, $paging_link, $paging_page - 1);
-                            }
-                        }
-                        else {
-                            $element_orig->cut;
-                        }
-                    }
-                }
-            }
-            else {
-                # remove paging area
-                for my $paging_elt (@{$list->{paging}->{elts}}) {
-                    $paging_elt->cut;
-                }
-            }
-        }
-
-		while ($row = $iter->next()) {
-			if ($row = $list->filter($self, $row)) {
-				$list_elt = $self->_replace_record($list, 'list', $lel, \%paste_pos, $row, $row_pos);
-
-                if ($list->{sob}->{level}) {
-                    $level_collect_sub->($row, $list_elt);
-                } 
-
-       		$row_pos++;
-
-				$list->increment();
-
-				if ($list->separators()) {
-				    for my $sep (@{$list->separators}) {
-					for my $elt (@{$sep->{elts}}) {
-					    $sep_copy = $elt->copy();
-					    $sep_copy->paste(%paste_pos);
-					}
-				    }
-				}
-			}
-		}
-
-		if ($sep_copy) {
-		    # remove last separator and original one(s) in the template
-		    $sep_copy->cut();
-		    
-		    for my $sep (@{$list->separators}) {
-			for my $elt (@{$sep->{elts}}) {
-			    $elt->cut();
-			}
-		    }
-		}
-
-        # collect last element
-        if ($list->{sob}->{level}) {
-            $level_collect_sub->();
-
-            for my $lref (@level_stack) {
-                # create <ul> element and move inferior elements
-                my $ul = $lref->{parent}->insert_new_elt('last_child', 'ul');
-
-                for my $cref (@{$lref->{children}}) {
-                    $cref->move(last_child => $ul);
-                }
-            }
-        }
-
-        
+		$self->_process_list($list, $params);
 	}
 
 	for my $form ($self->{template}->forms()) {
@@ -734,10 +436,10 @@ sub process {
 		if (keys(%{$form->inputs()}) && $form->input()) {
 			$iter = $dbobj->build($form->query());
 
-			$self->_replace_record($form, 'form', $lel, \%paste_pos, $iter->next());
+			$self->_replace_records($form, 'form', $lel, \%paste_pos, $iter->next());
 		}		
 		else {
-			$self->_replace_record($form, 'form', $lel, \%paste_pos, {});
+			$self->_replace_records($form, 'form', $lel, \%paste_pos, {});
 		}
 	}
 
@@ -774,7 +476,6 @@ sub _paging_link {
 sub _replace_within_elts {
 	my ($self, $param, $rep_str, $elt_handler) = @_;
 	my ($name, $zref);
-
 	for my $elt (@{$param->{elts}}) {
 	    if ($elt_handler) {
 		$elt_handler->($elt, $rep_str);
@@ -851,16 +552,120 @@ sub process_template {
 	return $self->{template};
 }
 
-sub _replace_record {
+sub _replace_records {
 	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt, $elt_handler);
-
+	my ($att_val, $class_alt);
 	# now fill in params
-	for $param (@{$container->params}) {
+	for my $param (@{$container->params}) {
+		$self->_replace_record($param, $record);
+	}
+			
+	# now add to the template
+	my $subtree = $lel->copy();
+
+	# alternate classes?
+	if ($type eq 'list'
+		&& ($class_alt = $container->static_class($row_pos))) {
+	    if ($att_val = $subtree->att('class')) {
+		$subtree->set_att('class', "$att_val $class_alt");
+	    }
+	    else {
+		$subtree->set_att('class', $class_alt);	    
+	    }
+	}
+
+	$subtree->paste(%$paste_pos);
+    return $subtree;
+}
+
+
+sub _replace_record {
+	my ($self, $param, $record) = @_;
+	my ($key, $filter, $rep_str, $att_name, $att_spec,
+		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, @elts);
+	
+	### NEW
+		
+		my $value = $param;
+		@elts = @{$value->{elts}};
+        $elt_handler = undef;
+        # check if we need an iterator for this value
+    	if ($self->{auto_iterators} && $value->{iterator}) {
+            my ($iter_name, $iter);
+
+            $iter_name = $value->{iterator};
+    		debug "We need iteartor $iter_name";
+
+            unless ($self->{specification}->iterator($iter_name)) {
+            	
+            	## PROCESS ITERATOR HERE
+            	
+                if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+                    $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                }
+                else {
+                    $iter = Template::Flute::Iterator->new([]);
+                }
+
+                $self->{specification}->set_iterator($iter_name, $iter);
+            }
+        }
+
+		# determine value used for replacements
+		($raw, $rep_str) = $self->value($value);
 		$key = $param->{name};
-				
-		$rep_str = $record->{$param->{field} || $key};
+		$rep_str = $record->{$param->{field} || $key} unless $rep_str;
+
+		if (exists $value->{op}) {
+            if ($value->{op} eq 'append' && ! $value->{target}) {
+                $elt_handler = sub {
+                    my ($elt, $str) = @_;
+
+                    $elt->set_text($elt->text_only . $str);
+                };
+            }
+		    elsif ($value->{op} eq 'toggle') {
+                if (exists $value->{args} && $value->{args} eq 'static') {
+                    if ($rep_str) {
+                        # preserve static text
+                        #return;
+                    }
+                }
+                elsif ($rep_str) {
+                    for my $elt (@elts) {
+                        $elt->set_text($rep_str);
+                        #return;
+                    }
+                }
+
+                unless ($raw) {
+                    # remove corresponding HTML elements from tree
+                    for my $elt (@elts) {
+                        $elt->cut();
+                    }
+                    #return;
+                }
+		    }
+		    elsif ($value->{op} eq 'hook') {
+                for my $elt (@elts) {
+                    Template::Flute::HTML::hook_html($elt, $rep_str);
+                }
+                #return;
+		    }
+		    elsif (ref($value->{op}) eq 'CODE') {
+                $elt_handler = $value->{op};
+		    }
+		}
+
+		unless (defined $rep_str) {
+			$rep_str = '';
+		}
+		
+		
+		### NEW
+		
+		### OLD
+		
 
 		if ($param->{increment}) {
 			$rep_str = $param->{increment}->value();
@@ -886,6 +691,10 @@ sub _replace_record {
 		unless (defined $rep_str) {
 			$rep_str = '';
 		}
+		
+		### OLD
+		
+		
 
 		if (ref($param->{op}) eq 'CODE') {
 		    $self->_replace_within_elts($param, $rep_str, $param->{op});
@@ -893,24 +702,6 @@ sub _replace_record {
 		else {
 		    $self->_replace_within_elts($param, $rep_str);
 		}
-	}
-			
-	# now add to the template
-	my $subtree = $lel->copy();
-
-	# alternate classes?
-	if ($type eq 'list'
-		&& ($class_alt = $container->static_class($row_pos))) {
-	    if ($att_val = $subtree->att('class')) {
-		$subtree->set_att('class', "$att_val $class_alt");
-	    }
-	    else {
-		$subtree->set_att('class', $class_alt);	    
-	    }
-	}
-
-	$subtree->paste(%$paste_pos);
-    return $subtree;
 }
 
 =head2 filter ELEMENT VALUE
@@ -1066,82 +857,10 @@ sub value {
 
 sub _replace_values {
 	my ($self) = @_;
-	my ($value, $raw, $rep_str, @elts, $elt_handler);
 
 	for my $value ($self->{template}->values()) {
-		@elts = @{$value->{elts}};
-        $elt_handler = undef;
-
-        # check if we need an iterator for this value
-    	if ($self->{auto_iterators} && $value->{iterator}) {
-            my ($iter_name, $iter);
-
-            $iter_name = $value->{iterator};
-
-            unless ($self->{specification}->iterator($iter_name)) {
-                if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
-                    $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
-                }
-                else {
-                    $iter = Template::Flute::Iterator->new([]);
-                }
-
-                $self->{specification}->set_iterator($iter_name, $iter);
-            }
-        }
-
-		# determine value used for replacements
-		($raw, $rep_str) = $self->value($value);
-
-		if (exists $value->{op}) {
-            if ($value->{op} eq 'append' && ! $value->{target}) {
-                $elt_handler = sub {
-                    my ($elt, $str) = @_;
-
-                    $elt->set_text($elt->text_only . $str);
-                };
-            }
-		    elsif ($value->{op} eq 'toggle') {
-                if (exists $value->{args} && $value->{args} eq 'static') {
-                    if ($rep_str) {
-                        # preserve static text
-                        next;
-                    }
-                }
-                elsif ($rep_str) {
-                    for my $elt (@elts) {
-                        $elt->set_text($rep_str);
-                        next;
-                    }
-                }
-
-                unless ($raw) {
-                    # remove corresponding HTML elements from tree
-                    for my $elt (@elts) {
-                        $elt->cut();
-                    }
-                    next;
-                }
-		    }
-		    elsif ($value->{op} eq 'hook') {
-                for my $elt (@elts) {
-                    Template::Flute::HTML::hook_html($elt, $rep_str);
-                }
-                next;
-		    }
-		    elsif (ref($value->{op}) eq 'CODE') {
-                $elt_handler = $value->{op};
-		    }
-		}
-		else {
-			$rep_str = $self->value($value);
-		}
-
-		unless (defined $rep_str) {
-			$rep_str = '';
-		}
-
-		$self->_replace_within_elts($value, $rep_str, $elt_handler);
+		$self->_replace_record($value);
+		#$self->_replace_value($value);
 	}
 }
 
@@ -1640,5 +1359,309 @@ by the Free Software Foundation; or the Artistic License.
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
+
+sub _process_list {
+		my ($self, $list, $params) = @_;
+		my ($name, $iter, $query, $lel, %paste_pos);
+		# check for (required) input
+		unless ($list->input($params)) {
+			die "Input missing for " . $list->name . "\n";
+		}
+
+		unless ($iter = $list->iterator()) {
+			if ($name = $list->iterator('name')) {
+				# resolve iterator name to object
+				if ($iter = $self->{specification}->iterator($name)) {
+					$list->set_iterator($iter);
+				}
+				elsif (exists $self->{iterators}->{$name}) {
+					# iterator name from method parameters
+					$iter = $list->set_iterator($self->{iterators}->{$name});
+				}
+				elsif ($self->{auto_iterators}) {
+					if (ref($self->{values}->{$name}) eq 'ARRAY') {
+						$iter = Template::Flute::Iterator->new($self->{values}->{$name});
+					}
+					else {
+						$iter = Template::Flute::Iterator->new([]);
+					}
+					$list->set_iterator($iter);
+				}
+				else {
+					die "Missing iterator object for list " . $list->name . " and iterator name $name";
+				}
+			}
+			elsif ($self->{database}) {
+				if ($query = $list->query()) {
+					$iter = $self->{database}->build($query);
+					$iter->run();
+				}
+				else {
+					die "List " . $list->name . " without iterator and database query.\n";
+				}
+			}
+			else {
+				die "List " . $list->name . " without iterator and database object.\n";
+			}
+		}
+		
+		# process template
+		$lel = $list->elt();
+
+		if ($lel->is_last_child()) {			
+			%paste_pos = (last_child => $lel->parent());
+		}
+		elsif ($lel->next_sibling()) {
+			%paste_pos = (before => $lel->next_sibling());
+		}
+		else {
+			# list is root element in the template
+			%paste_pos = (last_child => $self->{template}->{xml});
+		}
+		
+		$lel->cut();
+
+		my ($row, $sep_copy, $list_elt);
+		my $row_pos = 0;
+        
+		my ($level_last, $level_val, @level_elts, @siblings, @level_stack);
+        $level_last = 0;
+        my $level_collect_sub;
+        
+        if ($list->{sob}->{level}) {
+            # prepare function for flat trees
+            $level_collect_sub = sub {
+                my ($record, $list_elt) = @_;
+                
+                # register as sibling
+                if ($record) {
+                    $level_val =  $row->{$list->{sob}->{level}} || 0;
+                    push (@{$siblings[$level_val]}, $list_elt);
+                }
+                else {
+                    $level_val = 0;
+                }
+                
+                if ($level_val < $level_last) {
+                    # fill stack for tree manipulations
+                    for my $ll ($level_last - 1 .. $level_val) {
+                        unshift (@level_stack,
+                                 {parent => $level_elts[$ll],
+                                  children => [@{$siblings[$ll+1]}],
+                                 });
+                            
+                        $siblings[$ll+1] = [];
+                    }
+                }
+
+                if ($record) {
+                    $level_elts[$level_val] = $list_elt;
+                    $level_last = $level_val;
+                }
+            };
+        }
+
+        if ($list->{paging}) {
+            # turn iterator into paginator
+            my $page_size = $list->{paging}->{page_size} || 20;
+
+            $iter = Template::Flute::Paginator->new(iterator => $iter,
+                                                    page_size => $page_size);
+
+            if ($iter->pages > 1) {
+                my ($element_orig, $element_copy, %element_pos, $element_link,
+                    $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
+
+                $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
+                $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+
+                $slide_length = $list->{paging}->{slide_length};
+
+                $paging_min = 1;
+                $paging_max = $iter->pages;
+
+                if ($slide_length > 0) {
+                    # determine the page numbers to show up
+                    if ($iter->pages > $slide_length) {
+                        $paging_min = int($paging_page - $slide_length / 2);
+
+                        if ($paging_min < 1) {
+                            $paging_min = 1;
+                        }
+
+                        $paging_max = $paging_min + $slide_length - 1;
+                    }
+                }
+
+                $iter->select_page($paging_page);
+
+                for my $type (qw/first previous next last active standard/) {
+                    if ($element = $list->{paging}->{elements}->{$type}) {
+                        $element_orig = shift @{$element->{elts}};
+                        next unless $element_orig;
+
+                        # cut any other elements
+                        for my $sf (@{$element->{elts}}) {
+                            $sf->cut;
+                        }
+                    }
+                    else {
+                        next;
+                    }
+
+                    if ($element_orig->is_last_child()) {			
+                        %element_pos = (last_child => $element_orig->parent());
+                    }
+                    elsif ($element_orig->next_sibling()) {
+                        %element_pos = (before => $element_orig->next_sibling());
+                    }
+                    else {
+                        die "Neither last child nor next sibling.";
+                    }
+                   
+                    if ($element->{type} eq 'active') {
+                        $element_active = $element_orig;
+                    }
+                    elsif ($element->{type} eq 'standard') {
+                        for (1 .. $iter->pages) {
+                            next if $_ < $paging_min || $_ > $paging_max;
+
+                            if ($_ == $paging_page) {
+                                # Move active element here
+                                if ($element_active->{"flute_active"}->{rep_elt}) {
+                                    $element_active->{"flute_active"}->{rep_elt}->set_text($_);
+                                }
+                                else {
+                                    $element_active->set_text($_);
+                                }
+
+                                $element_copy = $element_active->cut;
+                                $element_copy->paste(%element_pos);
+                                next;
+                            }
+
+                            # Adjust text
+                            if ($element_orig->{"flute_$element->{name}"}->{rep_elt}) {
+                                $element_orig->{"flute_$element->{name}"}->{rep_elt}->set_text($_);
+                            }
+                            else {
+                                $element_orig->set_text($_);
+                            }
+
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, $_);
+                            }
+
+                            # Copy HTML element
+                            $element_copy = $element_orig->copy;
+                            $element_copy->paste(%element_pos);
+                        }
+
+                        $element_orig->cut;
+                    }
+                    elsif ($element->{type} eq 'first') {
+                        if ($paging_page > 1) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, 1);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
+                    }
+                    elsif ($element->{type} eq 'last') {
+                        if ($paging_page < $iter->pages) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, $iter->pages);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
+                    }
+                    elsif ($element->{type} eq 'next') {
+                        if ($paging_page < $iter->pages) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, $paging_page + 1);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
+                    }
+                    elsif ($element->{type} eq 'previous') {
+                        if ($paging_page > 1) {
+                            # Adjust link
+                            if ($element_link = $element_orig->first_descendant('a')) {
+                                $self->_paging_link($element_link, $paging_link, $paging_page - 1);
+                            }
+                        }
+                        else {
+                            $element_orig->cut;
+                        }
+                    }
+                }
+            }
+            else {
+                # remove paging area
+                for my $paging_elt (@{$list->{paging}->{elts}}) {
+                    $paging_elt->cut;
+                }
+            }
+        }
+
+		while ($row = $iter->next()) {
+			if ($row = $list->filter($self, $row)) {
+				$list_elt = $self->_replace_records($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+
+                if ($list->{sob}->{level}) {
+                    $level_collect_sub->($row, $list_elt);
+                } 
+
+       		$row_pos++;
+
+				$list->increment();
+
+				if ($list->separators()) {
+				    for my $sep (@{$list->separators}) {
+					for my $elt (@{$sep->{elts}}) {
+					    $sep_copy = $elt->copy();
+					    $sep_copy->paste(%paste_pos);
+					}
+				    }
+				}
+			}
+		}
+
+		if ($sep_copy) {
+		    # remove last separator and original one(s) in the template
+		    $sep_copy->cut();
+		    
+		    for my $sep (@{$list->separators}) {
+			for my $elt (@{$sep->{elts}}) {
+			    $elt->cut();
+			}
+		    }
+		}
+
+        # collect last element
+        if ($list->{sob}->{level}) {
+            $level_collect_sub->();
+
+            for my $lref (@level_stack) {
+                # create <ul> element and move inferior elements
+                my $ul = $lref->{parent}->insert_new_elt('last_child', 'ul');
+
+                for my $cref (@{$lref->{children}}) {
+                    $cref->move(last_child => $ul);
+                }
+            }
+        }
+	
+}
 
 1;
