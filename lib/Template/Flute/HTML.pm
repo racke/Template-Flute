@@ -660,6 +660,9 @@ sub _set_selected {
 			$elt->insert_new_elt('last_child', 'option',
 									 \%att, $text);
 		}
+
+        # reset iterator in case we use it multiple times
+        $iter->reset;
 	}
 	else {
 		for my $node (@children) {
