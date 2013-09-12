@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0064
+    Version 0.0065
 
 SYNOPSIS
         use Template::Flute;
@@ -41,7 +41,7 @@ DESCRIPTION
 
        <specification name="example" description="Example">
             <value name="customer_name" />
-            <value name="email" field="customer_email" />
+            <value name="email" class="customer_email" />
         </specification>
 
     Processing the above as follows:
@@ -300,6 +300,30 @@ SPECIFICATION
     sort
     i18n
 
+SIMPLE OPERATORS
+  append
+    Appends the value to the text inside a HTML element or to an attribute
+    if `target' has been specified. This can be used in `value' and `param'
+    specification elements.
+
+    The example shows how to add a HTML class to elements in a list:
+
+    HTML:
+
+        <ul class="nav-sub">
+            <li class="category"><a href="" class="catname">Medicine</a></li>
+        </ul>
+
+    XML:
+
+        <specification>
+            <list name="category" iterator="categories">
+                <param name="name" class="catname"/>
+                <param name="catname" field="uri" target="href"/>
+                <param name="css" class="catname" target="class" op="append" joiner=" "/>
+            </list>
+        </specification>
+
 CONDITIONALS
   Display image only if present
     In this example we want to show an image only on a certain condition:
@@ -546,6 +570,8 @@ SUPPORT
 ACKNOWLEDGEMENTS
     Thanks to David Previous (bigpresh) for writing a much clearer
     introduction for Template::Flute.
+
+    Thanks to Grega Pompe for a documentation fix.
 
     Thanks to Ton Verhagen for being a big supporter of my projects in all
     aspects.
