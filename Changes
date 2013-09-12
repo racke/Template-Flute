@@ -1,6 +1,10 @@
 Revision history for Template::Flute
 
-0.0065 
+0.0065 Thu Sep 12 21:44:47 2013 CEST 
+
+    [BUG FIXES]
+
+    * Reset iterator after using it for a dropdown to allow multiple elements sharing the same iterator.
       
     [DOCUMENTATION]
 
