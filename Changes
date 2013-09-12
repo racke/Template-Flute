@@ -11,12 +11,15 @@ Revision history for Template::Flute
 
     [BUG FIXES]
 
+    * Fix spurious joiner added regardless whether append value is empty or not.
     * Add support for auto_iterators to values.
 
     [TESTS]
 
     * Add tests for checkboxes.
-    * Add tests for HTML entities and XML::Twig version.
+    * Add tests for HTML entities and XML::Twig version (Marco Pessotto).
+    * Add test with nested <span> as param in a list.
+    * Add tests for append operations on value elements using joiner.
 
 0.0063 Wed Jun 12 14:57:48 2013 CEST
 
