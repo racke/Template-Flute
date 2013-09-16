@@ -384,8 +384,9 @@ sub process {
 		$self->{template}->translate($self->{i18n});
 	}
 
-	# replace simple values
-	$self->_replace_values();
+	# replace values
+	my @values = $self->{template}->values();
+	$self->_replace_records(\@values);
 
 	for my $container ($self->{template}->containers()) {
 		if (exists $self->{values}) {
@@ -400,9 +401,9 @@ sub process {
 	}
 
 	# List
-	for my $list ($self->{template}->lists()) {
-		$self->_process_list($list, $params);
-	}
+	#for my $list ($self->{template}->lists()) {
+	#	$self->_process_list($list, $params);
+	#}
 
 	for my $form ($self->{template}->forms()) {
 		$lel = $form->elt();
@@ -511,12 +512,7 @@ sub _replace_within_elts {
 			    else {
 				$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
 			    }
-			} elsif (exists $param->{op} && $param->{op} eq 'toggle') {
-				if ($rep_str) {
-					$elt->set_att($zref->{rep_att}, $rep_str);
-				} else {
-					$elt->del_att($zref->{rep_att});
-				}
+			
 			} else {
 				$elt->set_att($zref->{rep_att}, $rep_str);
 			}
@@ -524,14 +520,7 @@ sub _replace_within_elts {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
 		} else {
-            if (exists $param->{op} && $param->{op} eq 'toggle') {
-                unless ($rep_str) {
-                    $elt->cut;
-                }
-            }
-            else {
-                $elt->set_text($rep_str);
-            }
+        	$elt->set_text($rep_str);
 		}
 	}
 }
@@ -553,13 +542,16 @@ sub process_template {
 }
 
 sub _replace_records {
-	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($att_val, $class_alt);
+	my ($self, $records, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
+	my ($att_val, $class_alt, @values);
 	# now fill in params
-	for my $param (@{$container->params}) {
+	for my $param (@$records) {
+		$param->{value} = $record->{$param->{name}} if $record;
 		$self->_replace_record($param, $record);
 	}
-			
+	
+	# Return complex element
+	return unless $lel;
 	# now add to the template
 	my $subtree = $lel->copy();
 
@@ -580,13 +572,18 @@ sub _replace_records {
 
 
 sub _replace_record {
-	my ($self, $param, $record) = @_;
+	my ($self, $value, $record) = @_;
 	my ($key, $filter, $rep_str, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, @elts);
 	
 	### NEW
+		return unless $value;
+		return if $value->{array};
+		if ($value->{iterator} ) { #Its list!
+			$self->_process_list($value);
+			return;
+		} 
 		
-		my $value = $param;
 		@elts = @{$value->{elts}};
         $elt_handler = undef;
         # check if we need an iterator for this value
@@ -594,11 +591,11 @@ sub _replace_record {
             my ($iter_name, $iter);
 
             $iter_name = $value->{iterator};
-    		debug "We need iteartor $iter_name";
+    		debug "We need iterator $iter_name";
 
             unless ($self->{specification}->iterator($iter_name)) {
             	
-            	## PROCESS ITERATOR HERE
+            	## PROCESS ITERATOR HERE ($self, $list, $params, $values)
             	
                 if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
                     $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
@@ -612,28 +609,29 @@ sub _replace_record {
         }
 
 		# determine value used for replacements
-		($raw, $rep_str) = $self->value($value);
-		$key = $param->{name};
-		$rep_str = $record->{$param->{field} || $key} unless $rep_str;
+		$rep_str = $self->value($value);
+		$key = $value->{name};
+		$rep_str = $value->{value} unless defined $rep_str;
+		$raw = $rep_str;
 
 		if (exists $value->{op}) {
-            if ($value->{op} eq 'append' && ! $value->{target}) {
+            if ($value->{op} eq 'append' && ! $value->{target}) { 
                 $elt_handler = sub {
                     my ($elt, $str) = @_;
-
+					my $text = $elt->text_only;
                     $elt->set_text($elt->text_only . $str);
                 };
             }
 		    elsif ($value->{op} eq 'toggle') {
                 if (exists $value->{args} && $value->{args} eq 'static') {
                     if ($rep_str) {
-                        # preserve static text
-                        #return;
+                        # preserve static text, like a container
+                        return;
                     }
                 }
                 elsif ($rep_str) {
                     for my $elt (@elts) {
-                        $elt->set_text($rep_str);
+                        #$elt->set_text($rep_str);
                         #return;
                     }
                 }
@@ -643,7 +641,7 @@ sub _replace_record {
                     for my $elt (@elts) {
                         $elt->cut();
                     }
-                    #return;
+                    return;
                 }
 		    }
 		    elsif ($value->{op} eq 'hook') {
@@ -667,25 +665,18 @@ sub _replace_record {
 		### OLD
 		
 
-		if ($param->{increment}) {
-			$rep_str = $param->{increment}->value();
+		if ($value->{increment}) {
+			$rep_str = $value->{increment}->value();
 		}
+		
+		# TODO: Check what is that?		
+		#if ($value->{subref}) {
+		#	$rep_str = $value->{subref}->($record);
+		#}
 				
-		if ($param->{subref}) {
-			$rep_str = $param->{subref}->($record);
-		}
-				
-		if ($param->{value}) {
-		    if ($rep_str) {
-			$rep_str = $param->{value};
-		    }
-		    else {
-			$rep_str = '';
-		    }
-		}
 
-		if ($param->{filter}) {
-			$rep_str = $self->filter($param, $rep_str);
+		if ($value->{filter}) {
+			$rep_str = $self->filter($value, $rep_str);
 		}
 
 		unless (defined $rep_str) {
@@ -696,11 +687,11 @@ sub _replace_record {
 		
 		
 
-		if (ref($param->{op}) eq 'CODE') {
-		    $self->_replace_within_elts($param, $rep_str, $param->{op});
+		if (ref($value->{op}) eq 'CODE') {
+		    $self->_replace_within_elts($value, $rep_str, $value->{op});
 		}
 		else {
-		    $self->_replace_within_elts($param, $rep_str);
+		    $self->_replace_within_elts($value, $rep_str, $elt_handler);
 		}
 }
 
@@ -853,15 +844,6 @@ sub value {
 	}
 	
 	return $rep_str;
-}
-
-sub _replace_values {
-	my ($self) = @_;
-
-	for my $value ($self->{template}->values()) {
-		$self->_replace_record($value);
-		#$self->_replace_value($value);
-	}
 }
 
 =head2 set_values HASHREF
@@ -1361,12 +1343,14 @@ See http://dev.perl.org/licenses/ for more information.
 =cut
 
 sub _process_list {
-		my ($self, $list, $params) = @_;
+		my ($self, $list, $params, $values) = @_;
 		my ($name, $iter, $query, $lel, %paste_pos);
 		# check for (required) input
 		unless ($list->input($params)) {
 			die "Input missing for " . $list->name . "\n";
 		}
+		
+		$values ||= $self->{values};
 
 		unless ($iter = $list->iterator()) {
 			if ($name = $list->iterator('name')) {
@@ -1379,8 +1363,8 @@ sub _process_list {
 					$iter = $list->set_iterator($self->{iterators}->{$name});
 				}
 				elsif ($self->{auto_iterators}) {
-					if (ref($self->{values}->{$name}) eq 'ARRAY') {
-						$iter = Template::Flute::Iterator->new($self->{values}->{$name});
+					if (ref($values->{$name}) eq 'ARRAY') {
+						$iter = Template::Flute::Iterator->new($values->{$name});
 					}
 					else {
 						$iter = Template::Flute::Iterator->new([]);
@@ -1472,8 +1456,8 @@ sub _process_list {
                 my ($element_orig, $element_copy, %element_pos, $element_link,
                     $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
-                $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
-                $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+                $paging_page = $values->{$list->{paging}->{page_value}}  || 1;
+                $paging_link = $values->{$list->{paging}->{link_value}};
 
                 $slide_length = $list->{paging}->{slide_length};
 
@@ -1616,7 +1600,7 @@ sub _process_list {
 
 		while ($row = $iter->next()) {
 			if ($row = $list->filter($self, $row)) {
-				$list_elt = $self->_replace_records($list, 'list', $lel, \%paste_pos, $row, $row_pos);
+				$list_elt = $self->_replace_records($list->params, $list, 'list', $lel, \%paste_pos, $row, $row_pos);
 
                 if ($list->{sob}->{level}) {
                     $level_collect_sub->($row, $list_elt);
