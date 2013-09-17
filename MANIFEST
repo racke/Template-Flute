@@ -84,6 +84,7 @@ t/iterators/01-simple.t
 t/iterators/20-json.t
 t/iterators/paginator.t
 t/lists/alternate-classes.t
+t/lists/append.t
 t/lists/increments.t
 t/lists/params.t
 t/lists/separator.t
