@@ -1,5 +1,19 @@
 Revision history for Template::Flute
 
+0.0066 Tue Sep 17 09:35:22 2013 CEST
+
+    [BUG FIXES]
+
+    * Fix append operation on element text within lists.
+
+    [DOCUMENTATION]
+
+    * Add section about "Simple operators" to the documentation.
+
+    [TESTS]
+
+    * Add test for append operation on element text within lists.
+
 0.0065 Thu Sep 12 21:44:47 2013 CEST 
 
     [BUG FIXES]
