@@ -373,7 +373,7 @@ Returns HTML output.
 sub process {
 	debug "-----------------------Flute Process-----------------------------------";
 	my ($self, $params) = @_;
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
+	
 
 	unless ($self->{template}) {
 		$self->_bootstrap();
@@ -384,14 +384,75 @@ sub process {
 		$self->{template}->translate($self->{i18n});
 	}
 
-	# replace values
-	my @values = $self->{template}->values();
-	$self->_replace_records(\@values);
+	my $html = _sub_process($self->{template}, $self->{template}->{xml}, $self->{specification}->{'classes'}, $self->{specification}->{xml}->root, $self->{'values'});
+	return $html->sprint;
+}
 
-	for my $container ($self->{template}->containers()) {
-		if (exists $self->{values}) {
-			$container->set_values($self->{values});
+sub _sub_process {
+	my ($template, $html, $classes, $spec_xml,  $values) = @_;
+	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
+	# replace values
+	
+	for my $elt ( $spec_xml->children() ){
+		my $spec_name = $elt->{'att'}->{'name'};
+		my $type = $elt->tag;
+		
+		# List
+		if( $type eq 'list' ){
+			my $iterator = $elt->{'att'}->{'iterator'};
+			
+			my $sub_spec = $elt->copy();
+			my $element_template = $classes->{$spec_name}->[0]->{elts}->[0];
+			
+			if ($element_template->is_last_child()) {			
+				%paste_pos = (last_child => $element_template->parent());
+			}
+			elsif ($element_template->next_sibling()) {
+				%paste_pos = (before => $element_template->next_sibling());
+			}
+			else {
+				# list is root element in the template
+				%paste_pos = (last_child => $html);
+			}
+			
+			my $records = $values->{$iterator};
+			next unless $records;
+			for my $record_values (@$records){
+				my $element = $element_template->copy();
+				_sub_process($template, $element, $classes, $sub_spec, $record_values);
+				debug $element->sprint;
+				$element->paste(%paste_pos);
+			}
+			$element_template->cut(); # Remove template element
 		}
+		
+		# Values
+		elsif( $type eq 'value' or $type eq 'param'){
+			
+			my $rep_str = $values->{$spec_name};
+			next unless $rep_str;
+		
+		
+			my $spec_clases = $classes->{$spec_name};
+			for my $spec_class (@$spec_clases){
+				_replace_record($spec_name, $rep_str, $spec_class);
+			}
+		};
+  	}
+	
+=as	
+	my @values = $template->values();
+	for my $spec_name (keys $specification->{'values'}){
+		my $rep_str = $values->{$spec_name};
+		next unless $rep_str;
+		my $spec_clases = $specification->{'classes'}->{$spec_name};
+		for my $spec_class (@$spec_clases){
+			_replace_record($spec_name, $rep_str, $spec_class);
+		}
+	}
+=cut
+	for my $container ($template->containers()) {
+		$container->set_values($values) if $values;
 		
 		unless ($container->visible()) {
 		    for my $elt (@{$container->elts()}) {
@@ -400,11 +461,7 @@ sub process {
 		}
 	}
 
-	# List
-	#for my $list ($self->{template}->lists()) {
-	#	$self->_process_list($list, $params);
-	#}
-
+=FORMS
 	for my $form ($self->{template}->forms()) {
 		$lel = $form->elt();
 
@@ -443,8 +500,10 @@ sub process {
 			$self->_replace_records($form, 'form', $lel, \%paste_pos, {});
 		}
 	}
+=cut
 
-	return $self->{template}->{xml}->sprint;
+	return $template->{xml};
+	
 }
 
 sub _paging_link {
@@ -475,7 +534,7 @@ sub _paging_link {
 }
 
 sub _replace_within_elts {
-	my ($self, $param, $rep_str, $elt_handler) = @_;
+	my ($param, $rep_str, $elt_handler) = @_;
 	my ($name, $zref);
 	for my $elt (@{$param->{elts}}) {
 	    if ($elt_handler) {
@@ -542,12 +601,12 @@ sub process_template {
 }
 
 sub _replace_records {
-	my ($self, $records, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
+	my ($records, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
 	my ($att_val, $class_alt, @values);
 	# now fill in params
 	for my $param (@$records) {
 		$param->{value} = $record->{$param->{name}} if $record;
-		$self->_replace_record($param, $record);
+		_replace_record($param, $record);
 	}
 	
 	# Return complex element
@@ -572,10 +631,10 @@ sub _replace_records {
 
 
 sub _replace_record {
-	my ($self, $value, $record) = @_;
-	my ($key, $filter, $rep_str, $att_name, $att_spec,
+	my ($name, $rep_str, $value) = @_;
+	my ($key, $filter, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, @elts);
-	
+=Iterators	
 	### NEW
 		return unless $value;
 		return if $value->{array};
@@ -607,20 +666,19 @@ sub _replace_record {
                 $self->{specification}->set_iterator($iter_name, $iter);
             }
         }
-
+=cut
 		# determine value used for replacements
-		$rep_str = $self->value($value);
-		$key = $value->{name};
-		$rep_str = $value->{value} unless defined $rep_str;
+		#$rep_str = $self->value($value);
 		$raw = $rep_str;
 
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 
-                $elt_handler = sub {
-                    my ($elt, $str) = @_;
-					my $text = $elt->text_only;
-                    $elt->set_text($elt->text_only . $str);
-                };
+                #$elt_handler = sub {
+                #    my ($elt, $str) = @_;
+				#	my $text = $elt->text_only;
+                #    $elt->set_text($elt->text_only . $str);
+                #};
+                $rep_str = $value->{elts}->[0]->text_only.$rep_str;
             }
 		    elsif ($value->{op} eq 'toggle') {
                 if (exists $value->{args} && $value->{args} eq 'static') {
@@ -654,10 +712,6 @@ sub _replace_record {
                 $elt_handler = $value->{op};
 		    }
 		}
-
-		unless (defined $rep_str) {
-			$rep_str = '';
-		}
 		
 		
 		### NEW
@@ -675,9 +729,9 @@ sub _replace_record {
 		#}
 				
 
-		if ($value->{filter}) {
-			$rep_str = $self->filter($value, $rep_str);
-		}
+		#if ($value->{filter}) {
+		#	$rep_str = $self->filter($value, $rep_str);
+		#}
 
 		unless (defined $rep_str) {
 			$rep_str = '';
@@ -688,10 +742,10 @@ sub _replace_record {
 		
 
 		if (ref($value->{op}) eq 'CODE') {
-		    $self->_replace_within_elts($value, $rep_str, $value->{op});
+		    _replace_within_elts($value, $rep_str, $value->{op});
 		}
 		else {
-		    $self->_replace_within_elts($value, $rep_str, $elt_handler);
+		    _replace_within_elts($value, $rep_str, $elt_handler);
 		}
 }
 
