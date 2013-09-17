@@ -83,6 +83,7 @@ t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
 t/iterators/paginator.t
+t/lists/append.t
 t/lists/increments.t
 t/lists/object.t
 t/lists/params.t
