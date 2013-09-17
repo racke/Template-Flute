@@ -579,6 +579,14 @@ sub _elt_indicate_replacements {
 			$elt->{"flute_$name"}->{rep_sub} = \&hook_html;
 			return;
 		}
+        elsif ($sob->{op} eq 'append' && ! $sob->{target}) {
+            $elt->{"flute_$name"}->{rep_text_orig} = $elt->text_only;
+            $elt->{"flute_$name"}->{rep_sub} = sub {
+                my ($elt, $str) = @_;
+
+                $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $str);
+            };
+        }
         elsif ($sob->{op} eq 'toggle' && exists $sob->{args}
                && $sob->{args} eq 'tree') {
             $elt->{"flute_$name"}->{rep_sub} = sub {
