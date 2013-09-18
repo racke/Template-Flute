@@ -391,7 +391,8 @@ sub process {
 		$self->{'values'},
 		$self->{specification}, 
 		);
-	return $html->sprint;
+	my $shtml = $html->sprint;
+	return $shtml;
 }
 
 sub _sub_process {
@@ -408,6 +409,7 @@ sub _sub_process {
 	for my $elt ( $spec_xml->children() ){
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
+		my $spec_id = $elt->{'att'}->{'id'};
 		my $type = $elt->tag;
 		
 		# List
@@ -429,7 +431,7 @@ sub _sub_process {
 			}
 			
 			my $records = $values->{$iterator};
-			next unless $records;
+			
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
 				$element = _sub_process($template, $element, $sub_spec, $record_values, $specification);
@@ -448,23 +450,23 @@ sub _sub_process {
 			#next unless $rep_str;
 		
 		
-			my $spec_clases = $specification->{classes}->{$spec_class};
+			# Use CLASS or ID if set
+			my $spec_clases = [];
+			if ($spec_id){
+				$spec_clases = $specification->{ids}->{$spec_id};
+			}
+			else {
+				$spec_clases = $specification->{classes}->{$spec_class};
+			}
+			
 			for my $spec_class (@$spec_clases){
 				_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
 			}
 		};
   	}
 	
-=as	
-	my @values = $template->values();
-	for my $spec_name (keys $specification->{'values'}){
-		my $rep_str = $values->{$spec_name};
-		next unless $rep_str;
-		my $spec_clases = $specification->{'classes'}->{$spec_name};
-		for my $spec_class (@$spec_clases){
-			_replace_record($spec_name, $rep_str, $spec_class);
-		}
-	}
+
+	
 	for my $container ($template->containers()) {
 		$container->set_values($values) if $values;
 		
@@ -474,7 +476,7 @@ sub _sub_process {
 		    }
 		}
 	}
-=cut
+
 
 =FORMS
 	for my $form ($self->{template}->forms()) {
@@ -685,7 +687,8 @@ sub _replace_record {
 		# determine value used for replacements
 		#$rep_str = $self->value($value);
 		$raw = $rep_str;
-
+		$rep_str = '' unless $rep_str;
+		
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 
                 #$elt_handler = sub {
@@ -744,9 +747,10 @@ sub _replace_record {
 		#}
 				
 
-		#if ($value->{filter}) {
-		#	$rep_str = $self->filter($value, $rep_str);
-		#}
+		if ($value->{filter}) {
+			debug $value->{filter};
+			#$rep_str = $self->filter($value, $rep_str);
+		}
 
 		unless (defined $rep_str) {
 			$rep_str = '';
