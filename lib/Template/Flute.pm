@@ -384,12 +384,29 @@ sub process {
 		$self->{template}->translate($self->{i18n});
 	}
 
-	my $html = _sub_process($self->{template}, $self->{template}->{xml}, $self->{specification}->{'classes'}, $self->{specification}->{xml}->root, $self->{'values'});
+	my $html = _sub_process(
+		$self->{template}, 
+		$self->{template}->{xml}, 
+		$self->{specification}->{xml}->root, 
+		$self->{'values'},
+		$self->{specification}, 
+		);
 	return $html->sprint;
 }
 
 sub _sub_process {
-	my ($template, $html, $classes, $spec_xml,  $values) = @_;
+	my ($template, $html, $spec_xml,  $values, $specification_org) = @_;
+	
+	my $specification = $specification_org;
+	
+	$template = new Template::Flute::HTML;
+	$template->parse($html->sprint, $specification);
+	#my $template_elt = $template->first_elt;
+	#$specification = new Template::Flute::Specification::XML;
+	#$specification->parse($spec_xml->sprint);
+	#$specification = $specification->{spec};
+	#$specification->{xml} = $spec_xml;
+	
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	# replace values
 	
@@ -402,7 +419,7 @@ sub _sub_process {
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
 			my $sub_spec = $elt->copy();
-			my $element_template = $classes->{$spec_name}->[0]->{elts}->[0];
+			my $element_template = $specification->{classes}->{$spec_name}->[0]->{elts}->[0];
 			
 			if ($element_template->is_last_child()) {			
 				%paste_pos = (last_child => $element_template->parent());
@@ -419,11 +436,13 @@ sub _sub_process {
 			next unless $records;
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
-				_sub_process($template, $element, $classes, $sub_spec, $record_values);
+				$element = _sub_process($template, $element, $sub_spec, $record_values, $specification);
+				$element = $element->{twig_root};
 				debug $element->sprint;
 				$element->paste(%paste_pos);
 			}
 			$element_template->cut(); # Remove template element
+			
 		}
 		
 		# Values
@@ -433,9 +452,9 @@ sub _sub_process {
 			next unless $rep_str;
 		
 		
-			my $spec_clases = $classes->{$spec_name};
+			my $spec_clases = $specification->{classes}->{$spec_name};
 			for my $spec_class (@$spec_clases){
-				_replace_record($spec_name, $rep_str, $spec_class);
+				_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
 			}
 		};
   	}
@@ -450,7 +469,6 @@ sub _sub_process {
 			_replace_record($spec_name, $rep_str, $spec_class);
 		}
 	}
-=cut
 	for my $container ($template->containers()) {
 		$container->set_values($values) if $values;
 		
@@ -460,6 +478,7 @@ sub _sub_process {
 		    }
 		}
 	}
+=cut
 
 =FORMS
 	for my $form ($self->{template}->forms()) {
@@ -501,7 +520,7 @@ sub _sub_process {
 		}
 	}
 =cut
-
+	debug to_dumper $template->{xml}->sprint;
 	return $template->{xml};
 	
 }
@@ -534,9 +553,9 @@ sub _paging_link {
 }
 
 sub _replace_within_elts {
-	my ($param, $rep_str, $elt_handler) = @_;
+	my ($param, $rep_str, $elt_handler, $elts) = @_;
 	my ($name, $zref);
-	for my $elt (@{$param->{elts}}) {
+	for my $elt (@$elts) {
 	    if ($elt_handler) {
 		$elt_handler->($elt, $rep_str);
 		next;
@@ -631,7 +650,7 @@ sub _replace_records {
 
 
 sub _replace_record {
-	my ($name, $rep_str, $value) = @_;
+	my ($name, $rep_str, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, @elts);
 =Iterators	
@@ -742,10 +761,10 @@ sub _replace_record {
 		
 
 		if (ref($value->{op}) eq 'CODE') {
-		    _replace_within_elts($value, $rep_str, $value->{op});
+		    _replace_within_elts($value, $rep_str, $value->{op}, $elts);
 		}
 		else {
-		    _replace_within_elts($value, $rep_str, $elt_handler);
+		    _replace_within_elts($value, $rep_str, $elt_handler, $elts);
 		}
 }
 
