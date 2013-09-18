@@ -401,17 +401,13 @@ sub _sub_process {
 	
 	$template = new Template::Flute::HTML;
 	$template->parse($html->sprint, $specification);
-	#my $template_elt = $template->first_elt;
-	#$specification = new Template::Flute::Specification::XML;
-	#$specification->parse($spec_xml->sprint);
-	#$specification = $specification->{spec};
-	#$specification->{xml} = $spec_xml;
 	
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	# replace values
 	
 	for my $elt ( $spec_xml->children() ){
 		my $spec_name = $elt->{'att'}->{'name'};
+		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
 		my $type = $elt->tag;
 		
 		# List
@@ -449,10 +445,10 @@ sub _sub_process {
 		elsif( $type eq 'value' or $type eq 'param'){
 			
 			my $rep_str = $values->{$spec_name};
-			next unless $rep_str;
+			#next unless $rep_str;
 		
 		
-			my $spec_clases = $specification->{classes}->{$spec_name};
+			my $spec_clases = $specification->{classes}->{$spec_class};
 			for my $spec_class (@$spec_clases){
 				_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
 			}
@@ -652,7 +648,7 @@ sub _replace_records {
 sub _replace_record {
 	my ($name, $rep_str, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, @elts);
+		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw);
 =Iterators	
 	### NEW
 		return unless $value;
@@ -707,7 +703,7 @@ sub _replace_record {
                     }
                 }
                 elsif ($rep_str) {
-                    for my $elt (@elts) {
+                    for my $elt (@$elts) {
                         #$elt->set_text($rep_str);
                         #return;
                     }
@@ -715,14 +711,14 @@ sub _replace_record {
 
                 unless ($raw) {
                     # remove corresponding HTML elements from tree
-                    for my $elt (@elts) {
+                    for my $elt (@$elts) {
                         $elt->cut();
                     }
                     return;
                 }
 		    }
 		    elsif ($value->{op} eq 'hook') {
-                for my $elt (@elts) {
+                for my $elt (@$elts) {
                     Template::Flute::HTML::hook_html($elt, $rep_str);
                 }
                 #return;
