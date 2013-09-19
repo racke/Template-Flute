@@ -419,6 +419,11 @@ sub _sub_process {
 			my $sub_spec = $elt->copy();
 			my $element_template = $specification->{classes}->{$spec_name}->[0]->{elts}->[0];
 			
+			unless($element_template){
+				debug "HTML element for iterator $iterator not fund";
+				next;
+			}
+			
 			if ($element_template->is_last_child()) {			
 				%paste_pos = (last_child => $element_template->parent());
 			}
@@ -445,7 +450,7 @@ sub _sub_process {
 		# Values
 		elsif( $type eq 'value' or $type eq 'param'){
 			
-			my $rep_str = $values->{$spec_name};
+			#my $rep_str = $values->{$spec_name};
 		
 			# Use CLASS or ID if set
 			my $spec_clases = [];
@@ -457,7 +462,7 @@ sub _sub_process {
 			}
 			
 			for my $spec_class (@$spec_clases){
-				$self->_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
+				$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
 			}
 		};
   	}
@@ -650,9 +655,9 @@ sub _replace_records {
 
 
 sub _replace_record {
-	my ($self, $name, $rep_str, $value, $elts) = @_;
+	my ($self, $name, $values, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw);
+		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, $rep_str);
 =Iterators	
 	### NEW
 		return unless $value;
@@ -687,7 +692,7 @@ sub _replace_record {
         }
 =cut
 		# determine value used for replacements
-		#$rep_str = $self->value($value);
+		$rep_str = $self->value($value, $values);
 		$raw = $rep_str;
 		$rep_str = '' unless $rep_str;
 		
@@ -749,10 +754,10 @@ sub _replace_record {
 		#}
 				
 
-		if ($value->{filter}) {
-			debug $value->{filter};
-			$rep_str = $self->filter($value, $rep_str);
-		}
+		#if ($value->{filter}) {
+	#		debug $value->{filter};
+	#		$rep_str = $self->filter($value, $rep_str);
+	#	}
 
 		unless (defined $rep_str) {
 			$rep_str = '';
@@ -846,10 +851,10 @@ Returns the value for NAME.
 =cut
 
 sub value {
-	my ($self, $value) = @_;
+	my ($self, $value, $values) = @_;
 	my ($raw_value, $ref_value, $rep_str);
 
-	$ref_value = $self->{values};
+	$ref_value = $values;
 	
 	if ($self->{scopes}) {
 		if (exists $value->{scope}) {
