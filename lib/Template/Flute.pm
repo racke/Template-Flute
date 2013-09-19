@@ -384,7 +384,7 @@ sub process {
 		$self->{template}->translate($self->{i18n});
 	}
 
-	my $html = _sub_process(
+	my $html = $self->_sub_process(
 		$self->{template}, 
 		$self->{template}->{xml}, 
 		$self->{specification}->{xml}->root, 
@@ -396,7 +396,7 @@ sub process {
 }
 
 sub _sub_process {
-	my ($template, $html, $spec_xml,  $values, $specification_org) = @_;
+	my ($self, $template, $html, $spec_xml,  $values, $specification_org) = @_;
 	
 	my $specification = $specification_org;
 	
@@ -434,7 +434,7 @@ sub _sub_process {
 			
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
-				$element = _sub_process($template, $element, $sub_spec, $record_values, $specification);
+				$element = $self->_sub_process($template, $element, $sub_spec, $record_values, $specification);
 				$element = $element->{twig_root};
 				debug $element->sprint;
 				$element->paste(%paste_pos);
@@ -447,8 +447,6 @@ sub _sub_process {
 		elsif( $type eq 'value' or $type eq 'param'){
 			
 			my $rep_str = $values->{$spec_name};
-			#next unless $rep_str;
-		
 		
 			# Use CLASS or ID if set
 			my $spec_clases = [];
@@ -460,7 +458,7 @@ sub _sub_process {
 			}
 			
 			for my $spec_class (@$spec_clases){
-				_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
+				$self->_replace_record($spec_name, $rep_str, $spec_class, $spec_class->{elts});
 			}
 		};
   	}
@@ -648,7 +646,7 @@ sub _replace_records {
 
 
 sub _replace_record {
-	my ($name, $rep_str, $value, $elts) = @_;
+	my ($self, $name, $rep_str, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw);
 =Iterators	
@@ -749,7 +747,7 @@ sub _replace_record {
 
 		if ($value->{filter}) {
 			debug $value->{filter};
-			#$rep_str = $self->filter($value, $rep_str);
+			$rep_str = $self->filter($value, $rep_str);
 		}
 
 		unless (defined $rep_str) {

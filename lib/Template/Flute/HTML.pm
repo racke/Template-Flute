@@ -136,8 +136,8 @@ Returns list of values for this template.
 
 sub values {
 	my ($self) = @_;
-	my %values = (%{$self->{values}}, %{$self->{params}}, %{$self->{lists}});
-	return values %values;
+
+	return values %{$self->{values}};
 }
 
 =head2 iterators
