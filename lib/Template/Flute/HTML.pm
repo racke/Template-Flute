@@ -2,6 +2,7 @@ package Template::Flute::HTML;
 
 use strict;
 use warnings;
+use Dancer ':syntax';
 
 use Encode;
 use File::Slurp ();
@@ -313,8 +314,11 @@ sub _parse_template {
 		}
 	}
 
-	$xml = $twig->safe_parse_html($html_content);
-	
+	$xml = $twig->parse($html_content);
+	#my @new_root = $xml->root->get_xpath('/html/body');
+	#$xml->set_root($new_root[0]);
+	my $xmlSprint = $xml->sprint;
+
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";
 	}
@@ -705,16 +709,14 @@ sub hook_html {
 	}
 	
 	$parser = new XML::Twig ();
-	unless ($html = $parser->safe_parse_html($value)) {
+	debug $value;
+	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
 		die "Failed to parse HTML snippet: $@.\n";
 	}
 
 	$elt->cut_children();
-	
-	# locate body element
-	@ret = $html->root()->get_xpath(qq{//body});
 
-	@children = $ret[0]->cut_children();
+	@children = $html->root()->cut_children();
 	
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);

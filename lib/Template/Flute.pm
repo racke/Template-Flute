@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Dancer ':syntax';
 
-use Template::Flute::Utils;
+use Template::Flute::Utils; 
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 use Template::Flute::Iterator;
@@ -401,7 +401,7 @@ sub _sub_process {
 	my $specification = $specification_org;
 	
 	$template = new Template::Flute::HTML;
-	$template->parse($html->sprint, $specification);
+	$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification);
 	
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	# replace values
@@ -435,8 +435,7 @@ sub _sub_process {
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
 				$element = $self->_sub_process($template, $element, $sub_spec, $record_values, $specification);
-				$element = $element->{twig_root};
-				debug $element->sprint;
+				$element = $element->root;
 				$element->paste(%paste_pos);
 			}
 			$element_template->cut(); # Remove template element
@@ -516,8 +515,13 @@ sub _sub_process {
 		}
 	}
 =cut
-	debug to_dumper $template->{xml}->sprint;
-	return $template->{xml};
+
+	# Remove XML wrapper
+	my @ret = $template->{xml}->root()->get_xpath(qq{//flutexml});
+	my @children = $ret[0]->cut_children();
+	
+
+	return $children[0];
 	
 }
 
