@@ -385,24 +385,25 @@ sub process {
 	}
 
 	my $html = $self->_sub_process(
-		$self->{template}, 
 		$self->{template}->{xml}, 
 		$self->{specification}->{xml}->root, 
 		$self->{'values'},
 		$self->{specification}, 
+		#$self->{specification}->{classes},
 		);
 	my $shtml = $html->sprint;
 	return $shtml;
 }
 
 sub _sub_process {
-	my ($self, $template, $html, $spec_xml,  $values, $specification_org) = @_;
+	my ($self, $html, $spec_xml,  $values, $spec) = @_;
+
+	my $specification = $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>");
 	
-	my $specification = $specification_org;
-	
-	$template = new Template::Flute::HTML;
+	my $template = new Template::Flute::HTML;
 	$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification);
 	
+	my $classes = $specification->{classes};
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	# replace values
 	
@@ -417,7 +418,8 @@ sub _sub_process {
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
 			my $sub_spec = $elt->copy();
-			my $element_template = $specification->{classes}->{$spec_name}->[0]->{elts}->[0];
+			#$classes = $classes->; #TODO probably not just first one
+			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0]; #Take first element
 			
 			unless($element_template){
 				debug "HTML element for iterator $iterator not fund";
@@ -439,7 +441,7 @@ sub _sub_process {
 			
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
-				$element = $self->_sub_process($template, $element, $sub_spec, $record_values, $specification);
+				$element = $self->_sub_process($element, $sub_spec, $record_values);
 				$element = $element->root;
 				$element->paste(%paste_pos);
 			}
@@ -458,7 +460,7 @@ sub _sub_process {
 				$spec_clases = $specification->{ids}->{$spec_id};
 			}
 			else {
-				$spec_clases = $specification->{classes}->{$spec_class};
+				$spec_clases = $classes->{$spec_class};
 			}
 			
 			for my $spec_class (@$spec_clases){
