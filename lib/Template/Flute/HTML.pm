@@ -304,6 +304,7 @@ sub _parse_template {
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
 		$html_content = $$template;
+		$xml = $twig->parse($html_content);
 	}
 	else {
 		$self->{file} = $template;
@@ -312,9 +313,9 @@ sub _parse_template {
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
+		$xml = $twig->parse_html($html_content);
 	}
 
-	$xml = $twig->parse($html_content);
 	#my @new_root = $xml->root->get_xpath('/html/body');
 	#$xml->set_root($new_root[0]);
 	my $xmlSprint = $xml->sprint;
