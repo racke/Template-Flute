@@ -388,7 +388,8 @@ sub process {
 		$self->{template}->{xml}, 
 		$self->{specification}->{xml}->root, 
 		$self->{'values'},
-		$self->{specification}, 
+		$self->{specification},
+		$self->{template}, 
 		#$self->{specification}->{classes},
 		);
 	my $shtml = $html->sprint;
@@ -396,18 +397,24 @@ sub process {
 }
 
 sub _sub_process {
-	my ($self, $html, $spec_xml,  $values, $spec) = @_;
-
-	my $specification = $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>");
+	my ($self, $html, $spec_xml,  $values, $spec, $root_template) = @_;
+	my ($template);
+	# Use root spec or sub-spec
+	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>");
 	
-	my $template = new Template::Flute::HTML;
-	$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification);
+	if($root_template){
+		$template = $root_template;
+	}
+	else {
+		$template = new Template::Flute::HTML;
+		$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification);
+	}
 	
 	my $classes = $specification->{classes};
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	# replace values
 	
-	for my $elt ( $spec_xml->children() ){
+	for my $elt ( $spec_xml->descendants() ){
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
 		my $spec_id = $elt->{'att'}->{'id'};
@@ -415,10 +422,11 @@ sub _sub_process {
 		
 		# List
 		if( $type eq 'list' ){
+			my $sep_copy;
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
 			my $sub_spec = $elt->copy();
-			#$classes = $classes->; #TODO probably not just first one
+			#TODO probably not just first one
 			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0]; #Take first element
 			
 			unless($element_template){
@@ -438,14 +446,37 @@ sub _sub_process {
 			}
 			
 			my $records = $values->{$iterator};
+			my $list = $template->{lists}->{$spec_name};
 			
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
 				$element = $self->_sub_process($element, $sub_spec, $record_values);
 				$element = $element->root;
 				$element->paste(%paste_pos);
+
+				# Add separator
+				
+				if ($list->{separators}) {
+				    for my $sep (@{$list->{separators}}) {
+						for my $elt (@{$sep->{elts}}) {
+						    $sep_copy = $elt->copy();
+						    $sep_copy->paste(%paste_pos);
+						}
+				    }
+				}			
 			}
 			$element_template->cut(); # Remove template element
+			
+			if ($sep_copy) {
+			    # remove last separator and original one(s) in the template
+			    $sep_copy->cut();
+			    
+			    for my $sep (@{$list->{separators}}) {
+				for my $elt (@{$sep->{elts}}) {
+				    $elt->cut();
+				}
+		    }
+		}
 			
 		}
 		
@@ -466,7 +497,9 @@ sub _sub_process {
 			for my $spec_class (@$spec_clases){
 				$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
 			}
-		};
+		}
+		
+		
   	}
 	
 
@@ -523,13 +556,7 @@ sub _sub_process {
 	}
 =cut
 
-	# Remove XML wrapper
-	my @ret = $template->{xml}->root()->get_xpath(qq{//flutexml});
-	my @children = $ret[0]->cut_children();
-	
-
-	return $children[0];
-	
+	return $template->{xml}->root();	
 }
 
 sub _paging_link {
@@ -643,6 +670,7 @@ sub _replace_records {
 	# alternate classes?
 	if ($type eq 'list'
 		&& ($class_alt = $container->static_class($row_pos))) {
+			debug "ALTERNATE";
 	    if ($att_val = $subtree->att('class')) {
 		$subtree->set_att('class', "$att_val $class_alt");
 	    }
@@ -696,7 +724,7 @@ sub _replace_record {
 		# determine value used for replacements
 		$rep_str = $self->value($value, $values);
 		$raw = $rep_str;
-		$rep_str = '' unless $rep_str;
+		$rep_str = '' unless defined $rep_str;
 		
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 

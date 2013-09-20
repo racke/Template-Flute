@@ -419,7 +419,7 @@ sub _elt_handler {
 		    if ($first_static = $list->static_class(0)) {
 			# remove static class from initial list element
 			$first_classes = $list->elt->att('class');
-			$first_classes =~ s/\s*\b$first_static\b//;
+			#$first_classes =~ s/\s*\b$first_static\b//;
 			$list->elt->set_att('class', $first_classes);
 		    }
 
