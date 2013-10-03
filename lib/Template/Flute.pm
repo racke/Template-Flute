@@ -421,7 +421,7 @@ sub _sub_process {
 		my $type = $elt->tag;
 		
 		# List
-		if( $type eq 'list' ){
+		if( $type eq 'list' or $type eq 'form'  ){
 			my $sep_copy;
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
@@ -430,7 +430,7 @@ sub _sub_process {
 			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0]; #Take first element
 			
 			unless($element_template){
-				debug "HTML element for iterator $iterator not fund";
+				debug "HTML element $type $spec_name not fund";
 				next;
 			}
 			
@@ -481,7 +481,7 @@ sub _sub_process {
 		}
 		
 		# Values
-		elsif( $type eq 'value' or $type eq 'param'){
+		elsif( $type eq 'value' or $type eq 'param' or $type eq 'field'){
 			
 			#my $rep_str = $values->{$spec_name};
 		
@@ -653,78 +653,16 @@ sub process_template {
 	return $self->{template};
 }
 
-sub _replace_records {
-	my ($records, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($att_val, $class_alt, @values);
-	# now fill in params
-	for my $param (@$records) {
-		$param->{value} = $record->{$param->{name}} if $record;
-		_replace_record($param, $record);
-	}
-	
-	# Return complex element
-	return unless $lel;
-	# now add to the template
-	my $subtree = $lel->copy();
-
-	# alternate classes?
-	if ($type eq 'list'
-		&& ($class_alt = $container->static_class($row_pos))) {
-			debug "ALTERNATE";
-	    if ($att_val = $subtree->att('class')) {
-		$subtree->set_att('class', "$att_val $class_alt");
-	    }
-	    else {
-		$subtree->set_att('class', $class_alt);	    
-	    }
-	}
-
-	$subtree->paste(%$paste_pos);
-    return $subtree;
-}
-
 
 sub _replace_record {
 	my ($self, $name, $values, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
 		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, $rep_str);
-=Iterators	
-	### NEW
-		return unless $value;
-		return if $value->{array};
-		if ($value->{iterator} ) { #Its list!
-			$self->_process_list($value);
-			return;
-		} 
-		
-		@elts = @{$value->{elts}};
-        $elt_handler = undef;
-        # check if we need an iterator for this value
-    	if ($self->{auto_iterators} && $value->{iterator}) {
-            my ($iter_name, $iter);
 
-            $iter_name = $value->{iterator};
-    		debug "We need iterator $iter_name";
-
-            unless ($self->{specification}->iterator($iter_name)) {
-            	
-            	## PROCESS ITERATOR HERE ($self, $list, $params, $values)
-            	
-                if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
-                    $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
-                }
-                else {
-                    $iter = Template::Flute::Iterator->new([]);
-                }
-
-                $self->{specification}->set_iterator($iter_name, $iter);
-            }
-        }
-=cut
 		# determine value used for replacements
 		$rep_str = $self->value($value, $values);
+		return undef unless defined $rep_str;
 		$raw = $rep_str;
-		$rep_str = '' unless defined $rep_str;
 		
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 
@@ -768,11 +706,6 @@ sub _replace_record {
 		    }
 		}
 		
-		
-		### NEW
-		
-		### OLD
-		
 
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
@@ -782,21 +715,7 @@ sub _replace_record {
 		#if ($value->{subref}) {
 		#	$rep_str = $value->{subref}->($record);
 		#}
-				
-
-		#if ($value->{filter}) {
-	#		debug $value->{filter};
-	#		$rep_str = $self->filter($value, $rep_str);
-	#	}
-
-		unless (defined $rep_str) {
-			$rep_str = '';
-		}
 		
-		### OLD
-		
-		
-
 		if (ref($value->{op}) eq 'CODE') {
 		    _replace_within_elts($value, $rep_str, $value->{op}, $elts);
 		}
@@ -1450,7 +1369,7 @@ by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 
-=cut
+
 
 sub _process_list {
 		my ($self, $list, $params, $values) = @_;
@@ -1757,5 +1676,5 @@ sub _process_list {
         }
 	
 }
-
+=cut
 1;

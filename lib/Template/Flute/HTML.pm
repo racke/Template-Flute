@@ -710,7 +710,6 @@ sub hook_html {
 	}
 	
 	$parser = new XML::Twig ();
-	debug $value;
 	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
 		die "Failed to parse HTML snippet: $@.\n";
 	}
