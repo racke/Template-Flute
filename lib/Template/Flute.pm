@@ -451,8 +451,11 @@ sub _sub_process {
 			for my $record_values (@$records){
 				my $element = $element_template->copy();
 				$element = $self->_sub_process($element, $sub_spec, $record_values);
-				$element = $element->root;
-				$element->paste(%paste_pos);
+				
+				# Get rid of flutexml and put it into position
+				for my $e (reverse($element->cut_children())) {
+					$e->paste(%paste_pos);
+        		}
 
 				# Add separator
 				
