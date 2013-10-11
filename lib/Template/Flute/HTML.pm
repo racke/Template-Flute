@@ -498,9 +498,10 @@ sub _elt_handler {
         }
     }
     
-	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
-		return $self;
-	}
+    # TODO check why was this here
+	#if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
+	#	return $self;
+	#}
 
 	if ($sob->{type} eq 'form') {
 		$sob->{elts} = [$elt];

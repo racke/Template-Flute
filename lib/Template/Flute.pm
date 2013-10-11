@@ -830,7 +830,7 @@ sub value {
 		%args = (template_file => $include_file,
 			 auto_iterators => $self->{auto_iterators},
              filters => $self->{filters},
-			 values => $self->{values});
+			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values});
 		
 		$raw_value = Template::Flute->new(%args)->process();
 	}
