@@ -160,31 +160,14 @@ sub render ($$$) {
 		# select correct form
 		if ($tokens->{form} && ($tokens->{form}->name eq 'main' 
 		    || $tokens->{form}->name eq $forms[0]->name)) {
-
-		    for my $name ($forms[0]->iterators) {
-			if (ref($tokens->{$name}) eq 'ARRAY') {
-			    $iter = Template::Flute::Iterator->new($tokens->{$name});
-			    $flute->specification->set_iterator($name, $iter);
-			}
-		    }
-
-            if ($action = $tokens->{form}->action()) {
-                $forms[0]->set_action($action);
-            }
-
-		    $tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
-		    $forms[0]->fill($tokens->{form}->fill());
-
-		    if (Dancer::Config::settings->{session}) {
-			$tokens->{form}->to_session;
-		    }
+            $self->_tf_fill_forms($flute, $forms[0], $tokens);
 		}
 		else {
 		    Dancer::Logger::debug('Missing form parameters for form ' . $forms[0]->name);
 		}
 	    }
 	    else {
-		die "Got multiple (", scalar(@forms), ") forms.";
+		Dancer::Logger::error("Got multiple (", scalar(@forms), ") forms.");
 	    }
 	}
 	
@@ -192,6 +175,30 @@ sub render ($$$) {
 
 	return $html;
 }
+
+sub _tf_fill_forms {
+    my ($self, $flute, $form, $tokens) = @_;
+    my ($iter, $action);
+    for my $name ($form->iterators) {
+			if (ref($tokens->{$name}) eq 'ARRAY') {
+			    $iter = Template::Flute::Iterator->new($tokens->{$name});
+			    $flute->specification->set_iterator($name, $iter);
+			}
+		    }
+
+            if ($action = $tokens->{form}->action()) {
+                $form->set_action($action);
+            }
+
+		    $tokens->{form}->fields([map {$_->{name}} @{$form->fields()}]);
+		    $form->fill($tokens->{form}->fill());
+
+		    if (Dancer::Config::settings->{session}) {
+			$tokens->{form}->to_session;
+		    }
+
+}
+
 
 =head1 SEE ALSO
 
