@@ -153,28 +153,53 @@ sub render ($$$) {
 	}
 
 	# check for forms
-	my (@forms, $iter, $action);
-	
-	if (@forms = $flute->template->forms()) {
-	    if (@forms == 1) {
-		# select correct form
-		if ($tokens->{form} && ($tokens->{form}->name eq 'main' 
-		    || $tokens->{form}->name eq $forms[0]->name)) {
-            $self->_tf_fill_forms($flute, $forms[0], $tokens);
-		}
-		else {
-		    Dancer::Logger::debug('Missing form parameters for form ' . $forms[0]->name);
-		}
-	    }
-	    else {
-		Dancer::Logger::error("Got multiple (", scalar(@forms), ") forms.");
-	    }
-	}
-	
+    if (my @forms = $flute->template->forms()) {
+        if ($tokens->{form}) {
+            $self->_tf_manage_forms($flute, $tokens, @forms);
+        }
+        else {
+            Dancer::Logger::debug('Missing form parameters for forms ' .
+                                  join(", ", map { $_->name } @forms));
+        }
+    }
 	$html = $flute->process();
 
 	return $html;
 }
+
+sub _tf_manage_forms {
+    my ($self, $flute, $tokens, @forms) = @_;
+
+    # simple case: only one form passed and one in the flute
+    if (ref($tokens->{form}) ne 'ARRAY') {
+        my $form_name = $tokens->{form}->name;
+        if (@forms == 1) {
+            my $form = shift @forms;
+            if ($form_name eq 'main' or
+                $form_name eq $form->name) {
+                # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
+                $self->_tf_fill_forms($flute, $form, $tokens);
+            }
+        }
+        else {
+            my $found = 0;
+            foreach my $form (@forms) {
+                # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
+                if ($form_name eq $form->name) {
+                    $self->_tf_fill_forms($flute, $form, $tokens);
+                    $found++;
+                }
+            }
+            if ($found != 1) {
+                Dancer::Logger::error("Multiple form are not being managed correctly, found $found corresponding forms, but we expected just one!")
+              }
+        }
+    }
+    else {
+        die "form token is an array!"
+    }
+}
+
 
 sub _tf_fill_forms {
     my ($self, $flute, $form, $tokens) = @_;
