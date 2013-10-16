@@ -40,21 +40,13 @@ $resp = dancer_response(POST => '/register', { body =>  { %form } });
 
 diag "Checking form keyword and stickyness";
 response_status_is $resp, 200, "POST /register found";
-foreach my $f (keys %form) {
-    my $v = $form{$f};
-    response_content_like $resp, qr/<input[^>]*name="\Q$f\E"[^>]*value="\Q$v\E"/,
-      "Found form field $f => $v";
-}
+check_sticky_form($resp, %form);
 
 $resp = dancer_response(POST => '/login', { body =>  { %form } });
 
 diag "Checking form keyword and stickyness";
 response_status_is($resp, 200, "POST /login found")|| exit;
-foreach my $f (keys %form) {
-    my $v = $form{$f};
-    response_content_like $resp, qr/<input[^>]*name="\Q$f\E"[^>]*value="\Q$v\E"/,
-      "Found form field $f => $v";
-}
+check_sticky_form($resp, %form);
 
 my %other_form = (
                   email_2 => 'pinco',
@@ -102,3 +94,14 @@ is_deeply(read_logs, [
                        'message' => 'Missing form parameters for forms login, registration'
                       },
                      ], "Warning logged in debug as expected");
+
+
+
+sub check_sticky_form {
+    my ($res, %params) = @_;
+    foreach my $f (keys %params) {
+        my $v = $params{$f};
+        response_content_like $resp, qr/<input[^>]*name="\Q$f\E"[^>]*value="\Q$v\E"/,
+          "Found form field $f => $v";
+    }
+}
