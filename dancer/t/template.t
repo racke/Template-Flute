@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 50;
+use Test::More tests => 70;
 
 use File::Spec;
 use Data::Dumper;
@@ -145,6 +145,68 @@ check_sticky_form($resp, %multiple_first, %multiple_second);
 
 $resp = dancer_response (GET => '/multiple');
 check_sticky_form($resp, %multiple_first, %multiple_second);
+
+
+%multiple_first = (
+                   first_name => "Pippo",
+                   last_name => "Pluto",
+                  );
+%multiple_second = (
+                    gender => "Mixed up",
+                    address => "via del pioppo",
+                   );
+
+
+$resp = dancer_response ( GET => '/checkout' );
+$resp = dancer_response ( POST => '/checkout', { body => { submit => 1, %multiple_first }});
+check_sticky_form($resp, %multiple_first, gender => "", address => "");
+$resp = dancer_response ( POST => '/checkout', { body => { submit_details => 1,
+                                                           %multiple_second }});
+check_sticky_form($resp, %multiple_first, %multiple_second);
+$resp = dancer_response ( GET => '/checkout' );
+$resp = dancer_response (POST => '/checkout', { body => {
+                                                         submit => 1,
+                                                         %multiple_first,
+                                                         day => 15,
+                                                        }
+                                              });
+check_sticky_form($resp, %multiple_first, %multiple_second);
+response_content_like $resp, qr/<option selected="selected" value="15">/;
+$resp = dancer_response ( POST => '/checkout', { body => { submit_details => 1,
+                                                           %multiple_second,
+                                                           year => 2019,
+                                                         }});
+response_content_like $resp, qr/<option selected="selected" value="15">/,
+  "Found sticky day";
+response_content_like $resp, qr/<option selected="selected" value="2019">/,
+  "Found sticky year";
+
+diag "Trying out of range values";
+
+$multiple_first{first_name} = "Topolino";
+$multiple_second{gender} = "Male";
+
+$resp = dancer_response ( GET => '/checkout' );
+$resp = dancer_response (POST => '/checkout', { body => {
+                                                         submit => 1,
+                                                         %multiple_first,
+                                                         day => 60,
+                                                        }
+                                              });
+$resp = dancer_response ( GET => '/checkout' );
+
+$resp = dancer_response ( POST => '/checkout', { body => { submit_details => 1,
+                                                           %multiple_second,
+                                                           year => 2050,
+                                                         }});
+
+check_sticky_form($resp, %multiple_first, %multiple_second);
+
+response_content_unlike $resp, qr/<option selected="selected"/,
+  "Options are not selected";
+
+
+
 
 sub check_sticky_form {
     my ($res, %params) = @_;

@@ -13,6 +13,8 @@ t/manifest.t
 t/pod-coverage.t
 t/pod.t
 t/template.t
+t/views/checkout-giftinfo.html
+t/views/checkout-giftinfo.xml
 t/views/index.html
 t/views/index.xml
 t/views/login.html

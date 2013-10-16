@@ -5,3 +5,4 @@ pm_to_blib
 ^app\.pl$
 ^sessions
 MYMETA\.(json|yml)$
+^blib

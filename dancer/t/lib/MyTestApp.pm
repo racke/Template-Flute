@@ -61,5 +61,38 @@ any [qw/get post/] => '/multiple' => sub {
     template multiple => { form => [ $login, $registration ] };
 };
 
+any [qw/post get/] => '/checkout' => sub {
+    my (@days, @years);
+    for (1..31) {
+        push @days, { value => $_, label => "Day $_" };
+    }
+    for (2012..2020) {
+        push @years, { value => $_, label => "Year $_" };
+    }
+    my $form = form('giftinfo');
+    if (params->{submit}) {
+        my %values = %{$form->values};
+        $form->fill(\%values);
+    }
+    else {
+        $form->fill;
+    }
+
+    my $detform = form('giftdetails');
+    if (params->{submit_details}) {
+        my %values = %{$detform->values};
+        $detform->fill(\%values);
+    }
+    else {
+        $detform->fill;
+    }
+
+    template 'checkout-giftinfo' => {
+                                     form => [ $form, $detform ],
+                                     days => \@days,
+                                     years => \@years
+                                    };
+};
+
 1;
 
