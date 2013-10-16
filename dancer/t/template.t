@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 19;
+use Test::More tests => 50;
 
 use File::Spec;
 use Data::Dumper;
@@ -96,6 +96,55 @@ is_deeply(read_logs, [
                      ], "Warning logged in debug as expected");
 
 
+
+# values for first form
+
+my %multiple_first = (
+                      emailtest => "Fritz",
+                      passwordtest => "Frutz",
+                      verifytest => "Frotz",
+                     );
+
+# values for second form
+
+my %multiple_second = (
+                       emailtest_2 => "Hanz",
+                       passwordtest_2 => "Hunz",
+                      );
+
+# $resp 
+
+
+$resp = dancer_response (GET => '/multiple');
+diag "Checking if the form is clean";
+check_sticky_form($resp,
+                  emailtest => "",
+                  passwordtest => "",
+                  verifytest => "",
+                  emailtest_2 => "",
+                  passwordtest_2 => "");
+                  
+diag "Checking multiple forms";
+
+$resp = dancer_response (POST => '/multiple', { body => { register => 1, %multiple_first}});
+check_sticky_form($resp, %multiple_first);
+
+$resp = dancer_response (GET => '/multiple');
+check_sticky_form($resp, %multiple_first);
+
+$resp = dancer_response (POST => '/multiple', { body => { login => 1, %multiple_second}});
+check_sticky_form($resp, %multiple_first, %multiple_second);
+
+$resp = dancer_response (GET => '/multiple');
+check_sticky_form($resp, %multiple_first, %multiple_second);
+
+$multiple_second{passwordtest_2} = "xXxXx";
+
+$resp = dancer_response (POST => '/multiple', { body => { login => 1, %multiple_second}});
+check_sticky_form($resp, %multiple_first, %multiple_second);
+
+$resp = dancer_response (GET => '/multiple');
+check_sticky_form($resp, %multiple_first, %multiple_second);
 
 sub check_sticky_form {
     my ($res, %params) = @_;

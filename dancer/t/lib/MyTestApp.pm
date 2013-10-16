@@ -9,7 +9,9 @@ get '/' => sub {
 
 any [qw/get post/] => '/register' => sub {
     my $form = form('registration');
-    $form->fill($form->values);
+    my %values = %{$form->values};
+    # VALIDATE, filter, etc. the values
+    $form->fill(\%values);
     template register => {form => $form };
 };
 
@@ -34,7 +36,30 @@ any [qw/get post/] => '/bugged_multiple' => sub {
     template login => {};
 };
 
-
+any [qw/get post/] => '/multiple' => sub {
+    my $login = form('logintest');
+    debug to_dumper({params});
+    if (params->{login}) {
+        my %vals = %{$login->values};
+        # VALIDATE %vals here
+        $login->fill(\%vals);
+    }
+    else {
+        # pick from session
+        $login->fill;
+    }
+    my $registration = form('registrationtest');
+    if (params->{register}) {
+        my %vals = %{$registration->values};
+        # VALIDATE %vals here
+        $registration->fill(\%vals);
+    }
+    else {
+        # pick from session
+        $registration->fill;
+    }
+    template multiple => { form => [ $login, $registration ] };
+};
 
 1;
 

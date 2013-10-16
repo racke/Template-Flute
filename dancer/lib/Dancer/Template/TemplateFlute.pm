@@ -129,6 +129,95 @@ L<Dancer::Plugin::Form> objects.
       template register => {form => $form };
   };
 
+=head3 Usage example for multiple forms
+
+=head4 Specification
+
+  <specification>
+  <form name="registrationtest" link="name">
+  <field name="emailtest"/>
+  <field name="passwordtest"/>
+  <field name="verifytest"/>
+  </form>
+  <form name="logintest" link="name">
+  <field name="emailtest_2"/>
+  <field name="passwordtest_2"/>
+  </form>
+  </specification>
+
+=head4 HTML
+
+  <h1>Register</h1>
+  <form class="frm-default" name="registrationtest" action="/multiple" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="emailtest"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="passwordtest"/>
+		</li>
+		<li>
+		  <label>Confirm password</label>
+		  <input type="text" name="verifytest" />
+		</li>
+		<li>
+		  <input type="submit" name="register" value="Register" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+  <h1>Login</h1>
+  <form class="frm-default" name="logintest" action="/multiple" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="emailtest_2"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="passwordtest_2"/>
+		</li>
+		<li>
+		  <input type="submit" name="login" value="Login" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+
+
+=head4 Code
+
+  any [qw/get post/] => '/multiple' => sub {
+      my $login = form('logintest');
+      debug to_dumper({params});
+      if (params->{login}) {
+          my %vals = %{$login->values};
+          # VALIDATE %vals here
+          $login->fill(\%vals);
+      }
+      else {
+          # pick from session
+          $login->fill;
+      }
+      my $registration = form('registrationtest');
+      if (params->{register}) {
+          my %vals = %{$registration->values};
+          # VALIDATE %vals here
+          $registration->fill(\%vals);
+      }
+      else {
+          # pick from session
+          $registration->fill;
+      }
+      template multiple => { form => [ $login, $registration ] };
+  };
+
 =head1 METHODS
 
 =head2 default_tmpl_ext
@@ -229,7 +318,7 @@ sub _tf_manage_forms {
             if ($form_name eq 'main' or
                 $form_name eq $form->name) {
                 # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
-                $self->_tf_fill_forms($flute, $form, $tokens);
+                $self->_tf_fill_forms($flute, $tokens->{form}, $form, $tokens);
             }
         }
         else {
@@ -237,7 +326,7 @@ sub _tf_manage_forms {
             foreach my $form (@forms) {
                 # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
                 if ($form_name eq $form->name) {
-                    $self->_tf_fill_forms($flute, $form, $tokens);
+                    $self->_tf_fill_forms($flute, $tokens->{form}, $form, $tokens);
                     $found++;
                 }
             }
@@ -247,32 +336,47 @@ sub _tf_manage_forms {
         }
     }
     else {
-        die "form token is an array!"
+        foreach my $passed_form (@{$tokens->{form}}) {
+            foreach my $form (@forms) {
+                if ($passed_form->name eq $form->name) {
+                    $self->_tf_fill_forms($flute, $passed_form, $form, $tokens);
+                }
+            }
+        }
     }
 }
 
 
 sub _tf_fill_forms {
-    my ($self, $flute, $form, $tokens) = @_;
+    my ($self, $flute, $passed_form, $form, $tokens) = @_;
+    # arguments:
+    # $flute is the template object.
+
+    # $passed_form is the Dancer::Plugin::Form object we got from the
+    # tokens, which is $tokens->{form} when we have just a single one.
+
+    # $form is the form object we got from the template itself, with
+    # $flute->template->forms
+
+    # $tokens is the hashref passed to the template. We need it for the
+    # iterators.
+
     my ($iter, $action);
     for my $name ($form->iterators) {
-			if (ref($tokens->{$name}) eq 'ARRAY') {
-			    $iter = Template::Flute::Iterator->new($tokens->{$name});
-			    $flute->specification->set_iterator($name, $iter);
-			}
-		    }
+        if (ref($tokens->{$name}) eq 'ARRAY') {
+            $iter = Template::Flute::Iterator->new($tokens->{$name});
+            $flute->specification->set_iterator($name, $iter);
+        }
+    }
+    if ($action = $passed_form->action()) {
+        $form->set_action($action);
+    }
+    $passed_form->fields([map {$_->{name}} @{$form->fields()}]);
+    $form->fill($passed_form->fill());
 
-            if ($action = $tokens->{form}->action()) {
-                $form->set_action($action);
-            }
-
-		    $tokens->{form}->fields([map {$_->{name}} @{$form->fields()}]);
-		    $form->fill($tokens->{form}->fill());
-
-		    if (Dancer::Config::settings->{session}) {
-			$tokens->{form}->to_session;
-		    }
-
+    if (Dancer::Config::settings->{session}) {
+        $passed_form->to_session;
+    }
 }
 
 
