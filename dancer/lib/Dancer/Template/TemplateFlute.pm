@@ -77,7 +77,58 @@ Filter options and classes can be specified in the configuration file as below.
 
 Dancer::Template::TemplateFlute includes a form plugin L<Dancer::Plugin::Form>,
 which supports L<Template::Flute> forms.
-    
+
+The token C<form> is reserved for forms. It can be a single
+L<Dancer::Plugin::Form> object or an arrayref of
+L<Dancer::Plugin::Form> objects.
+
+=head3 Typical usage for a single form.
+
+=head4 XML Specification
+
+  <specification>
+  <form name="registration" link="name">
+  <field name="email"/>
+  <field name="password"/>
+  <field name="verify"/>
+  </form>
+  </specification>
+
+=head4 HTML
+
+  <form class="frm-default" name="registration" action="/register" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="email"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="password"/>
+		</li>
+		<li>
+		  <label>Confirm password</label>
+		  <input type="text" name="verify" />
+		</li>
+		<li>
+		  <input type="submit" value="Register" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+
+=head4 Code
+
+  any [qw/get post/] => '/register' => sub {
+      my $form = form('registration');
+      my %values = %{$form->values};
+      # VALIDATE, filter, etc. the values
+      $form->fill(\%values);
+      template register => {form => $form };
+  };
+
 =head1 METHODS
 
 =head2 default_tmpl_ext
