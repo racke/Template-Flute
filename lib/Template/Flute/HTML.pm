@@ -316,8 +316,6 @@ sub _parse_template {
 		$xml = $twig->parse_html($html_content);
 	}
 
-	#my @new_root = $xml->root->get_xpath('/html/body');
-	#$xml->set_root($new_root[0]);
 	my $xmlSprint = $xml->sprint;
 
 	unless ($xml) {
@@ -498,11 +496,6 @@ sub _elt_handler {
         }
     }
     
-    # TODO check why was this here
-	#if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
-	#	return $self;
-	#}
-
 	if ($sob->{type} eq 'form') {
 		$sob->{elts} = [$elt];
 

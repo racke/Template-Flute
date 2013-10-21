@@ -371,7 +371,6 @@ Returns HTML output.
 =cut
 
 sub process {
-	debug "-----------------------Flute Process-----------------------------------";
 	my ($self, $params) = @_;
 	
 
@@ -390,7 +389,6 @@ sub process {
 		$self->{'values'},
 		$self->{specification},
 		$self->{template}, 
-		#$self->{specification}->{classes},
 		);
 	my $shtml = $html->sprint;
 	return $shtml;
@@ -412,8 +410,8 @@ sub _sub_process {
 	
 	my $classes = $specification->{classes};
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
-	# replace values
 	
+	# Replace values
 	for my $elt ( $spec_xml->descendants() ){
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
@@ -426,7 +424,6 @@ sub _sub_process {
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
 			my $sub_spec = $elt->copy();
-			#TODO probably not just first one
 			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0]; #Take first element
 			
 			unless($element_template){
@@ -452,13 +449,12 @@ sub _sub_process {
 				my $element = $element_template->copy();
 				$element = $self->_sub_process($element, $sub_spec, $record_values);
 				
-				# Get rid of flutexml and put it into position
+				# Get rid of flutexml container and put it into position
 				for my $e (reverse($element->cut_children())) {
 					$e->paste(%paste_pos);
         		}
 
 				# Add separator
-				
 				if ($list->{separators}) {
 				    for my $sep (@{$list->{separators}}) {
 						for my $elt (@{$sep->{elts}}) {
@@ -471,23 +467,20 @@ sub _sub_process {
 			$element_template->cut(); # Remove template element
 			
 			if ($sep_copy) {
-			    # remove last separator and original one(s) in the template
+			    # Remove last separator and original one(s) in the template
 			    $sep_copy->cut();
 			    
 			    for my $sep (@{$list->{separators}}) {
-				for my $elt (@{$sep->{elts}}) {
-				    $elt->cut();
-				}
-		    }
-		}
-			
+					for my $elt (@{$sep->{elts}}) {
+					    $elt->cut();
+					}
+			    }
+			}
 		}
 		
 		# Values
 		elsif( $type eq 'value' or $type eq 'param' or $type eq 'field'){
 			
-			#my $rep_str = $values->{$spec_name};
-		
 			# Use CLASS or ID if set
 			my $spec_clases = [];
 			if ($spec_id){
@@ -504,11 +497,7 @@ sub _sub_process {
 				$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
 			}
 		}
-		
-		
   	}
-	
-
 	
 	for my $container ($template->containers()) {
 		$container->set_values($values) if $values;
@@ -519,48 +508,6 @@ sub _sub_process {
 		    }
 		}
 	}
-
-
-=FORMS
-	for my $form ($self->{template}->forms()) {
-		$lel = $form->elt();
-
-		if ($lel->is_last_child()) {			
-			%paste_pos = (last_child => $lel->parent());
-		}
-		elsif ($lel->next_sibling()) {
-			%paste_pos = (before => $lel->next_sibling());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $self->{template}->{xml});
-		}
-		
-		$lel->cut();
-
-		if ($self->{auto_iterators}) {
-			for my $iter_name ($form->iterators()) {
-				if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
-					$iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
-				}
-				else {
-					$iter = Template::Flute::Iterator->new([]);
-				}
-
-				$self->{specification}->set_iterator($iter_name, $iter);
-			}
-		}
-		
-		if (keys(%{$form->inputs()}) && $form->input()) {
-			$iter = $dbobj->build($form->query());
-
-			$self->_replace_records($form, 'form', $lel, \%paste_pos, $iter->next());
-		}		
-		else {
-			$self->_replace_records($form, 'form', $lel, \%paste_pos, {});
-		}
-	}
-=cut
 
 	return $template->{xml}->root();	
 }
@@ -628,7 +575,7 @@ sub _replace_within_elts {
                     }
 			    }
 			    else {
-				$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
+					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
 			    }
 			
 			} else {
@@ -672,11 +619,6 @@ sub _replace_record {
 		
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 
-                #$elt_handler = sub {
-                #    my ($elt, $str) = @_;
-				#	my $text = $elt->text_only;
-                #    $elt->set_text($elt->text_only . $str);
-                #};
                 $rep_str = $value->{elts}->[0]->text_only.$rep_str;
             }
 		    elsif ($value->{op} eq 'toggle') {
@@ -684,12 +626,6 @@ sub _replace_record {
                     if ($rep_str) {
                         # preserve static text, like a container
                         return;
-                    }
-                }
-                elsif ($rep_str) {
-                    for my $elt (@$elts) {
-                        #$elt->set_text($rep_str);
-                        #return;
                     }
                 }
 
@@ -705,7 +641,6 @@ sub _replace_record {
                 for my $elt (@$elts) {
                     Template::Flute::HTML::hook_html($elt, $rep_str);
                 }
-                #return;
 		    }
 		    elsif (ref($value->{op}) eq 'CODE') {
                 $elt_handler = $value->{op};
@@ -716,11 +651,6 @@ sub _replace_record {
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
 		}
-		
-		# TODO: Check what is that?		
-		#if ($value->{subref}) {
-		#	$rep_str = $value->{subref}->($record);
-		#}
 		
 		if (ref($value->{op}) eq 'CODE') {
 		    _replace_within_elts($value, $rep_str, $value->{op}, $elts);
