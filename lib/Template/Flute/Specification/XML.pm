@@ -65,7 +65,8 @@ sub parse {
 		$self->_add_error(error => $@);
 		return;
 	}
-
+	$self->{spec}->{xml} = $xml;
+	
 	return $self->{spec};
 }
 

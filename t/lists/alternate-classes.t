@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Test for alternate CSS classes
 
@@ -18,8 +17,10 @@ $spec = q{<specification>
 };
 
 $html = q{
-<div class="products"><span class="sku">SKU</span></div>
-<div class="products even"><span class="sku">SKU</span></div>
+<html>
+	<div class="products"><span class="sku">SKU</span></div>
+	<div class="products even"><span class="sku">SKU</span></div>
+</html>
 };
 
 $products = [{sku => 'ABC'}, {sku => 'DEF'}, {sku => 'GHI'}];
@@ -32,13 +33,15 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="products">.*?</div><div class="products even">.*?</div><div class="products">.*?</div>%,
+ok ($out =~ m%<html><div class="products">.*?</div><div class="products even">.*?</div><div class="products">.*?</div></html>%,
     'list with alternate classes')
     || diag $out;
 
 $html = q{
-<div class="products odd"><span class="sku">SKU</span></div>
-<div class="products even"><span class="sku">SKU</span></div>
+<html>
+	<div class="products odd"><span class="sku">SKU</span></div>
+	<div class="products even"><span class="sku">SKU</span></div>
+</html>
 };
 
 $products = [{sku => 'ABC'}, {sku => 'DEF'}, {sku => 'GHI'}];
@@ -51,6 +54,6 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="products odd">.*?</div><div class="products even">.*?</div><div class="products odd">.*?</div>%,
+ok ($out =~ m%<html><div class="products odd">.*?</div><div class="products even">.*?</div><div class="products odd">.*?</div></html>%,
     'list with alternate classes')
     || diag $out;

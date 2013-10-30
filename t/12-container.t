@@ -1,7 +1,5 @@
-#! perl -T
 #
 # Tests for containers.
-
 use strict;
 use warnings;
 
@@ -62,7 +60,7 @@ my (@tests, @tests_id, $html, $spec, $flute, $out);
 
 plan tests => scalar @tests + @tests_id + 5;
 
-$html = q{<div class="box">USER</div>};
+$html = q{<html><div class="box">USER</div></html>};
 
 my $i;
 
@@ -76,10 +74,10 @@ for my $t (@tests) {
     $out = $flute->process();
 
     if ($t->[2]) {
-	ok($out =~ m%<div class="box">USER</div>%, "$i: $out");
+	ok($out =~ m%<html><div class="box">USER</div></html>%, "$i: $out");
     }
     else {
-	ok($out !~ m%<div class="box">USER</div>%, "$i: $out");
+	ok($out !~ m%<html><div class="box">USER</div></html>%, "$i: $out");
     }
 }
 
@@ -87,17 +85,17 @@ for my $t (@tests) {
 $html .= $html;
 
 $flute = Template::Flute->new(specification => q{<container name="box" value="!username"/>},
-			      template => $html,
+			      template => "<html>$html</html>",
 			      values => {username => 'racke'});
 
 $out = $flute->process();
 
-ok ($out !~  m%<div class="box">USER</div>%, "Duplicate container: $out.");
+ok ($out !~  m%<html><div class="box">USER</div><html>%, "Duplicate container: $out.");
 
 # add test for containers with id attribute
 $i = 0;
 
-$html = q{<div id="box">USER</div>};
+$html = q{<html><div id="box">USER</div></html>};
 
 for my $t (@tests_id) {
     $i++;
@@ -109,15 +107,15 @@ for my $t (@tests_id) {
     $out = $flute->process();
 
     if ($t->[2]) {
-	ok($out =~ m%<div id="box">USER</div>%, "$i: $out");
+	ok($out =~ m%<html><div id="box">USER</div></html>%, "$i: $out");
     }
     else {
-	ok($out !~ m%<div id="box">USER</div>%, "$i: $out");
+	ok($out !~ m%<html><div id="box">USER</div></html>%, "$i: $out");
     }
 }
 
 # add test for container and value sharing same HTML element
-$html = q{<div class="message">MESSAGE</div>};
+$html = q{<html><div class="message">MESSAGE</div></html>};
 $spec = q{<specification>
 <container name="message" value="message">
 <value name="message" field="message"/>
@@ -132,7 +130,7 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out =~ m%<div class="message">Alright</div>%, 'container shares value with value present') || diag $out;
+ok($out =~ m%<html><div class="message">Alright</div></html>%, 'container shares value with value present') || diag $out;
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $html,
@@ -140,10 +138,10 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out !~ m%<div class="message">.*</div>%, 'container shares value with value not present') || diag $out;
+ok($out !~ m%<html><div class="message">.*</div></html>%, 'container shares value with value not present') || diag $out;
 
 # add test for container and value sharing same HTML element through ID
-$html = q{<div id="message">MESSAGE</div>};
+$html = q{<html><div id="message">MESSAGE</div></html>};
 $spec = q{<specification>
 <container name="message" value="message" id="message">
 <value name="message" field="message" id="message"/>
@@ -158,7 +156,7 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out =~ m%<div id="message">Alright</div>%, 'container shares value with value present using HTML id attribute') || diag $out;
+ok($out =~ m%<html><div id="message">Alright</div></html>%, 'container shares value with value present using HTML id attribute') || diag $out;
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $html,
@@ -166,4 +164,4 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out !~ m%<div id="message">.*</div>%, 'container shares value with value not present using HTML id attribute') || diag $out;
+ok($out !~ m%<html><div id="message">.*</div></html>%, 'container shares value with value not present using HTML id attribute') || diag $out;

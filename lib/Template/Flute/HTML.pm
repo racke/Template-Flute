@@ -2,11 +2,11 @@ package Template::Flute::HTML;
 
 use strict;
 use warnings;
-use Dancer ':syntax';
 
 use Encode;
 use File::Slurp ();
 use XML::Twig;
+use HTML::Entities;
 
 use Template::Flute::Increment;
 use Template::Flute::Container;
@@ -303,7 +303,7 @@ sub _parse_template {
 
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
-		$html_content = $$template;
+		$html_content = decode_entities($$template);
 		$xml = $twig->parse($html_content);
 	}
 	else {

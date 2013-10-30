@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Test for the code added to the POD introduction
 
@@ -11,12 +10,14 @@ use Template::Flute;
 my ($html, $xml, $html_object, $spec_object, $spec, $flute);
 	
 $html = <<'EOF';
+<html>
     <div class="customer_name">Mr A Test</div>
     <div class="customer_email">someone@example.com</div>
+</html>
 EOF
 
 $xml = <<'EOF';
-   <specification name="example" description="Example">>
+   <specification name="example" description="Example">
         <value name="customer_name" />
         <value name="customer_email" field="email" />
     </specification>

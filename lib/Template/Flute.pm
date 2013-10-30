@@ -2,7 +2,6 @@ package Template::Flute;
 
 use strict;
 use warnings;
-use Dancer ':syntax';
 
 use Template::Flute::Utils; 
 use Template::Flute::Specification::XML;
@@ -330,7 +329,6 @@ sub _bootstrap_specification {
 	my ($name, $iter);
 	
 	while (($name, $iter) = each %{$self->{iterators}}) {
-		debug "bootstrap spec $name iterator";
 		$self->{specification}->set_iterator($name, $iter);
 	}
 	
@@ -424,10 +422,9 @@ sub _sub_process {
 			my $iterator = $elt->{'att'}->{'iterator'};
 			
 			my $sub_spec = $elt->copy();
-			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0]; #Take first element
+			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0];
 			
 			unless($element_template){
-				debug "HTML element $type $spec_name not fund";
 				next;
 			}
 			
@@ -460,6 +457,7 @@ sub _sub_process {
 						for my $elt (@{$sep->{elts}}) {
 						    $sep_copy = $elt->copy();
 						    $sep_copy->paste(%paste_pos);
+						    last;
 						}
 				    }
 				}			
@@ -614,12 +612,12 @@ sub _replace_record {
 
 		# determine value used for replacements
 		$rep_str = $self->value($value, $values);
-		return undef unless defined $rep_str;
+		#return undef if ((not defined $rep_str) and (defined $value->{target}));
 		$raw = $rep_str;
 		
 		if (exists $value->{op}) {
             if ($value->{op} eq 'append' && ! $value->{target}) { 
-                $rep_str = $value->{elts}->[0]->text_only.$rep_str;
+                $rep_str = $value->{elts}->[0]->text_only.$rep_str if defined $rep_str;
             }
 		    elsif ($value->{op} eq 'toggle') {
                 if (exists $value->{args} && $value->{args} eq 'static') {
@@ -636,6 +634,7 @@ sub _replace_record {
                     }
                     return;
                 }
+                $rep_str = '' unless defined $rep_str;
 		    }
 		    elsif ($value->{op} eq 'hook') {
                 for my $elt (@$elts) {
@@ -646,7 +645,19 @@ sub _replace_record {
                 $elt_handler = $value->{op};
 		    }
 		}
+		#debug "$name has value ";
+		return undef unless defined $rep_str;
+		#debug "'$rep_str'";
 		
+		# Template specified value if value defined
+		if ($value->{value}) {
+            if ($rep_str) {
+            	$rep_str = $value->{value};
+            }
+            else {
+            	$rep_str = '';
+            }
+        }
 
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
