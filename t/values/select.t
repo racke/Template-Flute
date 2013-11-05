@@ -1,4 +1,4 @@
-#! perl -T
+use lib '/home/gregap/workspace/Template-Flute/lib';
 #
 # Dropdown tests for values.
 
@@ -15,13 +15,14 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<select class="test"></select>};
+$html = q{<html><select class="test"></select></html>};
 
 @colors = ({value => 'red'}, {value => 'black'});
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
                               iterators => {colors => \@colors},
+                              values => {colors => \@colors},
                              );
 
 $out = $flute->process();
@@ -34,7 +35,7 @@ ok ($out =~ m%<option>red</option><option>black</option>%,
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
                               iterators => {colors => \@colors},
-                              values => {test => 'black'},
+                              values => {colors => \@colors, test => 'black'},
                              );
 
 $out = $flute->process();

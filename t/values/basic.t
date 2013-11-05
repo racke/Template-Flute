@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Basic tests for values
 
@@ -36,7 +35,7 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<iframe class="test" src="test">};
+$html = q{<iframe class="test" src="test"/>};
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
@@ -45,7 +44,7 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok($out =~ m%<iframe class="test" src="/test.html">%, 'basic value target test by class')
+ok($out =~ m%<iframe class="test" src="/test.html"/>%, 'basic value target test by class')
     || diag $out;
 
 $spec = q{<specification>
@@ -53,7 +52,7 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<iframe id="test" src="test">};
+$html = q{<iframe id="test" src="test"/>};
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
@@ -61,7 +60,7 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok($out =~ m%<iframe id="test" src="/test.html">%, 'basic value target test by id')
+ok($out =~ m%<iframe id="test" src="/test.html"/>%, 'basic value target test by id')
     || diag $out;
 
 # test "field"

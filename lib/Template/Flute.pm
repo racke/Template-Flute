@@ -7,6 +7,7 @@ use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 use Template::Flute::Iterator;
+use Template::Flute::Increment;
 use Template::Flute::Paginator;
 
 =head1 NAME
@@ -393,7 +394,7 @@ sub process {
 }
 
 sub _sub_process {
-	my ($self, $html, $spec_xml,  $values, $spec, $root_template) = @_;
+	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count) = @_;
 	my ($template);
 	# Use root spec or sub-spec
 	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>");
@@ -441,15 +442,16 @@ sub _sub_process {
 			
 			my $records = $values->{$iterator};
 			my $list = $template->{lists}->{$spec_name};
-			
+			my $count = 1;
 			for my $record_values (@$records){
+				
 				my $element = $element_template->copy();
-				$element = $self->_sub_process($element, $sub_spec, $record_values);
+				$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count);
 				
 				# Get rid of flutexml container and put it into position
 				for my $e (reverse($element->cut_children())) {
 					$e->paste(%paste_pos);
-        		}
+        		}				
 
 				# Add separator
 				if ($list->{separators}) {
@@ -460,7 +462,8 @@ sub _sub_process {
 						    last;
 						}
 				    }
-				}			
+				}	
+				$count++;		
 			}
 			$element_template->cut(); # Remove template element
 			
@@ -492,6 +495,13 @@ sub _sub_process {
 			}
 			
 			for my $spec_class (@$spec_clases){
+				
+				# Increment count
+				$spec_class->{increment} = new Template::Flute::Increment(
+					increment => $spec_class->{increment}->{increment},
+					start => $count
+				) if $spec_class->{increment};
+				
 				$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
 			}
 		}
@@ -573,7 +583,8 @@ sub _replace_within_elts {
                     }
 			    }
 			    else {
-					$elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $rep_str);
+			    	$rep_str = $rep_str ? ($zref->{rep_att_orig} . $rep_str) : $zref->{rep_att_orig};
+					$elt->set_att($zref->{rep_att}, $rep_str);
 			    }
 			
 			} else {
@@ -582,8 +593,8 @@ sub _replace_within_elts {
 		} elsif ($zref->{rep_elt}) {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
-		} else {
-        	$elt->set_text($rep_str);
+		} else {			
+        	$elt->set_text($rep_str) if defined $rep_str;
 		}
 	}
 }
@@ -646,7 +657,6 @@ sub _replace_record {
 		    }
 		}
 		#debug "$name has value ";
-		return undef unless defined $rep_str;
 		#debug "'$rep_str'";
 		
 		# Template specified value if value defined
@@ -661,7 +671,9 @@ sub _replace_record {
 
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
+			$value->{increment}->increment();
 		}
+		#return undef unless defined $rep_str;
 		
 		if (ref($value->{op}) eq 'CODE') {
 		    _replace_within_elts($value, $rep_str, $value->{op}, $elts);

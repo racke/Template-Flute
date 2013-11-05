@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Basic tests for list params
 
@@ -17,12 +16,12 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<div class="list"><div class="value">TEST</div></div>};
+$html = q{<html><div class="list"><div class="value">TEST</div></div></html>};
 
 for my $value (0, 1, ' ', 'test') {
     $flute = Template::Flute->new(template => $html,
                                   specification => $spec,
-                                  iterators => {test => [{value => $value}]},
+                                  values => {test => [{value => $value}]},
     );
 
     $out = $flute->process();
@@ -39,13 +38,13 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = '<span class="approval"><span class="email">TEST</span></span>';
+$html = '<html><span class="approval"><span class="email">TEST</span></span></html>';
 
 my $value = 'LIVE';
 
 $flute = Template::Flute->new(template => $html,
                                   specification => $spec,
-                                  iterators => {approvals => [{email => $value}]},
+                                  values => {approvals => [{email => $value}]},
                              );
 
 $out = $flute->process();

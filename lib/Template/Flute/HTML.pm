@@ -316,20 +316,10 @@ sub _parse_template {
 		$xml = $twig->parse_html($html_content);
 	}
 
-	my $xmlSprint = $xml->sprint;
-
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";
 	}
-
-	# examine list on alternates
-	for my $name (keys %{$object->{lists}}) {
-		$list = $object->{lists}->{$name};
-
-		if (@{$list->[1]} > 1) {
-			$list->[2]->{alternate} = @{$list->[1]};
-		}
-	}
+	
 
 	$self->{xml} = $object->{xml} = $xml;
 
@@ -651,6 +641,7 @@ sub _set_selected {
 		$elt->cut_children($cond);
 		
 		# get options from iterator		
+		$iter->reset();
 		while ($optref = $iter->next()) {
 			my (%att, $text);
 			
