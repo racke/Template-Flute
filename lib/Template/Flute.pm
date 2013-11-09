@@ -3,6 +3,8 @@ package Template::Flute;
 use strict;
 use warnings;
 
+use Scalar::Util qw/blessed/;
+
 use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
@@ -853,14 +855,26 @@ sub process_template {
 
 sub _replace_record {
 	my ($self, $container, $type, $lel, $paste_pos, $record, $row_pos) = @_;
-	my ($param, $key, $filter, $rep_str, $att_name, $att_spec,
+	my ($param, $key, $filter, $rep_str, $att_name, $att_spec, $record_is_object,
 		$att_tag_name, $att_tag_spec, %att_tags, $att_val, $class_alt, $elt_handler);
+
+    $record_is_object = defined blessed $record;
 
 	# now fill in params
 	for $param (@{$container->params}) {
-		$key = $param->{name};
-				
-		$rep_str = $record->{$param->{field} || $key};
+        if ($param->{field}) {
+            $key = $param->{field};
+        }
+        else {
+            $key = $param->{name};
+        }
+
+        if ($record_is_object) {
+            $rep_str = $record->$key;
+        }
+        else {
+            $rep_str = $record->{$key};
+        }
 
 		if ($param->{increment}) {
 			$rep_str = $param->{increment}->value();
