@@ -20,6 +20,7 @@ WriteMakefile(
         'HTML::TreeBuilder' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 0,
+        'Scalar::Util' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-*' },
