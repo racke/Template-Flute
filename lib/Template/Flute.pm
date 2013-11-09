@@ -5,7 +5,7 @@ use warnings;
 
 use Scalar::Util qw/blessed/;
 
-use Template::Flute::Utils; 
+use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 use Template::Flute::Iterator;
