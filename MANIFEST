@@ -86,6 +86,7 @@ t/iterators/paginator.t
 t/lists/alternate-classes.t
 t/lists/append.t
 t/lists/increments.t
+t/lists/object.t
 t/lists/params.t
 t/lists/separator.t
 t/targets/01-value.t
