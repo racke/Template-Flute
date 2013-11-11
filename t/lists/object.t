@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Object tests for list params
 
@@ -40,14 +39,20 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<div class="list"><div class="value">TEST</div><div class="computed">COMPUTED</div>};
+$html = q{
+<html>	
+	<div class="list">
+		<div class="value">TEST</div>
+		<div class="computed">COMPUTED</div>
+	</div>
+</html>};
 
 for my $value (0, 1, ' ', 'test') {
     $obj = ObjectTest->new(value => $value);
 
     $flute = Template::Flute->new(template => $html,
                                   specification => $spec,
-                                  iterators => {test => [$obj]},
+                                  values => {test => [$obj]},
     );
 
     $out = $flute->process();
