@@ -3,6 +3,8 @@ package Template::Flute;
 use strict;
 use warnings;
 
+use Scalar::Util qw/blessed/;
+
 use Template::Flute::Utils; 
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
@@ -619,7 +621,7 @@ sub process_template {
 sub _replace_record {
 	my ($self, $name, $values, $value, $elts) = @_;
 	my ($key, $filter, $att_name, $att_spec,
-		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, $rep_str);
+		$att_tag_name, $att_tag_spec, %att_tags,  $elt_handler, $raw, $rep_str,);
 
 		# determine value used for replacements
 		$rep_str = $self->value($value, $values);
@@ -760,9 +762,10 @@ Returns the value for NAME.
 
 sub value {
 	my ($self, $value, $values) = @_;
-	my ($raw_value, $ref_value, $rep_str);
+	my ($raw_value, $ref_value, $rep_str, $record_is_object, $key);
 
 	$ref_value = $values;
+	$record_is_object = defined blessed $ref_value;
 	
 	if ($self->{scopes}) {
 		if (exists $value->{scope}) {
@@ -813,11 +816,13 @@ sub value {
             }
         }
         else {
-            $raw_value = $ref_value->{$value->{field}};
+        	$key = $value->{field};
+            $raw_value = $record_is_object ? $ref_value->$key : $ref_value->{$key};
         }
 	}
 	else {
-		$raw_value = $ref_value->{$value->{name}};
+       	$key = $value->{name};
+        $raw_value = $record_is_object ? $ref_value->$key : $ref_value->{$key};
 	}
 
 	if ($value->{filter}) {
