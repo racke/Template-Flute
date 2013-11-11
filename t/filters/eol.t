@@ -1,7 +1,5 @@
-#! perl -T
 #
 # Test for linebreak filter
-
 use strict;
 use warnings;
 
@@ -61,7 +59,7 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%div class="text"></div>%, "Output: $ret");
+ok($ret =~ m%div class="text"/>%, "Output: $ret");
 
 # linebreak filter (leading linebreak)
 $xml = <<EOF;

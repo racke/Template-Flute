@@ -23,16 +23,18 @@ $spec_xml = <<'EOF';
 </specification>
 EOF
 
-$template =  qq{<div class="linklist">
+$template =  qq{<html>
+	<div class="linklist">
 <span class="name">Name</span>
 <div class="link">
 <a href="#" class="url">Goto ...</a>
 </div>
-</div>};
+</div>
+</html>};
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
-							  iterators => {links => \@records});
+							  values => {links => \@records});
 
 $output = $flute->process();
 

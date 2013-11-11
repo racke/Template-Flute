@@ -65,7 +65,8 @@ sub parse {
 		$self->_add_error(error => $@);
 		return;
 	}
-
+	$self->{spec}->{xml} = $xml;
+	
 	return $self->{spec};
 }
 
@@ -82,9 +83,9 @@ sub parse_file {
 
 	$twig = $self->_initialize;
 	
-	$xml = $twig->safe_parsefile($file);
+	$self->{spec}->{xml} = $twig->safe_parsefile($file);
 
-	unless ($xml) {
+	unless ($self->{spec}->{xml}) {
 		$self->_add_error(file => $file, error => $@);
 		return;
 	}

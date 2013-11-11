@@ -6,6 +6,7 @@ use warnings;
 use Encode;
 use File::Slurp ();
 use XML::Twig;
+use HTML::Entities;
 
 use Template::Flute::Increment;
 use Template::Flute::Container;
@@ -302,7 +303,8 @@ sub _parse_template {
 
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
-		$html_content = $$template;
+		$html_content = decode_entities($$template);
+		$xml = $twig->parse($html_content);
 	}
 	else {
 		$self->{file} = $template;
@@ -311,22 +313,13 @@ sub _parse_template {
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
+		$xml = $twig->parse_html($html_content);
 	}
 
-	$xml = $twig->safe_parse_html($html_content);
-	
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";
 	}
-
-	# examine list on alternates
-	for my $name (keys %{$object->{lists}}) {
-		$list = $object->{lists}->{$name};
-
-		if (@{$list->[1]} > 1) {
-			$list->[2]->{alternate} = @{$list->[1]};
-		}
-	}
+	
 
 	$self->{xml} = $object->{xml} = $xml;
 
@@ -414,7 +407,7 @@ sub _elt_handler {
 		    if ($first_static = $list->static_class(0)) {
 			# remove static class from initial list element
 			$first_classes = $list->elt->att('class');
-			$first_classes =~ s/\s*\b$first_static\b//;
+			#$first_classes =~ s/\s*\b$first_static\b//;
 			$list->elt->set_att('class', $first_classes);
 		    }
 
@@ -493,10 +486,6 @@ sub _elt_handler {
         }
     }
     
-	if (exists $sob->{list} && exists $self->{lists}->{$sob->{list}}) {
-		return $self;
-	}
-
 	if ($sob->{type} eq 'form') {
 		$sob->{elts} = [$elt];
 
@@ -660,6 +649,7 @@ sub _set_selected {
 		$elt->cut_children($cond);
 		
 		# get options from iterator		
+		$iter->reset();
 		while ($optref = $iter->next()) {
 			my (%att, $text);
 			
@@ -716,16 +706,13 @@ sub hook_html {
 	}
 	
 	$parser = new XML::Twig ();
-	unless ($html = $parser->safe_parse_html($value)) {
+	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
 		die "Failed to parse HTML snippet: $@.\n";
 	}
 
 	$elt->cut_children();
-	
-	# locate body element
-	@ret = $html->root()->get_xpath(qq{//body});
 
-	@children = $ret[0]->cut_children();
+	@children = $html->root()->cut_children();
 	
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);

@@ -1,4 +1,4 @@
-#! perl -T
+use lib '/home/gregap/workspace/Template-Flute/lib';
 #
 # Tests for list increments
 
@@ -18,13 +18,13 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<div class="list"><span class="pos">1</span><span class="value"></span></div>};
+$html = q{<html><div class="list"><span class="pos">1</span><span class="value"></span></div></html>};
 
 $iter = [{value => 'one'}, {value => 'two'}, {value => 'three'}];
 
 $flute = Template::Flute->new(template => $html,
                            specification => $spec,
-                           iterators => {tokens => $iter},
+                           values => {tokens => $iter},
     );
 
 $out = $flute->process();

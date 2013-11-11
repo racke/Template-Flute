@@ -1,4 +1,3 @@
-#! perl -T
 #
 # Toggle tests for values
 
@@ -15,7 +14,7 @@ $spec = q{<specification>
 </specification>
 };
 
-$html = q{<div class="test">TEST</div>};
+$html = q{<html><div class="test">TEST</div></html>};
 
 for my $value (0, 1, ' ', 'test') {
     $flute = Template::Flute->new(template => $html,

@@ -23,7 +23,7 @@ sub translate {
 $i18n = Template::Flute::I18N->new(\&translate);
 
 $spec = '<specification></specification>';
-$template = '<div>Cart</div><div>Price</div>';
+$template = '<html><div>Cart</div><div>Price</div></html>';
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $template,
@@ -34,7 +34,7 @@ $output = $flute->process();
 ok($output =~ m%<div>Warenkorb</div><div>Preis</div>%, $output);
 
 $spec = '<specification><i18n class="cart" key="CART"/></specification>';
-$template = '<div class="cart">Cart</div><div>Price</div>';
+$template = '<html><div class="cart">Cart</div><div>Price</div></html>';
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $template,

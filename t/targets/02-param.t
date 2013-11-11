@@ -1,4 +1,3 @@
-#! perl -T
 #
 
 use strict;
@@ -22,11 +21,11 @@ $spec_xml = <<'EOF';
 </specification>
 EOF
 
-$template = qq{<div class="linklist"><a href="#" class="link description">$link_descriptions[0]</a></div>};
+$template = qq{<html><div class="linklist"><a href="#" class="link description">$link_descriptions[0]</a></div></html>};
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
-							  iterators => {links => [{link => $link_value}]});
+							  values => {links => [{link => $link_value}]});
 
 $output = $flute->process();
 
@@ -46,7 +45,7 @@ EOF
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
-							  iterators => {links => [{link => $link_value,
+							  values => {links => [{link => $link_value,
 													   description => $link_descriptions[1]}]});
 
 $output = $flute->process();
@@ -64,12 +63,12 @@ $spec_xml = <<'EOF';
 </specification>
 EOF
 
-$template = qq{<div class="linklist"><a href="#" class="link">$link_descriptions[0]</a></div>};
+$template = qq{<html><div class="linklist"><a href="#" class="link">$link_descriptions[0]</a></div></html>};
 
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
-							  iterators => {links => [{link => $link_value,
+							  values => {links => [{link => $link_value,
 													   description => $link_descriptions[1]}]});
 
 $output = $flute->process();
@@ -87,12 +86,12 @@ $spec_xml = <<'EOF';
 </specification>
 EOF
 
-$template = qq{<div class="linklist"><a href="/" class="link">$link_descriptions[0]</a></div>};
+$template = qq{<html><div class="linklist"><a href="/" class="link">$link_descriptions[0]</a></div></html>};
 
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
-							  iterators => {links => [{link => $link_value,
+							  values => {links => [{link => $link_value,
 													   description => $link_descriptions[1]}]});
 
 $output = $flute->process();

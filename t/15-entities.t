@@ -1,3 +1,4 @@
+use lib '/home/gregap/workspace/Template-Flute/lib';
 use strict;
 use warnings;
 use Test::More;
@@ -14,7 +15,7 @@ else {
     plan tests => 3;
 }
 
-my $layout_html = << 'HTML';
+my $layout_html = << 'EOF';
 <html>
 <head>
 <title>Test</title>
@@ -26,10 +27,19 @@ This is the default page.
 <div id="test">&nbsp;</div>
 </body>
 </html>
-HTML
+EOF
 
 my $layout_spec = q{<specification><value name="content" id="content" op="hook"/></specification>};
-my $template_html = q{<div id="body">body</div><div id="test">&nbsp; v&amp;r</div><span id="spanning" style="display:none">&nbps;</span>};
+my $template_html = << 'EOF';
+<html>
+	<head>
+	<title>Test</title>
+	</head>
+	<div id="body">body</div>
+	<div id="test">&nbsp; v&amp;r</div>
+	<span id="spanning" style="display:none">&nbps;</span>
+</html>
+EOF
 my $template_spec = q{<specification><value name="body" id="body"/><value name="none" id="spanning"/></specification>};
 
 my $flute = Template::Flute->new(specification => $template_spec,
@@ -41,7 +51,7 @@ my $flute = Template::Flute->new(specification => $template_spec,
 
 my $out = $flute->process();
 
-my $expected = q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>};
+my $expected = q{<html><div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span></html>};
 ok((index($out, $expected) >= 0),
   "body rendered");
 
