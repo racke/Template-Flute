@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0066
+    Version 0.0080
 
 SYNOPSIS
         use Template::Flute;
@@ -571,7 +571,8 @@ ACKNOWLEDGEMENTS
     Thanks to David Previous (bigpresh) for writing a much clearer
     introduction for Template::Flute.
 
-    Thanks to Grega Pompe for a documentation fix.
+    Thanks to Grega Pompe for proper implementation of nested lists and a
+    documentation fix.
 
     Thanks to Ton Verhagen for being a big supporter of my projects in all
     aspects.

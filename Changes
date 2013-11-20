@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0080 Wed Nov 20 13:40:31 2013 CET
+
+    [ENHANCEMENTS]
+
+    * Support for nested lists (Grega Pompe).
+
+    [TESTS]
+
+    * Remove tests based on Config::Scoped from list separator tests.
+
 0.0066 Tue Sep 17 09:35:22 2013 CEST
 
     [BUG FIXES]
