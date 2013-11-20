@@ -33,7 +33,6 @@ lib/Template/Flute/Iterator/JSON.pm
 lib/Template/Flute/Paginator.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
-t/boilerplate.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
