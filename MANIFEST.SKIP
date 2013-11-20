@@ -6,5 +6,7 @@
 ^scripts
 ^style
 \.bak$
+\.bak/
 \.old$
 ^lib/Template/Flute/PDF
+^lib/Template/Flute/Filter/Boolean.pm

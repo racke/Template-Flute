@@ -88,6 +88,7 @@ t/lists/increments.t
 t/lists/object.t
 t/lists/params.t
 t/lists/separator.t
+t/object.t
 t/targets/01-value.t
 t/targets/02-param.t
 t/test-twig.t
