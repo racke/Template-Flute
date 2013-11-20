@@ -572,7 +572,7 @@ sub _elt_indicate_replacements {
             $elt->{"flute_$name"}->{rep_text_orig} = $elt->text_only;
             $elt->{"flute_$name"}->{rep_sub} = sub {
                 my ($elt, $str) = @_;
-
+				$str ||= '';
                 $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $str);
             };
         }

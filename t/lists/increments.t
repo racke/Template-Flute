@@ -1,5 +1,3 @@
-use lib '/home/gregap/workspace/Template-Flute/lib';
-#
 # Tests for list increments
 
 use strict;

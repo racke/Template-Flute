@@ -629,10 +629,7 @@ sub _replace_record {
 		$raw = $rep_str;
 		
 		if (exists $value->{op}) {
-            if ($value->{op} eq 'append' && ! $value->{target}) { 
-                $rep_str = $value->{elts}->[0]->text_only.$rep_str if defined $rep_str;
-            }
-		    elsif ($value->{op} eq 'toggle') {
+            if ($value->{op} eq 'toggle') {
                 if (exists $value->{args} && $value->{args} eq 'static') {
                     if ($rep_str) {
                         # preserve static text, like a container

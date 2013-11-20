@@ -1,4 +1,3 @@
-use lib '/home/gregap/workspace/Template-Flute/lib';
 
 #
 # Object tests for list params
