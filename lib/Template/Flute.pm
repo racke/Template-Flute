@@ -1337,7 +1337,8 @@ L<http://search.cpan.org/dist/Template-Flute/>
 Thanks to David Previous (bigpresh) for writing a much clearer introduction for
 Template::Flute.
 
-Thanks to Grega Pompe for a documentation fix.
+Thanks to Grega Pompe for proper implementation of nested lists and
+a documentation fix.
 
 Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
 
