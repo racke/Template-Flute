@@ -1,5 +1,3 @@
-use lib '/home/gregap/workspace/Template-Flute/lib';
-#
 # Dropdown tests for values.
 
 use strict;

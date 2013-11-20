@@ -1,5 +1,4 @@
 #! perl
-use lib '/home/gregap/workspace/Template-Flute/lib';
 
 use strict;
 use warnings;
