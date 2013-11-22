@@ -422,8 +422,7 @@ sub _sub_process {
 		# List
 		if( $type eq 'list' or $type eq 'form'  ){
 			my $sep_copy;
-			my $iterator = $elt->{'att'}->{'iterator'};
-			
+			my $iterator = $elt->{'att'}->{'iterator'} || '';
 			my $sub_spec = $elt->copy();
 			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0];
 			
