@@ -22,6 +22,12 @@ WriteMakefile(
         'Moo' => 0,
         'Scalar::Util' => 0,
     },
+    META_MERGE        => {
+        resources => {
+            repository  => 'https://github.com/racke/Template-Flute.git',
+            bugtracker  => 'https://github.com/racke/Template-Flute/issues',
+        },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-*' },
     test                => { TESTS => join( ' ', (glob( 't/*.t'), glob('t/*/*.t')))},

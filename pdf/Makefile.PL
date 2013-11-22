@@ -21,6 +21,12 @@ WriteMakefile(
 	'PDF::API2' => 0,
         'Image::Size' => 0,
     },
+    META_MERGE        => {
+        resources => {
+            repository  => 'https://github.com/racke/Template-Flute.git',
+            bugtracker  => 'https://github.com/racke/Template-Flute/issues',
+        },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Flute-PDF-*' },
 );
