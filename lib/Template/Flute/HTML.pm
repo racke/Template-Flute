@@ -304,7 +304,7 @@ sub _parse_template {
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
 		$html_content = decode_entities($$template);
-		$xml = $twig->parse($html_content);
+		$xml = $twig->parse_html($html_content);
 	}
 	else {
 		$self->{file} = $template;
