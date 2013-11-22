@@ -74,10 +74,10 @@ for my $t (@tests) {
     $out = $flute->process();
 
     if ($t->[2]) {
-	ok($out =~ m%<html><div class="box">USER</div></html>%, "$i: $out");
+	ok($out =~ m%<html><head></head><body><div class="box">USER</div></body></html>%, "$i: $out");
     }
     else {
-	ok($out !~ m%<html><div class="box">USER</div></html>%, "$i: $out");
+	ok($out !~ m%<html><head></head><body><div class="box">USER</div></body></html>%, "$i: $out");
     }
 }
 
@@ -107,10 +107,12 @@ for my $t (@tests_id) {
     $out = $flute->process();
 
     if ($t->[2]) {
-	ok($out =~ m%<html><div id="box">USER</div></html>%, "$i: $out");
+        ok($out =~ m%<html><head></head><body><div id="box">USER</div></body></html>%, "$i: $out")
+            || diag $out;
     }
     else {
-	ok($out !~ m%<html><div id="box">USER</div></html>%, "$i: $out");
+        ok($out !~ m%<html><div id="box">USER</div></html>%, "$i: $out")
+            || diag $out;
     }
 }
 
@@ -130,7 +132,7 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out =~ m%<html><div class="message">Alright</div></html>%, 'container shares value with value present') || diag $out;
+ok($out =~ m%<html><head></head><body><div class="message">Alright</div></body></html>%, 'container shares value with value present') || diag $out;
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $html,
@@ -138,7 +140,7 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out !~ m%<html><div class="message">.*</div></html>%, 'container shares value with value not present') || diag $out;
+ok($out !~ m%<html><head></head><body><div class="message">.*</div></body></html>%, 'container shares value with value not present') || diag $out;
 
 # add test for container and value sharing same HTML element through ID
 $html = q{<html><div id="message">MESSAGE</div></html>};
@@ -156,7 +158,7 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out =~ m%<html><div id="message">Alright</div></html>%, 'container shares value with value present using HTML id attribute') || diag $out;
+ok($out =~ m%<html><head></head><body><div id="message">Alright</div></body></html>%, 'container shares value with value present using HTML id attribute') || diag $out;
 
 $flute = Template::Flute->new(specification => $spec,
 			      template => $html,
@@ -164,4 +166,4 @@ $flute = Template::Flute->new(specification => $spec,
 
 $out = $flute->process();
 
-ok($out !~ m%<html><div id="message">.*</div></html>%, 'container shares value with value not present using HTML id attribute') || diag $out;
+ok($out !~ m%<html><head></head><body><div id="message">.*</div></body></html>%, 'container shares value with value not present using HTML id attribute') || diag $out;
