@@ -37,7 +37,7 @@ sub twig {
 	}
 
 	# add HTML linebreak
-	push (@elts, XML::Twig::Elt->new('br '));
+	push (@elts, XML::Twig::Elt->new(br   => '#EMPTY'));
     }
 
     # pop last HTML linebreak

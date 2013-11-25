@@ -1,6 +1,5 @@
 #
 # Tests for separators
-
 use strict;
 use warnings;
 
@@ -20,7 +19,7 @@ $spec = q{<specification>
 $iter = [{key => 'FOO'}, {key => 'BAR'}];
 
 # first test: separator outside the list
-$html_outside = q{<html><div class="list"><span class="key">KEY</span></div><span class="sep"> | </span></html>};
+$html_outside = q{<div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>};
 
 $tf = Template::Flute->new(template => $html_outside,
 			   specification => $spec,
@@ -29,10 +28,10 @@ $tf = Template::Flute->new(template => $html_outside,
 
 $out = $tf->process();
 
-ok ($out =~ m%<html><div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div></html>%, "Out: $out.");
+ok ($out =~ m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
 
 # second test: separator inside the list
-$html_inside = q{<html><div class="list"><span class="key">KEY</span><span class="sep"> | </span></div></html>};
+$html_inside = q{<div class="list"><span class="key">KEY</span><span class="sep"> | </span></div>};
 
 $tf = Template::Flute->new(template => $html_inside,
 			   specification => $spec,
@@ -41,4 +40,4 @@ $tf = Template::Flute->new(template => $html_inside,
 
 $out = $tf->process();
 
-ok ($out =~ m%<html><div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div></html>%, "Out: $out.");
+ok ($out =~ m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");

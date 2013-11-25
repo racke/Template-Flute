@@ -267,7 +267,7 @@ sub new {
 }
 
 sub _bootstrap {
-	my ($self) = @_;
+	my ($self, $snippet) = @_;
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
 	
 	unless ($self->{specification}) {
@@ -283,7 +283,7 @@ sub _bootstrap {
 		$self->_bootstrap_specification(file => $self->{specification_file});
 	}
 
-	$self->_bootstrap_template(file => $self->{template_file});
+	$self->_bootstrap_template(file => $self->{template_file}, $snippet);
 }
 
 sub _bootstrap_specification {
@@ -339,17 +339,17 @@ sub _bootstrap_specification {
 }
 
 sub _bootstrap_template {
-	my ($self, $source, $template) = @_;
+	my ($self, $source, $template, $snippet) = @_;
 	my ($template_object);
 
 	$template_object = new Template::Flute::HTML;
 	
 	if ($source eq 'file') {
-		$template_object->parse_file($template, $self->{specification});
+		$template_object->parse_file($template, $self->{specification}, $snippet);
 		$self->{template} = $template_object;
 	}
 	elsif ($source eq 'string') {
-		$template_object->parse($template, $self->{specification});
+		$template_object->parse($template, $self->{specification}, $snippet);
 		$self->{template} = $template_object;
 	}
 
@@ -376,7 +376,7 @@ sub process {
 	
 
 	unless ($self->{template}) {
-		$self->_bootstrap();
+		$self->_bootstrap($params->{snippet});
 	}
 	
 	if ($self->{i18n}) {
@@ -390,6 +390,7 @@ sub process {
 		$self->{'values'},
 		$self->{specification},
 		$self->{template}, 
+		
 		);
 	my $shtml = $html->sprint;
 	return $shtml;
@@ -399,14 +400,14 @@ sub _sub_process {
 	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count) = @_;
 	my ($template);
 	# Use root spec or sub-spec
-	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>");
+	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>", 1);
 	
 	if($root_template){
 		$template = $root_template;
 	}
 	else {
 		$template = new Template::Flute::HTML;
-		$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification);
+		$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification, 1);
 	}
 	
 	my $classes = $specification->{classes};

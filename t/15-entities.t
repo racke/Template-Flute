@@ -50,7 +50,7 @@ my $flute = Template::Flute->new(specification => $template_spec,
 
 my $out = $flute->process();
 
-my $expected = q{<html><div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span></html>};
+my $expected = q{<div id="body">v&amp;r</div><div id="test">  v&amp;r</div><span id="spanning" style="display:none">hello</span>};
 ok((index($out, $expected) >= 0),
   "body rendered");
 

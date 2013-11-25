@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-
 use Test::More tests => 2;
 use Template::Flute;
 
@@ -15,14 +14,12 @@ my $spec = <<EOF;
 EOF
 
 my $html = <<EOF;
-<html>
 	<form name="colors">
 		<input type="checkbox" name="color" value="red" />
 		<input type="checkbox" name="color" value="blue" />
 		<input type="checkbox" name="color" value="green" />
 		<input type="submit" value="OK" />
 	</form>
-</html>
 EOF
 
 process_form({red => 0, blue => 1, green => 0});
@@ -56,7 +53,7 @@ sub process_form {
     $match = $out;
 
     # match input HTML tags
-    while ($match =~ s%<input( checked="checked")? name="color" type="checkbox" value="(.*?)"/>%%) {
+    while ($match =~ s%<input( checked="checked")? name="color" type="checkbox" value="(.*?)" />%%) {
         if ($1) {
             $colors_found{$2} = 1;
         }
