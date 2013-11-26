@@ -59,7 +59,7 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%div class="text"/>%, "Output: $ret");
+ok($ret =~ m%div class="text"></div>%, "Output: $ret");
 
 # linebreak filter (leading linebreak)
 $xml = <<EOF;

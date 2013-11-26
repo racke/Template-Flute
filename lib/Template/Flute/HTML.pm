@@ -261,14 +261,14 @@ of a L<Template::Flute::Specification> object SPECOBJECT.
 =cut
 
 sub parse {
-	my ($self, $template, $spec_object) = @_;
+	my ($self, $template, $spec_object, $snippet) = @_;
 	my ($object);
 	
 	if (ref($template) eq 'SCALAR') {
-		$object = $self->_parse_template($template, $spec_object);
+		$object = $self->_parse_template($template, $spec_object, $snippet);
 	}
 	else {
-		$object = $self->_parse_template(\$template, $spec_object);
+		$object = $self->_parse_template(\$template, $spec_object, $snippet);
 	}
 
 	return $object;
@@ -282,13 +282,13 @@ of a L<Template::Flute::Specification> object SPECOBJECT.
 =cut
 	
 sub parse_file {
-	my ($self, $template_file, $spec_object) = @_;
+	my ($self, $template_file, $spec_object, $snippet) = @_;
 
-	return $self->_parse_template($template_file, $spec_object);
+	return $self->_parse_template($template_file, $spec_object, $snippet);
 }
 
 sub _parse_template {
-	my ($self, $template, $spec_object) = @_;
+	my ($self, $template, $spec_object, $snippet) = @_;
 	my ($twig, %twig_args, $xml, $object, $list, $html_content, $encoding);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
@@ -304,7 +304,6 @@ sub _parse_template {
 	if (ref($template) eq 'SCALAR') {
 		$self->{file} = '';
 		$html_content = decode_entities($$template);
-		$xml = $twig->parse_html($html_content);
 	}
 	else {
 		$self->{file} = $template;
@@ -313,8 +312,8 @@ sub _parse_template {
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
-		$xml = $twig->parse_html($html_content);
 	}
+	$xml = $snippet ? $twig->parse($html_content) : $twig->parse_html($html_content);
 
 	unless ($xml) {
 		die "Invalid HTML template: $template: $@\n";
