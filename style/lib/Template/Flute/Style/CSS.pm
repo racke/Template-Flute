@@ -13,7 +13,7 @@ use constant SIDE_NAMES => qw/top right bottom left/;
 # default font size - used for the calucation of 1em
 use constant FONT_SIZE => '12';
 
-our $VERSION = '0.0031';
+our $VERSION = '0.0081';
 
 # block elements
 my %block_elements = (address => 1,
@@ -41,7 +41,7 @@ Template::Flute::Style::CSS - CSS parser class for Template::Flute
 
 =head1 VERSION
 
-Version 0.0031
+Version 0.0081
 
 =head1 CONSTRUCTOR
 
