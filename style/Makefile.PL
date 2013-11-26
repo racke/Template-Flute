@@ -14,7 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'CSS::Tiny' => 0,
-        'Template::Flute' => 0.0005,
+        'Template::Flute' => 0.0081,
     },
     META_MERGE        => {
         resources => {
