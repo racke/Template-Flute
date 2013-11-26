@@ -1,5 +1,14 @@
 Revision history for Template::Flute
 
+0.0081 Tue Nov 26 10:29:41 2013 CET
+
+    [BUG FIXES]
+
+    * Use XML:Twig's parse_html method only for root templates and 
+      parse for inner snippets (Grega Pompe, GH #15).
+    * Fix parsing method for templates passed as a scalar reference.
+    * Prevent warning from uninitialized iterator attribute.
+
 0.0080 Wed Nov 20 13:40:31 2013 CET
 
     [ENHANCEMENTS]
