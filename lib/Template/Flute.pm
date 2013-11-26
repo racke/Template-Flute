@@ -413,61 +413,67 @@ sub _sub_process {
 	my $classes = $specification->{classes};
 	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
 	
-	# Replace values
+	# Read one layer of spec
+	my $spec_elements = {};
 	for my $elt ( $spec_xml->descendants() ){
+		my $type = $elt->tag;
+		$spec_elements->{$type} ||= [];
+		push @{$spec_elements->{$type}}, $elt;
+		
+	}	
+	
+	## Replace values
+		
+	# List
+	for my $elt ( @{$spec_elements->{list}}, @{$spec_elements->{form}} ){
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
-		my $spec_id = $elt->{'att'}->{'id'};
-		my $type = $elt->tag;
+		my $sep_copy;
+		my $iterator = $elt->{'att'}->{'iterator'} || '';
+		my $sub_spec = $elt->copy();
+		my $element_template = $classes->{$spec_class}->[0]->{elts}->[0];
 		
-		# List
-		if( $type eq 'list' or $type eq 'form'  ){
-			my $sep_copy;
-			my $iterator = $elt->{'att'}->{'iterator'} || '';
-			my $sub_spec = $elt->copy();
-			my $element_template = $classes->{$spec_class}->[0]->{elts}->[0];
+		unless($element_template){
+			next;
+		}
+		
+		if ($element_template->is_last_child()) {			
+			%paste_pos = (last_child => $element_template->parent());
+		}
+		elsif ($element_template->next_sibling()) {
+			%paste_pos = (before => $element_template->next_sibling());
+		}
+		else {
+			# list is root element in the template
+			%paste_pos = (last_child => $html);
+		}
 			
-			unless($element_template){
-				next;
-			}
+		my $records = $values->{$iterator};
+		my $list = $template->{lists}->{$spec_name};
+		my $count = 1;
+		for my $record_values (@$records){
 			
-			if ($element_template->is_last_child()) {			
-				%paste_pos = (last_child => $element_template->parent());
-			}
-			elsif ($element_template->next_sibling()) {
-				%paste_pos = (before => $element_template->next_sibling());
-			}
-			else {
-				# list is root element in the template
-				%paste_pos = (last_child => $html);
-			}
+			my $element = $element_template->copy();
+			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count);
 			
-			my $records = $values->{$iterator};
-			my $list = $template->{lists}->{$spec_name};
-			my $count = 1;
-			for my $record_values (@$records){
-				
-				my $element = $element_template->copy();
-				$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count);
-				
-				# Get rid of flutexml container and put it into position
-				for my $e (reverse($element->cut_children())) {
-					$e->paste(%paste_pos);
-        		}				
+			# Get rid of flutexml container and put it into position
+			for my $e (reverse($element->cut_children())) {
+				$e->paste(%paste_pos);
+       		}				
 
-				# Add separator
-				if ($list->{separators}) {
-				    for my $sep (@{$list->{separators}}) {
-						for my $elt (@{$sep->{elts}}) {
-						    $sep_copy = $elt->copy();
-						    $sep_copy->paste(%paste_pos);
-						    last;
-						}
-				    }
-				}	
-				$count++;		
-			}
-			$element_template->cut(); # Remove template element
+			# Add separator
+			if ($list->{separators}) {
+			    for my $sep (@{$list->{separators}}) {
+					for my $elt (@{$sep->{elts}}) {
+					    $sep_copy = $elt->copy();
+					    $sep_copy->paste(%paste_pos);
+					    last;
+					}
+			    }
+			}	
+			$count++;		
+		}
+		$element_template->cut(); # Remove template element
 			
 			if ($sep_copy) {
 			    # Remove last separator and original one(s) in the template
@@ -481,33 +487,36 @@ sub _sub_process {
 			}
 		}
 		
-		# Values
-		elsif( $type eq 'value' or $type eq 'param' or $type eq 'field'){
-			
-			# Use CLASS or ID if set
-			my $spec_clases = [];
-			if ($spec_id){
-				$spec_clases = $specification->{ids}->{$spec_id};
-			}
-			else {
-				$spec_clases = $classes->{$spec_class};
-			}
-			if ($spec_name eq 'label'){
-				1;
-			}
-			
-			for my $spec_class (@$spec_clases){
-				
-				# Increment count
-				$spec_class->{increment} = new Template::Flute::Increment(
-					increment => $spec_class->{increment}->{increment},
-					start => $count
-				) if $spec_class->{increment};
-				
-				$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
-			}
+	# Values
+	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
+		my $spec_id = $elt->{'att'}->{'id'};
+		my $spec_name = $elt->{'att'}->{'name'};
+		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
+		
+		# Use CLASS or ID if set
+		my $spec_clases = [];
+		if ($spec_id){
+			$spec_clases = $specification->{ids}->{$spec_id};
 		}
-  	}
+		else {
+			$spec_clases = $classes->{$spec_class};
+		}
+		if ($spec_name eq 'label'){
+			1;
+		}
+		
+		for my $spec_class (@$spec_clases){
+			
+			# Increment count
+			$spec_class->{increment} = new Template::Flute::Increment(
+				increment => $spec_class->{increment}->{increment},
+				start => $count
+			) if $spec_class->{increment};
+			
+			$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
+		}
+	}
+  	
 	
 	for my $container ($template->containers()) {
 		$container->set_values($values) if $values;
