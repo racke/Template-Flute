@@ -1,5 +1,12 @@
 Revision history for Template::Flute::Style::CSS
 
+0.0081 Tue Nov 26 10:53:22 2013 CET
+
+    [BUG FIXES]
+
+    * Bump up requisite on Template::Flute to 0.0081 to prevent
+      using buggy version 0.0080 (rt.cpan.org #90610).
+
 0.0031 Wed Jun 20 18:17:50 2012 CEST
 
     [BUG FIXES]
