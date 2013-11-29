@@ -528,7 +528,7 @@ sub _sub_process {
 		}
 	}
 
-	return $template->{xml}->root();	
+	return $count ? $template->{xml}->root() : $template->{xml};	
 }
 
 sub _paging_link {
