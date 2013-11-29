@@ -594,8 +594,8 @@ sub _replace_within_elts {
                     }
 			    }
 			    else {
-			    	$rep_str = $rep_str ? ($zref->{rep_att_orig} . $rep_str) : $zref->{rep_att_orig};
-					$elt->set_att($zref->{rep_att}, $rep_str);
+			    	my $rep_str_appended = $rep_str ? ($zref->{rep_att_orig} . $rep_str) : $zref->{rep_att_orig};
+					$elt->set_att($zref->{rep_att}, $rep_str_appended);
 			    }
 			
 			} else {
