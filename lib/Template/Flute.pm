@@ -599,7 +599,12 @@ sub _replace_within_elts {
 			    }
 			
 			} else {
-				$elt->set_att($zref->{rep_att}, $rep_str);
+				if (defined $rep_str){
+					$elt->set_att($zref->{rep_att}, $rep_str);
+				}
+				else {
+					$elt->del_att($zref->{rep_att});
+				}
 			}
 		} elsif ($zref->{rep_elt}) {
 			# use provided text element for replacement
