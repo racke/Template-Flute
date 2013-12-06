@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0081
+    Version 0.0082
 
 SYNOPSIS
         use Template::Flute;

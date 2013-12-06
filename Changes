@@ -1,5 +1,18 @@
 Revision history for Template::Flute
 
+0.0082 Fri Dec  6 09:52:29 2013 CET
+
+    [BUG FIXES]
+
+    * Delete HTML attributes with undefined value to prevent Perl warnings
+      and improper HTML (Grega Pompe, GH #16 #17)
+
+    * Fix problem with HTML doctype (Grega Pompe)
+
+    * Fix problem with append operation (Grega Pompe)
+
+    * Lists before values, preventing same name value leak (Grega Pompe)
+
 0.0081 Tue Nov 26 10:29:41 2013 CET
 
     [BUG FIXES]
