@@ -447,8 +447,25 @@ sub _sub_process {
 			# list is root element in the template
 			%paste_pos = (last_child => $html);
 		}
-			
-		my $records = $values->{$iterator};
+
+        my @iter_steps = split(/\./, $iterator);
+        my $iter_ref = $values;
+        my $records;
+
+        for my $step (@iter_steps) {
+            if (defined blessed $iter_ref) {
+                $records = $iter_ref->$step;
+                $iter_ref = {};
+            }
+            elsif (ref($iter_ref->{$step})) {
+                       $iter_ref = $iter_ref->{$step};
+               }
+            else {
+                $records = $iter_ref->{$step};
+                $iter_ref = {};
+            }
+        }
+
 		my $list = $template->{lists}->{$spec_name};
 		my $count = 1;
 		for my $record_values (@$records){
