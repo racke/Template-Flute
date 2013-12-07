@@ -811,9 +811,13 @@ sub value {
             $raw_value = $ref_value;
 
             for $lookup (@{$value->{field}}) {
-                if (ref($raw_value)
-                    && exists $raw_value->{$lookup}) {
-                    $raw_value = $raw_value->{$lookup};
+                if (ref($raw_value)) {
+                    if (defined blessed $raw_value) {
+                        $raw_value = $raw_value->$lookup;
+                    }
+                    elsif (exists $raw_value->{$lookup}) {
+                        $raw_value = $raw_value->{$lookup};
+                    }
                 }
                 else {
                     $raw_value = '';
