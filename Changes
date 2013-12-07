@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0090 Sat Dec  7 21:11:17 2013 CET
+
+    [ENHANCEMENTS]
+
+    * Check for object in values hash with dotted values for field attribute.
+    * Get iterator from dotted value and use methods of objects.
+
 0.0082 Fri Dec  6 09:52:29 2013 CET
 
     [BUG FIXES]
