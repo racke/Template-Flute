@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0091 Sun Dec  8 11:35:13 2013 CET
+
+    [BUG FIXES]
+
+    * Fix bug in iterator resolution.
+
 0.0090 Sat Dec  7 21:11:17 2013 CET
 
     [ENHANCEMENTS]
