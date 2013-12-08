@@ -458,8 +458,9 @@ sub _sub_process {
                 $iter_ref = {};
             }
             elsif (ref($iter_ref->{$step})) {
-                       $iter_ref = $iter_ref->{$step};
-               }
+                $records = $iter_ref->{$step};
+                $iter_ref = $iter_ref->{$step};
+            }
             else {
                 $records = $iter_ref->{$step};
                 $iter_ref = {};
