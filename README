@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0091
+    Version 0.0092
 
 SYNOPSIS
         use Template::Flute;
@@ -417,6 +417,54 @@ ITERATORS
           <option value="red">Red</option>
           <option value="black" selected="selected">Black</option>
           </select>
+
+    Custom iterators for dropdowns
+    By default, the iterator for a dropdown is an arrayref of hashrefs with
+    two hardcoded keys: `value' and (optionally) `label'. You can override
+    this behaviour in the specification with `iterator_value_key' and
+    `iterator_name_key' to use your own hashref's keys from the iterator,
+    instead of `value' and `label'.
+
+    Specification:
+
+      <specification>
+        <value name="color" iterator="colors"
+               iterator_value_key="code" iterator_name_key="name"/>
+      </specification>
+
+    Template:
+
+      <html>
+       <select class="color">
+       <option value="example">Example</option>
+       </select>
+      </html>
+
+    Code:
+
+      @colors = ({code => 'red', name => 'Red'},
+                 {code => 'black', name => 'Black'},
+                );
+  
+      $flute = Template::Flute->new(template => $html,
+                                    specification => $spec,
+                                    iterators => {colors => \@colors},
+                                    values => { color => 'black' },
+                                   );
+  
+      $out = $flute->process();
+
+    Output:
+
+      <html>
+       <head></head>
+       <body>
+        <select class="color">
+         <option value="red">Red</option>
+         <option selected="selected" value="black">Black</option>
+        </select>
+       </body>
+      </html>
 
 LISTS
     Lists can be accessed after parsing the specification and the HTML

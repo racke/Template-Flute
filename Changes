@@ -1,5 +1,14 @@
 Revision history for Template::Flute
 
+0.0092 Thu Dec 19 13:51:47 2013 CET
+
+    [ENHANCEMENTS]
+
+    * Add new specification attributes iterator_value_key and
+      iterator_name_key to select fields used in populating dropdowns.
+    * Add object detection to iterators used in value and field
+      specification elements.
+
 0.0091 Sun Dec  8 11:35:13 2013 CET
 
     [BUG FIXES]
