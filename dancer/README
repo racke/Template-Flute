@@ -2,7 +2,7 @@ NAME
     Dancer::Template::TemplateFlute - Template::Flute wrapper for Dancer
 
 VERSION
-    Version 0.0061
+    Version 0.0092
 
 DESCRIPTION
     This class is an interface between Dancer's template engine abstraction
@@ -57,6 +57,137 @@ DESCRIPTION
   FORMS
     Dancer::Template::TemplateFlute includes a form plugin
     Dancer::Plugin::Form, which supports Template::Flute forms.
+
+    The token `form' is reserved for forms. It can be a single
+    Dancer::Plugin::Form object or an arrayref of Dancer::Plugin::Form
+    objects.
+
+    Typical usage for a single form.
+    XML Specification
+      <specification>
+      <form name="registration" link="name">
+      <field name="email"/>
+      <field name="password"/>
+      <field name="verify"/>
+      </form>
+      </specification>
+
+    HTML
+      <form class="frm-default" name="registration" action="/register" method="POST">
+            <fieldset>
+              <div class="reg-info">Info</div>
+              <ul>
+                    <li>
+                      <label>Email</label>
+                      <input type="text" name="email"/>
+                    </li>
+                    <li>
+                      <label>Password</label>
+                      <input type="text" name="password"/>
+                    </li>
+                    <li>
+                      <label>Confirm password</label>
+                      <input type="text" name="verify" />
+                    </li>
+                    <li>
+                      <input type="submit" value="Register" class="btn-submit" />
+                    </li>
+              </ul>
+            </fieldset>
+      </form>
+
+    Code
+      any [qw/get post/] => '/register' => sub {
+          my $form = form('registration');
+          my %values = %{$form->values};
+          # VALIDATE, filter, etc. the values
+          $form->fill(\%values);
+          template register => {form => $form };
+      };
+
+    Usage example for multiple forms
+    Specification
+      <specification>
+      <form name="registrationtest" link="name">
+      <field name="emailtest"/>
+      <field name="passwordtest"/>
+      <field name="verifytest"/>
+      </form>
+      <form name="logintest" link="name">
+      <field name="emailtest_2"/>
+      <field name="passwordtest_2"/>
+      </form>
+      </specification>
+
+    HTML
+      <h1>Register</h1>
+      <form class="frm-default" name="registrationtest" action="/multiple" method="POST">
+            <fieldset>
+              <div class="reg-info">Info</div>
+              <ul>
+                    <li>
+                      <label>Email</label>
+                      <input type="text" name="emailtest"/>
+                    </li>
+                    <li>
+                      <label>Password</label>
+                      <input type="text" name="passwordtest"/>
+                    </li>
+                    <li>
+                      <label>Confirm password</label>
+                      <input type="text" name="verifytest" />
+                    </li>
+                    <li>
+                      <input type="submit" name="register" value="Register" class="btn-submit" />
+                    </li>
+              </ul>
+            </fieldset>
+      </form>
+      <h1>Login</h1>
+      <form class="frm-default" name="logintest" action="/multiple" method="POST">
+            <fieldset>
+              <div class="reg-info">Info</div>
+              <ul>
+                    <li>
+                      <label>Email</label>
+                      <input type="text" name="emailtest_2"/>
+                    </li>
+                    <li>
+                      <label>Password</label>
+                      <input type="text" name="passwordtest_2"/>
+                    </li>
+                    <li>
+                      <input type="submit" name="login" value="Login" class="btn-submit" />
+                    </li>
+              </ul>
+            </fieldset>
+      </form>
+
+    Code
+      any [qw/get post/] => '/multiple' => sub {
+          my $login = form('logintest');
+          debug to_dumper({params});
+          if (params->{login}) {
+              my %vals = %{$login->values};
+              # VALIDATE %vals here
+              $login->fill(\%vals);
+          }
+          else {
+              # pick from session
+              $login->fill;
+          }
+          my $registration = form('registrationtest');
+          if (params->{register}) {
+              my %vals = %{$registration->values};
+              # VALIDATE %vals here
+              $registration->fill(\%vals);
+          }
+          else {
+              # pick from session
+              $registration->fill;
+          }
+          template multiple => { form => [ $login, $registration ] };
+      };
 
 METHODS
   default_tmpl_ext
