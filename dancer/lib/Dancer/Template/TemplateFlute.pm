@@ -77,7 +77,147 @@ Filter options and classes can be specified in the configuration file as below.
 
 Dancer::Template::TemplateFlute includes a form plugin L<Dancer::Plugin::Form>,
 which supports L<Template::Flute> forms.
-    
+
+The token C<form> is reserved for forms. It can be a single
+L<Dancer::Plugin::Form> object or an arrayref of
+L<Dancer::Plugin::Form> objects.
+
+=head3 Typical usage for a single form.
+
+=head4 XML Specification
+
+  <specification>
+  <form name="registration" link="name">
+  <field name="email"/>
+  <field name="password"/>
+  <field name="verify"/>
+  </form>
+  </specification>
+
+=head4 HTML
+
+  <form class="frm-default" name="registration" action="/register" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="email"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="password"/>
+		</li>
+		<li>
+		  <label>Confirm password</label>
+		  <input type="text" name="verify" />
+		</li>
+		<li>
+		  <input type="submit" value="Register" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+
+=head4 Code
+
+  any [qw/get post/] => '/register' => sub {
+      my $form = form('registration');
+      my %values = %{$form->values};
+      # VALIDATE, filter, etc. the values
+      $form->fill(\%values);
+      template register => {form => $form };
+  };
+
+=head3 Usage example for multiple forms
+
+=head4 Specification
+
+  <specification>
+  <form name="registrationtest" link="name">
+  <field name="emailtest"/>
+  <field name="passwordtest"/>
+  <field name="verifytest"/>
+  </form>
+  <form name="logintest" link="name">
+  <field name="emailtest_2"/>
+  <field name="passwordtest_2"/>
+  </form>
+  </specification>
+
+=head4 HTML
+
+  <h1>Register</h1>
+  <form class="frm-default" name="registrationtest" action="/multiple" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="emailtest"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="passwordtest"/>
+		</li>
+		<li>
+		  <label>Confirm password</label>
+		  <input type="text" name="verifytest" />
+		</li>
+		<li>
+		  <input type="submit" name="register" value="Register" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+  <h1>Login</h1>
+  <form class="frm-default" name="logintest" action="/multiple" method="POST">
+	<fieldset>
+	  <div class="reg-info">Info</div>
+	  <ul>
+		<li>
+		  <label>Email</label>
+		  <input type="text" name="emailtest_2"/>
+		</li>
+		<li>
+		  <label>Password</label>
+		  <input type="text" name="passwordtest_2"/>
+		</li>
+		<li>
+		  <input type="submit" name="login" value="Login" class="btn-submit" />
+		</li>
+	  </ul>
+	</fieldset>
+  </form>
+
+
+=head4 Code
+
+  any [qw/get post/] => '/multiple' => sub {
+      my $login = form('logintest');
+      debug to_dumper({params});
+      if (params->{login}) {
+          my %vals = %{$login->values};
+          # VALIDATE %vals here
+          $login->fill(\%vals);
+      }
+      else {
+          # pick from session
+          $login->fill;
+      }
+      my $registration = form('registrationtest');
+      if (params->{register}) {
+          my %vals = %{$registration->values};
+          # VALIDATE %vals here
+          $registration->fill(\%vals);
+      }
+      else {
+          # pick from session
+          $registration->fill;
+      }
+      template multiple => { form => [ $login, $registration ] };
+  };
+
 =head1 METHODS
 
 =head2 default_tmpl_ext
@@ -153,45 +293,92 @@ sub render ($$$) {
 	}
 
 	# check for forms
-	my (@forms, $iter, $action);
-	
-	if (@forms = $flute->template->forms()) {
-	    if (@forms == 1) {
-		# select correct form
-		if ($tokens->{form} && ($tokens->{form}->name eq 'main' 
-		    || $tokens->{form}->name eq $forms[0]->name)) {
-
-		    for my $name ($forms[0]->iterators) {
-			if (ref($tokens->{$name}) eq 'ARRAY') {
-			    $iter = Template::Flute::Iterator->new($tokens->{$name});
-			    $flute->specification->set_iterator($name, $iter);
-			}
-		    }
-
-            if ($action = $tokens->{form}->action()) {
-                $forms[0]->set_action($action);
-            }
-
-		    $tokens->{form}->fields([map {$_->{name}} @{$forms[0]->fields()}]);
-		    $forms[0]->fill($tokens->{form}->fill());
-
-		    if (Dancer::Config::settings->{session}) {
-			$tokens->{form}->to_session;
-		    }
-		}
-		else {
-		    Dancer::Logger::debug('Missing form parameters for form ' . $forms[0]->name);
-		}
-	    }
-	    else {
-		die "Got multiple (", scalar(@forms), ") forms.";
-	    }
-	}
-	
+    if (my @forms = $flute->template->forms()) {
+        if ($tokens->{form}) {
+            $self->_tf_manage_forms($flute, $tokens, @forms);
+        }
+        else {
+            Dancer::Logger::debug('Missing form parameters for forms ' .
+                                  join(", ", map { $_->name } @forms));
+        }
+    }
 	$html = $flute->process();
 
 	return $html;
 }
+
+sub _tf_manage_forms {
+    my ($self, $flute, $tokens, @forms) = @_;
+
+    # simple case: only one form passed and one in the flute
+    if (ref($tokens->{form}) ne 'ARRAY') {
+        my $form_name = $tokens->{form}->name;
+        if (@forms == 1) {
+            my $form = shift @forms;
+            if ($form_name eq 'main' or
+                $form_name eq $form->name) {
+                # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
+                $self->_tf_fill_forms($flute, $tokens->{form}, $form, $tokens);
+            }
+        }
+        else {
+            my $found = 0;
+            foreach my $form (@forms) {
+                # Dancer::Logger::debug("Filling the template form with" . Dumper($tokens->{form}->values));
+                if ($form_name eq $form->name) {
+                    $self->_tf_fill_forms($flute, $tokens->{form}, $form, $tokens);
+                    $found++;
+                }
+            }
+            if ($found != 1) {
+                Dancer::Logger::error("Multiple form are not being managed correctly, found $found corresponding forms, but we expected just one!")
+              }
+        }
+    }
+    else {
+        foreach my $passed_form (@{$tokens->{form}}) {
+            foreach my $form (@forms) {
+                if ($passed_form->name eq $form->name) {
+                    $self->_tf_fill_forms($flute, $passed_form, $form, $tokens);
+                }
+            }
+        }
+    }
+}
+
+
+sub _tf_fill_forms {
+    my ($self, $flute, $passed_form, $form, $tokens) = @_;
+    # arguments:
+    # $flute is the template object.
+
+    # $passed_form is the Dancer::Plugin::Form object we got from the
+    # tokens, which is $tokens->{form} when we have just a single one.
+
+    # $form is the form object we got from the template itself, with
+    # $flute->template->forms
+
+    # $tokens is the hashref passed to the template. We need it for the
+    # iterators.
+
+    my ($iter, $action);
+    for my $name ($form->iterators) {
+        if (ref($tokens->{$name}) eq 'ARRAY') {
+            $iter = Template::Flute::Iterator->new($tokens->{$name});
+            $flute->specification->set_iterator($name, $iter);
+        }
+    }
+    if ($action = $passed_form->action()) {
+        $form->set_action($action);
+    }
+    $passed_form->fields([map {$_->{name}} @{$form->fields()}]);
+    $form->fill($passed_form->fill());
+
+    if (Dancer::Config::settings->{session}) {
+        $passed_form->to_session;
+    }
+}
+
 
 =head1 SEE ALSO
 
