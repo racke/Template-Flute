@@ -12,6 +12,7 @@ use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
+use Scalar::Util qw/blessed/;
 
 =head1 NAME
 
@@ -661,19 +662,44 @@ sub _set_selected {
 		$iter->reset();
 		while ($optref = $iter->next()) {
 
-			my (%att, $text);
-			
-			if (exists $optref->{$label_k}) {
-				$text = $optref->{$label_k};
-				$att{value} = $optref->{$value_k};
-			}
-			else {
-				$text = $optref->{$value_k};
-			}
+            # check the record if is an object
+            my $is_an_object = blessed($optref);
 
-			if (defined $value && $optref->{$value_k} eq $value) {
-				$att{selected} = 'selected';
-			}
+			my (%att, $text);
+            my ($record_value, $record_label);
+
+            if ($is_an_object) {
+                # here we could also peek inside the object, but hey,
+                # if it's an object the correct practise is not to
+                # look inside it.
+                if ($optref->can("$value_k")) {
+                    $record_value = $optref->$value_k;
+                }
+                if ($optref->can("$label_k")) {
+                    $record_label = $optref->$label_k;
+                }
+            }
+            else {
+                if (exists $optref->{$value_k}) {
+                    $record_value = $optref->{$value_k};
+                }
+                if (exists $optref->{$label_k}) {
+                    $record_label = $optref->{$label_k};
+                }
+            }
+
+            if (defined $record_label) {
+                $text = $record_label;
+                $att{value} = $record_value;
+            }
+            else {
+                $text = $record_value;
+            }
+            if (defined $value and
+                defined $record_value and
+                $record_value eq $value) {
+                $att{selected} = 'selected';
+            }
 			
 			$elt->insert_new_elt('last_child', 'option',
 									 \%att, $text);
