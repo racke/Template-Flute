@@ -14,7 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'Dancer' => 0,
-        'Template::Flute' => 0.0060,
+        'Template::Flute' => 0.0092,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Dancer-Template-Template-Flute-*' },
