@@ -299,7 +299,7 @@ sub render ($$$) {
         }
         else {
             Dancer::Logger::debug('Missing form parameters for forms ' .
-                                  join(", ", map { $_->name } @forms));
+                                  join(", ", sort map { $_->name } @forms));
         }
     }
 	$html = $flute->process();
