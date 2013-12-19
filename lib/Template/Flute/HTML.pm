@@ -647,20 +647,19 @@ sub _set_selected {
 		
 		$elt->cut_children($cond);
 		
+        # determine where to look for labels and values in the iterator
+        my $value_k = "value";
+        my $label_k = "label";
+        if (exists $sob->{iterator_value_key} && $sob->{iterator_value_key}) {
+            $value_k = $sob->{iterator_value_key};
+        }
+        if (exists $sob->{iterator_name_key} && $sob->{iterator_name_key}) {
+            $label_k = $sob->{iterator_name_key};
+        }
+
 		# get options from iterator		
 		$iter->reset();
 		while ($optref = $iter->next()) {
-
-            # determine where to look for labels and values in the iterator
-            my $value_k = "value";
-            my $label_k = "label";
-            if (exists $sob->{iterator_value_key} && $sob->{iterator_value_key}) {
-                $value_k = $sob->{iterator_value_key};
-            }
-            if (exists $sob->{iterator_name_key} && $sob->{iterator_name_key}) {
-                $label_k = $sob->{iterator_name_key};
-            }
-
 
 			my (%att, $text);
 			
