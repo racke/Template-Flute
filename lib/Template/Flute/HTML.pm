@@ -650,17 +650,29 @@ sub _set_selected {
 		# get options from iterator		
 		$iter->reset();
 		while ($optref = $iter->next()) {
+
+            # determine where to look for labels and values in the iterator
+            my $value_k = "value";
+            my $label_k = "label";
+            if (exists $sob->{iterator_value_key} && $sob->{iterator_value_key}) {
+                $value_k = $sob->{iterator_value_key};
+            }
+            if (exists $sob->{iterator_name_key} && $sob->{iterator_name_key}) {
+                $label_k = $sob->{iterator_name_key};
+            }
+
+
 			my (%att, $text);
 			
-			if (exists $optref->{label}) {
-				$text = $optref->{label};
-				$att{value} = $optref->{value};
+			if (exists $optref->{$label_k}) {
+				$text = $optref->{$label_k};
+				$att{value} = $optref->{$value_k};
 			}
 			else {
-				$text = $optref->{value};
+				$text = $optref->{$value_k};
 			}
 
-			if (defined $value && $optref->{value} eq $value) {
+			if (defined $value && $optref->{$value_k} eq $value) {
 				$att{selected} = 'selected';
 			}
 			
