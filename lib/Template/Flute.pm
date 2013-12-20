@@ -521,7 +521,24 @@ sub _sub_process {
 		}
 		
 		for my $spec_class (@$spec_clases){
-			
+            # check if we need an iterator for this element
+            if ($self->{auto_iterators} && $spec_class->{iterator}) {
+                my ($iter_name, $iter);
+
+                $iter_name = $spec_class->{iterator};
+
+                unless ($specification->iterator($iter_name)) {
+                    if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+                        $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                    }
+                    else {
+                        $iter = Template::Flute::Iterator->new([]);
+                    }
+
+                    $specification->set_iterator($iter_name, $iter);
+                }
+            }
+
 			# Increment count
 			$spec_class->{increment} = new Template::Flute::Increment(
 				increment => $spec_class->{increment}->{increment},

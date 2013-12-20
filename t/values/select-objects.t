@@ -37,7 +37,7 @@ package My::Object::Other {
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Template::Flute;
 use Data::Dumper;
 
@@ -161,6 +161,27 @@ $flute = Template::Flute->new(template => $html,
                               specification => $spec,
                               iterators => {colors => \@colors},
                               values => { color => 'black' },
+                             );
+
+$out = $flute->process();
+my $expected =<<'HTML';
+<select class="color">
+<option value="red">Red</option>
+<option selected="selected" value="black">Black</option>
+</select></body>
+HTML
+
+$expected =~ s/\n//g;
+
+ok($out =~ m/\Q$expected\E/, "doc example ok") || diag $out;
+
+# testing with auto iterators
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              auto_iterators => 1,
+                              values => { color => 'black',
+                                        colors => \@colors},
                              );
 
 $out = $flute->process();
