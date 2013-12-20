@@ -421,9 +421,6 @@ sub _sub_process {
 		push @{$spec_elements->{$type}}, $elt;
 		
 	}	
-	
-	## Replace values
-		
 	# List
 	for my $elt ( @{$spec_elements->{list}}, @{$spec_elements->{form}} ){
 		my $spec_name = $elt->{'att'}->{'name'};
