@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0093 Fri Dec 20 16:13:45 2013 CET
+
+    [BUG FIXES]
+
+    * Fix iterators for value elements when using auto iterators.
+
 0.0092 Thu Dec 19 13:51:47 2013 CET
 
     [ENHANCEMENTS]
