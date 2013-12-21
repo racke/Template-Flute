@@ -1,38 +1,38 @@
 # Dropdown tests for values.
 
-package My::Object {
-    sub new {
-        my ($class, %self) = @_;
-        return bless \%self, $class;
-    }
-    sub code_method {
-        return shift->{private_code};
-    }
-    sub name_method {
-        return shift->{private_name};
-    }
-    sub code {
-        return shift->{private_code};
-    }
-    sub name {
-        return shift->{private_name};
-    }
+package My::Object;
+
+sub new {
+    my ($class, %self) = @_;
+    return bless \%self, $class;
+}
+sub code_method {
+    return shift->{private_code};
+}
+sub name_method {
+    return shift->{private_name};
+}
+sub code {
+    return shift->{private_code};
+}
+sub name {
+    return shift->{private_name};
 }
 
-package My::Object::Other {
-    sub new {
-        my ($class, %self) = @_;
-        return bless \%self, $class;
-    }
-    sub value {
-        return shift->{private_code};
-    }
-    sub label {
-        return shift->{private_name};
-    }
+package My::Object::Other;
+
+sub new {
+    my ($class, %self) = @_;
+    return bless \%self, $class;
+}
+sub value {
+    return shift->{private_code};
+}
+sub label {
+    return shift->{private_name};
 }
 
-
+package main;
 
 use strict;
 use warnings;
@@ -41,7 +41,7 @@ use Test::More tests => 19;
 use Template::Flute;
 use Data::Dumper;
 
-my ($spec, $html, @colors, $flute, $out);
+my ($spec, $html, @colors, $flute, $out, $expected);
 
 $spec = q{<specification>
 <value name="test" iterator="colors" iterator_value_key="code" iterator_name_key="name"/>
@@ -164,7 +164,7 @@ $flute = Template::Flute->new(template => $html,
                              );
 
 $out = $flute->process();
-my $expected =<<'HTML';
+$expected =<<'HTML';
 <select class="color">
 <option value="red">Red</option>
 <option selected="selected" value="black">Black</option>
@@ -185,7 +185,7 @@ $flute = Template::Flute->new(template => $html,
                              );
 
 $out = $flute->process();
-my $expected =<<'HTML';
+$expected =<<'HTML';
 <select class="color">
 <option value="red">Red</option>
 <option selected="selected" value="black">Black</option>
