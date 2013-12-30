@@ -411,7 +411,7 @@ sub _sub_process {
 	}
 	
 	my $classes = $specification->{classes};
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query);
+	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query, %skip);
 	
 	# Read one layer of spec
 	my $spec_elements = {};
@@ -419,14 +419,19 @@ sub _sub_process {
 		my $type = $elt->tag;
 		$spec_elements->{$type} ||= [];
 
-        # skip sublists on this level
-        next if $type eq 'list' && $elt->parent->tag eq 'list';
-
+        # check whether to skip sublists on this level
+        if ($type eq 'list' && $elt->parent->tag eq 'list') {
+            if ($elt->parent ne $spec_xml) {
+                $skip{$elt} = 1;
+            }
+        }
 		push @{$spec_elements->{$type}}, $elt;
 		
 	}	
 	# List
-	for my $elt ( @{$spec_elements->{list}}, @{$spec_elements->{form}} ){
+	for my $elt ( @{$spec_elements->{list}}, @{$spec_elements->{form}} ) {
+        next if exists $skip{$elt};
+
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
 		my $sep_copy;
