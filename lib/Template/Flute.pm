@@ -418,6 +418,10 @@ sub _sub_process {
 	for my $elt ( $spec_xml->descendants() ){
 		my $type = $elt->tag;
 		$spec_elements->{$type} ||= [];
+
+        # skip sublists on this level
+        next if $type eq 'list' && $elt->parent->tag eq 'list';
+
 		push @{$spec_elements->{$type}}, $elt;
 		
 	}	
