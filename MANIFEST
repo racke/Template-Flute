@@ -88,6 +88,7 @@ t/iterators/20-json.t
 t/iterators/paginator.t
 t/lists/append.t
 t/lists/increments.t
+t/lists/nested.t
 t/lists/object.t
 t/lists/params.t
 t/lists/separator.t
