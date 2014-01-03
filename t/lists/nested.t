@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 8;
 use Template::Flute;
 
 my ($spec, $html, $flute, $out, $attributes);
@@ -60,6 +60,41 @@ ok ($attr_matches[0] eq 'Color' && $attr_matches[1] eq 'Size',
 
 # match attribute values
 my @attr_value_matches = ($out =~ m%<li class="values"><span class="attribute_title">(\w+)</span></li>%g);
+
+ok (@attr_value_matches == 5, "Number of second level elements")
+    || diag "Matches: ", scalar(@attr_value_matches);
+
+is_deeply(\@attr_value_matches, ['Red', 'White', 'Yellow', 'S', 'L'],
+          "Title of second level elements")
+    || diag "Matches: $attr_matches[0] $attr_matches[1]";
+
+# different HTML
+$html = q{<html>
+<ul><li class="attributes"><span class="value">Name</span>
+<ul><li class="values attribute_title">Title</li>
+</li></ul>
+</html>
+};
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {attributes => $attributes},
+                              );
+
+$out = $flute->process;
+
+# match attributes
+my @attr_matches = ($out =~ m%<li class="attributes"><span class="value">(\w+)</span>%g);
+
+ok (@attr_matches == 2, "Number of toplevel elements")
+    || diag "Matches: ", scalar(@attr_matches);
+
+ok ($attr_matches[0] eq 'Color' && $attr_matches[1] eq 'Size',
+    "Title of toplevel elements")
+    || diag "Matches: $attr_matches[0] $attr_matches[1]";
+
+# match attribute values
+my @attr_value_matches = ($out =~ m%<li class="values attribute_title">(\w+)</li>%g);
 
 ok (@attr_value_matches == 5, "Number of second level elements")
     || diag "Matches: ", scalar(@attr_value_matches);
