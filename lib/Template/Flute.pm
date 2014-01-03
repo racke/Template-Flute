@@ -513,6 +513,15 @@ sub _sub_process {
 		
 	# Values
 	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
+        if ($elt->tag eq 'param') {
+            my $name = $spec_xml->att('name');
+
+            if (defined $name && $name ne $elt->parent->att('name')) {
+                # don't process params of sublists again
+                next;
+            }
+        }
+
 		my $spec_id = $elt->{'att'}->{'id'};
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
