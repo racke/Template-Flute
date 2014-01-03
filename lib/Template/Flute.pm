@@ -390,14 +390,15 @@ sub process {
 		$self->{'values'},
 		$self->{specification},
 		$self->{template}, 
-		
+        0,
+        0,
 		);
 	my $shtml = $html->sprint;
 	return $shtml;
 }
 
 sub _sub_process {
-	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count) = @_;
+	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count, $level) = @_;
 	my ($template);
 	# Use root spec or sub-spec
 	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>", 1);
@@ -478,7 +479,7 @@ sub _sub_process {
 		for my $record_values (@$records){
 			
 			my $element = $element_template->copy();
-			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count);
+			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
 			
 			# Get rid of flutexml container and put it into position
 			for my $e (reverse($element->cut_children())) {
