@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0094 Tue Jan  7 13:19:12 2014 CET
+
+    [BUG FIXES]
+
+    * Fix processing of lists and params on the wrong nesting level.
+    * Fix t/values/select-objects.t to work with Perl <= 5.12.
+
+    [TESTS]
+
+    * Add tests for nested lists.
+
 0.0093 Fri Dec 20 16:13:45 2013 CET
 
     [BUG FIXES]
