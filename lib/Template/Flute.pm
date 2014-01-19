@@ -535,9 +535,6 @@ sub _sub_process {
 		else {
 			$spec_clases = $classes->{$spec_class};
 		}
-		if ($spec_name eq 'label'){
-			1;
-		}
 		
 		for my $spec_class (@$spec_clases){
             # check if we need an iterator for this element
