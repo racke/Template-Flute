@@ -567,7 +567,7 @@ the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-F
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010-2013 Stefan Hornburg (Racke).
+Copyright 2010-2014 Stefan Hornburg (Racke).
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
