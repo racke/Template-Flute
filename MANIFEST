@@ -48,8 +48,6 @@ t/08-utf8-html.t
 t/09-iso-html.t
 t/10-include.t
 t/11-value.t
-t/12-container.t
-t/14-container-value.t
 t/15-entities.t
 t/files/component.html
 t/files/component.xml
@@ -76,6 +74,8 @@ t/values/select-objects.t
 t/values/toggle.t
 t/values/utf8.t
 t/i18n/01-simple.t
+t/containers/basic.t
+t/containers/value.t
 t/forms/01-name.t
 t/forms/02-link.t
 t/forms/05-textarea.t
