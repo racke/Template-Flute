@@ -430,7 +430,7 @@ sub _sub_process {
 		
 	}	
 	# List
-	for my $elt ( @{$spec_elements->{list}}, @{$spec_elements->{form}} ) {
+	for my $elt ( @{$spec_elements->{list}} ) {
         next if exists $skip{$elt};
 
 		my $spec_name = $elt->{'att'}->{'name'};
