@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0095 Tue Jan 21 10:06:12 2014 CET
+
+    [BUG FIXES]
+
+    * Fix problem with vanished form (GH #23).
+
 0.0094 Tue Jan  7 13:19:12 2014 CET
 
     [BUG FIXES]
