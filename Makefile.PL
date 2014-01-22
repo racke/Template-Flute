@@ -14,6 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'Test::Warn' => 0,
+        'Test::Warnings' => 0,
         'Test::Fatal' => 0,
         'File::Slurp' => 0,
         'XML::Twig' => 0,

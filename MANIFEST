@@ -49,6 +49,7 @@ t/09-iso-html.t
 t/10-include.t
 t/11-value.t
 t/15-entities.t
+t/expressions/basic.t
 t/files/component.html
 t/files/component.xml
 t/files/iso.xml
@@ -75,6 +76,7 @@ t/values/toggle.t
 t/values/utf8.t
 t/i18n/01-simple.t
 t/containers/basic.t
+t/containers/dotted-value.t
 t/containers/value.t
 t/forms/01-name.t
 t/forms/02-link.t
