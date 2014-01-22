@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0096 Wed Jan 22 20:00:18 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add two level dotted values for containers.
+
 0.0095 Tue Jan 21 10:06:12 2014 CET
 
     [BUG FIXES]
