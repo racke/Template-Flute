@@ -648,7 +648,14 @@ sub _replace_within_elts {
 			    	my $rep_str_appended = $rep_str ? ($zref->{rep_att_orig} . $rep_str) : $zref->{rep_att_orig};
 					$elt->set_att($zref->{rep_att}, $rep_str_appended);
 			    }
-			
+
+            } elsif (exists $param->{op} && $param->{op} eq 'toggle') {
+                if ($rep_str) {
+                    $elt->set_att($zref->{rep_att});
+                }
+                else {
+                    $elt->del_att($zref->{rep_att});
+                }
 			} else {
 				if (defined $rep_str){
 					$elt->set_att($zref->{rep_att}, $rep_str);
@@ -694,7 +701,7 @@ sub _replace_record {
 		$raw = $rep_str;
 		
 		if (exists $value->{op}) {
-            if ($value->{op} eq 'toggle') {
+            if ($value->{op} eq 'toggle' && ! $value->{target}) {
                 if (exists $value->{args} && $value->{args} eq 'static') {
                     if ($rep_str) {
                         # preserve static text, like a container
