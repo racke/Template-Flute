@@ -314,10 +314,10 @@ sub _parse_template {
 			$html_content = encode('utf8', $html_content);
 		}
 	}
-	$xml = $snippet ? $twig->parse($html_content) : $twig->parse_html($html_content);
+	$xml = $snippet ? $twig->safe_parse($html_content) : $twig->safe_parse_html($html_content);
 
 	unless ($xml) {
-		die "Invalid HTML template: $template: $@\n";
+		die "Invalid HTML template: $html_content: $@\n";
 	}
 	
 
