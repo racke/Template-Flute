@@ -1015,7 +1015,8 @@ Appends the param value to the text found in the HTML template.
 
 =item toggle
 
-Only shows corresponding HTML element if param value is set.
+Without target attribute, it only shows corresponding HTML element if param value is set.
+Wiht target attribute, it simply toggles the target attribute.
 
 =back
 
