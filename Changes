@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0097 Mon Jan 27 19:10:16 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Implement toggle operation with target for params.
+
+    [BUG FIXES]
+
+    * Improve error handling in _parse_template method.
+
 0.0096 Wed Jan 22 20:00:18 2014 CET
 
     [ENHANCEMENTS]

@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0096
+    Version 0.0097
 
 SYNOPSIS
         use Template::Flute;
@@ -246,7 +246,9 @@ SPECIFICATION
             Appends the param value to the text found in the HTML template.
 
         toggle
-            Only shows corresponding HTML element if param value is set.
+            Without target attribute, it only shows corresponding HTML
+            element if param value is set. Wiht target attribute, it simply
+            toggles the target attribute.
 
         Other attributes for param elements are:
 
