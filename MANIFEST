@@ -85,6 +85,7 @@ t/forms/06-select.t
 t/forms/07-select-iterators.t
 t/forms/checkbox.t
 t/forms/container.t
+t/forms/fields.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
 t/iterators/20-json.t
