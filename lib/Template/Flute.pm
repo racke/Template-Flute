@@ -477,14 +477,13 @@ sub _sub_process {
 		my $list = $template->{lists}->{$spec_name};
 		my $count = 1;
 		for my $record_values (@$records){
-			
 			my $element = $element_template->copy();
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
-			
+
 			# Get rid of flutexml container and put it into position
 			for my $e (reverse($element->cut_children())) {
 				$e->paste(%paste_pos);
-       		}				
+       		}
 
 			# Add separator
 			if ($list->{separators}) {
@@ -495,23 +494,24 @@ sub _sub_process {
 					    last;
 					}
 			    }
-			}	
-			$count++;		
-		}
-		$element_template->cut(); # Remove template element
-			
-			if ($sep_copy) {
-			    # Remove last separator and original one(s) in the template
-			    $sep_copy->cut();
-			    
-			    for my $sep (@{$list->{separators}}) {
-					for my $elt (@{$sep->{elts}}) {
-					    $elt->cut();
-					}
-			    }
 			}
+			$count++;
 		}
-		
+
+		$element_template->cut(); # Remove template element
+
+        if ($sep_copy) {
+            # Remove last separator and original one(s) in the template
+            $sep_copy->cut();
+
+            for my $sep (@{$list->{separators}}) {
+                for my $elt (@{$sep->{elts}}) {
+                    $elt->cut();
+                }
+            }
+        }
+    }
+
 	# Values
 	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
         if ($elt->tag eq 'param') {
