@@ -23,6 +23,25 @@ sub new {
 	$class = shift;
 	$self = {sob => $sob, static => $static, valid_input => undef};
 
+    # retrieve values for action and method attributes
+    my $action = $self->{sob}->{elts}->[0]->att('action');
+
+    if (defined $action) {
+        $self->{action} = $action;
+    }
+    else {
+        $self->{action} = '';
+    }
+
+    my $method = $self->{sob}->{elts}->[0]->att('method');
+
+    if (defined $method && $method =~ /\S/) {
+        $self->{method} = uc($method);
+    }
+    else {
+        $self->{method} = 'GET';
+    }
+
 	bless $self;
 }
 
@@ -207,6 +226,18 @@ sub set_action {
 	$self->{sob}->{elts}->[0]->set_att('action', $action);
 	$self->{action} = $action;
 }
+
+=head2 method
+
+Returns current form method, e.g. GET or POST.
+
+=cut
+
+sub method {
+    my ($self) = @_;
+
+    return $self->{method};
+};
 
 =head2 set_method METHOD
 

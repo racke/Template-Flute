@@ -83,6 +83,7 @@ t/forms/02-link.t
 t/forms/05-textarea.t
 t/forms/06-select.t
 t/forms/07-select-iterators.t
+t/forms/basic.t
 t/forms/checkbox.t
 t/forms/container.t
 t/forms/fields.t
