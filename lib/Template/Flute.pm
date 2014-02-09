@@ -1466,6 +1466,8 @@ a documentation fix.
 
 Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
 
+Thanks to Sam Batschelet helping me with a bug causing duplicate form fields (GH #14).
+
 Thanks to Terrence Brannon for spotting a documentation mix-up.
 
 =head1 HISTORY
