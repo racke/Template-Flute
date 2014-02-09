@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0098 Sun Feb  9 10:46:39 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add method method to Template::Flute::Form and retrieve HTML form attributes.
+
+    [BUG FIXES]
+
+    * Fix bug causing duplicate fields in form object (GH #24).
+
 0.0097 Mon Jan 27 19:10:16 2014 CET
 
     [ENHANCEMENTS]
