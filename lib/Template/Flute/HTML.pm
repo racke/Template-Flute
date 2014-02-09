@@ -487,6 +487,9 @@ sub _elt_handler {
     }
     
 	if ($sob->{type} eq 'form') {
+        # only HTML <form> elements can be tied to 'form'
+        return $self if $elt->tag ne 'form';
+
 		$sob->{elts} = [$elt];
 
 		$self->{forms}->{$name} = new Template::Flute::Form ($sob);
@@ -531,6 +534,9 @@ sub _elt_handler {
 		
 		$self->{values}->{$name} = $sob;
 	} elsif ($sob->{type} eq 'field') {
+         # HTML <form> elements can't be tied to 'field'
+        return $self if $elt->tag eq 'form';
+        
 		# match for form field found in HTML
 		push (@{$sob->{elts}}, $elt);
 
