@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0099 Mon Feb 10 20:17:42 2014 CET
+
+    [BUG FIXES]
+
+    * Pass through i18n parameter to included templates.
+
 0.0098 Sun Feb  9 10:46:39 2014 CET
 
     [ENHANCEMENTS]
