@@ -854,6 +854,7 @@ sub value {
 		# process template and include it
 		%args = (template_file => $include_file,
 			 auto_iterators => $self->{auto_iterators},
+			 i18n => $self->{i18n},
              filters => $self->{filters},
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values});
 		
