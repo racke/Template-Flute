@@ -41,10 +41,10 @@ $template =<<'TEMPLATE';
 <html><div>Cart</div><div class="component">Hello</div><div>Price</div></html>
 TEMPLATE
 
-my $flute = Template::Flute->new(specification => $spec,
+$flute = Template::Flute->new(specification => $spec,
                                  template => $template,
                                  i18n => $i18n);
-my $output = $flute->process();
+$output = $flute->process();
 
 # print $output;
 unlike $output, qr{Hello}, "Placeholder is replaced";
