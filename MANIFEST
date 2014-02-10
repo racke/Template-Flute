@@ -103,5 +103,7 @@ t/target-id.t
 t/targets/01-value.t
 t/targets/02-param.t
 t/test-twig.t
-
+t/files/i18n.html
+t/files/i18n.xml
+t/i18n/02-includes.t
 
