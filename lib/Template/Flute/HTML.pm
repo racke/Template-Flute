@@ -320,7 +320,6 @@ sub _parse_template {
 		die "Invalid HTML template: $html_content: $@\n";
 	}
 	
-	$xml = $twig->safe_parse_html($html_content);
         _fix_script_tags($xml);
 
 	$self->{xml} = $object->{xml} = $xml;
