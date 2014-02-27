@@ -317,7 +317,11 @@ sub _parse_template {
 	$xml = $snippet ? $twig->safe_parse($html_content) : $twig->safe_parse_html($html_content);
 
 	unless ($xml) {
-		die "Invalid HTML template: $html_content: $@\n";
+        my $failure = '';
+        if ($@ =~ /, byte ([0-9]+) at/) {
+            $failure = '...' . substr($html_content, $1, 50) . '...';
+        }
+		die "Invalid HTML template: $html_content: $@ $failure\n";
 	}
 	
         _fix_script_tags($xml);
@@ -750,7 +754,12 @@ sub hook_html {
 	
 	$parser = new XML::Twig ();
 	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
-		die "Failed to parse HTML snippet: $@.\n";
+        my $failure = '';
+        if ($@ =~ /, byte ([0-9]+) at/) {
+            $failure = '...' . substr($value, $1 + length('<xmlHook>'), 40)
+              . '...';
+        }
+		die "Failed to parse HTML snippet: $@. $failure\n";
 	}
         _fix_script_tags($html);
 
