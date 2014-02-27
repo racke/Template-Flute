@@ -69,6 +69,7 @@ t/filters/subs.t
 t/filters/upper.t
 t/values/append.t
 t/values/basic.t
+t/values/js.t
 t/values/select.t
 t/values/select-custom.t
 t/values/select-objects.t
