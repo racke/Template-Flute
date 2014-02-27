@@ -290,7 +290,9 @@ sub fill {
 					# don't override button text
 				}
 				elsif ($type eq 'checkbox') {
-					if ($value eq $elts[0]->att('value')) {
+                    my $att_value = $elts[0]->att('value');
+
+					if (defined $att_value && $value eq $att_value) {
 						$elts[0]->set_att('checked', 'checked');
 					}
 					else {
