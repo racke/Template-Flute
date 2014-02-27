@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0101 Thu Feb 27 11:20:36 2014 CET
+
+    [BUG FIXES]
+
+    * Fix bad escaping inside <script> tags (GH #6, GH #10, GH #27).
+
 0.0099 Mon Feb 10 20:17:42 2014 CET
 
     [BUG FIXES]
