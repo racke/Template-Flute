@@ -317,9 +317,14 @@ sub _parse_template {
 	$xml = $snippet ? $twig->safe_parse($html_content) : $twig->safe_parse_html($html_content);
 
 	unless ($xml) {
-		die "Invalid HTML template: $html_content: $@\n";
+        my $failure = '';
+        if ($@ =~ /, byte ([0-9]+) at/) {
+            $failure = '...' . substr($html_content, $1, 50) . '...';
+        }
+		die "Invalid HTML template: $html_content: $@ $failure\n";
 	}
 	
+        _fix_script_tags($xml);
 
 	$self->{xml} = $object->{xml} = $xml;
 
@@ -748,19 +753,37 @@ sub hook_html {
 	}
 	
 	$parser = new XML::Twig ();
-	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
-		die "Failed to parse HTML snippet: $@.\n";
+	unless ($html = $parser->safe_parse_html($value)) {
+        my $failure = '';
+        if ($@ =~ /, byte ([0-9]+) at/) {
+            $failure = '...' . substr($value, $1, 40)
+              . '...';
+        }
+		die "Failed to parse HTML snippet: $@. $failure\n";
 	}
+        _fix_script_tags($html);
 
 	$elt->cut_children();
 
-	@children = $html->root()->cut_children();
+	@children = $html->root()->first_child('body')->cut_children();
 	
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);
 	}
 	
 	return;
+}
+
+sub _fix_script_tags {
+    my $parsed = shift;
+    # script tags should not be escaped. Please note that this should
+    # be safe. It affects only the *content* of the <script> tags. If
+    # your values contains injected JS, having the & escaped as &amp;
+    # or > as &gt; will not save you.
+    my @elts = $parsed->get_xpath('//script');
+    foreach my $el (@elts) {
+        $el->set_asis;
+    }
 }
 
 =head1 AUTHOR

@@ -25,9 +25,9 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok ($out =~ m%<div class="content"><p>Enter <b>dancefloor</b></p></div>%,
-    'value op=hook test with class')
-    || diag $out;
+like($out, qr{\Q<div class="content"><p>Enter <b>dancefloor</b></p></div>\E},
+     'value op=hook test with class')
+    or diag $out;
 
 # value with op=hook, using id
 $spec = q{<specification>
@@ -44,7 +44,7 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process();
 
-ok ($out =~ m%<div id="content"><p>Enter <b>dancefloor</b></p></div>%,
-    'value op=hook test with id')
-    || diag $out;
+like($out,  qr{\Q<div id="content"><p>Enter <b>dancefloor</b></p></div>\E},
+     'value op=hook test with id')
+  or diag $out;
 
