@@ -753,10 +753,10 @@ sub hook_html {
 	}
 	
 	$parser = new XML::Twig ();
-	unless ($html = $parser->safe_parse("<xmlHook>".$value."</xmlHook>")) {
+	unless ($html = $parser->safe_parse_html($value)) {
         my $failure = '';
         if ($@ =~ /, byte ([0-9]+) at/) {
-            $failure = '...' . substr($value, $1 + length('<xmlHook>'), 40)
+            $failure = '...' . substr($value, $1, 40)
               . '...';
         }
 		die "Failed to parse HTML snippet: $@. $failure\n";
@@ -765,7 +765,7 @@ sub hook_html {
 
 	$elt->cut_children();
 
-	@children = $html->root()->cut_children();
+	@children = $html->root()->first_child('body')->cut_children();
 	
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);
