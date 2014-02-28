@@ -25,10 +25,10 @@ use File::Temp qw(tempfile);
 
 use Template::Flute;
 use Template::Flute::Config;
-use Template::Flute::Database::Rose;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
-
+binmode STDERR, ":encoding(utf-8)";
+binmode STDOUT, ":encoding(utf-8)";
 my (%opts, %input, %values);
 
 # commandline options
@@ -77,7 +77,7 @@ if ($opts{combine}) {
 	exit 0;
 }
 
-my ($config_file, $config_vars, $spec_file, $template_file, $db_object,
+my ($config_file, $config_vars, $spec_file, $template_file,
 	%iterators);
 
 if ($opts{conf}) {
@@ -85,10 +85,6 @@ if ($opts{conf}) {
 
 	$config_vars = Template::Flute::Config::load($config_file);
 
-	if (exists $config_vars->{database}) {
-		# setup database object
-		$db_object = new Template::Flute::Database::Rose (%{$config_vars->{database}});
-	}
 }
 
 if ($opts{iterator}) {
@@ -113,59 +109,30 @@ if ($opts{iterator}) {
 }
 
 # parse specification file
+my ($specification, $template) = @ARGV;
+die "Missing specification and template file at the command line\n"
+  unless ($specification && $template);
 
-my ($xml_spec, $xml_file, $spec);
-
-$xml_file = shift;
-
-$xml_spec = new Template::Flute::Specification::XML;
-
-unless ($spec = $xml_spec->parse_file($xml_file)) {
-	die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
-}
-
-# parse template
-
-my ($html_file, $html_object, $list_object, $form_object);
-
-$html_file = shift;
-
-$html_object = new Template::Flute::HTML;
-
-$html_object->parse_file($html_file, $spec);
-
-for $list_object ($html_object->lists()) {
-	# seed and check input
-	$list_object->input(\%input);
-}
-
-for $form_object ($html_object->forms()) {
-	# seed and check input
-	$form_object->input(\%input);
-}
-
-# process template
-
-my ($flute);
-
-$flute = new Template::Flute (template => $html_object,
-							  specification => $spec,
-							  database => $db_object,
-							  iterators => \%iterators,
-							  values => \%values);
+my $flute = new Template::Flute (template_file => $template,
+                                 specification_file => $specification,
+                                 iterators => \%iterators,
+                                 values => \%values);
 
 if ($opts{pdf}) {
 	require Template::Flute::PDF;
 
 	$flute->process();
 	
-	my $pdf = new Template::Flute::PDF (template => $html_object);
-
-	$pdf->process($opts{pdf});
+	my $pdf = Template::Flute::PDF->new(
+                                        template => $flute->template,
+                                        file => $opts{pdf},
+                                       );
+	$pdf->process();
 }
 elsif ($opts{browser}) {
 	# store flute result in temporary file
 	my ($tmph, $tmpfile) = tempfile();
+    binmode $tmph, ":encoding(utf-8)";
 	print $tmph $flute->process();
 	print "Using temporary file $tmpfile\n";
 	system('x-www-browser', $tmpfile);
