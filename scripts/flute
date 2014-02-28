@@ -63,10 +63,11 @@ if ($opts{combine}) {
 	# combine PDF's from commandline
 	my ($pdf, $import);
 
-	$pdf = new Template::Flute::PDF (file => $opts{pdf},
-								   );
+	$pdf = Template::Flute::PDF->new(
+                                     file => $opts{pdf},
+                                    );
 
-	$import = new Template::Flute::PDF::Import;
+	$import = Template::Flute::PDF::Import->new;
 
 	for my $file (@ARGV) {
 		$import->import(pdf => $pdf->{pdf}, file => $file);
@@ -113,7 +114,7 @@ my ($specification, $template) = @ARGV;
 die "Missing specification and template file at the command line\n"
   unless ($specification && $template);
 
-my $flute = new Template::Flute (template_file => $template,
+my $flute = Template::Flute->new(template_file => $template,
                                  specification_file => $specification,
                                  iterators => \%iterators,
                                  values => \%values);
