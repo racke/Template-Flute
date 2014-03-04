@@ -35,7 +35,7 @@ my (%opts, %input, %values);
 $opts{value} = \%values;
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s',
+unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s', 'check',
 					'iterator=s', 'value=s%', 'pdf=s')) {
 	exit 1;
 }
@@ -141,4 +141,15 @@ elsif ($opts{browser}) {
 else {
 	print $flute->process(), "\n";
 }
+
+if ($opts{check}) {
+    if (my @empty = $flute->specification->dangling) {
+        warn "Found dangling elements in the specification\n";
+        foreach my $el (@empty) {
+            warn "$el->{type} $el->{name} ($el->{dump})\n";
+        }
+        die "Bad specification!\n";
+    }
+}
+
 

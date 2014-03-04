@@ -579,7 +579,6 @@ name, type and a dump of the element.
 
 It returns a list of hashref, so you can check the template with
 
-
 my $flute = Template::Flute->new(....);
 my @bad_elts = $flute->specification->dangling;
 if (@bad_elts) {
@@ -588,6 +587,21 @@ if (@bad_elts) {
 else {
     print "all ok\n";
 }
+
+Each hashref returned has the following keys set:
+
+=over 4
+
+=item name
+
+=item type
+
+=item dump
+
+=back
+
+Beware that to call this method successfully, the specification must
+already be processed, so it's safer to call it after C<$flute->process>.
 
 =cut
 
