@@ -55,6 +55,18 @@ sub new {
 	bless $self;
 }
 
+sub _ids {
+    return keys %{shift->{ids}};
+}
+
+sub _classes {
+    return keys %{shift->{classes}};
+}
+
+sub _names {
+    return keys %{shift->{names}};
+}
+
 =head1 METHODS
 
 =head2 name NAME
@@ -554,6 +566,70 @@ sub list_paging {
             }
         }
 	}	
+}
+
+=head2 check_no_elts
+
+Method to check if the specification is consistent with the HTML. The
+method retrieve the list of ids, classes and names, and check if there
+are twigs attached.
+
+For each element without twigs attached, return an hashref with
+name, type and a dump of the element.
+
+It returns a list of hashref, so you can check the template with
+
+
+my $flute = Template::Flute->new(....);
+my @bad_elts = $flute->specification->check_no_elts;
+if (@bad_elts) {
+    warn "empty elements" . Dumper(\@bad_elts);
+}
+else {
+    print "all ok\n";
+}
+
+=cut
+
+
+sub check_no_elts {
+    my $self = shift;
+    my @empty;
+    my %methods = (
+                   id => {
+                          list => '_ids',
+                          elts => 'elements_by_id',
+                         },
+                   name => {
+                            list => '_names',
+                            elts => 'elements_by_name',
+                           },
+                   class => {
+                             list => '_classes',
+                             elts => 'elements_by_class',
+                            },
+                 );
+    foreach my $internal (keys %methods) {
+        my $method       = $methods{$internal}{list};
+        my $get_elements = $methods{$internal}{elts};
+
+        my @structs = $self->$method;
+        foreach my $struct (@structs) {
+            # here we have to look in the internals
+            if (my $arrayref = $self->$get_elements($struct)) {
+                foreach my $el (@$arrayref) {
+                    unless (exists ($el->{elts})) {
+                        push @empty, {
+                                      type => $internal,
+                                      name => $struct,
+                                      dump => join(' ', %$el),
+                                     }
+                    }
+                }
+            }
+        }
+    }
+    return @empty;
 }
 
 =head1 AUTHOR

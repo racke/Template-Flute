@@ -49,6 +49,7 @@ t/09-iso-html.t
 t/10-include.t
 t/11-value.t
 t/15-entities.t
+t/checking/basic.t
 t/expressions/basic.t
 t/files/component.html
 t/files/component.xml
