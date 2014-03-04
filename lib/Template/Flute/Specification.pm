@@ -568,11 +568,11 @@ sub list_paging {
 	}	
 }
 
-=head2 check_no_elts
+=head2 dangling
 
-Method to check if the specification is consistent with the HTML. The
-method retrieve the list of ids, classes and names, and check if there
-are twigs attached.
+Method to check if the template is consistent with the specification.
+The method retrieve the list of ids, classes and names, and check if
+there are twigs attached.
 
 For each element without twigs attached, return an hashref with
 name, type and a dump of the element.
@@ -581,7 +581,7 @@ It returns a list of hashref, so you can check the template with
 
 
 my $flute = Template::Flute->new(....);
-my @bad_elts = $flute->specification->check_no_elts;
+my @bad_elts = $flute->specification->dangling;
 if (@bad_elts) {
     warn "empty elements" . Dumper(\@bad_elts);
 }
@@ -592,7 +592,7 @@ else {
 =cut
 
 
-sub check_no_elts {
+sub dangling {
     my $self = shift;
     my @empty;
     my %methods = (

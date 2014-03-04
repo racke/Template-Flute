@@ -45,7 +45,7 @@ $flute = Template::Flute->new(template => $html,
                               values => \%values);
 
 
-my @empty = $flute->specification->check_no_elts;
+my @empty = $flute->specification->dangling;
 # diag Dumper(\@empty);
 ok(@empty, "Found empty elements");
 is_deeply \@empty, [
@@ -70,7 +70,7 @@ $flute = Template::Flute->new(template => $html,
                               specification => $good_spec,
                               values => \%values);
 
-@empty = $flute->specification->check_no_elts;
+@empty = $flute->specification->dangling;
 ok(!@empty, "No empty elements found");
 
 
