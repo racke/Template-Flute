@@ -256,13 +256,29 @@ sub set_method {
 
 Fills form with parameters from hash reference PARAMS.
 
+=head2 is_filled
+
+Return true if you called fill on the form.
+
 =cut
 
+
 # fill - fills form fields
+
+sub _set_filled {
+    my $self = shift;
+    $self->{_form_is_filled} = 1;
+}
+
+sub is_filled {
+    my $self = shift;
+    return $self->{_form_is_filled};
+}
+
 sub fill {
 	my ($self, $href) = @_;
 	my ($f, @elts, $value, $zref, $type);
-
+    $self->_set_filled;
 	for my $f (@{$self->fields()}) {
 		@elts = @{$f->{elts}};
 

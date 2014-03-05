@@ -537,6 +537,11 @@ sub _sub_process {
 		}
 		
 		for my $spec_class (@$spec_clases){
+            # check if it's a form and it's already filled
+            if (exists $spec_class->{form} && $spec_class->{form}) {
+                my $form = $self->template->form($spec_class->{form});
+                next if $form->is_filled;
+            }
             # check if we need an iterator for this element
             if ($self->{auto_iterators} && $spec_class->{iterator}) {
                 my ($iter_name, $iter);
