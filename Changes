@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0102 Wed Mar  5 16:26:44 2014 CET
+
+    [SPECIAL]
+
+    * First airborne CPAN release.
+
+    [BUG FIXES]
+
+    * Fix duplicates in dropdowns (GH #31, Marco Pessotto)
+    * Prevent Perl warning caused by HTML checkboxes without value attribute.
+
+    [TESTS]
+
+    * Add test for &nbsp; (GH #28, Marco Pessotto)
+
 0.0101 Thu Feb 27 11:20:36 2014 CET
 
     [BUG FIXES]
