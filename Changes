@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0103 Thu Mar  6 18:08:44 2014 CET
+
+    [BUG FIXES]
+
+    * Let top level containers affect lists too (GH #32, Marco Pessotto)
+
 0.0102 Wed Mar  5 16:26:44 2014 CET
 
     [SPECIAL]
