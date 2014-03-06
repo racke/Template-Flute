@@ -95,6 +95,7 @@ t/iterators/01-simple.t
 t/iterators/20-json.t
 t/iterators/paginator.t
 t/lists/append.t
+t/lists/global-containers.t
 t/lists/increments.t
 t/lists/nested.t
 t/lists/object.t
