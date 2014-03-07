@@ -66,6 +66,11 @@ Save the result in the named PDF file
 
 Load the iterator named C<name> from a JSON file.
 
+=item --value name=value
+
+Pass the given value to the template for processing. This option can
+be repeated (for different names).
+
 =item --check
 
 Report template/specification inconsistencies. 
