@@ -39,6 +39,9 @@ sub result {
         if ($uri->path =~ m%^/%) {
             $adjust =~ s%/$%%;
         }
+        elsif ($adjust !~ m%/$%) {
+            $adjust .= '/';
+        }
 
         $result->path($adjust . $uri->path);
         return $result;
