@@ -1,14 +1,15 @@
 # Dropdown tests for values.
 
-package My::Object::Class;
-
-use strict;
-use warnings;
+package My::Object;
 
 sub new {
     my ($class, %self) = @_;
     return bless \%self, $class;
 }
+
+package My::Object::Class;
+
+use base 'My::Object';
 
 package main;
 

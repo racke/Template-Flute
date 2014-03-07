@@ -212,7 +212,7 @@ Builds iterators automatically from values.
 =item autodetect
 
 A configuration option. It should be an hashref with a key C<disable>
-and a value with an arrayref with a list of B<namespaces> for objects
+and a value with an arrayref with a list of B<classes> for objects
 which should be considered plain hashrefs instead. Example:
 
   my $flute = Template::Flute->new(....
@@ -228,7 +228,9 @@ Doing so, if you pass a value holding a C<My::Object> object, and you have a spe
 
 The value will be C<$object->{method}>, not C<$object->$method>.
 
-Classical example: C<Dancer::Session>.
+The object is checked with C<isa>.
+
+Classical example: C<Dancer::Session::Abstract>.
 
 =back
 
@@ -975,7 +977,7 @@ sub _is_record_object {
     my @ignores = $self->_autodetect_ignores;
     my $is_good_object = 1;
     foreach my $i (@ignores) {
-        if (index($class, $i) == 0) {
+        if ($record->isa($i)) {
             $is_good_object = 0;
             last;
         }
