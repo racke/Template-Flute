@@ -22,6 +22,7 @@ WriteMakefile(
         'Parse::RecDescent' => 0,
         'Moo' => 0,
         'Scalar::Util' => 0,
+        'URI' => 0,
     },
     EXE_FILES => [ 'scripts/flute' ],
     META_MERGE        => {

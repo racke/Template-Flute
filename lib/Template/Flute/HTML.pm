@@ -7,11 +7,14 @@ use Encode;
 use File::Slurp ();
 use XML::Twig;
 use HTML::Entities;
+use URI;
 
 use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
+use Template::Flute::UriAdjust;
+
 use Scalar::Util qw/blessed/;
 
 =head1 NAME
@@ -40,7 +43,9 @@ sub new {
 
 	$class = shift;
 
-	$self = {containers => {}, lists => {}, pagings => {}, forms => {},
+    my %args = @_;
+
+	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
 			 params => {}, values => {}, query => {}, file => undef};
 	
 	bless $self;
@@ -341,6 +346,26 @@ sub _parse_handler {
 	$class_names = $elt->class();
 	$id = $elt->id();
 	$elt_name = $elt->att('name');
+
+    if ($self->{uri}) {
+        my %targets = (a => {link_att => 'href'},
+                       img => {link_att => 'src'},
+                       link => {link_att => 'href'},
+                       script => {link_att => 'src'},
+                   );
+
+        # adjust links to static files
+        if (exists $targets{$gi}) {
+            my $link_att = $targets{$gi}->{link_att};
+            my $uri_adjust = Template::Flute::UriAdjust->new(uri => $elt->att($link_att),
+                                                             adjust => $self->{uri},
+                                                         );
+
+            if (my $result = $uri_adjust->result) {
+                $elt->set_att($link_att, $result->path);
+            }
+        }
+    }
 
 	# don't act on elements without class, id or name attribute
 	return unless $class_names || $id || $elt_name;

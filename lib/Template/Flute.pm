@@ -368,7 +368,7 @@ sub _bootstrap_template {
 	my ($self, $source, $template, $snippet) = @_;
 	my ($template_object);
 
-	$template_object = new Template::Flute::HTML;
+	$template_object = new Template::Flute::HTML(uri => $self->{uri});
 	
 	if ($source eq 'file') {
 		$template_object->parse_file($template, $self->{specification}, $snippet);
@@ -912,7 +912,9 @@ sub value {
 			 auto_iterators => $self->{auto_iterators},
 			 i18n => $self->{i18n},
              filters => $self->{filters},
-			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values});
+			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
+                 uri => $self->{uri},
+         );
 		
 		$raw_value = Template::Flute->new(%args)->process();
 	}
