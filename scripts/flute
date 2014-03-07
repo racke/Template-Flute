@@ -29,7 +29,7 @@ use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 binmode STDERR, ":encoding(utf-8)";
 binmode STDOUT, ":encoding(utf-8)";
-my (%opts, %input, %values);
+my (%opts, %values);
 
 # commandline options
 $opts{value} = \%values;
@@ -40,13 +40,6 @@ unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s', 'check',
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
-
-# get input out of commandline arguments (key=value pairs)
-for (@ARGV) {
-	if (/^(\w+)=(.*)$/) {
-		$input{$1} = $2;
-	}
-}
 
 unless (@ARGV) {
 	die "$0: Commandline arguments missing.\n";
