@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0103
+    Version 0.0104
 
 SYNOPSIS
         use Template::Flute;
@@ -16,6 +16,9 @@ SYNOPSIS
                                template_file => 'cart.html',
                                iterators => {cart => $cart},
                                values => \%values,
+                               autodetect => {
+                                              disable => [qw/Foo::Bar/],
+                                             }
                                );
 
         print $flute->process();
@@ -162,6 +165,29 @@ CONSTRUCTOR
 
     auto_iterators
         Builds iterators automatically from values.
+
+    autodetect
+        A configuration option. It should be an hashref with a key `disable'
+        and a value with an arrayref with a list of classes for objects
+        which should be considered plain hashrefs instead. Example:
+
+          my $flute = Template::Flute->new(....
+                                           autodetect => { disable => [qw/My::Object/] },
+                                           ....
+                                          );
+
+        Doing so, if you pass a value holding a `My::Object' object, and you
+        have a specification with something like this:
+
+          <specification>
+           <value name="name" field="object.method"/>
+          </specification>
+
+        The value will be `$object-'{method}>, not `$object-'$method>.
+
+        The object is checked with `isa'.
+
+        Classical example: `Dancer::Session::Abstract'.
 
 METHODS
   process [HASHREF]

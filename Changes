@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0104 Fri Mar  7 13:00:12 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add check for dangling specification elements (GH #30, Marco Pessotto).
+    * Add blacklist for object autodetection (GH #33, Marco Pessotto).
+
+    [BUG FIXES]
+
+    * Skip processing params for empty lists at the end of the _sub_process method (GH #25).
+
 0.0103 Thu Mar  6 18:08:44 2014 CET
 
     [BUG FIXES]
