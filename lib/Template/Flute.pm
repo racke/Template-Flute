@@ -1379,6 +1379,63 @@ addressed in this way.
 
 See L<Template::Flute::List> for details about lists.
 
+=head1 OBJECTS AND STRUCTURES
+
+You can pass objects and hashrefs as values. To access a key or an
+accessor, you have to use a dotted notation with C<field>. An example
+for both hashrefs and objects follows.
+
+Specification:
+
+  <specification>
+   <value name="object" field="myobject.method" />
+   <value name="struct" field="mystruct.key" />
+  </specification>
+
+
+HTML:
+
+  <html>
+    <body>
+      <span class="object">Welcome back!</span>
+      <span class="struct">Another one</span>
+    </body>
+  </html>
+
+
+Code:
+
+  package My::Object;
+  sub new {
+      my $class = shift;
+      bless {}, $class;
+  }
+  sub method {
+      return "Hello from the method";
+  }
+  package main;
+  my $flute = Template::Flute->new(
+      specification => $spec,
+      template => $html,
+      values => {
+          myobject => My::Object->new,
+          mystruct => { key => "Hello from hash" },
+         }
+     );
+
+C<process> will return:
+
+  <html>
+    <head></head>
+    <body>
+      <span class="object">Hello from the method</span>
+      <span class="struct">Hello from hash</span>
+    </body>
+  </html>
+
+Sometimes you need to treat an object like an hashref. How to do that
+is explained under the C<autodetect> option for the constructor.
+
 =head1 FORMS
 
 Forms can be accessed after parsing the specification and the HTML template

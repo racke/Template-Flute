@@ -19,6 +19,7 @@
 
 use strict;
 use warnings;
+use utf8;
 
 use Getopt::Long;
 use File::Temp qw(tempfile);
@@ -27,26 +28,81 @@ use Template::Flute;
 use Template::Flute::Config;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
+
+use Pod::Usage;
+
+=encoding utf8
+
+=head1 NAME
+
+flute -- Process template with L<Template::Flute> on the command line
+
+=head1 SYNOPSIS
+
+  flute [ options ] specification.xml template.html
+
+Available options
+
+=over 4
+
+=item --help
+
+Print this help and exit
+
+=item --browser
+
+Store the result in a temporary file and call C<x-www-browser> on
+that.
+
+=item --conf <configuration file>
+
+Load the L<Template::Flute> configuration from the given file.
+
+=item --pdf <output.pdf>
+
+Save the result in the named PDF file
+
+=item --iterator name=file.json
+
+Load the iterator named C<name> from a JSON file.
+
+=item --value name=value
+
+Pass the given value to the template for processing. This option can
+be repeated (for different names).
+
+=item --check
+
+Report template/specification inconsistencies. 
+
+=back
+
+The C<flute> script can also combine pdf in a single one:
+
+  flute --combine --pdf output.pdf file1.pdf file2.pdf ...
+
+=cut
+
+
 binmode STDERR, ":encoding(utf-8)";
 binmode STDOUT, ":encoding(utf-8)";
-my (%opts, %input, %values);
+my (%opts, %values);
 
 # commandline options
 $opts{value} = \%values;
 my $whandler = $SIG{__WARN__};
 $SIG{__WARN__} = sub {print STDERR "$0: @_";};
-unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s', 'check',
+unless (GetOptions (\%opts, 'browser', 'combine', 'conf=s', 'check', 'help',
 					'iterator=s', 'value=s%', 'pdf=s')) {
 	exit 1;
 }
 $SIG{__WARN__} = $whandler;
 
-# get input out of commandline arguments (key=value pairs)
-for (@ARGV) {
-	if (/^(\w+)=(.*)$/) {
-		$input{$1} = $2;
-	}
+if ($opts{help}) {
+    pod2usage("Using Template::Flute " . $Template::Flute::VERSION . "\n");
+    exit 2;
 }
+
 
 unless (@ARGV) {
 	die "$0: Commandline arguments missing.\n";

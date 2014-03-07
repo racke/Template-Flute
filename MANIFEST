@@ -74,6 +74,7 @@ t/values/bad_objects.t
 t/values/basic.t
 t/values/js.t
 t/values/nbsp.t
+t/values/object-and-structs.t
 t/values/select.t
 t/values/select-custom.t
 t/values/select-objects.t
@@ -133,3 +134,4 @@ t/testfiles/good/product.html
 t/testfiles/good/product.xml
 t/testfiles/good/registration.html
 t/testfiles/good/registration.xml
+scripts/flute

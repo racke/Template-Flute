@@ -23,6 +23,7 @@ WriteMakefile(
         'Moo' => 0,
         'Scalar::Util' => 0,
     },
+    EXE_FILES => [ 'scripts/flute' ],
     META_MERGE        => {
         resources => {
             repository  => 'https://github.com/racke/Template-Flute.git',
