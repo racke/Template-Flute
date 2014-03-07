@@ -423,7 +423,7 @@ sub process {
 
 sub _sub_process {
 	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count, $level) = @_;
-	my ($template);
+	my ($template, %list_active);
 	# Use root spec or sub-spec
 	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>", 1);
 	
@@ -513,6 +513,14 @@ sub _sub_process {
 
 		my $list = $template->{lists}->{$spec_name};
 		my $count = 1;
+
+        if ($records) {
+            $list_active{$spec_name} = 1;
+        }
+        else {
+            $list_active{$spec_name} = 0;
+        }
+
 		for my $record_values (@$records){
 			my $element = $element_template->copy();
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
@@ -553,13 +561,18 @@ sub _sub_process {
 	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
         if ($elt->tag eq 'param') {
             my $name = $spec_xml->att('name');
+            my $parent_name = $elt->parent->att('name');
 
-            if (defined $name && $name ne $elt->parent->att('name')) {
+            if (defined $name && $name ne $parent_name) {
                 # don't process params of sublists again
                 next;
             }
-        }
 
+            if (exists $list_active{$parent_name} && ! $list_active{$parent_name}) {
+                # don't process params for empty lists
+                 next;
+            }
+        }
 		my $spec_id = $elt->{'att'}->{'id'};
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
