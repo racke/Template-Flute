@@ -23,7 +23,13 @@ my @tests = (
      uri => URI->new('/t/', 'http'),
      match => qr{img src="http://example.com/foo.png"},
     },
-    # links used for Angular
+    # links with anchor
+    {html => q{<html><body><a href="#login">Log in</a></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new('/t/', 'http'),
+     match => qr{<a href="/t/#login">Log in</a>},
+    },
+     # links used for Angular
     {html => q{<html><body><a href="{{link.url}}" class="">{{link.name}}</a></body></html>},
      spec => q{<specification></specification>},
      uri => URI->new('/t/', 'http'),

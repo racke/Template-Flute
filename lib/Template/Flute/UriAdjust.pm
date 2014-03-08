@@ -51,6 +51,10 @@ sub result {
         # unescape the resulting path
         $result = uri_unescape($result->path);
 
+        if ($uri->fragment) {
+            $result .= "#" . uri_unescape($uri->fragment);
+        }
+
         return $result;
     }
 
