@@ -314,10 +314,14 @@ Add value specified by hash reference VALUE.
 sub value_add {
 	my ($self, $new_valueref) = @_;
 	my ($valueref, $value_name, $id, $class);
-	
+
 	$value_name = $new_valueref->{value}->{name};
 
-	if (exists $new_valueref->{value}->{include}) {
+    unless (defined $value_name && $value_name =~ /\S/) {
+        die "Value needs a name attribute.";
+    }
+
+    if (exists $new_valueref->{value}->{include}) {
 		# include implies hooking resulting value
 		$new_valueref->{value}->{op} = 'hook';
 	}
