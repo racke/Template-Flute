@@ -636,7 +636,7 @@ sub dangling {
                         push @empty, {
                                       type => $internal,
                                       name => $struct,
-                                      dump => join(' ', %$el),
+                                      dump => $el,
                                      }
                     }
                 }

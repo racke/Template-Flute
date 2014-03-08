@@ -22,6 +22,7 @@ use warnings;
 use utf8;
 
 use Getopt::Long;
+use Data::Dumper;
 use File::Temp qw(tempfile);
 
 use Template::Flute;
@@ -202,7 +203,7 @@ if ($opts{check}) {
     if (my @empty = $flute->specification->dangling) {
         warn "Found dangling elements in the specification\n";
         foreach my $el (@empty) {
-            warn "$el->{type} $el->{name} ($el->{dump})\n";
+            warn "$el->{type} $el->{name} ", Dumper($el->{dump});
         }
         die "Bad specification!\n";
     }
