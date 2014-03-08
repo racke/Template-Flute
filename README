@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0104
+    Version 0.0105
 
 SYNOPSIS
         use Template::Flute;
@@ -507,6 +507,60 @@ LISTS
 
     See Template::Flute::List for details about lists.
 
+OBJECTS AND STRUCTURES
+    You can pass objects and hashrefs as values. To access a key or an
+    accessor, you have to use a dotted notation with `field'. An example for
+    both hashrefs and objects follows.
+
+    Specification:
+
+      <specification>
+       <value name="object" field="myobject.method" />
+       <value name="struct" field="mystruct.key" />
+      </specification>
+
+    HTML:
+
+      <html>
+        <body>
+          <span class="object">Welcome back!</span>
+          <span class="struct">Another one</span>
+        </body>
+      </html>
+
+    Code:
+
+      package My::Object;
+      sub new {
+          my $class = shift;
+          bless {}, $class;
+      }
+      sub method {
+          return "Hello from the method";
+      }
+      package main;
+      my $flute = Template::Flute->new(
+          specification => $spec,
+          template => $html,
+          values => {
+              myobject => My::Object->new,
+              mystruct => { key => "Hello from hash" },
+             }
+         );
+
+    `process' will return:
+
+      <html>
+        <head></head>
+        <body>
+          <span class="object">Hello from the method</span>
+          <span class="struct">Hello from hash</span>
+        </body>
+      </html>
+
+    Sometimes you need to treat an object like an hashref. How to do that is
+    explained under the `autodetect' option for the constructor.
+
 FORMS
     Forms can be accessed after parsing the specification and the HTML
     template through the HTML template object:
@@ -620,9 +674,8 @@ AUTHOR
     Stefan Hornburg (Racke), <racke@linuxia.de>
 
 BUGS
-    Please report any bugs or feature requests to `bug-template-flute at
-    rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute.
+    Please report any bugs or feature requests at
+    https://github.com/racke/Template-Flute/issues.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
@@ -630,9 +683,6 @@ SUPPORT
         perldoc Template::Flute
 
     You can also look for information at:
-
-    * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Flute
 
     * AnnoCPAN: Annotated CPAN documentation
         http://annocpan.org/dist/Template-Flute

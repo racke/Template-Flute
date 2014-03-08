@@ -1,5 +1,26 @@
 Revision history for Template::Flute
 
+0.0105 Sat Mar  8 14:28:22 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Use hash reference instead of string concatenation for dump key produced by dangling method.
+    * Install flute script.
+
+    [BUG FIXES]
+
+    * Use Test::Deep for checking output of dangling method to avoid hash randomization problem (GH #35).
+
+    [DOCUMENTATION]
+
+    * Add section "OBJECTS AND STRUCTURES" to main POD (Marco Pessotto).
+    * Fix bugtracker location.
+    * Improve documentation of dangling method.
+
+    [TESTS]
+
+    * Add objects and structures test (Marco Pessotto).
+
 0.0104 Fri Mar  7 13:00:12 2014 CET
 
     [ENHANCEMENTS]
