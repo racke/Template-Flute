@@ -349,6 +349,7 @@ sub _parse_handler {
 
     if ($self->{uri}) {
         my %targets = (a => {link_att => 'href'},
+                       base => {link_att => 'href'},
                        img => {link_att => 'src'},
                        link => {link_att => 'href'},
                        script => {link_att => 'src'},
