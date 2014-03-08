@@ -12,6 +12,7 @@ WriteMakefile(
       : ()),
     PL_FILES            => {},
     PREREQ_PM => {
+        'Test::Deep' => 0,
         'Test::More' => 0,
         'Test::Warn' => 0,
         'Test::Warnings' => 0,

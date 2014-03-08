@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 
 use Test::More tests => 9;
+use Test::Deep;
 
 my $builder = Test::More->builder;
 binmode $builder->output,         ":utf8";
@@ -48,13 +49,14 @@ $flute = Template::Flute->new(template => $html,
 my @empty = $flute->specification->dangling;
 # diag Dumper(\@empty);
 ok(@empty, "Found empty elements");
-is_deeply \@empty, [
-                    {
-                     'dump' => 'name cammmmmel type value',
+cmp_deeply @empty, ({
+                     'dump' => {name => 'cammmmmel',
+                                type => 'value',
+                            },
                      'name' => 'cammmmmel',
                      'type' => 'class'
-                    }
-                   ], "Report ok";
+                    })
+                   , "Report ok";
 
 
 foreach my $internal (qw/_ids _classes _names/) {
