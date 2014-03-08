@@ -6,6 +6,12 @@ use Test::More;
 use URI;
 
 my @tests = (
+    # base tag
+    {html => q{<html><head><base href="/foo"><body><img src="foo.png"></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new('/t/', 'http'),
+     match => qr{base href="/t/foo"},
+    },
     # images
     {html => q{<html><body><img src="foo.png"></body></html>},
      spec => q{<specification></specification>},
