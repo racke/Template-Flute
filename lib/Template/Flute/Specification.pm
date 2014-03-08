@@ -653,8 +653,7 @@ Stefan Hornburg (Racke), C<< <racke at linuxia.de> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-template-flute at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute>.
+Please report any bugs or feature requests at L<https://github.com/racke/Template-Flute/issues>.
 
 =head1 LICENSE AND COPYRIGHT
 

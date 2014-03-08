@@ -1571,8 +1571,7 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-template-flute at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Flute>.
+Please report any bugs or feature requests at L<https://github.com/racke/Template-Flute/issues>.
 
 =head1 SUPPORT
 
@@ -1583,10 +1582,6 @@ You can find documentation for this module with the perldoc command.
 You can also look for information at:
 
 =over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Template-Flute>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
