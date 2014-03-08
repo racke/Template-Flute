@@ -232,6 +232,11 @@ The object is checked with C<isa>.
 
 Classical example: C<Dancer::Session::Abstract>.
 
+=item uri
+
+Base URI for your template. This adjusts the links in the HTML tags
+C<a>, C<base>, C<img>, C<link> and C<script>.
+
 =back
 
 =cut
