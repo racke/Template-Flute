@@ -17,6 +17,12 @@ my @tests = (
      uri => URI->new('/t/', 'http'),
      match => qr{img src="http://example.com/foo.png"},
     },
+    # links used for Angular
+    {html => q{<html><body><a href="{{link.url}}" class="">{{link.name}}</a></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new('/t/', 'http'),
+     match => qr{<a class="" href="/t/{{link.url}}">{{link.name}}</a>},
+    },
     # stylesheets
     {html => q{<html><head><link href="/css/main.css" rel="stylesheet"></head></html>},
      spec => q{<specification></specification>},
