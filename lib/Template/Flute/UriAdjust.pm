@@ -4,6 +4,9 @@ use strict;
 use warnings;
 
 use URI;
+use URI::Escape;
+use URI::Escape (qw/uri_unescape/);
+
 use Moo;
 
 has adjust => (
@@ -44,6 +47,10 @@ sub result {
         }
 
         $result->path($adjust . $uri->path);
+
+        # unescape the resulting path
+        $result = uri_unescape($result->path);
+
         return $result;
     }
 

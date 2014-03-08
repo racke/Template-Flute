@@ -7,8 +7,6 @@ use Encode;
 use File::Slurp ();
 use XML::Twig;
 use HTML::Entities;
-use URI;
-use URI::Escape (qw/uri_unescape/);
 
 use Template::Flute::Increment;
 use Template::Flute::Container;
@@ -364,8 +362,7 @@ sub _parse_handler {
                                                          );
 
             if (my $result = $uri_adjust->result) {
-                # we need to unescape the path
-                $elt->set_att($link_att, uri_unescape($result->path));
+                $elt->set_att($link_att, $result);
             }
         }
     }
