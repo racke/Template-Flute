@@ -22,6 +22,7 @@ lib/Template/Flute/Filter/Upper.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
+lib/Template/Flute/UriAdjust.pm
 lib/Template/Flute/Container.pm
 lib/Template/Flute/List.pm
 lib/Template/Flute/Database/Rose.pm
@@ -111,6 +112,7 @@ t/target-id.t
 t/targets/01-value.t
 t/targets/02-param.t
 t/test-twig.t
+t/uri-adjust.t
 t/files/i18n.html
 t/files/i18n.xml
 t/i18n/02-includes.t
