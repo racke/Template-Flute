@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0105
+    Version 0.0106
 
 SYNOPSIS
         use Template::Flute;
@@ -188,6 +188,9 @@ CONSTRUCTOR
         The object is checked with `isa'.
 
         Classical example: `Dancer::Session::Abstract'.
+
+    uri Base URI for your template. This adjusts the links in the HTML tags
+        `a', `base', `img', `link' and `script'.
 
 METHODS
   process [HASHREF]

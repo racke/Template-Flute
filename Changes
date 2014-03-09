@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0106 Sun Mar  9 13:36:42 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add URI adjust feature.
+
+    [BUG FIXES]
+
+    * Call is_filled form method only on an existing form object.
+
 0.0105 Sat Mar  8 14:28:22 2014 CET
 
     [ENHANCEMENTS]
