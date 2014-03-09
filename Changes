@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0107 Sun Mar  9 15:30:50 2014 CET
+
+    [BUG FIXES]
+
+    * Add missing files for URI adjust feature to MANIFEST.
+
+    [DOCUMENTATION]
+
+    * Add documentaton to UriAdjust module.
+
 0.0106 Sun Mar  9 13:36:42 2014 CET
 
     [ENHANCEMENTS]
