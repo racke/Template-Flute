@@ -21,7 +21,7 @@ WriteMakefile(
         'XML::Twig' => 0,
         'HTML::TreeBuilder' => 0,
         'Parse::RecDescent' => 0,
-        'Moo' => 0,
+        'Moo' => 1.001000,
         'Scalar::Util' => 0,
         'URI' => 0,
     },
