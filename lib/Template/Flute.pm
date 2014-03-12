@@ -520,15 +520,29 @@ sub _sub_process {
 
 		my $list = $template->{lists}->{$spec_name};
 		my $count = 1;
+        my $iter_records;
 
-        if ($records) {
+        if (defined blessed $records) {
+            # check whether this object can serve as iterator
+            if ($records->can('next') && $records->can('count')) {
+                $iter_records = $records;
+            }
+            else {
+                die "Object cannot be used as iterator for list $spec_name: ", ref($records);
+            }
+        }
+        else {
+            $iter_records = Template::Flute::Iterator->new(@$records);
+        }
+
+        if ($iter_records->count) {
             $list_active{$spec_name} = 1;
         }
         else {
             $list_active{$spec_name} = 0;
         }
 
-		for my $record_values (@$records){
+		while (my $record_values = $iter_records->next) {
 			my $element = $element_template->copy();
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
 
