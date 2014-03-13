@@ -11,12 +11,14 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
-    PREREQ_PM => {
+    BUILD_REQUIRES => {
         'Test::Deep' => 0,
         'Test::More' => 0,
         'Test::Warn' => 0,
         'Test::Warnings' => 0,
         'Test::Fatal' => 0,
+    },
+    PREREQ_PM => {
         'File::Slurp' => 0,
         'XML::Twig' => 0,
         'HTML::TreeBuilder' => 0,
