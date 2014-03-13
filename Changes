@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0108 Thu Mar 13 18:41:15 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Use list values as an iterator if they are an appropriate object.
+
+    [BUG FIXES]
+
+    * Fix another case where a param is processed outside of its list.
+    * Bumped up minimum version of Moo (Marco Pessotto, GH #38).
+
 0.0107 Sun Mar  9 15:30:50 2014 CET
 
     [BUG FIXES]
