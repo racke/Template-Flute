@@ -584,7 +584,7 @@ sub _sub_process {
             my $name = $spec_xml->att('name');
             my $parent_name = $elt->parent->att('name');
 
-            if (defined $name && $name ne $parent_name) {
+            if (! defined $name || $name ne $parent_name) {
                 # don't process params of sublists again
                 next;
             }
