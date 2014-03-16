@@ -499,7 +499,7 @@ sub resolve_iterator {
 		$iter = $self->{iters}->{$input};
 	}
 	else {
-		die "Failed to resolve iterator $input.";
+		die "Failed to resolve iterator $input.\n";
 	}
 
 	return $iter;
@@ -606,7 +606,7 @@ Each hashref returned has the following keys set:
 =back
 
 Beware that to call this method successfully, the specification must
-already be processed, so it's safer to call it after C<$flute->process>.
+already be processed, so it's safer to call it after C<$flute-E<gt>process>.
 
 =cut
 
