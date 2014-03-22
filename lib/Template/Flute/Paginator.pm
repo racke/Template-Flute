@@ -5,7 +5,6 @@ use warnings;
 
 use Moo;
 use Sub::Quote;
-
 use Template::Flute::Iterator;
 
 =head1 NAME
@@ -57,13 +56,13 @@ has page_position => (
 =head2 pages
 
 Returns number of pages.
-    
+
 =cut
-    
+
 sub pages {
     my $self = shift;
     my ($count, $pages);
-    
+
     $count = $self->iterator->count;
 
     if ($self->page_size > 0) {
@@ -107,7 +106,7 @@ Select page, starting from 1.
 sub select_page {
     my ($self, $page) = @_;
     my ($new_position, $distance);
-    
+
     # calculate number of entries
     $new_position = ($page  - 1) * $self->page_size;
 
@@ -126,7 +125,7 @@ sub select_page {
 
 sub position_first {
     my $self = shift;
-    
+
     return ($self->current_page - 1) * $self->page_size + 1;
 }
 
@@ -190,7 +189,7 @@ sub count {
 Seeds the iterator.
 
 =cut
-    
+
 sub seed {
     my ($self, $data) = @_;
 
@@ -200,7 +199,7 @@ sub seed {
 sub BUILDARGS {
     my ($class, @args) = @_;
     my ($iter, $data);
-    
+
     if (ref($args[0]) eq 'ARRAY') {
         # create iterator
         $data = shift @args;
@@ -232,6 +231,3 @@ L<Template::Flute::Iterator>
 =cut
 
 1;
-
-1;
-
