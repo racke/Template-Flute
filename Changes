@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0109 Sat Mar 22 18:55:08 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add experimental support for paging.
+    * Split prerequisites into build and runtime prerequisites.
+
+    [BUG FIXES]
+
+    * Fix missing POD escape in Template::Flute::Specification's dangling method documentation.
+
+    [TESTS]
+
+    *  Show resulting HTML in case of an error in entities test.
+
 0.0108 Thu Mar 13 18:41:15 2014 CET
 
     [ENHANCEMENTS]
