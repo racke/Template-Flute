@@ -10,6 +10,7 @@ use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 use Template::Flute::Iterator;
 use Template::Flute::Increment;
+use Template::Flute::Pager;
 use Template::Flute::Paginator;
 
 =head1 NAME
@@ -566,6 +567,11 @@ sub _sub_process {
 
 		$element_template->cut(); # Remove template element
 
+        if ($list->{paging}) {
+            $iter_records->reset;
+            $self->_paging($list, $iter_records);
+        }
+
         if ($sep_copy) {
             # Remove last separator and original one(s) in the template
             $sep_copy->cut();
@@ -653,33 +659,6 @@ sub _sub_process {
     }
 
 	return $count ? $template->{xml}->root() : $template->{xml};	
-}
-
-sub _paging_link {
-    my ($self, $elt, $paging_link, $paging_page) = @_;
-    my ($path, $uri);
-
-    if (ref($paging_link) =~ /^URI::/) {
-        # add to path
-        $uri = $paging_link->clone;
-        if ($paging_page == 1) {
-            $uri->path(join('/', $paging_link->path));
-        }
-        else {
-            $uri->path(join('/', $paging_link->path, $paging_page));
-        }
-        $path = $uri->as_string;
-    }
-    else {
-        if ($paging_page == 1) {
-            $path = "/$paging_link";
-        }
-        else {
-            $path = "/$paging_link/$paging_page";
-        }
-    }
-
-    $elt->set_att(href => $path);
 }
 
 sub _replace_within_elts {
@@ -894,6 +873,181 @@ sub _filter {
     }
 
     return $filter_obj->filter($value);
+}
+
+sub _paging {
+    my ($self, $list, $iterator) = @_;
+
+    # turn iterator into paginator
+    my $page_size = $list->{paging}->{page_size} || 20;
+
+    my ($iter, $pager);
+
+    if (defined blessed($iterator)
+            && $iterator->can('pager')
+                && ($pager = $iterator->pager)) {
+        $iter = Template::Flute::Pager->new(iterator => $pager,
+                                            page_size => $page_size);
+    }
+    else {
+        $iter = Template::Flute::Paginator->new(iterator => $iterator,
+                                                page_size => $page_size);
+    }
+
+    if ($iter->pages > 1) {
+        my ($element_orig, $element_copy, %element_pos, $element_link,
+            $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
+
+        $slide_length = $list->{paging}->{slide_length} || 0;
+
+        $paging_min = 1;
+        $paging_max = $iter->pages;
+
+        if ($slide_length > 0) {
+            # determine the page numbers to show up
+            if ($iter->pages > $slide_length) {
+                $paging_min = int($paging_page - $slide_length / 2);
+
+                if ($paging_min < 1) {
+                    $paging_min = 1;
+                }
+
+                $paging_max = $paging_min + $slide_length - 1;
+            }
+        }
+
+        $paging_page = $iter->current_page;
+
+        for my $type (qw/first previous next last active standard/) {
+            if ($element = $list->{paging}->{elements}->{$type}) {
+                $element_orig = shift @{$element->{elts}};
+                next unless $element_orig;
+
+                # cut any other elements
+                for my $sf (@{$element->{elts}}) {
+                    $sf->cut;
+                }
+            }
+
+            if ($element_orig->is_last_child()) {
+                %element_pos = (last_child => $element_orig->parent());
+            } elsif ($element_orig->next_sibling()) {
+                %element_pos = (before => $element_orig->next_sibling());
+            } else {
+                die "Neither last child nor next sibling.";
+            }
+
+            if ($element->{type} eq 'active') {
+                $element_active = $element_orig;
+            } elsif ($element->{type} eq 'standard') {
+                for (1 .. $iter->pages) {
+                    next if $_ < $paging_min || $_ > $paging_max;
+
+                    if ($_ == $paging_page) {
+                                # Move active element here
+                        if ($element_active->{"flute_active"}->{rep_elt}) {
+                            $element_active->{"flute_active"}->{rep_elt}->set_text($_);
+                        } else {
+                            $element_active->set_text($_);
+                        }
+
+                        $element_copy = $element_active->cut;
+                        $element_copy->paste(%element_pos);
+                        next;
+                    }
+
+                    # Adjust text
+                    if ($element_orig->{"flute_$element->{name}"}->{rep_elt}) {
+                        $element_orig->{"flute_$element->{name}"}->{rep_elt}->set_text($_);
+                    } else {
+                        $element_orig->set_text($_);
+                    }
+
+                    # Adjust link
+                    if ($element_link = $element_orig->first_descendant('a')) {
+                        $self->_paging_link($element_link, $paging_link, $_);
+                    }
+
+                    # Copy HTML element
+                    $element_copy = $element_orig->copy;
+                    $element_copy->paste(%element_pos);
+                }
+
+                $element_orig->cut;
+            } elsif ($element->{type} eq 'first') {
+                if ($paging_page > 1) {
+                    # Adjust link
+                    if ($element_link = $element_orig->first_descendant('a')) {
+                        $self->_paging_link($element_link, $paging_link, 1);
+                    }
+                } else {
+                    $element_orig->cut;
+                }
+            } elsif ($element->{type} eq 'last') {
+                if ($paging_page < $iter->pages) {
+                    # Adjust link
+                    if ($element_link = $element_orig->first_descendant('a')) {
+                        $self->_paging_link($element_link, $paging_link, $iter->pages);
+                    }
+                } else {
+                    $element_orig->cut;
+                }
+            } elsif ($element->{type} eq 'next') {
+                if ($paging_page < $iter->pages) {
+                    # Adjust link
+                    if ($element_link = $element_orig->first_descendant('a')) {
+                        $self->_paging_link($element_link, $paging_link, $paging_page + 1);
+                    }
+                } else {
+                    $element_orig->cut;
+                }
+            } elsif ($element->{type} eq 'previous') {
+                if ($paging_page > 1) {
+                    # Adjust link
+                    if ($element_link = $element_orig->first_descendant('a')) {
+                        $self->_paging_link($element_link, $paging_link, $paging_page - 1);
+                    }
+                } else {
+                    $element_orig->cut;
+                }
+            }
+        }
+    } else {
+        # remove paging area
+        for my $paging_elt (@{$list->{paging}->{elts}}) {
+            $paging_elt->cut;
+        }
+    }
+}
+
+sub _paging_link {
+    my ($self, $elt, $paging_link, $paging_page) = @_;
+    my ($path, $uri);
+
+    if (ref($paging_link) =~ /^URI::/) {
+        # add to path
+        $uri = $paging_link->clone;
+        if ($paging_page == 1) {
+            $uri->path(join('/', $paging_link->path));
+        }
+        else {
+            $uri->path(join('/', $paging_link->path, $paging_page));
+        }
+        $path = $uri->as_string;
+    }
+    elsif ($paging_link) {
+        if ($paging_page == 1) {
+            $path = "/$paging_link";
+        }
+        else {
+            $path = "/$paging_link/$paging_page";
+        }
+    }
+    else {
+        $path = $paging_page;
+    }
+
+    $elt->set_att(href => $path);
 }
 
 =head2 value NAME
