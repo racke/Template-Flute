@@ -7,7 +7,7 @@ binmode STDOUT, ":encoding(utf-8)";
 
 use XML::Twig;
 
-if ($XML::Twig::VERSION > 3.39) {
+if ($XML::Twig::VERSION > 3.39 && $XML::Twig::VERSION < 3.47) {
     plan skip_all => "WARNING! Your XML::Twig version probably contains a bug when parsing entities!. Skipping test";
 }
 else {
