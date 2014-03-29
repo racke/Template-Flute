@@ -19,6 +19,7 @@ WriteMakefile(
         'Test::Fatal' => 0,
     },
     PREREQ_PM => {
+        'Data::Transpose' => 0.0009,
         'File::Slurp' => 0,
         'XML::Twig' => 0,
         'HTML::TreeBuilder' => 0,
