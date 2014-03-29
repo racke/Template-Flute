@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0110 Sat Mar 29 12:22:15 2014 CET
+
+    [BUG FIXES]
+
+    * Add missing prerequisite on Data::Transpose.
+
+    [TESTS]
+
+    * Enable entities test for XML::Twig 3.47 and newer as the bug is fixed now.
+
 0.0109 Sat Mar 22 18:55:08 2014 CET
 
     [ENHANCEMENTS]
