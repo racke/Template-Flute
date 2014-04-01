@@ -928,6 +928,10 @@ sub _paging {
                     $sf->cut;
                 }
             }
+	    else {
+		# skip processing of paging elements which aren't specified
+		next;
+            }
 
             if ($element_orig->is_last_child()) {
                 %element_pos = (last_child => $element_orig->parent());
