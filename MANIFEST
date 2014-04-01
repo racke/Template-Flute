@@ -80,6 +80,7 @@ t/values/object-and-structs.t
 t/values/select.t
 t/values/select-custom.t
 t/values/select-objects.t
+t/values/select-scalar.t
 t/values/toggle.t
 t/values/utf8.t
 t/i18n/01-simple.t
