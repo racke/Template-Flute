@@ -626,7 +626,18 @@ sub _sub_process {
                 $iter_name = $spec_class->{iterator};
 
                 unless ($specification->iterator($iter_name)) {
-                    if (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+		    my $maybe_iter = $self->{values}->{$iter_name};
+
+		    if (defined blessed $maybe_iter) {
+			if ($maybe_iter->can('next') &&
+			    $maybe_iter->can('count')) {
+			    $iter = $maybe_iter;
+			}
+			else {
+			    die "Object cannot be used as iterator for value $spec_name: ", ref($maybe_iter);
+			}
+		    }
+                    elsif (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
                         $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
                     }
                     else {
