@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0112 Wed Apr  2 06:57:38 2014 CEST
+
+    [BUG FIXES]
+
+    * Fix empty dropdown produced by value element with scalar iterator.
+
 0.0111 Tue Apr  1 11:28:25 2014 CEST
 
     [BUG FIXES]
