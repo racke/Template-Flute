@@ -4,11 +4,12 @@ use Test::More tests => 4;
 use Template::Flute;
 use Data::Dumper;
 
+diag 'All tests will fail if args="tree" is not provided';
 
 my $spec = <<EOF;
 <specification>
 <list name="items" iterator="items" class="list">
- <param name="received_check" class="received-check" op="toggle"/>
+ <param name="received_check" class="received-check" op="toggle" args="tree"/>
  <param name="received" field="code"/>
 </list>
 </specification>
@@ -53,7 +54,7 @@ $spec = <<EOF;
 <specification>
 <list name="items" iterator="items" class="list">
  <param name="received" field="code"/>
- <param name="received_check" class="received-check" op="toggle"/>
+ <param name="received_check" class="received-check" op="toggle" args="tree"/>
 </list>
 </specification>
 EOF
@@ -69,7 +70,7 @@ like $out, qr/\Q$expected\E/;
 
 $spec = <<EOF;
 <specification>
- <value name="received_check" class="received-check" op="toggle"/>
+ <value name="received_check" class="received-check" op="toggle" args="tree"/>
  <value name="received" />
 </specification>
 EOF
@@ -103,7 +104,7 @@ like $out, qr/\Q$expected\E/;
 $spec = <<EOF;
 <specification>
  <value name="received" />
- <value name="received_check" class="received-check" op="toggle"/>
+ <value name="received_check" class="received-check" op="toggle" args="tree"/>
 </specification>
 EOF
 
