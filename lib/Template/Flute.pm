@@ -238,6 +238,21 @@ Classical example: C<Dancer::Session::Abstract>.
 Base URI for your template. This adjusts the links in the HTML tags
 C<a>, C<base>, C<img>, C<link> and C<script>.
 
+=item email_cids
+
+This is meant to be used on HTML emails. When this is set to an hash
+reference (which should be empty), the hash will be populated with the
+following values:
+
+  cid1 => { filename => 'foo.png' },
+  cid2 => { filename => 'foo2.gif' },
+
+and in the body the images C<src> attribute will be replaced with
+C<cid:cid1>.
+
+The cid names are arbitrary and assigned by the template. The code
+should look at the reference values which were modified.
+
 =back
 
 =cut
@@ -374,7 +389,8 @@ sub _bootstrap_template {
 	my ($self, $source, $template, $snippet) = @_;
 	my ($template_object);
 
-	$template_object = new Template::Flute::HTML(uri => $self->{uri});
+	$template_object = new Template::Flute::HTML(uri => $self->{uri},
+                                                 email_cids => $self->{email_cids});
 	
 	if ($source eq 'file') {
 		$template_object->parse_file($template, $self->{specification}, $snippet);
@@ -1102,6 +1118,7 @@ sub value {
              filters => $self->{filters},
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
                  uri => $self->{uri},
+                 email_cids => $self->{email_cids},
          );
 		
 		$raw_value = Template::Flute->new(%args)->process();
