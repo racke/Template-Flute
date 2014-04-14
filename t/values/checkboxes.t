@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 4;
 use Template::Flute;
 use Data::Dumper;
 
@@ -66,3 +66,55 @@ $flute = Template::Flute->new(template => $html,
 $out = $flute->process;
 
 like $out, qr/\Q$expected\E/;
+
+$spec = <<EOF;
+<specification>
+ <value name="received_check" class="received-check" op="toggle"/>
+ <value name="received" />
+</specification>
+EOF
+
+$html = <<EOF;
+<span class="received-check">
+<input class="received" name="received" type="checkbox" value="second" />
+</span>
+EOF
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              auto_iterators => 1,
+                              values => { received => 'blabla',
+                                          received_check => 1
+                                        });
+
+$out = $flute->process;
+
+$expected = <<EOF;
+<span class="received-check">
+<input class="received" name="received" type="checkbox" value="blabla" />
+</span>
+EOF
+
+$expected =~ s/\n//g;
+
+like $out, qr/\Q$expected\E/;
+
+
+$spec = <<EOF;
+<specification>
+ <value name="received" />
+ <value name="received_check" class="received-check" op="toggle"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              auto_iterators => 1,
+                              values => { received => 'blabla',
+                                          received_check => 1
+                                        });
+
+$out = $flute->process;
+
+like $out, qr/\Q$expected\E/;
+
