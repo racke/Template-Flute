@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Template::Flute;
-use Test::More;
+use Test::More tests => 2;
 
 
 my $html = <<'HTML';
