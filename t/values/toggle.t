@@ -25,12 +25,12 @@ for my $value (0, 1, ' ', 'test') {
     $out = $flute->process();
 
     if ($value) {
-        ok ($out =~ m%<div class="test">$value</div>%,
+        like ($out, qr%<div class="test">$value</div>%,
             "toggle value test with: $value")
             || diag $out;
     }
     else {
-        ok ($out !~ /div/,
+        unlike ($out, qr/div/,
             "toggle value test with: $value")
             || diag $out;
     }

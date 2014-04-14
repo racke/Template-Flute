@@ -74,6 +74,7 @@ t/filters/upper.t
 t/values/append.t
 t/values/bad_objects.t
 t/values/basic.t
+t/values/checkboxes.t
 t/values/js.t
 t/values/nbsp.t
 t/values/object-and-structs.t
