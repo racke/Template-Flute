@@ -1291,8 +1291,17 @@ Appends the param value to the text found in the HTML template.
 
 =item toggle
 
-Without target attribute, it only shows corresponding HTML element if param value is set.
-Wiht target attribute, it simply toggles the target attribute.
+When the C<args> attribute is set to C<tree>, it doesn't interpolate
+anything and just shows corresponding HTML element if param value is
+set.
+
+With C<target> attribute, it simply toggles the target attribute.
+
+Otherwise, if value is true, shows the HTML element and set its
+content to the value. If value is false, removes the HTML element.
+
+So, if your element has children elements, you probably want to use
+the C<args="tree"> attribute (see below for an example).
 
 =back
 
