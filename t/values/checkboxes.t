@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Template::Flute;
 use Data::Dumper;
 
@@ -49,4 +49,20 @@ $expected =~ s/\n//g;
 
 like $out, qr/\Q$expected\E/;
 
+$spec = <<EOF;
+<specification>
+<list name="items" iterator="items" class="list">
+ <param name="received" field="code"/>
+ <param name="received_check" class="received-check" op="toggle"/>
+</list>
+</specification>
+EOF
 
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              auto_iterators => 1,
+                              values => { items => $iter });
+
+$out = $flute->process;
+
+like $out, qr/\Q$expected\E/;
