@@ -53,6 +53,7 @@ t/11-value.t
 t/15-entities.t
 t/checking/basic.t
 t/checking/batch.t
+t/email-cids.t
 t/expressions/basic.t
 t/files/component.html
 t/files/component.xml
