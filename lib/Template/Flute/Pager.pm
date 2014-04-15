@@ -30,6 +30,12 @@ Template::Flute::Pager - Data::Pager class for Template::Flute
     # select a page (starting with 1)
     $paginator->select_page;
 
+=head1 ATTRIBUTES
+
+=head2 iterator
+
+Pager iterator.
+
 =cut
 
 has iterator => (
@@ -38,11 +44,23 @@ has iterator => (
 #    default => quote_sub q{return Data::Pager->new;},
 );
 
+=head2 page_size
+
+Page size (defaults to 0).
+
+=cut
+
 has page_size => (
     is => 'rw',
     lazy => 1,
     default => quote_sub q{return 0;},
 );
+
+=head2 page_position
+
+Page position (defaults to 0).
+
+=cut
 
 has page_position => (
     is => 'ro',
