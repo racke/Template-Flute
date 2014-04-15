@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0112
+    Version 0.0113
 
 SYNOPSIS
         use Template::Flute;
@@ -192,6 +192,20 @@ CONSTRUCTOR
     uri Base URI for your template. This adjusts the links in the HTML tags
         `a', `base', `img', `link' and `script'.
 
+    email_cids
+        This is meant to be used on HTML emails. When this is set to an hash
+        reference (which should be empty), the hash will be populated with
+        the following values:
+
+          cid1 => { filename => 'foo.png' },
+          cid2 => { filename => 'foo2.gif' },
+
+        and in the body the images `src' attribute will be replaced with
+        `cid:cid1'.
+
+        The cid names are arbitrary and assigned by the template. The code
+        should look at the reference values which were modified.
+
 METHODS
   process [HASHREF]
     Processes HTML template, manipulates the HTML tree based on the
@@ -275,9 +289,18 @@ SPECIFICATION
             Appends the param value to the text found in the HTML template.
 
         toggle
-            Without target attribute, it only shows corresponding HTML
-            element if param value is set. Wiht target attribute, it simply
-            toggles the target attribute.
+            When the `args' attribute is set to `tree', it doesn't
+            interpolate anything and just shows corresponding HTML element
+            if param value is set.
+
+            With `target' attribute, it simply toggles the target attribute.
+
+            Otherwise, if value is true, shows the HTML element and set its
+            content to the value. If value is false, removes the HTML
+            element.
+
+            So, if your element has children elements, you probably want to
+            use the `args="tree"' attribute (see below for an example).
 
         Other attributes for param elements are:
 

@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0113 Tue Apr 15 17:37:41 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Add support for embedding images in emails (GH #43, Marco Pessotto).
+
+    [DOCUMENTATION]
+
+    * Fix documentation bug for op="toggle" (GH #42, Marco Pessotto).
+    * Add POD documentation on attributes for Pager class.
+
+    [TESTS]
+
+    * Add tests for op="toggle" (GH #42, Marco Pessotto).
+
 0.0112 Wed Apr  2 06:57:38 2014 CEST
 
     [BUG FIXES]
