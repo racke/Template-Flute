@@ -3,15 +3,8 @@
 use strict;
 use warnings;
 use XML::Twig;
-use Test::More;
+use Test::More tests => 3;
 
-
-if ($XML::Twig::VERSION > 3.39 && $XML::Twig::VERSION < 3.47) {
-    plan skip_all => "WARNING! Your XML::Twig version probably contains a bug when parsing entities!. Skipping test";
-}
-else {
-    plan tests => 3;
-}
 
 my $parser = XML::Twig->new();
 

@@ -1,18 +1,11 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 3;
 use Template::Flute;
 use utf8;
 binmode STDOUT, ":encoding(utf-8)";
 
 use XML::Twig;
-
-if ($XML::Twig::VERSION > 3.39 && $XML::Twig::VERSION < 3.47) {
-    plan skip_all => "WARNING! Your XML::Twig version probably contains a bug when parsing entities!. Skipping test";
-}
-else {
-    plan tests => 3;
-}
 
 my $layout_html = << 'EOF';
 <html>

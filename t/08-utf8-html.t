@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Test for HTML files with UTF-8 content
 

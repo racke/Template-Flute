@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Testing basic functions of iterator.
 

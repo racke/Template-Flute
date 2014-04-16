@@ -10,7 +10,7 @@ use Template::Flute;
 use XML::Twig;
 use Data::Dumper;
 
-plan tests => 6;
+plan tests => 7;
 
 
 my $js_first = 'value layout < 0 && value >= 0 && value <= 1 && value > 1 || 0';
@@ -134,7 +134,5 @@ like $final, qr/\Q$js_first\E/, "js (body) found verbatim";
 like $final, qr/\Q$js_second\E/, "js (layout) found verbatim";
 diag "Output: $final\n";
 
-if ($final =~ m/\]\]&gt;/) {
-    diag "End of CDATA escaped because of XML::Twig";
-}
+unlike $final,  qr/\]\]&gt;/, "End of CDATA escaped correctly";
 

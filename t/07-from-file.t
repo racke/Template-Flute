@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Test for passing specification and/or template from string
 
