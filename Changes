@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0114 Wed Apr 16 09:21:36 2014 CEST
+
+    [TESTS]
+
+    * Require XML::Twig 3.48 and adjust tests accordingly
+      (GH #44, Marco Pessotto).
+
+    * Remove -T switch from regular tests
+      (GH #44, Marco Pessotto).
+
 0.0113 Tue Apr 15 17:37:41 2014 CEST
 
     [ENHANCEMENTS]
