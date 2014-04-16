@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Test for nobreak_single filter
 

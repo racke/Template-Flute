@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Extended tests for values
 

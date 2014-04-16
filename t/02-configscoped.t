@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Tests for specification parser based on Config::Scoped.
 

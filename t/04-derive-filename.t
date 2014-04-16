@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 #
 # Tests for Template::Flute::Utils::derive_filename function.
 
