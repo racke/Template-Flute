@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0115 Wed Apr 23 15:33:08 2014 CEST
+
+    [BUG FIXES]
+
+    * Skip URI adjust for link elements without target attribute (<a href, <img src, ...).
+
 0.0114 Wed Apr 16 09:21:36 2014 CEST
 
     [TESTS]
