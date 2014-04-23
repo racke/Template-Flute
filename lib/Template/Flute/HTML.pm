@@ -357,13 +357,18 @@ sub _parse_handler {
         # adjust links to static files
         if (exists $targets{$gi}) {
             my $link_att = $targets{$gi}->{link_att};
-            my $uri_adjust = Template::Flute::UriAdjust->new(uri => $elt->att($link_att),
-                                                             adjust => $self->{uri},
-                                                         );
+	    my $link_value = $elt->att($link_att);
+	    my $uri_adjust;
 
-            if (my $result = $uri_adjust->result) {
-                $elt->set_att($link_att, $result);
-            }
+	    if (defined $link_value) {
+		$uri_adjust = Template::Flute::UriAdjust->new(uri => $link_value,
+							      adjust => $self->{uri},
+		    );
+
+		if (my $result = $uri_adjust->result) {
+		    $elt->set_att($link_att, $result);
+		}
+	    }
         }
     }
     if (my $cids = $self->{email_cids}) {

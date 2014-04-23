@@ -35,6 +35,12 @@ my @tests = (
      uri => URI->new('/t/', 'http'),
      match => qr{<a class="" href="/t/{{link.url}}">{{link.name}}</a>},
     },
+    # link elements without href attributes
+    {html => q{<html><body><a class="">{{link.name}}</a></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new('/t/', 'http'),
+     match => qr{<a class="">{{link.name}}</a>},
+    },
     # stylesheets
     {html => q{<html><head><link href="/css/main.css" rel="stylesheet"></head></html>},
      spec => q{<specification></specification>},
