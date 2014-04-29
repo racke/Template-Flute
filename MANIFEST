@@ -84,7 +84,7 @@ t/values/select-custom.t
 t/values/select-objects.t
 t/values/select-scalar.t
 t/values/toggle.t
-t/values/undef.t
+t/values/undefs.t
 t/values/utf8.t
 t/i18n/01-simple.t
 t/containers/basic.t
