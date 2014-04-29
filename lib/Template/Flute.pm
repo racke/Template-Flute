@@ -1157,6 +1157,13 @@ sub value {
 	else {
        	$key = $value->{name};
         $raw_value = $record_is_object ? $ref_value->$key : $ref_value->{$key};
+
+        # if the value is undef, but the type is 'value', set it to
+        # the empty string. this way we prevent template values to pop
+        # up because no action is done somewhere else.
+        if (!defined($raw_value) and $value->{type} eq 'value') {
+            $raw_value = '';
+        }
 	}
 
 	if ($value->{filter}) {
