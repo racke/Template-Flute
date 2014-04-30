@@ -519,6 +519,11 @@ sub _sub_process {
         my @iter_steps = split(/\./, $iterator);
         my $iter_ref = $values;
         my $records;
+        my $spec_iter = $specification->iterator($iterator);
+
+        if ($spec_iter) {
+            $iter_ref->{$iterator} = $spec_iter;
+        }
 
         for my $step (@iter_steps) {
             if (defined blessed $iter_ref) {
