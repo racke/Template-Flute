@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0116 Wed Apr 30 09:57:19 2014 CEST
+
+    [BUG FIXES]
+
+    * Consider undefined values as empty strings (GH #45, Marco Pessotto).
+
 0.0115 Wed Apr 23 15:33:08 2014 CEST
 
     [BUG FIXES]
