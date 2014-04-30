@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0117 Wed Apr 30 15:58:18 2014 CEST
+
+    [BUG FIXES]
+
+    * Use iterator from specification instead of looking it up from template
+      values.
+
 0.0116 Wed Apr 30 09:57:19 2014 CEST
 
     [BUG FIXES]
