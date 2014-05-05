@@ -557,6 +557,13 @@ sub _sub_process {
             $iter_records = Template::Flute::Iterator->new(@$records);
         }
 
+        if ($list->{paging}) {
+            $iter_records->reset;
+            $self->_paging($list, $iter_records);
+        }
+
+
+
         if ($iter_records->count) {
             $list_active{$spec_name} = 1;
         }
@@ -587,11 +594,6 @@ sub _sub_process {
 		}
 
 		$element_template->cut(); # Remove template element
-
-        if ($list->{paging}) {
-            $iter_records->reset;
-            $self->_paging($list, $iter_records);
-        }
 
         if ($sep_copy) {
             # Remove last separator and original one(s) in the template
@@ -931,6 +933,11 @@ sub _paging {
             $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
         $slide_length = $list->{paging}->{slide_length} || 0;
+        $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
+        $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+
+        $iter->select_page($paging_page);
+        # print "Page size is: " . $iter->page_size;
 
         $paging_min = 1;
         $paging_max = $iter->pages;

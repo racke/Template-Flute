@@ -64,11 +64,9 @@ my $flute = Template::Flute->new(template => $html,
                                            });
 my $output = $flute->process;
 
-diag $output;
-
 like $output, qr{<li class="standard"><a href="/page/2">2</a>}, "Found page 2";
 like $output, qr{<li class="active"><a class="selected" href="">1</a></li>}, "Found page 1 active";
-like $output, qr{user-5}, "User 5 not found";
+like $output, qr{user-5}, "User 5 found";
 unlike $output, qr{user-6}, "User 6 not found";
 
 $flute = Template::Flute->new(template => $html,
@@ -82,9 +80,10 @@ $flute = Template::Flute->new(template => $html,
                                          uri => 'page',
                                         });
 $output = $flute->process;
+
 like $output, qr{<li class="standard"><a href="/page">1</a>}, "Found page 1";
 like $output, qr{<li class="active"><a class="selected" href="">2</a></li>}, "Found page 1 active";
-like $output, qr{user-6}, "User 6 not found";
+like $output, qr{user-6}, "User 6 found";
 unlike $output, qr{user-5}, "User 5 not found";
-
+unlike $output, qr{user-11}, "User 6 not found";
 done_testing;
