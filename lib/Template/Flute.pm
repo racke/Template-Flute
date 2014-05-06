@@ -460,7 +460,7 @@ sub _sub_process {
 	}
 	
 	my $classes = $specification->{classes};
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query, %skip);
+	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip);
 	
 	# Read one layer of spec
 	my $spec_elements = {};
@@ -504,17 +504,33 @@ sub _sub_process {
 		unless($element_template){
 			next;
 		}
-		
-		if ($element_template->is_last_child()) {			
-			%paste_pos = (last_child => $element_template->parent());
-		}
-		elsif ($element_template->next_sibling()) {
-			%paste_pos = (before => $element_template->next_sibling());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $html);
-		}
+
+        # collect the list of classes to see if the separator is
+        # inside or outside the list element
+        my %children_classes;
+        foreach my $child_element ($element_template->children) {
+            if (my $c = $child_element->att('class')) {
+                $children_classes{$c} = 1;
+            }
+        }
+
+        # determine where to paste
+		my ($list_paste_to, $paste_operation);
+        # if last child, append
+		if ($element_template->is_last_child) {
+            $list_paste_to = $element_template->parent;
+            $paste_operation = 'last_child';
+        }
+        # if there is material, before the template element (we will cut that later)
+        elsif ($element_template->next_sibling) {
+            $list_paste_to = $element_template;
+            $paste_operation = 'before';
+        }
+        else {
+            # list is root element in the template
+            $list_paste_to = $html;
+            $paste_operation = 'last_child';
+        }
 
         my @iter_steps = split(/\./, $iterator);
         my $iter_ref = $values;
@@ -557,6 +573,14 @@ sub _sub_process {
             $iter_records = Template::Flute::Iterator->new(@$records);
         }
 
+        if ($list->{paging}) {
+            $iter_records->reset;
+            # replace the iterator with the paginator
+            $iter_records = $self->_paging($list, $iter_records);
+        }
+
+
+
         if ($iter_records->count) {
             $list_active{$spec_name} = 1;
         }
@@ -565,20 +589,35 @@ sub _sub_process {
         }
 
 		while (my $record_values = $iter_records->next) {
+
+            # cut the separators away before copying
+            for my $sep (@{$list->{separators}}) {
+                for my $elt (@{$sep->{elts}}) {
+                    $elt->cut();
+                }
+            }
+
 			my $element = $element_template->copy();
+
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
 
 			# Get rid of flutexml container and put it into position
+			my $current;
 			for my $e (reverse($element->cut_children())) {
-				$e->paste(%paste_pos);
+				$e->paste($paste_operation, $list_paste_to);
+				$current = $e;
        		}
 
 			# Add separator
-			if ($list->{separators}) {
+			if ($current && $list->{separators}) {
 			    for my $sep (@{$list->{separators}}) {
 					for my $elt (@{$sep->{elts}}) {
 					    $sep_copy = $elt->copy();
-					    $sep_copy->paste(%paste_pos);
+                        my $operation = 'after';
+                        if ($children_classes{$sep_copy->att('class')}) {
+                            $operation = 'last_child';
+                        }
+					    $sep_copy->paste($operation, $current);
 					    last;
 					}
 			    }
@@ -588,20 +627,10 @@ sub _sub_process {
 
 		$element_template->cut(); # Remove template element
 
-        if ($list->{paging}) {
-            $iter_records->reset;
-            $self->_paging($list, $iter_records);
-        }
-
         if ($sep_copy) {
             # Remove last separator and original one(s) in the template
             $sep_copy->cut();
 
-            for my $sep (@{$list->{separators}}) {
-                for my $elt (@{$sep->{elts}}) {
-                    $elt->cut();
-                }
-            }
         }
     }
 
@@ -932,6 +961,19 @@ sub _paging {
 
         $slide_length = $list->{paging}->{slide_length} || 0;
 
+        if (exists $list->{paging}->{page_value} and
+            exists $self->{values}->{$list->{paging}->{page_value}}) {
+            $paging_page = $self->{values}->{$list->{paging}->{page_value}};
+        }
+        if (exists $list->{paging}->{link_value} and
+            exists $self->{values}->{$list->{paging}->{link_value}}) {
+            $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+        }
+        $paging_page ||= 1;
+
+        $iter->select_page($paging_page);
+        # print "Page size is: " . $iter->page_size;
+
         $paging_min = 1;
         $paging_max = $iter->pages;
 
@@ -947,8 +989,6 @@ sub _paging {
                 $paging_max = $paging_min + $slide_length - 1;
             }
         }
-
-        $paging_page = $iter->current_page;
 
         for my $type (qw/first previous next last active standard/) {
             if ($element = $list->{paging}->{elements}->{$type}) {
@@ -1054,6 +1094,7 @@ sub _paging {
             $paging_elt->cut;
         }
     }
+    return $iter;
 }
 
 sub _paging_link {

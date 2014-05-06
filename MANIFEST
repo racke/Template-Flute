@@ -111,9 +111,11 @@ t/lists/nested.t
 t/lists/object.t
 t/lists/paging.t
 t/lists/params.t
+t/lists/placement.t
 t/lists/separator.t
 t/lists/toggle_param.t
 t/object.t
+t/paging/simple.t
 t/target-id.t
 t/targets/01-value.t
 t/targets/02-param.t

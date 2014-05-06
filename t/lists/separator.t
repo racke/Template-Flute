@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 4;
 use Template::Flute;
 
 my ($html_outside, $html_inside, $spec, $tf, $out, $iter);
@@ -18,8 +18,13 @@ $spec = q{<specification>
 
 $iter = [{key => 'FOO'}, {key => 'BAR'}];
 
-# first test: separator outside the list
-$html_outside = q{<div class="list"><span class="key">KEY</span></div><span class="sep"> | </span>};
+diag "first test: separator outside the list";
+$html_outside = q{
+<div class="list">
+<span class="key">KEY</span>
+</div>
+<span class="sep"> | </span>
+};
 
 $tf = Template::Flute->new(template => $html_outside,
 			   specification => $spec,
@@ -27,11 +32,18 @@ $tf = Template::Flute->new(template => $html_outside,
     );
 
 $out = $tf->process();
+diag $out;
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+like $out, qr%<div class="list"><span class="key">FOO</span></div><span class="sep"> \| </span><div class="list"><span class="key">BAR</span></div>%, "Checking list";
 
-# second test: separator inside the list
-$html_inside = q{<div class="list"><span class="key">KEY</span><span class="sep"> | </span></div>};
+unlike $out, qr/KEY/;
+
+diag "second test: separator inside the list";
+$html_inside = q{
+<div class="list">
+<span class="key">KEY</span>
+<span class="sep"> | </span>
+</div>};
 
 $tf = Template::Flute->new(template => $html_inside,
 			   specification => $spec,
@@ -39,5 +51,7 @@ $tf = Template::Flute->new(template => $html_inside,
     );
 
 $out = $tf->process();
+diag $out;
+like $out, qr%<div class="list"><span class="key">FOO</span><span class="sep"> \| </span></div><div class="list"><span class="key">BAR</span></div>%, "Checking separator";
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+unlike $out, qr/KEY/;
