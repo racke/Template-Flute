@@ -568,12 +568,6 @@ sub _elt_handler {
 
 		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
-	} elsif ($sob->{type} eq 'separator') {
-		push (@{$sob->{elts}}, $elt);
-		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-
-		$self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
-		push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
     } elsif ($sob->{type} eq 'element') {
         push (@{$sob->{elts}}, $elt);
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
