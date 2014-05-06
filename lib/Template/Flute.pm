@@ -934,8 +934,16 @@ sub _paging {
             $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
         $slide_length = $list->{paging}->{slide_length} || 0;
-        $paging_page = $self->{values}->{$list->{paging}->{page_value}}  || 1;
-        $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+
+        if (exists $list->{paging}->{page_value} and
+            exists $self->{values}->{$list->{paging}->{page_value}}) {
+            $paging_page = $self->{values}->{$list->{paging}->{page_value}};
+        }
+        if (exists $list->{paging}->{link_value} and
+            exists $self->{values}->{$list->{paging}->{link_value}}) {
+            $paging_link = $self->{values}->{$list->{paging}->{link_value}};
+        }
+        $paging_page ||= 1;
 
         $iter->select_page($paging_page);
         # print "Page size is: " . $iter->page_size;
