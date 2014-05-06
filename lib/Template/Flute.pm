@@ -509,7 +509,7 @@ sub _sub_process {
 			%paste_pos = (last_child => $element_template->parent());
 		}
 		elsif ($element_template->next_sibling()) {
-			%paste_pos = (last_child => $element_template->next_sibling());
+			%paste_pos = (last_child => $element_template->parent());
 		}
 		else {
 			# list is root element in the template
