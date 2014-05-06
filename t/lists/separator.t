@@ -28,7 +28,7 @@ $tf = Template::Flute->new(template => $html_outside,
 
 $out = $tf->process();
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+like $out, qr%<div class="list"><span class="key">FOO</span></div><span class="sep"> | </span><div class="list"><span class="key">BAR</span></div>%, "Checking list";
 
 # second test: separator inside the list
 $html_inside = q{<div class="list"><span class="key">KEY</span><span class="sep"> | </span></div>};
@@ -40,4 +40,4 @@ $tf = Template::Flute->new(template => $html_inside,
 
 $out = $tf->process();
 
-ok ($out =~ m%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Out: $out.");
+like $out, qr%<div class="list"><span class="key">FOO</span><span class="sep"> | </span></div><div class="list"><span class="key">BAR</span></div>%, "Checking separator";
