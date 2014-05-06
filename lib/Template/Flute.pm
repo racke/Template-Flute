@@ -559,7 +559,8 @@ sub _sub_process {
 
         if ($list->{paging}) {
             $iter_records->reset;
-            $self->_paging($list, $iter_records);
+            # replace the iterator with the paginator
+            $iter_records = $self->_paging($list, $iter_records);
         }
 
 
@@ -1061,6 +1062,7 @@ sub _paging {
             $paging_elt->cut;
         }
     }
+    return $iter;
 }
 
 sub _paging_link {
