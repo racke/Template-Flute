@@ -504,6 +504,15 @@ sub _sub_process {
 		unless($element_template){
 			next;
 		}
+
+        # collect the list of classes to see if the separator is
+        # inside or outside the list element
+        my %children_classes;
+        foreach my $child_element ($element_template->children) {
+            if (my $c = $child_element->att('class')) {
+                $children_classes{$c} = 1;
+            }
+        }
 		my $list_paste_to;
 		if ($element_template->is_last_child or $element_template->next_sibling) {
             $list_paste_to = $element_template->parent;
@@ -570,21 +579,35 @@ sub _sub_process {
         }
 
 		while (my $record_values = $iter_records->next) {
+
+            # cut the separators away before copying
+            for my $sep (@{$list->{separators}}) {
+                for my $elt (@{$sep->{elts}}) {
+                    $elt->cut();
+                }
+            }
+
 			my $element = $element_template->copy();
+
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
 
 			# Get rid of flutexml container and put it into position
+			my $current;
 			for my $e (reverse($element->cut_children())) {
-                print "** Pasting " . $e->sprint . " into " . $list_paste_to->sprint ."\n";
 				$e->paste(last_child => $list_paste_to);
+				$current = $e;
        		}
 
 			# Add separator
-			if ($list->{separators}) {
+			if ($current && $list->{separators}) {
 			    for my $sep (@{$list->{separators}}) {
 					for my $elt (@{$sep->{elts}}) {
 					    $sep_copy = $elt->copy();
-					    $sep_copy->paste(last_child => $list_paste_to);
+                        my $operation = 'after';
+                        if ($children_classes{$sep_copy->att('class')}) {
+                            $operation = 'last_child';
+                        }
+					    $sep_copy->paste($operation, $current);
 					    last;
 					}
 			    }
@@ -598,11 +621,6 @@ sub _sub_process {
             # Remove last separator and original one(s) in the template
             $sep_copy->cut();
 
-            for my $sep (@{$list->{separators}}) {
-                for my $elt (@{$sep->{elts}}) {
-                    $elt->cut();
-                }
-            }
         }
     }
 
