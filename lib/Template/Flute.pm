@@ -513,13 +513,23 @@ sub _sub_process {
                 $children_classes{$c} = 1;
             }
         }
-		my $list_paste_to;
-		if ($element_template->is_last_child or $element_template->next_sibling) {
+
+        # determine where to paste
+		my ($list_paste_to, $paste_operation);
+        # if last child, append
+		if ($element_template->is_last_child) {
             $list_paste_to = $element_template->parent;
+            $paste_operation = 'last_child';
+        }
+        # if there is material, before the template element (we will cut that later)
+        elsif ($element_template->next_sibling) {
+            $list_paste_to = $element_template;
+            $paste_operation = 'before';
         }
         else {
             # list is root element in the template
             $list_paste_to = $html;
+            $paste_operation = 'last_child';
         }
 
         my @iter_steps = split(/\./, $iterator);
@@ -594,7 +604,7 @@ sub _sub_process {
 			# Get rid of flutexml container and put it into position
 			my $current;
 			for my $e (reverse($element->cut_children())) {
-				$e->paste(last_child => $list_paste_to);
+				$e->paste($paste_operation, $list_paste_to);
 				$current = $e;
        		}
 

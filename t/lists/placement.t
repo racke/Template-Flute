@@ -21,7 +21,7 @@ my $iter = [{key => 'FOO'}, {key => 'BAR'}];
 my $html = q{
 <div class="pagging"><ul class="pagination"></ul></div>
 <div class="list"><span class="key">KEY</span></div>
-<div class="pagging"><ul class="pagination"></ul></div>
+<div class="pagging">XXX<ul class="pagination"></ul></div>
 };
 
 my $tf = Template::Flute->new(template => $html,
