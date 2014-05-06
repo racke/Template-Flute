@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0118 Tue May  6 15:47:37 2014 CEST
+
+    [BUG FIXES]
+
+    * Restore paging and add proper tests (GH #46, Marco Pessotto).
+
 0.0117 Wed Apr 30 15:58:18 2014 CEST
 
     [BUG FIXES]
