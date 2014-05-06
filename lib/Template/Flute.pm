@@ -956,8 +956,6 @@ sub _paging {
             }
         }
 
-        $paging_page = $iter->current_page;
-
         for my $type (qw/first previous next last active standard/) {
             if ($element = $list->{paging}->{elements}->{$type}) {
                 $element_orig = shift @{$element->{elts}};
