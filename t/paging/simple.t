@@ -1,10 +1,12 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More;
+use Test::More tests => 10;
 use XML::Twig;
 use Template::Flute;
 use Data::Dumper;
+
+$Data::Dumper::Maxdepth = 4;
 
 my $spec =<<'SPEC';
 <specification>
@@ -68,6 +70,7 @@ like $output, qr{<li class="standard"><a href="/page/2">2</a>}, "Found page 2";
 like $output, qr{<li class="active"><a class="selected" href="">1</a></li>}, "Found page 1 active";
 like $output, qr{user-5}, "User 5 found";
 unlike $output, qr{user-6}, "User 6 not found";
+unlike $output, qr{user-11}, "User 11 not found";
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
@@ -81,9 +84,8 @@ $flute = Template::Flute->new(template => $html,
                                         });
 $output = $flute->process;
 
-like $output, qr{<li class="standard"><a href="/page">1</a>}, "Found page 1";
+like $output, qr{<li class="standard"><a href="/page">1</a>}, "Found inactive page 1";
 like $output, qr{<li class="active"><a class="selected" href="">2</a></li>}, "Found page 1 active";
 like $output, qr{user-6}, "User 6 found";
 unlike $output, qr{user-5}, "User 5 not found";
-unlike $output, qr{user-11}, "User 6 not found";
-done_testing;
+unlike $output, qr{user-11}, "User 11 not found";
