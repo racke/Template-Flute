@@ -460,7 +460,7 @@ sub _sub_process {
 	}
 	
 	my $classes = $specification->{classes};
-	my ($dbobj, $iter, $sth, $row, $lel, %paste_pos, $query, %skip);
+	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip);
 	
 	# Read one layer of spec
 	my $spec_elements = {};
@@ -504,17 +504,14 @@ sub _sub_process {
 		unless($element_template){
 			next;
 		}
-		
-		if ($element_template->is_last_child()) {			
-			%paste_pos = (last_child => $element_template->parent());
-		}
-		elsif ($element_template->next_sibling()) {
-			%paste_pos = (last_child => $element_template->parent());
-		}
-		else {
-			# list is root element in the template
-			%paste_pos = (last_child => $html);
-		}
+		my $list_paste_to;
+		if ($element_template->is_last_child or $element_template->next_sibling) {
+            $list_paste_to = $element_template->parent;
+        }
+        else {
+            # list is root element in the template
+            $list_paste_to = $html;
+        }
 
         my @iter_steps = split(/\./, $iterator);
         my $iter_ref = $values;
@@ -578,7 +575,8 @@ sub _sub_process {
 
 			# Get rid of flutexml container and put it into position
 			for my $e (reverse($element->cut_children())) {
-				$e->paste(%paste_pos);
+                print "** Pasting " . $e->sprint . " into " . $list_paste_to->sprint ."\n";
+				$e->paste(last_child => $list_paste_to);
        		}
 
 			# Add separator
@@ -586,7 +584,7 @@ sub _sub_process {
 			    for my $sep (@{$list->{separators}}) {
 					for my $elt (@{$sep->{elts}}) {
 					    $sep_copy = $elt->copy();
-					    $sep_copy->paste(%paste_pos);
+					    $sep_copy->paste(last_child => $list_paste_to);
 					    last;
 					}
 			    }
