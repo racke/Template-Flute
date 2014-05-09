@@ -588,7 +588,10 @@ sub _sub_process {
             $list_active{$spec_name} = 0;
         }
 
+        my $count_iterations = 0;
 		while (my $record_values = $iter_records->next) {
+
+            $count_iterations++;
 
             # cut the separators away before copying
             for my $sep (@{$list->{separators}}) {
@@ -611,6 +614,15 @@ sub _sub_process {
 			# Add separator
 			if ($current && $list->{separators}) {
 			    for my $sep (@{$list->{separators}}) {
+
+                    if (my $every_x = $sep->{every}) {
+                        unless ($count_iterations % $every_x == 0) {
+                            # prevent the last separator to be removed
+                            # if not last element.
+                            $sep_copy = undef;
+                            next;
+                        }
+                    }
 					for my $elt (@{$sep->{elts}}) {
 					    $sep_copy = $elt->copy();
                         my $operation = 'after';
