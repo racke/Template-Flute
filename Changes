@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0119 Fri May  9 09:13:14 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Add "every" attribute to separator elements (GH #47, Marco Pessotto).
+
 0.0118 Tue May  6 15:47:37 2014 CEST
 
     [BUG FIXES]
