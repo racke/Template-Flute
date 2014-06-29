@@ -20,7 +20,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Data::Transpose' => 0.0009,
-        'File::Slurp' => 0,
+        'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
         'HTML::TreeBuilder' => 0,
         'Parse::RecDescent' => 0,

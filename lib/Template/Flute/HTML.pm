@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Encode;
-use File::Slurp ();
+use Path::Tiny ();
 use XML::Twig;
 use HTML::Entities;
 
@@ -313,7 +313,7 @@ sub _parse_template {
 	else {
 		$self->{file} = $template;
 		$encoding = $spec_object->encoding();
-		$html_content = File::Slurp::read_file($template, binmode => ":encoding($encoding)");
+		$html_content = Path::Tiny::path($template)->slurp({binmode => ":encoding($encoding)"});
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
