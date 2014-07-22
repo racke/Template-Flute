@@ -313,6 +313,21 @@ sub new {
 	return $self;
 }
 
+sub _get_pattern {
+    my ($self, $name) = @_;
+    return $self->{patterns}->{$name};
+}
+
+sub _set_pattern {
+    my ($self, $name, $regexp) = @_;
+    die "Missing pattern name" unless $name;
+    die "pattern $name already exists!" if $self->{patterns}->{$name};
+    die "Missing pattern regexp for $name" unless $regexp;
+    # print "Adding pattern $name";
+    $self->{patterns}->{$name} = $regexp;
+}
+
+
 sub _bootstrap {
 	my ($self, $snippet) = @_;
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
@@ -382,6 +397,12 @@ sub _bootstrap_specification {
 		$self->{specification}->set_iterator($name, $iter);
 	}
 	
+    if (my %patterns = $self->{specification}->patterns) {
+        foreach my $k (keys %patterns) {
+            $self->_set_pattern($k, $patterns{$k});
+        }
+    }
+
 	return $self->{specification};
 }
 
@@ -864,6 +885,23 @@ sub _replace_record {
             	$rep_str = '';
             }
         }
+
+    if (my $pattern = $value->{pattern}) {
+        if (my $regexp = $self->_get_pattern($pattern)) {
+            # print "It has pattern $pattern for $rep_str ($regexp)\n";
+            $elt_handler = sub {
+                my ($elt, $string) = @_;
+                my $newtext = $elt->text;
+                $newtext =~ s/$regexp/$string/;
+                $elt->set_text($newtext);
+            };
+        }
+        else {
+            die "No pattern named $pattern!";
+        }
+
+    }
+
 
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
@@ -1466,6 +1504,54 @@ is usually more convenient.
 =item sort	
 
 =item i18n
+
+=item pattern
+
+You can define patterns in your specification to I<interpolate> the
+strings instead of replacing them.
+
+A pattern is defined by the attributes C<name> and C<type> and its
+content. C<type> can be only C<string> or C<regexp>.
+
+The interpolation happens if the C<value> and C<param> elements of the
+specification have an attribute C<pattern> set with the pattern's name.
+
+Given this HTML:
+
+ <p class="cartline">There are 123 items in your shopping cart.</p>
+ <ul>
+   <li class="items">
+     <span class="number">1</span>
+     <span class="category">in category 123</span>
+   </li>
+ </ul>
+
+And this specification:
+
+ <specification>
+ <pattern name="pxt" type="string">123</pattern>
+ <list name="items" iterator="items">
+   <param name="number"/>
+   <param name="category" pattern="pxt"/>
+ </list>
+ <value name="cartline" pattern="pxt"/>
+ </specification>
+
+In this example, in the cartline and category classes' text, only the
+template text "123" will be replaced by the value, not the whole
+element content, yielding such output:
+
+ <p class="cartline">There are 42 items in your shopping cart.</p>
+ <ul>
+  <li class="items">
+   <span class="number">1</span>
+   <span class="category">in category tofu</span>
+  </li>
+  <li class="items">
+   <span class="number">2</span>
+   <span class="category">in category pizza</span>
+  </li>
+ </ul>
 
 =back
 
