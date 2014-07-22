@@ -52,6 +52,9 @@ sub new {
 
 	$self->{pagings} = {};
 
+    # named patterns
+    $self->{patterns} = {};
+
 	bless $self;
 }
 
@@ -370,6 +373,33 @@ sub i18n_add {
 	
 	return $i18nref;
 }
+
+=head2 pattern_add({ name => 'pxt', regexp => qr/\Qmy string\E/ });
+
+Add a pattern to the specification. The two keyes C<name> and
+C<regexp> are mandatory.
+
+=head2 patterns
+
+Returns a plain hash with name => regexp pairs of the patterns set in
+the specification.
+
+=cut
+
+sub pattern_add {
+    my ($self, $pattern) = @_;
+    my $name   = $pattern->{name} or die "Couldn't add pattern: missing name";
+    my $regexp = $pattern->{regexp} or die "Missing regexp for pattern $name";
+    # print "Adding $name $regexp\n";
+    $self->{patterns}->{$name} = $regexp;
+    # print Dumper($self->{patterns});
+}
+
+sub patterns {
+    return %{shift->{patterns}};
+}
+
+
 
 =head2 list_iterator NAME
 

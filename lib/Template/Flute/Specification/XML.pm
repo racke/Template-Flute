@@ -117,12 +117,35 @@ sub _initialize {
 				 i18n => sub {$self->_i18n_handler($_[1])},
 				 input => sub {$self->_stash_handler($_[1])},
 				 sort => sub {$self->_sort_handler($_[1])},
+                 pattern => sub { $self->_pattern_handler($_[1]) },
 				 );
 	
 	# twig parser object
 	$twig = new XML::Twig (twig_handlers => \%handlers);
 
 	return $twig;
+}
+
+
+sub _pattern_handler {
+    my ($self, $elt) = @_;
+    # print "###"  .  $elt->sprint . "###\n";
+    my $name = $elt->att('name') or die "Missing name for pattern";
+    my $type = $elt->att('type') or die "Missing type for pattern $name";
+    my $content = $elt->text     or die "Missing content for pattern $name";
+    # print "### $name $type $content ###\n";
+    # always conver the content to a compiled regexp
+    my $regexp;
+    if ($type eq 'string') {
+        $regexp = qr/\Q$content\E/;
+    }
+    elsif ($type eq 'regexp') {
+        $regexp = qr/$content/;
+    }
+    else {
+        die "Wrong pattern type $type! Only string and regexp are supported";
+    }
+    $self->{spec}->pattern_add({ name => $name, regexp => $regexp });
 }
 
 sub _spec_handler {

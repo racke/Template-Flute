@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 1;
+use Test::More tests => 2;
+use Data::Dumper;
 
 my ($spec, $html, $flute, $out, $expected);
 
@@ -45,11 +46,14 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-print $out;
+$expected =<<'EXPECTED';
+<p class="cartline">There are 42 items in your shopping cart.</p>
+EXPECTED
+
+$expected =~ s/\n//g;
+like $out, qr/\Q$expected\E/, "Interpolation value by pattern";
 
 $expected =<<'EXPECTED';
-<html><head></head><body>
-<p class="cartline">There are 42 items in your shopping cart</p>
 <ul>
 <li class="items">
 <span class="number">1</span>
@@ -60,13 +64,10 @@ $expected =<<'EXPECTED';
 <span class="category">in category pizza</span>
 </li>
 </ul>
-</body></html>
 EXPECTED
 
 $expected =~ s/\n//g;
-
-is $out, $expected, "Interpolation by pattern";
-
+like $out, qr/\Q$expected\E/, "Interpolation param by pattern";
 
 =pod
 

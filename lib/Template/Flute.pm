@@ -313,6 +313,21 @@ sub new {
 	return $self;
 }
 
+sub _get_pattern {
+    my ($self, $name) = @_;
+    return $self->{patterns}->{$name};
+}
+
+sub _set_pattern {
+    my ($self, $name, $regexp) = @_;
+    die "Missing pattern name" unless $name;
+    die "pattern $name already exists!" if $self->{patterns}->{$name};
+    die "Missing pattern regexp for $name" unless $regexp;
+    # print "Adding pattern $name";
+    $self->{patterns}->{$name} = $regexp;
+}
+
+
 sub _bootstrap {
 	my ($self, $snippet) = @_;
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
@@ -382,6 +397,12 @@ sub _bootstrap_specification {
 		$self->{specification}->set_iterator($name, $iter);
 	}
 	
+    if (my %patterns = $self->{specification}->patterns) {
+        foreach my $k (keys %patterns) {
+            $self->_set_pattern($k, $patterns{$k});
+        }
+    }
+
 	return $self->{specification};
 }
 
@@ -864,6 +885,23 @@ sub _replace_record {
             	$rep_str = '';
             }
         }
+
+    if (my $pattern = $value->{pattern}) {
+        if (my $regexp = $self->_get_pattern($pattern)) {
+            # print "It has pattern $pattern for $rep_str ($regexp)\n";
+            $elt_handler = sub {
+                my ($elt, $string) = @_;
+                my $newtext = $elt->text;
+                $newtext =~ s/$regexp/$string/;
+                $elt->set_text($newtext);
+            };
+        }
+        else {
+            die "No pattern named $pattern!";
+        }
+
+    }
+
 
 		if ($value->{increment}) {
 			$rep_str = $value->{increment}->value();
