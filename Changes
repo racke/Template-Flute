@@ -1,5 +1,15 @@
 Revision history for Template::Flute
 
+0.0120 Tue Jul 22 11:47:22 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Add "pattern" element (GH #51, Marco Pessotto)
+
+    [BUG FIXES]
+
+    * Replace broken File::Slurp with Path::Tiny (GH #49, Stefan Hornburg)
+
 0.0119 Fri May  9 09:13:14 2014 CEST
 
     [ENHANCEMENTS]

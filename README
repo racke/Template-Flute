@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0119
+    Version 0.0120
 
 SYNOPSIS
         use Template::Flute;
@@ -353,6 +353,53 @@ SPECIFICATION
     filter
     sort
     i18n
+    pattern
+        You can define patterns in your specification to *interpolate* the
+        strings instead of replacing them.
+
+        A pattern is defined by the attributes `name' and `type' and its
+        content. `type' can be only `string' or `regexp'.
+
+        The interpolation happens if the `value' and `param' elements of the
+        specification have an attribute `pattern' set with the pattern's
+        name.
+
+        Given this HTML:
+
+         <p class="cartline">There are 123 items in your shopping cart.</p>
+         <ul>
+           <li class="items">
+             <span class="number">1</span>
+             <span class="category">in category 123</span>
+           </li>
+         </ul>
+
+        And this specification:
+
+         <specification>
+         <pattern name="pxt" type="string">123</pattern>
+         <list name="items" iterator="items">
+           <param name="number"/>
+           <param name="category" pattern="pxt"/>
+         </list>
+         <value name="cartline" pattern="pxt"/>
+         </specification>
+
+        In this example, in the cartline and category classes' text, only
+        the template text "123" will be replaced by the value, not the whole
+        element content, yielding such output:
+
+         <p class="cartline">There are 42 items in your shopping cart.</p>
+         <ul>
+          <li class="items">
+           <span class="number">1</span>
+           <span class="category">in category tofu</span>
+          </li>
+          <li class="items">
+           <span class="number">2</span>
+           <span class="category">in category pizza</span>
+          </li>
+         </ul>
 
 SIMPLE OPERATORS
   append
