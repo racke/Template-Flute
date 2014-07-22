@@ -376,7 +376,7 @@ sub i18n_add {
 
 =head2 pattern_add({ name => 'pxt', regexp => qr/\Qmy string\E/ });
 
-Add a pattern to the specification. The two keyes C<name> and
+Add a pattern to the specification. The two keys C<name> and
 C<regexp> are mandatory.
 
 =head2 patterns
