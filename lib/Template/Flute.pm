@@ -1966,7 +1966,7 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to David Previous (bigpresh) for writing a much clearer introduction for
+Thanks to David Precious (bigpresh) for writing a much clearer introduction for
 Template::Flute.
 
 Thanks to Grega Pompe for proper implementation of nested lists and
