@@ -1518,6 +1518,27 @@ is usually more convenient.
 
 =item i18n
 
+=item skip
+
+This attribute (which can be provided to C<param> or C<value>
+specification elements) supports the following values:
+
+=over 4
+
+=item empty
+
+Do not replace the template string if the value or parameter is
+undefined, empty or just whitespace.
+
+E.g.
+
+ <value name="cartline" skip="empty"/>
+ <list name="items" iterator="items">
+   <param name="category" skip="empty"/>
+ </list>
+
+=back
+
 =item pattern
 
 You can define patterns in your specification to I<interpolate> the
