@@ -849,7 +849,8 @@ sub _replace_record {
         if (my $skiptype = $value->{skip}) {
         # placeholder for future options
             if ($skiptype eq 'empty') {
-                if (!defined($rep_str) or !length($rep_str)) {
+                if (!defined($rep_str) or
+                    $rep_str =~ m/^\s*$/s) {
                     # do nothing
                     return;
                 }

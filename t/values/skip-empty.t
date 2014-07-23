@@ -18,6 +18,7 @@ $spec =<<'SPEC';
 <value name="zero"         skip="empty"/>
 <value name="empty-string" skip="empty"/>
 <value name="undefined"    skip="empty"/>
+<value name="whitespace"   skip="empty"/>
 </specification>
 SPEC
 
@@ -26,6 +27,7 @@ $html =<<'HTML';
 <p>There are <span class="zero">60</span> items in your shopping cart.</p>
 <p>There are <span class="empty-string">60</span> items in your shopping cart.</p>
 <p>There are <span class="undefined">60</span> items in your shopping cart.</p>
+<p>There are <span class="whitespace">60</span> items in your shopping cart.</p>
 <ul>
   <li class="items">
     <span class="number">1</span>
@@ -51,6 +53,10 @@ my $iterator = [
                  number => 4,
                  category => undef
                 },
+                {
+                 number => 5,
+                 category => "  \n\n\r\n\t   ",
+                },
                ];
 
 $flute = Template::Flute->new(template => $html,
@@ -61,6 +67,7 @@ $flute = Template::Flute->new(template => $html,
                                          zero => 0,
                                          'empty-string' => '',
                                          undefined => undef,
+                                         whitespace => "  \n\n\r\n\t   ",
                                         });
 
 $out = $flute->process;
@@ -70,6 +77,7 @@ $expected =<<'EXPECTED';
 <p>There are <span class="zero">0</span> items in your shopping cart.</p>
 <p>There are <span class="empty-string">60</span> items in your shopping cart.</p>
 <p>There are <span class="undefined">60</span> items in your shopping cart.</p>
+<p>There are <span class="whitespace">60</span> items in your shopping cart.</p>
 EXPECTED
 
 $expected =~ s/\n//g;
@@ -93,6 +101,10 @@ $expected =<<'EXPECTED';
 <span class="number">4</span>
 <span class="category">My category</span>
 </li>
+<li class="items">
+<span class="number">5</span>
+<span class="category">My category</span>
+</li>
 </ul>
 EXPECTED
 
@@ -114,6 +126,7 @@ $spec =<<'SPEC';
 <value name="zero"         skip="empty" pattern="pxt"/>
 <value name="empty-string" skip="empty" pattern="pxt"/>
 <value name="undefined"    skip="empty" pattern="pxt"/>
+<value name="whitespace"   skip="empty" pattern="pxt"/>
 </specification>
 SPEC
 
@@ -122,6 +135,7 @@ $html =<<'HTML';
 <p class="zero">There are 60 items in your shopping cart.</p>
 <p class="empty-string">There are 60 items in your shopping cart.</p>
 <p class="undefined">There are 60 items in your shopping cart.</p>
+<p class="whitespace">There are 60 items in your shopping cart.</p>
 <ul>
   <li class="items">
     <span class="number">1</span>
@@ -138,6 +152,7 @@ $flute = Template::Flute->new(template => $html,
                                          zero => 0,
                                          'empty-string' => '',
                                          undefined => undef,
+                                         whitespace => "  \n\n\r\n\t   ",
                                         });
 
 $out = $flute->process;
@@ -148,6 +163,7 @@ $expected =<<'EXPECTED';
 <p class="zero">There are 0 items in your shopping cart.</p>
 <p class="empty-string">There are 60 items in your shopping cart.</p>
 <p class="undefined">There are 60 items in your shopping cart.</p>
+<p class="whitespace">There are 60 items in your shopping cart.</p>
 EXPECTED
 
 $expected =~ s/\n//g;
@@ -169,6 +185,10 @@ $expected =<<'EXPECTED';
 </li>
 <li class="items">
 <span class="number">4</span>
+<span class="category">My category is 60</span>
+</li>
+<li class="items">
+<span class="number">5</span>
 <span class="category">My category is 60</span>
 </li>
 </ul>
