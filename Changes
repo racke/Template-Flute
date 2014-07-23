@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0121 Wed Jul 23 10:13:00 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Add skip attribute for value and param elements
+      (GH #53, Marco Pessotto).
+
+    [DOCUMENTATION]
+
+    * Fix typo in acknowledgements (GH #52, Marco Pessotto).
+
 0.0120 Tue Jul 22 11:47:22 2014 CEST
 
     [ENHANCEMENTS]

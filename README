@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0120
+    Version 0.0121
 
 SYNOPSIS
         use Template::Flute;
@@ -353,6 +353,21 @@ SPECIFICATION
     filter
     sort
     i18n
+    skip
+        This attribute (which can be provided to `param' or `value'
+        specification elements) supports the following values:
+
+        empty
+            Do not replace the template string if the value or parameter is
+            undefined, empty or just whitespace.
+
+            E.g.
+
+             <value name="cartline" skip="empty"/>
+             <list name="items" iterator="items">
+               <param name="category" skip="empty"/>
+             </list>
+
     pattern
         You can define patterns in your specification to *interpolate* the
         strings instead of replacing them.
@@ -767,7 +782,7 @@ SUPPORT
         http://search.cpan.org/dist/Template-Flute/
 
 ACKNOWLEDGEMENTS
-    Thanks to David Previous (bigpresh) for writing a much clearer
+    Thanks to David Precious (bigpresh) for writing a much clearer
     introduction for Template::Flute.
 
     Thanks to Grega Pompe for proper implementation of nested lists and a
