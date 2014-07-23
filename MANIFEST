@@ -83,6 +83,7 @@ t/values/select.t
 t/values/select-custom.t
 t/values/select-objects.t
 t/values/select-scalar.t
+t/values/skip-empty.t
 t/values/toggle.t
 t/values/undefs.t
 t/values/utf8.t

@@ -846,6 +846,18 @@ sub _replace_record {
 		#return undef if ((not defined $rep_str) and (defined $value->{target}));
 		$raw = $rep_str;
 		
+        if (my $skiptype = $value->{skip}) {
+        # placeholder for future options
+            if ($skiptype eq 'empty') {
+                if (!defined($rep_str) or !length($rep_str)) {
+                    # do nothing
+                    return;
+                }
+            } else {
+                die "Wrong skip type $skiptype";
+            }
+        }
+
 		if (exists $value->{op}) {
             if ($value->{op} eq 'toggle' && ! $value->{target}) {
                 if (exists $value->{args} && $value->{args} eq 'static') {
