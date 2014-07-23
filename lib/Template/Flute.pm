@@ -846,6 +846,19 @@ sub _replace_record {
 		#return undef if ((not defined $rep_str) and (defined $value->{target}));
 		$raw = $rep_str;
 		
+        if (my $skiptype = $value->{skip}) {
+        # placeholder for future options
+            if ($skiptype eq 'empty') {
+                if (!defined($rep_str) or
+                    $rep_str =~ m/^\s*$/s) {
+                    # do nothing
+                    return;
+                }
+            } else {
+                die "Wrong skip type $skiptype";
+            }
+        }
+
 		if (exists $value->{op}) {
             if ($value->{op} eq 'toggle' && ! $value->{target}) {
                 if (exists $value->{args} && $value->{args} eq 'static') {
@@ -1504,6 +1517,27 @@ is usually more convenient.
 =item sort	
 
 =item i18n
+
+=item skip
+
+This attribute (which can be provided to C<param> or C<value>
+specification elements) supports the following values:
+
+=over 4
+
+=item empty
+
+Do not replace the template string if the value or parameter is
+undefined, empty or just whitespace.
+
+E.g.
+
+ <value name="cartline" skip="empty"/>
+ <list name="items" iterator="items">
+   <param name="category" skip="empty"/>
+ </list>
+
+=back
 
 =item pattern
 
