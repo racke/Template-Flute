@@ -623,7 +623,13 @@ sub _sub_process {
 
 			my $element = $element_template->copy();
 
+            # make sure that we save and restore specification object
+            # otherwise it would be overwritten and can cause weird
+            # errors (GH #54)
+
+            my $old_spec = $self->{specification};
 			$element = $self->_sub_process($element, $sub_spec, $record_values, undef, undef, $count, $level + 1);
+            $self->{specification} = $old_spec;
 
 			# Get rid of flutexml container and put it into position
 			my $current;
