@@ -1722,6 +1722,36 @@ HTML output:
       <option value="black" selected="selected">Black</option>
       </select>
 
+=head3 Default value for dropdowns
+
+You can specify the dropdown item which is selected by
+default with the C<iterator_default>) attribute.
+
+Template:
+
+    <select class="color"></select>
+
+Specification:
+
+    <value name="color" iterator="colors" iterator_default="black"/>
+
+Code:
+
+    @colors = ({value => 'red', label => 'Red'},
+               {value => 'black', label => 'Black'});
+
+    $flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              iterators => {colors => \@colors},
+                             );
+
+HTML output:
+
+      <select class="color">
+      <option value="red">Red</option>
+      <option value="black" selected="selected">Black</option>
+      </select>
+
 =head3 Custom iterators for dropdowns
 
 By default, the iterator for a dropdown is an arrayref of hashrefs

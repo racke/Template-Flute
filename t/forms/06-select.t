@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 18;
 
 use Template::Flute;
 use Template::Flute::Specification::XML;
@@ -10,6 +10,14 @@ my $xml_cut = <<EOF;
 <specification name="select">
 <form name="select" id="dropdown">
 <field name="regions" id="regions" iterator="regions"/>
+</form>
+</specification>
+EOF
+
+my $xml_default = <<EOF;
+<specification name="select">
+<form name="select" id="dropdown">
+<field name="regions" id="regions" iterator="regions" iterator_default="AF"/>
 </form>
 </specification>
 EOF
@@ -43,13 +51,19 @@ my $html = <<EOF;
 EOF
 
 # parse XML specifications
-my ($spec_cut, $spec_dup, $spec_keep, $ret_cut, $ret_dup, $ret_keep);
+my ($spec_cut, $spec_default, $spec_dup, $spec_keep, $ret_cut, $ret_default, $ret_dup, $ret_keep);
 
 $spec_cut = new Template::Flute::Specification::XML;
 
 $ret_cut = $spec_cut->parse($xml_cut);
 
 isa_ok($ret_cut, 'Template::Flute::Specification');
+
+$spec_default = new Template::Flute::Specification::XML;
+
+$ret_default = $spec_default->parse($xml_default);
+
+isa_ok($ret_default, 'Template::Flute::Specification');
 
 $spec_dup = new Template::Flute::Specification::XML;
 
@@ -69,6 +83,12 @@ isa_ok($ret_keep, 'Template::Flute::Specification');
 $ret_cut->set_iterator('regions',
 					   Template::Flute::Iterator->new([{value => 'EUR'},
 													   {value => 'AF'}]));
+
+
+$ret_default->set_iterator('regions',
+					   Template::Flute::Iterator->new([{value => 'EUR'},
+													   {value => 'AF'}]));
+
 
 $ret_dup->set_iterator('regions',
 					   Template::Flute::Iterator->new([{value => 'EUR'},
@@ -105,7 +125,45 @@ eval {
 ok($ret !~ /Your Region/, $ret);
 ok($ret =~ /AF/, $ret);
 
-# 2nd specification (replace both selects)
+# 2nd specification (use default value)
+
+# parse HTML template
+my ($html_object_default);
+
+$html_object_default = new Template::Flute::HTML;
+
+$html_object_default->parse($html, $ret_default);
+
+# locate form
+$form = $html_object_default->form('select');
+
+isa_ok ($form, 'Template::Flute::Form');
+
+$form->fill({});
+
+$flute = new Template::Flute(specification => $ret_default,
+							  template => $html_object_default,
+);
+
+eval {
+	$ret = $flute->process();
+};
+
+ok($ret =~ m%<option selected="selected">AF</option>%);
+
+$form->fill({regions => 'EUR'});
+
+$flute = new Template::Flute(specification => $ret_default,
+							  template => $html_object_default,
+);
+
+eval {
+	$ret = $flute->process();
+};
+
+ok($ret =~ m%<option selected="selected">EUR</option>%);
+
+# 3rd specification (replace both selects)
 
 # parse HTML template
 my ($html_object_dup);
@@ -129,8 +187,6 @@ eval {
 	$ret = $flute->process();
 };
 
-warn "Ret: $ret.\n";
-
 ok($ret !~ /Your Region/, 'Test whether first static string was replaced.')
     || diag "Output: $ret";
 
@@ -144,7 +200,7 @@ ok($ret =~ m%<select id="lander" name="lander"><option>EUR</option><option>AF</o
    'Test for correct value of replacement.')
     || diag "Output: $ret";
 
-# 3rd specification (keep the existing option)
+# 4th specification (keep the existing option)
 
 $html_object_keep = new Template::Flute::HTML;
 

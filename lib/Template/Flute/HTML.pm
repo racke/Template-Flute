@@ -698,7 +698,14 @@ sub _set_selected {
 		}
 		
 		$elt->cut_children($cond);
-		
+
+		if (! $value) {
+            # check whether there is a default in the specification
+            if (exists $sob->{iterator_default} && $sob->{iterator_default}) {
+                $value = $sob->{iterator_default};
+            }
+        }
+
         # determine where to look for labels and values in the iterator
         my $value_k = "value";
         my $label_k = "label";
