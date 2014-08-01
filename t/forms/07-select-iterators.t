@@ -147,8 +147,6 @@ eval {
 	$ret = $flute->process();
 };
 
-warn "Ret: $ret.\n";
-
 ok($ret !~ /Your Region/, 'Test whether first static string was replaced.')
     || diag "Output: $ret";
 
