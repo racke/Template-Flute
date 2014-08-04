@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0123 Mon Aug  4 20:28:36 2014 CEST
+
+    [BUG FIXES]
+
+    * Fix pattern interpolation in attributes (GH #56, Marco Pessotto):
+
 0.0122 Fri Aug  1 15:19:49 2014 CEST
 
     [ENHANCEMENTS]
