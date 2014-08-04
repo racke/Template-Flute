@@ -3,9 +3,28 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 my ($spec, $html, $flute, $out, $expected);
+
+$spec =<<'SPEC';
+<specification>
+<value name="cartline" target="alt"/>
+</specification>
+SPEC
+
+$html =<<'HTML';
+<img class="cartline" alt="There are 123 items in your shopping cart." />
+HTML
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {
+                                         cartline => "42",
+                                        });
+
+$out = $flute->process;
+like $out, qr/alt="42"/, "Alt attribute replaced";
 
 $spec =<<'SPEC';
 <specification>
@@ -14,9 +33,6 @@ $spec =<<'SPEC';
 </specification>
 SPEC
 
-$html =<<'HTML';
-<img class="cartline" alt="There are 123 items in your shopping cart." />
-HTML
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
