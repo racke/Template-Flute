@@ -907,13 +907,24 @@ sub _replace_record {
 
     if (my $pattern = $value->{pattern}) {
         if (my $regexp = $self->_get_pattern($pattern)) {
-            # print "It has pattern $pattern for $rep_str ($regexp)\n";
-            $elt_handler = sub {
-                my ($elt, $string) = @_;
-                my $newtext = $elt->text;
-                $newtext =~ s/$regexp/$string/;
-                $elt->set_text($newtext);
-            };
+            # if the value has a target operate on that attribute, otherwise
+            # operate on the text, as expected
+            if (my $attribute = $value->{target}) {
+                $elt_handler = sub {
+                    my ($elt, $string) = @_;
+                    my $newtext = $elt->att($attribute);
+                    $newtext =~ s/$regexp/$string/;
+                    $elt->set_att($attribute, $newtext);
+                };
+            }
+            else {
+                $elt_handler = sub {
+                    my ($elt, $string) = @_;
+                    my $newtext = $elt->text;
+                    $newtext =~ s/$regexp/$string/;
+                    $elt->set_text($newtext);
+                };
+            }
         }
         else {
             die "No pattern named $pattern!";
