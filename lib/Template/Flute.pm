@@ -1459,6 +1459,10 @@ The following operations are supported for param elements:
  
 Appends the param value to the text found in the HTML template.
 
+=item target
+
+The attribute to operate on. See below C<target> for C<value> for details.
+
 =item toggle
 
 When the C<args> attribute is set to C<tree>, it doesn't interpolate
@@ -1519,6 +1523,13 @@ Only shows corresponding HTML element if value is set.
 Other attributes for value elements are:
 
 =over 4
+
+=item target
+
+Specify the attribute to operate on instead of the tag content. It can
+be a named attribute (e.g., C<href>), the wildcard character(C<*>,
+meaning all the attributes found in the HTML template), or a comma
+separated list (e.g., C<alt,title>).
 
 =item filter
 
