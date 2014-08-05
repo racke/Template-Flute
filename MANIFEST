@@ -113,6 +113,7 @@ t/lists/increments.t
 t/lists/nested.t
 t/lists/object.t
 t/lists/paging.t
+t/lists/param-wildcards.t
 t/lists/params.t
 t/lists/placement.t
 t/lists/separator.t
