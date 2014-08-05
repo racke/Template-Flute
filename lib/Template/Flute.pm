@@ -955,7 +955,8 @@ sub _replace_record {
 sub _expand_elt_attributes {
     my ($elt, $attribute) = @_;
     if ($attribute eq '*') {
-        return keys %{ $elt->atts };
+        my @attributes = keys %{ $elt->atts };
+        return grep { $_ ne 'class' and $_ ne 'id' and $_ ne 'name' } @attributes;
     }
     elsif ($attribute =~ m/,/) {
         return split(/\s*,\s*/, $attribute);

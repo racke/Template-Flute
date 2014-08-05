@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Template::Flute;
 use Data::Dumper;
 
@@ -45,6 +45,7 @@ $out = $flute->process;
 my @expected = (
                 qr{href="666"},
                 qr{title="666"},
+                qr{class="glide-o-meter-link"},
                 qr{alt="Glide-o-meter value: 666"},
                 qr{src="/images/glide/sliders/200/slider666_off.jpg"},
                 qr{onmouseout="this.src='/images/glide/sliders/200/slider3_off.jpg'"},
