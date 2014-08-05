@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0130 Tue Aug  5 10:37:52 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Implement the wildcard matching of attributes (GH #57, Marco Pessotto).
+
 0.0123 Mon Aug  4 20:28:36 2014 CEST
 
     [BUG FIXES]

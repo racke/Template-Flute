@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0123
+    Version 0.0130
 
 SYNOPSIS
         use Template::Flute;
@@ -288,6 +288,10 @@ SPECIFICATION
         append
             Appends the param value to the text found in the HTML template.
 
+        target
+            The attribute to operate on. See below `target' for `value' for
+            details.
+
         toggle
             When the `args' attribute is set to `tree', it doesn't
             interpolate anything and just shows corresponding HTML element
@@ -331,6 +335,12 @@ SPECIFICATION
             Only shows corresponding HTML element if value is set.
 
         Other attributes for value elements are:
+
+        target
+            Specify the attribute to operate on instead of the tag content.
+            It can be a named attribute (e.g., `href'), the wildcard
+            character(`*', meaning all the attributes found in the HTML
+            template), or a comma separated list (e.g., `alt,title').
 
         filter
             Applies filter to value.
