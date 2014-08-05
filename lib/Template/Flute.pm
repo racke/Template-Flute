@@ -790,32 +790,35 @@ sub _replace_within_elts {
 			$zref->{rep_sub}->($elt, $rep_str);
 		} elsif ($zref->{rep_att}) {
 			# replace attribute instead of embedded text (e.g. for <input>)
-			if (exists $param->{op} && $param->{op} eq 'append') {
-			    if (exists $param->{joiner}) {
-                    if ($rep_str) {
-                        $elt->set_att($zref->{rep_att}, $zref->{rep_att_orig} . $param->{joiner} . $rep_str);
+            foreach my $replace_attr (_expand_elt_attributes($elt, $zref->{rep_att})) {
+                if (exists $param->{op} && $param->{op} eq 'append') {
+                    my $original_attribute = $zref->{rep_att_orig}->{$replace_attr};
+                    if (exists $param->{joiner}) {
+                        if ($rep_str) {
+                            $elt->set_att($replace_attr, $original_attribute . $param->{joiner} . $rep_str);
+                        }
                     }
-			    }
-			    else {
-			    	my $rep_str_appended = $rep_str ? ($zref->{rep_att_orig} . $rep_str) : $zref->{rep_att_orig};
-					$elt->set_att($zref->{rep_att}, $rep_str_appended);
-			    }
+                    else {
+                        my $rep_str_appended = $rep_str ? ($original_attribute . $rep_str) : $original_attribute;
+                        $elt->set_att($replace_attr, $rep_str_appended);
+                    }
 
-            } elsif (exists $param->{op} && $param->{op} eq 'toggle') {
-                if ($rep_str) {
-                    $elt->set_att($zref->{rep_att});
+                } elsif (exists $param->{op} && $param->{op} eq 'toggle') {
+                    if ($rep_str) {
+                        $elt->set_att($replace_attr);
+                    }
+                    else {
+                        $elt->del_att($replace_attr);
+                    }
+                } else {
+                    if (defined $rep_str) {
+                        $elt->set_att($replace_attr, $rep_str);
+                    }
+                    else {
+                        $elt->del_att($replace_attr);
+                    }
                 }
-                else {
-                    $elt->del_att($zref->{rep_att});
-                }
-			} else {
-				if (defined $rep_str){
-					$elt->set_att($zref->{rep_att}, $rep_str);
-				}
-				else {
-					$elt->del_att($zref->{rep_att});
-				}
-			}
+            }
 		} elsif ($zref->{rep_elt}) {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
@@ -912,9 +915,11 @@ sub _replace_record {
             if (my $attribute = $value->{target}) {
                 $elt_handler = sub {
                     my ($elt, $string) = @_;
-                    my $newtext = $elt->att($attribute);
-                    $newtext =~ s/$regexp/$string/;
-                    $elt->set_att($attribute, $newtext);
+                    foreach my $att (_expand_elt_attributes($elt, $attribute)) {
+                        my $newtext = $elt->att($att);
+                        $newtext =~ s/$regexp/$string/;
+                        $elt->set_att($att, $newtext)
+                    };
                 };
             }
             else {
@@ -946,6 +951,21 @@ sub _replace_record {
 		    _replace_within_elts($value, $rep_str, $elt_handler, $elts);
 		}
 }
+
+sub _expand_elt_attributes {
+    my ($elt, $attribute) = @_;
+    if ($attribute eq '*') {
+        my @attributes = keys %{ $elt->atts };
+        return grep { $_ ne 'class' and $_ ne 'id' and $_ ne 'name' } @attributes;
+    }
+    elsif ($attribute =~ m/,/) {
+        return split(/\s*,\s*/, $attribute);
+    }
+    else {
+        return $attribute;
+    }
+}
+
 
 =head2 filter ELEMENT VALUE
 
@@ -1439,6 +1459,10 @@ The following operations are supported for param elements:
  
 Appends the param value to the text found in the HTML template.
 
+=item target
+
+The attribute to operate on. See below C<target> for C<value> for details.
+
 =item toggle
 
 When the C<args> attribute is set to C<tree>, it doesn't interpolate
@@ -1499,6 +1523,13 @@ Only shows corresponding HTML element if value is set.
 Other attributes for value elements are:
 
 =over 4
+
+=item target
+
+Specify the attribute to operate on instead of the tag content. It can
+be a named attribute (e.g., C<href>), the wildcard character(C<*>,
+meaning all the attributes found in the HTML template), or a comma
+separated list (e.g., C<alt,title>).
 
 =item filter
 

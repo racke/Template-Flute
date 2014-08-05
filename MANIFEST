@@ -85,6 +85,7 @@ t/values/select-custom.t
 t/values/select-objects.t
 t/values/select-scalar.t
 t/values/skip-empty.t
+t/values/target-wildcards.t
 t/values/toggle.t
 t/values/undefs.t
 t/values/utf8.t
@@ -112,6 +113,7 @@ t/lists/increments.t
 t/lists/nested.t
 t/lists/object.t
 t/lists/paging.t
+t/lists/param-wildcards.t
 t/lists/params.t
 t/lists/placement.t
 t/lists/separator.t

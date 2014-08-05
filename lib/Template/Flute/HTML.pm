@@ -643,11 +643,15 @@ sub _elt_indicate_replacements {
 	if ($sob->{target}) {
 		if (exists $sob->{op}) {
 			if ($sob->{op} eq 'append') {
-				# keep original value around
-                $att_orig = $elt->att($sob->{target});
-
-				$elt->{"flute_$name"}->{rep_att_orig} =
-                    defined $att_orig ? $att_orig : '';
+				# keep original values around. The target could be a
+				# wildcard.
+				foreach my $attribute (keys %{ $elt->atts }) {
+					my $att_orig = $elt->att($attribute);
+					unless (defined $att_orig) {
+						$att_orig = '';
+					}
+					$elt->{"flute_$name"}->{rep_att_orig}->{$attribute} = $att_orig;
+				}
 			}
 		}
 			
