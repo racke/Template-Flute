@@ -915,8 +915,14 @@ sub _replace_record {
             if (my $attribute = $value->{target}) {
                 $elt_handler = sub {
                     my ($elt, $string) = @_;
+                    if (!defined($string)) {
+                        $string = '';
+                    }
                     foreach my $att (_expand_elt_attributes($elt, $attribute)) {
                         my $newtext = $elt->att($att);
+                        if (!defined($newtext)) {
+                            $newtext = '';
+                        }
                         $newtext =~ s/$regexp/$string/;
                         $elt->set_att($att, $newtext)
                     };
@@ -925,7 +931,13 @@ sub _replace_record {
             else {
                 $elt_handler = sub {
                     my ($elt, $string) = @_;
+                    if (!defined($string)) {
+                        $string = '';
+                    }
                     my $newtext = $elt->text;
+                    if (!defined($newtext)) {
+                        $newtext = '';
+                    }
                     $newtext =~ s/$regexp/$string/;
                     $elt->set_text($newtext);
                 };
