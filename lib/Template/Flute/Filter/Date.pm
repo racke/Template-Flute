@@ -42,7 +42,7 @@ separately resulting in returning an empty string instead.
 
 Example for accepting empty dates:
 
-    options => {empty => 0}
+    options => {strict => {empty => 0}}
 
 =back
 
