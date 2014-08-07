@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 2;
+use Test::More tests => 3;
+use Test::Warnings ':all';
 
 my ($spec, $html, $flute, $out, $expected);
 
@@ -24,11 +25,10 @@ $flute = Template::Flute->new(template => $html,
                                          cartline => "42",
                                         });
 
-{
-    my @warnings;
-    local $SIG{__WARN__} = sub { push @warnings, @_ };
-    $out = $flute->process;
-    like $out, qr/alt=""/, "Alt attribute replaced";
-    ok (!@warnings, "No warnings issued") or diag join("\n", @warnings);
-}
+$out = $flute->process;
+like $out, qr/alt=""/, "Alt attribute replaced";
+had_no_warnings("No warnings issued");
+
+
+
 
