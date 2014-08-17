@@ -8,7 +8,7 @@ use Sub::Quote;
 
 =head1 NAME
 
-Template::Flute::Pager - Data::Pager class for Template::Flute
+Template::Flute::Pager - Data::Page class for Template::Flute
 
 =head1 SYNOPSIS
 
