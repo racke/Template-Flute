@@ -162,7 +162,7 @@ sub next {
     if ($self->page_size > 0) {
         if ($self->page_position < $self->page_size) {
             $self->{page_position}++;
-            return $self->iterator->next;
+            return $self->iterator->next_page;
         }
         else {
             # advance current page
@@ -185,7 +185,7 @@ Returns number of records.
 sub count {
     my $self = shift;
 
-    $self->iterator->count;
+    $self->iterator->total_entries;
 }
 
 =head2 seed
