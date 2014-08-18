@@ -1056,9 +1056,22 @@ sub _paging {
 
     my ($iter, $pager);
 
-    if (defined blessed($iterator)
-            && $iterator->can('pager')
-                && ($pager = $iterator->pager)) {
+    if (defined blessed($iterator)) {
+        # DBIx::Class::ResultSet objects have a pager method, but
+        # it throws an error without a limit through the rows attribute
+        if ($iterator->can('pager')) {
+            if ($iterator->can('is_paged')) {
+                if ($iterator->is_paged) {
+                    $pager = $iterator->pager;
+                }
+            }
+            else {
+                $pager = $iterator->pager;
+            }
+        }
+    }
+
+    if ($pager) {
         $iter = Template::Flute::Pager->new(iterator => $pager,
                                             page_size => $page_size);
     }
