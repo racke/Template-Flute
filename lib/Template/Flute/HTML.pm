@@ -621,10 +621,14 @@ sub _elt_indicate_replacements {
 		}
         elsif ($sob->{op} eq 'append' && ! $sob->{target}) {
             $elt->{"flute_$name"}->{rep_text_orig} = $elt->text_only;
+            my $joiner = '';
+            if (exists $sob->{joiner}) {
+                $joiner = $sob->{joiner};
+            }
             $elt->{"flute_$name"}->{rep_sub} = sub {
                 my ($elt, $str) = @_;
 				$str ||= '';
-                $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $str);
+                $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
             };
         }
         elsif ($sob->{op} eq 'toggle' && exists $sob->{args}
