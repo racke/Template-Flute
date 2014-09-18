@@ -29,6 +29,23 @@ ok ($out =~ m%<div class="test">FOOBAR</div>%,
     "value with op=append")
     || diag $out;
 
+# simple append with joiner
+$spec = q{<specification>
+<value name="test" op="append" joiner="&amp;"/>
+</specification>
+};
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {test => 'BAR'},
+                             );
+
+$out = $flute->process;
+
+ok ($out =~ m%<div class="test">FOO&BAR</div>%,
+    "value with op=append and joiner=&")
+    || diag $out;
+
 # append to target
 $spec = q{<specification>
 <value name="test" op="append" target="href"/>
