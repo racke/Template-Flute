@@ -5,7 +5,7 @@ use JSON;
 
 =head1 NAME
 
-Template::Flute::Filters::JsonVar - JSON to Javascript variable filter
+Template::Flute::Filter::JsonVar - JSON to Javascript variable filter
 
 =head1 DESCRIPTION
 
