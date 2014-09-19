@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 use Template::Flute;
 
 my ($spec, $html, $flute, $out);
@@ -25,9 +25,9 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-ok ($out =~ m%<div class="test">FOOBAR</div>%,
-    "value with op=append")
-    || diag $out;
+like ($out, qr%<div class="test">FOOBAR</div>%,
+    "value with op=append");
+
 
 # simple append with joiner
 $spec = q{<specification>
@@ -42,9 +42,25 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-ok ($out =~ m%<div class="test">FOO&BAR</div>%,
-    "value with op=append and joiner=&")
-    || diag $out;
+like ($out, qr%<div class="test">FOO&amp;BAR</div>%,
+    "value with op=append and joiner=&");
+
+# simple append with joiner which doesn't escape
+$spec = q{<specification>
+<value name="test" op="append" joiner="|"/>
+</specification>
+};
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {test => 'BAR'},
+                             );
+
+$out = $flute->process;
+
+like ($out, qr%<div class="test">FOO|BAR</div>%,
+    "value with op=append and joiner=&");
+
 
 # append to target
 $spec = q{<specification>
@@ -61,9 +77,9 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-ok ($out =~ m%<a class="test" href="FOOBAR">FOO</a>%,
-    "value with op=append and target=href")
-    || diag $out;
+like ($out, qr%<a class="test" href="FOOBAR">FOO</a>%,
+    "value with op=append and target=href");
+
 
 # append with joiner
 $spec =  q{<specification>
@@ -80,9 +96,8 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-ok ($out =~ m%<a class="test bar" href="FOO">FOO</a>%,
-    "value with op=append, target=class and joiner")
-    || diag $out;
+like ($out, qr%<a class="test bar" href="FOO">FOO</a>%,
+    "value with op=append, target=class and joiner");
 
 
 # append with joiner without value
@@ -99,6 +114,5 @@ $flute = Template::Flute->new(template => $html,
 
 $out = $flute->process;
 
-ok ($out =~ m%<a class="test" href="FOO">FOO</a>%,
-    "value with op=append, target=class and joiner without value")
-    || diag $out;
+like ($out, qr%<a class="test" href="FOO">FOO</a>%,
+    "value with op=append, target=class and joiner without value");
