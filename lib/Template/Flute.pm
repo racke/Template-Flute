@@ -2109,6 +2109,9 @@ Template::Flute.
 Thanks to Grega Pompe for proper implementation of nested lists and
 a documentation fix.
 
+Thanks to Jeff Boes for spotting a typo in the documentation of the
+Template::Flute::Filter::JsonVar class.
+
 Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
 
 Thanks to Sam Batschelet helping me with a bug causing duplicate form fields (GH #14).
