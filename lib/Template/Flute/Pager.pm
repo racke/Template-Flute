@@ -188,6 +188,18 @@ sub count {
     $self->iterator->total_entries;
 }
 
+=head2 reset
+
+Resets iterator.
+
+=cut
+
+sub reset {
+    my $self = shift;
+
+    $self->iterator->current_page(1);
+}
+
 =head2 seed
 
 Seeds the iterator.
