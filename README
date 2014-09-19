@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0130
+    Version 0.0131
 
 SYNOPSIS
         use Template::Flute;
@@ -826,6 +826,9 @@ ACKNOWLEDGEMENTS
 
     Thanks to Grega Pompe for proper implementation of nested lists and a
     documentation fix.
+
+    Thanks to Jeff Boes for spotting a typo in the documentation of the
+    Template::Flute::Filter::JsonVar class.
 
     Thanks to Ton Verhagen for being a big supporter of my projects in all
     aspects.

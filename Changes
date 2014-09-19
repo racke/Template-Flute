@@ -1,5 +1,21 @@
 Revision history for Template::Flute
 
+0.0131 Fri Sep 19 08:42:03 2014 CEST
+
+    [BUG FIXES]
+
+    * Support joiner with simple value (GH #63, #64, Marco Pessotto).
+    * Fix pager check in _paging method (Stefan Hornburg).
+    * Fix next and count calls in Template::Flute::Pager class (Stefan Hornburg).
+    * Add reset method to Template::Flute::Pager class (Stefan Hornburg).
+    * Suppress warnings for patterns (GH #60, Marco Pessotto).
+
+    [DOCUMENTATION]
+
+    * Fix typo in Template::Flute::Filter::JsonVar's POD (Jeff Boes).
+    * Fix name of pager module in Template::Flute::Pager's POD (Stefan Hornburg)
+    * Fix POD example on accepting empty dates in the date filter.
+
 0.0130 Tue Aug  5 10:37:52 2014 CEST
 
     [ENHANCEMENTS]
