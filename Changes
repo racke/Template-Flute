@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0132 Thu Sep 25 14:10:27 2014 CEST
+
+    [ENHANCEMENTS]
+
+    * Translate placeholder and value attribute of HTML input elements
+      (GH #65, Marco Pessotto).
+
 0.0131 Fri Sep 19 08:42:03 2014 CEST
 
     [BUG FIXES]
