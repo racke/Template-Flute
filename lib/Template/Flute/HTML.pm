@@ -186,6 +186,46 @@ the I18NOBJECT.
 
 =cut
 
+sub _translate_string {
+    my ($self, $i18n, $text) = @_;
+
+    # remove surrounding whitespace before passing
+    # to translation function
+    my ($ws_before, $ws_after);
+    if ($text =~ s/^(\s+)//s) {
+        $ws_before = $1;
+    }
+    else {
+        $ws_before = '';
+    }
+
+    if ($text =~ s/(\s+)$//s) {
+        $ws_after = $1;
+    }
+    else {
+        $ws_after = '';
+    }
+    # return undef if no text is left
+    return unless length($text);
+    # translate and restore spaces
+    return $ws_before . $i18n->localize($text) . $ws_after;
+}
+
+sub _translate_attribute {
+    my ($self, $i18n, $elt, $attribute) = @_;
+    die unless ($i18n && $elt && $attribute);
+    # here the i18n-key doesn't make sense, because we can't know
+    # exactly which attribute has to be translated.
+
+    if (my $string = $elt->att($attribute)) {
+        my $translated = $self->_translate_string($i18n, $string);
+        if (defined $translated) {
+            $elt->set_att($attribute, $translated);
+        }
+    }
+}
+
+
 sub translate {
 	my ($self, $i18n) = @_;
 	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n,
@@ -208,31 +248,27 @@ sub translate {
 		}
 		else {
             $text = $elt->text;
-
-            # remove surrounding whitespace before passing
-            # to translation function
-            if ($text =~ s/^(\s+)//s) {
-                $ws_before = $1;
-            }
-            else {
-                $ws_before = '';
-            }
-
-            if ($text =~ s/(\s+)$//s) {
-                $ws_after = $1;
-            }
-            else {
-                $ws_after = '';
-            }
-
-            # skip empty text
-            next unless $text;
-            
-			$i18n_ret = $ws_before . $i18n->localize($text) . $ws_after;
+            $i18n_ret = $self->_translate_string($i18n, $text);
+            next unless defined $i18n_ret;
 		}
 
 		$elt->set_text($i18n_ret);
 	}
+
+    # scan the input as well, but only of selected type to avoid
+    # mangling the user input
+    my @inputs = $root->descendants('input');
+    foreach my $elt (@inputs) {
+        my $type = $elt->att('type');
+
+        # placeholders are safe to translate
+        $self->_translate_attribute($i18n, $elt, 'placeholder');
+
+        # submit values are not really safe, but anyway....
+        if ($type and $type eq 'submit') {
+            $self->_translate_attribute($i18n, $elt, 'value');
+        }
+    }
 
 	# cleanup
 	if ($self->{_i18n_key_elts}) {
