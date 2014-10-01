@@ -410,8 +410,7 @@ sub _bootstrap_template {
 	my ($self, $source, $template, $snippet) = @_;
 	my ($template_object);
 
-	$template_object = new Template::Flute::HTML(uri => $self->{uri},
-                                                 email_cids => $self->{email_cids});
+	$template_object = new Template::Flute::HTML(uri => $self->{uri});
 	
 	if ($source eq 'file') {
 		$template_object->parse_file($template, $self->{specification}, $snippet);
@@ -462,8 +461,52 @@ sub process {
         0,
         0,
 		);
+
+    if ($self->{email_cids}) {
+        $self->_cidify_html($html);
+    }
 	my $shtml = $html->sprint;
 	return $shtml;
+}
+
+sub _cidify_html {
+    my ($self, $html) = @_;
+
+    my %options;
+    if ($self->{cids}) {
+        %options = %{ $self->{cids} };
+    }
+
+    foreach my $img ($html->descendants('img')) {
+
+        if (my $source = $img->att('src')) {
+            my $cid = $source;
+            # to generate a cid, remove every character save for [a-zA-Z0-9]
+            # and use that.
+            $cid =~ s/[^0-9A-Za-z]//g;
+            next unless $cid;
+
+            # before processing, check what we have in the src
+            # url:
+            my $filename;
+            if ($source =~ m!https?://!) {
+                if (my $base = $options{base_url}) {
+                    if ($source =~ m/^\Q$base\E(.+)/) {
+                        $filename = $1;
+                    }
+                }
+            }
+            else {
+                $filename = $source;
+            }
+
+            # found? cidify the source
+            if ($filename) {
+                $img->set_att(src => "cid:$cid");
+                $self->{email_cids}->{$cid} = { filename => $filename };
+            }
+        }
+    }
 }
 
 sub _sub_process {
@@ -1289,7 +1332,6 @@ sub value {
              filters => $self->{filters},
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
                  uri => $self->{uri},
-                 email_cids => $self->{email_cids},
          );
 		
 		$raw_value = Template::Flute->new(%args)->process();

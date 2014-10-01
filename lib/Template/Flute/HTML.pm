@@ -407,23 +407,6 @@ sub _parse_handler {
 	    }
         }
     }
-    if (my $cids = $self->{email_cids}) {
-        if ($gi eq 'img') {
-            if (my $source = $elt->att('src')) {
-                my $cid = $source;
-                # to generate a cid, remove every character save for [a-zA-Z0-9]
-                # and use that.
-                $cid =~ s/[^0-9A-Za-z]//g;
-                # if cid now is an empty string, the filename is just not sane
-                if ($cid) {
-                    $elt->set_att(src => "cid:$cid");
-                    # overwriting should be idempotent
-                    $cids->{$cid} = { filename => $source };
-                }
-            }
-        }
-    }
-
 	# don't act on elements without class, id or name attribute
 	return unless $class_names || $id || $elt_name;
 	
