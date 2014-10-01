@@ -253,6 +253,31 @@ C<cid:cid1>.
 The cid names are arbitrary and assigned by the template. The code
 should look at the reference values which were modified.
 
+=item cids
+
+Optional hashref with options for the CID replacement behaviour.
+
+By default, if the source looks like an HTTP/HTTPS URI, the image
+source is not altered and no CID is assigned.
+
+If you pass a C<base_url> value in this hashref, the URI matching it
+will be converted to cids and the rest of the path will be added to
+the C<email_cids> hashref.
+
+Example:
+
+    my $cids = {};
+    $flute = Template::Flute->new(template => $template,
+                                  specification => $spec,
+                                  email_cids => $cids,
+                                  cids => {
+                                           base_url => 'http://example.com/'
+                                          });
+
+Say the template contains images with source
+C<http://example.com/image.png>, the C<email_cids> hashref will
+contain a cid with C<filename> "image.png".
+
 =back
 
 =cut
@@ -491,7 +516,7 @@ sub _cidify_html {
             my $filename;
             if ($source =~ m!https?://!) {
                 if (my $base = $options{base_url}) {
-                    if ($source =~ m/^\Q$base\E(.+)/) {
+                    if ($source =~ m/^\s*\Q$base\E(.+?)\s*$/s) {
                         $filename = $1;
                     }
                 }

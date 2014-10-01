@@ -34,9 +34,6 @@ is_deeply $cids, {
                              }
                  }, "the email_cids has been correctly populated";
 
-diag "Testing replacements";
-
-
 $html = <<'HTML';
 <html><head><body>
 <img src="foo.png" alt="Foo" />
