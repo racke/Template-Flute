@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0132
+    Version 0.0140
 
 SYNOPSIS
         use Template::Flute;
@@ -205,6 +205,30 @@ CONSTRUCTOR
 
         The cid names are arbitrary and assigned by the template. The code
         should look at the reference values which were modified.
+
+    cids
+        Optional hashref with options for the CID replacement behaviour.
+
+        By default, if the source looks like an HTTP/HTTPS URI, the image
+        source is not altered and no CID is assigned.
+
+        If you pass a `base_url' value in this hashref, the URI matching it
+        will be converted to cids and the rest of the path will be added to
+        the `email_cids' hashref.
+
+        Example:
+
+            my $cids = {};
+            $flute = Template::Flute->new(template => $template,
+                                          specification => $spec,
+                                          email_cids => $cids,
+                                          cids => {
+                                                   base_url => 'http://example.com/'
+                                                  });
+
+        Say the template contains images with source
+        `http://example.com/image.png', the `email_cids' hashref will
+        contain a cid with `filename' "image.png".
 
 METHODS
   process [HASHREF]

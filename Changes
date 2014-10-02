@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0140 Thu Oct  2 09:40:59 2014 CEST
+
+    [API CHANGES]
+
+    * Overhaul support for email CIDs (GH #66, Marco Pessotto).
+
 0.0132 Thu Sep 25 14:10:27 2014 CEST
 
     [ENHANCEMENTS]
