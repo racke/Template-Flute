@@ -253,6 +253,31 @@ C<cid:cid1>.
 The cid names are arbitrary and assigned by the template. The code
 should look at the reference values which were modified.
 
+=item cids
+
+Optional hashref with options for the CID replacement behaviour.
+
+By default, if the source looks like an HTTP/HTTPS URI, the image
+source is not altered and no CID is assigned.
+
+If you pass a C<base_url> value in this hashref, the URI matching it
+will be converted to cids and the rest of the path will be added to
+the C<email_cids> hashref.
+
+Example:
+
+    my $cids = {};
+    $flute = Template::Flute->new(template => $template,
+                                  specification => $spec,
+                                  email_cids => $cids,
+                                  cids => {
+                                           base_url => 'http://example.com/'
+                                          });
+
+Say the template contains images with source
+C<http://example.com/image.png>, the C<email_cids> hashref will
+contain a cid with C<filename> "image.png".
+
 =back
 
 =cut
@@ -410,8 +435,7 @@ sub _bootstrap_template {
 	my ($self, $source, $template, $snippet) = @_;
 	my ($template_object);
 
-	$template_object = new Template::Flute::HTML(uri => $self->{uri},
-                                                 email_cids => $self->{email_cids});
+	$template_object = new Template::Flute::HTML(uri => $self->{uri});
 	
 	if ($source eq 'file') {
 		$template_object->parse_file($template, $self->{specification}, $snippet);
@@ -462,8 +486,52 @@ sub process {
         0,
         0,
 		);
+
+    if ($self->{email_cids}) {
+        $self->_cidify_html($html);
+    }
 	my $shtml = $html->sprint;
 	return $shtml;
+}
+
+sub _cidify_html {
+    my ($self, $html) = @_;
+
+    my %options;
+    if ($self->{cids}) {
+        %options = %{ $self->{cids} };
+    }
+
+    foreach my $img ($html->descendants('img')) {
+
+        if (my $source = $img->att('src')) {
+            my $cid = $source;
+            # to generate a cid, remove every character save for [a-zA-Z0-9]
+            # and use that.
+            $cid =~ s/[^0-9A-Za-z]//g;
+            next unless $cid;
+
+            # before processing, check what we have in the src
+            # url:
+            my $filename;
+            if ($source =~ m!https?://!) {
+                if (my $base = $options{base_url}) {
+                    if ($source =~ m/^\s*\Q$base\E(.+?)\s*$/s) {
+                        $filename = $1;
+                    }
+                }
+            }
+            else {
+                $filename = $source;
+            }
+
+            # found? cidify the source
+            if ($filename) {
+                $img->set_att(src => "cid:$cid");
+                $self->{email_cids}->{$cid} = { filename => $filename };
+            }
+        }
+    }
 }
 
 sub _sub_process {
@@ -1289,7 +1357,6 @@ sub value {
              filters => $self->{filters},
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
                  uri => $self->{uri},
-                 email_cids => $self->{email_cids},
          );
 		
 		$raw_value = Template::Flute->new(%args)->process();
