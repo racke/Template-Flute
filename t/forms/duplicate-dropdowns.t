@@ -59,8 +59,6 @@ my @forms = $flute->template->forms;
 
 ok scalar(@forms), "Found forms";
 
-diag "Expecting $expected";
-
 foreach my $f ($flute->template->forms) {
     # this is what basically the TemplateFlute does.
     $f->fill({role => 1});

@@ -63,7 +63,6 @@ for my $t (@tests) {
     );
 
     $out = $flute->process;
-    diag $out;
     @dangling = $flute->specification->dangling;
 
     ok (! scalar(@dangling), "Dangling check")

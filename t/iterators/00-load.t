@@ -7,4 +7,3 @@ BEGIN {
 ";
 }
 
-diag( "Testing Template::Flute::Iterator, Perl $], $^X" );

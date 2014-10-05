@@ -7,4 +7,3 @@ BEGIN {
 ";
 }
 
-diag( "Testing Template::Flute $Template::Flute::VERSION, Perl $], $^X" );

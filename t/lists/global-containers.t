@@ -76,5 +76,4 @@ $expected =~ s/\n//g;
 like $out, qr{\Q$expected\E}, "list is looking good";
 unlike $out, qr{class="locked"};
 
-diag $out;
 

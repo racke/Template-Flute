@@ -18,7 +18,7 @@ $spec = q{<specification>
 
 $iter = [{key => 'FOO'}, {key => 'BAR'}];
 
-diag "first test: separator outside the list";
+# diag "first test: separator outside the list";
 $html_outside = q{
 <div class="list">
 <span class="key">KEY</span>
@@ -32,13 +32,12 @@ $tf = Template::Flute->new(template => $html_outside,
     );
 
 $out = $tf->process();
-diag $out;
 
 like $out, qr%<div class="list"><span class="key">FOO</span></div><span class="sep"> \| </span><div class="list"><span class="key">BAR</span></div>%, "Checking list";
 
 unlike $out, qr/KEY/;
 
-diag "second test: separator inside the list";
+# diag "second test: separator inside the list";
 $html_inside = q{
 <div class="list">
 <span class="key">KEY</span>
@@ -51,12 +50,11 @@ $tf = Template::Flute->new(template => $html_inside,
     );
 
 $out = $tf->process();
-diag $out;
 like $out, qr%<div class="list"><span class="key">FOO</span><span class="sep"> \| </span></div><div class="list"><span class="key">BAR</span></div>%, "Checking separator";
 
 unlike $out, qr/KEY/;
 
-diag "third: testing separator every 2 items";
+# diag "third: testing separator every 2 items";
 
 $iter = [{key => '1'}, {key => '2'}, {key => '3'}, {key => '4'}, {key => '5'}];
 
@@ -83,7 +81,6 @@ $tf = Template::Flute->new(template => $html_inside,
                           );
 
 $out = $tf->process();
-diag $out;
 like $out, qr%<div class="list"><span class="key">1</span></div><div class="list"><span class="key">2</span><span class="sep"> \| </span></div><div class="list"><span class="key">3</span>%, "Checking separator";
 
 like $out, qr%<div class="list"><span class="key">3</span></div><div class="list"><span class="key">4</span><span class="sep"> \| </span></div><div class="list"><span class="key">5</span>%, "Checking separator";
@@ -106,8 +103,5 @@ like $out, qr%<div class="list"><span class="key">3</span></div><div class="list
 like $out, qr%<span class="key">6</span>%, "Last element found";
 unlike $out, qr%<span class="key">6</span><span class="sep"> \| </span></div>%,
   "Last separator removed";
-diag $out;
-
-
 
 unlike $out, qr/KEY/, "Placeholder removed"

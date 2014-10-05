@@ -4,7 +4,7 @@ use Test::More tests => 4;
 use Template::Flute;
 use Data::Dumper;
 
-diag 'All tests will fail if args="tree" is not provided';
+# diag 'All tests will fail if args="tree" is not provided';
 
 my $spec = <<EOF;
 <specification>

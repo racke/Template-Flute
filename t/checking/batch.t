@@ -17,7 +17,6 @@ my @testfiles = (qw/admin
 plan tests => scalar(@testfiles) * 4;
 
 foreach my $file (@testfiles) {
-    diag "Testing $file";
     my $flute = Template::Flute->new(
                                      template_file => get_good_template($file),
                                      specification_file => get_good_spec($file),

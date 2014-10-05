@@ -32,8 +32,6 @@ $out = $flute->process;
 ok ($out =~ /Germany/, "Test for country name.")
     || diag $out;
  
-warn $out;
- 
 $flute = Template::Flute->new(specification => $spec,
                                  template => $html,
                                  auto_iterators => 1,
@@ -46,6 +44,3 @@ $out = $flute->process;
  
 ok ($out =~ /id="DE"/, "Test for country code in element ID.")
     || diag $out;
- 
- 
-warn $out;

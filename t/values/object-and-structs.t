@@ -51,4 +51,3 @@ my $out = $flute->process;
 is $out, '<html><head></head><body>' .
   '<span class="object">Hello from the method</span>' .
   '<span class="struct">Hello from hash</span></body></html>';
-diag $out;

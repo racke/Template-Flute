@@ -57,8 +57,6 @@ my $flute = Template::Flute->new(specification => $template_spec,
 
 my $output = $flute->process();
 
-diag "\nOUTPUT:\n", $output, "\n\n";
-
 like $output, qr/\Q$js_second\E/, "js found verbatim in body";
 
 my $layout = Template::Flute->new(specification => $layout_spec,
@@ -69,8 +67,6 @@ my $final = $layout->process;
 
 like $final, qr/\Q$js_first\E/, "js (body) found verbatim";
 like $final, qr/\Q$js_second\E/, "js (layout) found verbatim";
-diag "Output: $final\n";
-
 
 my $fixed_html =<< "HTML";
 <div id="body">body</div>
@@ -97,7 +93,6 @@ $output = $flute->process();
 
 
 like $output, qr/\Q$js_second\E/, "found js verbatim in content";
-diag "\nOUTPUT:\n", $output, "\n\n";
 
 if ($output =~ m/\]\]&gt;/) {
     diag "End of CDATA escaped because of XML::Twig";
@@ -132,7 +127,6 @@ $final = $layout->process;
 
 like $final, qr/\Q$js_first\E/, "js (body) found verbatim";
 like $final, qr/\Q$js_second\E/, "js (layout) found verbatim";
-diag "Output: $final\n";
 
 unlike $final,  qr/\]\]&gt;/, "End of CDATA escaped correctly";
 

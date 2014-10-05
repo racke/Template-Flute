@@ -50,8 +50,6 @@ $spec = q{<specification>
 
 $html = q{<html><select class="test"></select></html>};
 
-diag "Testing objects";
-
 foreach my $new ({private_code => 'red'},
                  {private_code => 'black'}) {
     my $obj = My::Object->new(%$new);
@@ -59,8 +57,6 @@ foreach my $new ({private_code => 'red'},
     ok ($obj->can("code"), "object can call code");
     ok (!exists $obj->{code}, "the iterator_value_key is not accessible");
 }
-
-diag "Testing  the template";
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
@@ -88,8 +84,6 @@ ok ($out =~ m%<option>red</option><option selected="selected">black</option>%,
 
 @colors = ();
 
-diag "Testing objects";
-
 foreach my $new ({private_code => 'red',
                   private_name => 'Red',
                  },
@@ -103,8 +97,6 @@ foreach my $new ({private_code => 'red',
     ok (!exists $obj->{name}, "name not directly accessible");
     ok (!exists $obj->{code}, "code not directly accessible");
 }
-
-diag "Testing  the template";
 
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
@@ -196,7 +188,7 @@ $expected =~ s/\n//g;
 
 ok($out =~ m/\Q$expected\E/, "doc example ok") || diag $out;
 
-diag "Testing with object which can call ->label and ->value";
+# diag "Testing with object which can call ->label and ->value";
 
 $spec =<<'SPEC';
 <specification>

@@ -52,10 +52,7 @@ $flute = Template::Flute->new(
 
 $out = $flute->process;
 
-print Dumper($flute->{values});
-
 unlike $out, qr/TEST/, "product-description class was removed";
 like $out, qr{<input id="email" type="email" />}, "input email is here";
 like $out, qr{<input id="password" type="password" />}, "input password is here";
 
-diag $out;
