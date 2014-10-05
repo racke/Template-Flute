@@ -739,6 +739,8 @@ sub _sub_process {
             $sep_copy->cut();
 
         }
+
+        $iter_records->reset;
     }
 
 	# Values
@@ -860,7 +862,7 @@ sub _replace_within_elts {
 			# replace attribute instead of embedded text (e.g. for <input>)
             foreach my $replace_attr (_expand_elt_attributes($elt, $zref->{rep_att})) {
                 if (exists $param->{op} && $param->{op} eq 'append') {
-                    my $original_attribute = $zref->{rep_att_orig}->{$replace_attr};
+                    my $original_attribute = $zref->{rep_att_orig}->{$replace_attr} || '';
                     if (exists $param->{joiner}) {
                         if ($rep_str) {
                             $elt->set_att($replace_attr, $original_attribute . $param->{joiner} . $rep_str);
