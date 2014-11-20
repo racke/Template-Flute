@@ -839,8 +839,14 @@ sub hook_html {
 
 	$elt->cut_children();
 
-	@children = $html->root()->first_child('body')->cut_children();
-	
+    my $fc = $html->root()->first_child('body');
+
+    if ($elt->gi eq 'select' && $fc->first_child->gi eq 'select') {
+        $fc = $fc->first_child;
+    }
+
+    @children = $fc->cut_children();
+
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);
 	}
