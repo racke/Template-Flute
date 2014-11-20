@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Template::Flute;
 
 my ($spec, $html, $flute, $out);
@@ -48,3 +48,23 @@ like($out,  qr{\Q<div id="content"><p>Enter <b>dancefloor</b></p></div>\E},
      'value op=hook test with id')
   or diag $out;
 
+# value with op=hook, using id and select HTML element
+$spec = q{<specification>
+<value name="available_shipmodes" class="available_shipmodes" op="hook"/>
+</specification>
+};
+
+$html = q{<select id="available_shipmodes" class="available_shipmodes" name="available_shipmodes">
+</select>};
+
+$flute = Template::Flute->new(template => $html,
+			      specification => $spec,
+			      values => {available_shipmodes => q{
+<option cost="" value="">Select Shipping</option>}},
+    );
+
+$out = $flute->process();
+
+like($out,  qr{\Q<select class="available_shipmodes" id="available_shipmodes" name="available_shipmodes"><option cost="" value="">Select Shipping</option></select>\E},
+     'value op=hook test with select HTML element')
+  or diag $out;
