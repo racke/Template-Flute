@@ -567,11 +567,29 @@ sub _sub_process {
 		
 	}	
 
+    my $cut_container = 0;
+
     # cut the elts in the template, *before* processing the lists
     if ($level == 0) {
         for my $container ($template->containers()) {
+            next if $container->list;
+
             $container->set_values($values) if $values;
             unless ($container->visible()) {
+                for my $elt (@{$container->elts()}) {
+                    $elt->cut();
+                }
+            }
+        }
+    }
+    elsif ($spec_xml->gi eq 'list') {
+        # we check whether the container is a child of this list
+        for my $container ($template->containers()) {
+            next if $container->list ne $spec_xml->att('name');
+
+            $container->set_values($values) if $values;
+            unless ($container->visible()) {
+                $cut_container = 1;
                 for my $elt (@{$container->elts()}) {
                     $elt->cut();
                 }
@@ -747,9 +765,20 @@ sub _sub_process {
 	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
         if ($elt->tag eq 'param') {
             my $name = $spec_xml->att('name');
-            my $parent_name = $elt->parent->att('name');
 
-            if (! defined $name || $name ne $parent_name) {
+            # skip params on top level
+            next unless defined $name;
+
+            my $parent_name;
+            if ($elt->parent->gi eq 'container') {
+                next if $cut_container;
+                $parent_name = $name;
+            }
+            else {
+                $parent_name = $elt->parent->att('name');
+            }
+
+            if ($name ne $parent_name) {
                 # don't process params of sublists again
                 next;
             }

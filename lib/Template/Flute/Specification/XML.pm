@@ -176,14 +176,19 @@ sub _container_handler {
 	my ($name, %container);
 	
 	$name = $elt->att('name');
-
-	$container{container} = $elt->atts();
 	
-	# flush elements from stash into container hash
-	$self->_stash_flush($elt, \%container);
+	$container{container} = $elt->atts();
 
-	# add container to specification object
-	$self->{spec}->container_add(\%container);
+    if ($elt->parent && $elt->parent->gi ne 'specification') {
+        $self->_stash_handler($elt);
+    }
+    else {
+        # flush elements from stash into container hash
+        $self->_stash_flush($elt, \%container);
+
+        # add container to specification object
+        $self->{spec}->container_add(\%container);
+    }
 }
 
 sub _list_handler {
@@ -307,6 +312,10 @@ sub _stash_flush {
 		if ($item_elt->parent() eq $elt) {
 			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
 		}
+        elsif ($elt->gi eq 'list'
+                   && $item_elt->parent->gi eq 'container') {
+            push (@{$hashref->{$item_elt->gi()}}, {%{$item_elt->atts()}, container => $item_elt->parent->att('name')});
+        }
 		else {
 		    push (@stash, $item_elt);
 		}

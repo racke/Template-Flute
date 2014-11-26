@@ -181,7 +181,17 @@ sub list_add {
 	for my $sort (@{$new_listref->{sort}}) {
 		$listref->{sort}->{$sort->{name}} = $sort;
 	}
-	
+
+    # loop through containers for this list
+    for my $container (@{$new_listref->{container}}) {
+		$class = $container->{class} || $container->{name};
+		unless ($class) {
+			die "Neither class nor name for container within list $list_name.\n";
+		}
+
+		push @{$self->{classes}->{$class}}, {%{$container}, type => 'container', list => $list_name};
+	}
+
 	# loop through separators for this list
 	for my $separator (@{$new_listref->{separator}}) {
 	        $class = $separator->{class} || $separator->{name};

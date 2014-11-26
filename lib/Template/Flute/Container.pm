@@ -45,6 +45,16 @@ sub name {
 	return $self->{sob}->{name};
 }
 
+=head2 list
+
+Name of list this container belongs to or undef for top level containers.
+
+=cut
+
+sub list {
+    return shift->{sob}->{list};
+}
+
 =head2 set_values
 
 Passes current values to this container.
