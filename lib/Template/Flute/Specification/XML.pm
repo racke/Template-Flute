@@ -166,7 +166,7 @@ sub _spec_handler {
 		$self->_value_handler($stash_elt);
 	    }
 	    else {
-		die "Unexpected element left on stash: ", $stash_elt->gi;
+		die "Unexpected element left on stash: ", $stash_elt->sprint;
 	    }
 	}
 }
