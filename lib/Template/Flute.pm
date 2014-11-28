@@ -1829,7 +1829,9 @@ XML:
         </list>
     </specification>
 
-=head1 CONDITIONALS
+=head1 CONTAINERS
+
+Conditional processing like C<IF> or C<ELSE> is done with the help of containers.
 
 =head2 Display image only if present
 
