@@ -184,20 +184,6 @@ sub count {
     $self->iterator->count;
 }
 
-=head2 reset
-
-Resets iterator.
-
-=cut
-
-sub reset {
-    my $self = shift;
-
-    $self->iterator->reset;
-    $self->{current_page} = 1;
-    $self->{page_position} = 0;
-}
-
 =head2 seed
 
 Seeds the iterator.
