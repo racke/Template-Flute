@@ -1535,6 +1535,45 @@ L<Template::Flute::Specification::XML> module. You can use the Config::Scoped
 format implemented by L<Template::Flute::Specification::Scoped> module or
 write your own specification parser class.
 
+=head2 COMMON ATTRIBUTES
+
+Common attributes for specification elements are:
+
+=over 4
+
+=item name
+
+Name of element.
+
+    <value name="dancefloor"/>
+
+=item class
+
+Class of corresponding elements in the HTML template.
+
+    <value name="dancefloor" class="dancefloor-link"/>
+
+If this attribute is omitted, the value of the name attribute
+is used to relate to the class in the HTML template.
+
+=item id
+
+Id of corresponding element in the HTML template. Overrides
+the class attribute for the specification element.
+
+   <value name="dancefloor" id="dancefloor-link"/>
+
+=item target
+
+HTML attribute to fill the value instead of replacing the body of
+the HTML element.
+
+   <value name="dancefloor" class="dancefloor-link" target="href"/>
+
+=back
+
+=head2 ELEMENTS
+
 Possible elements in the specification are:
 
 =over 4
