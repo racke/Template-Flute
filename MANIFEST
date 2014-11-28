@@ -92,6 +92,7 @@ t/values/utf8.t
 t/i18n/01-simple.t
 t/containers/basic.t
 t/containers/dotted-value.t
+t/containers/list.t
 t/containers/value.t
 t/forms/01-name.t
 t/forms/02-link.t
