@@ -841,7 +841,13 @@ sub _sub_process {
 				increment => $spec_class->{increment}->{increment},
 				start => $count
 			) if $spec_class->{increment};
-			
+
+            my $field = $spec_class->{'field'};
+
+            if (defined $field && ! ref($field) && $field =~ /\./) {
+                $spec_class->{'field'} = [split /\./, $field];
+            }
+
 			$self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
 		}
 	}
