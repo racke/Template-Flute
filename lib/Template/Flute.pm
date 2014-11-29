@@ -1876,7 +1876,7 @@ XML:
         <list name="links" class="linklist" iterator="links">
             <param name="name"/>
             <param name="url" target="href"/>
-            <param name="link" field="url" op="toggle" args="tree"/>
+            <container name="link" class="link" value="url"/>
         </list>
     </specification>
 
