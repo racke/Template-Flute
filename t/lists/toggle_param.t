@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Template::Flute;
 use Data::Dumper;
 
@@ -32,6 +32,30 @@ $template =  qq{<html>
 </div>
 </div>
 </html>};
+
+$flute = Template::Flute->new(specification => $spec_xml,
+							  template => $template,
+							  values => {links => \@records});
+
+$output = $flute->process();
+
+@matches = $output =~ m%http://localhost/%g;
+ok (@matches == 2, 'Number of matching links')
+    || diag $output;
+
+@matches = $output =~ m%<div class="link">%g;
+ok (@matches == 2, 'Number of link divs')
+    || diag $output;
+
+$spec_xml = <<'EOF';
+<specification name="link">
+<list name="links" class="linklist" iterator="links">
+<container name="link" class="link" value="url"/>
+<param name="name"/>
+<param name="url" target="href"/>
+</list>
+</specification>
+EOF
 
 $flute = Template::Flute->new(specification => $spec_xml,
 							  template => $template,
