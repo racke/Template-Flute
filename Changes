@@ -1,5 +1,25 @@
 Revision history for Template::Flute
 
+0.0150 Sat Nov 29 09:33:18 2014 CET
+
+    [ENHANCEMENTS]
+
+    * Add implementation of containers within list (Stefan Hornburg, GH #61, #67).
+    * Add support for dotted values in field attribute of param element
+      (Stefan Hornburg, GH #71).
+    * Add workaround for the case that you pass the <option> elements for a dropdown
+      (Stefan Hornburg).
+    * Display string representation of element in case of stash leftovers
+      (Stefan Hornburg).
+
+    [DOCUMENTATION]
+
+    * Add section about common specification attributes to main POD (Stefan Hornburg).
+    * Rename conditionals section in main POD to containers
+      and add short introduction (Stefan Hornburg).
+    * Adjust example for "Display link in a list only if present"
+      to use container inside the list (Stefan Hornburg).
+
 0.0140 Thu Oct  2 09:40:59 2014 CEST
 
     [API CHANGES]

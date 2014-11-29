@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0140
+    Version 0.0150
 
 SYNOPSIS
         use Template::Flute;
@@ -267,6 +267,34 @@ SPECIFICATION
     Template::Flute::Specification::Scoped module or write your own
     specification parser class.
 
+  COMMON ATTRIBUTES
+    Common attributes for specification elements are:
+
+    name
+        Name of element.
+
+            <value name="dancefloor"/>
+
+    class
+        Class of corresponding elements in the HTML template.
+
+            <value name="dancefloor" class="dancefloor-link"/>
+
+        If this attribute is omitted, the value of the name attribute is
+        used to relate to the class in the HTML template.
+
+    id  Id of corresponding element in the HTML template. Overrides the
+        class attribute for the specification element.
+
+           <value name="dancefloor" id="dancefloor-link"/>
+
+    target
+        HTML attribute to fill the value instead of replacing the body of
+        the HTML element.
+
+           <value name="dancefloor" class="dancefloor-link" target="href"/>
+
+  ELEMENTS
     Possible elements in the specification are:
 
     container
@@ -474,7 +502,10 @@ SIMPLE OPERATORS
             </list>
         </specification>
 
-CONDITIONALS
+CONTAINERS
+    Conditional processing like `IF' or `ELSE' is done with the help of
+    containers.
+
   Display image only if present
     In this example we want to show an image only on a certain condition:
 
@@ -514,7 +545,7 @@ CONDITIONALS
             <list name="links" class="linklist" iterator="links">
                 <param name="name"/>
                 <param name="url" target="href"/>
-                <param name="link" field="url" op="toggle" args="tree"/>
+                <container name="link" class="link" value="url"/>
             </list>
         </specification>
 
