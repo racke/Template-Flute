@@ -1704,7 +1704,7 @@ Applies filter to value.
 =item include
 
 Processes the template file named in this attribute. This implies
-the hook operation.
+the hook operation. See L</INCLUDE FILES> for more information.
 
 =back
 
