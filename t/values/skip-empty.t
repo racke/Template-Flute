@@ -197,7 +197,6 @@ EXPECTED
 $expected =~ s/\n//g;
 like $out, qr/\Q$expected\E/, "Params as expected" or diag $out;
 
-
 $spec =<<'SPEC';
 <specification>
 <list name="items" iterator="items">
@@ -234,8 +233,18 @@ $iterator = [
              }
             ];
 
+my %currency_options = (int_curr_symbol => 'EUR',
+		     mon_thousands_sep => '.',
+		     mon_decimal_point => ',',
+		     p_sep_by_space => 1);
+
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
+                              filters => {
+                                  currency => {
+                                      options => \%currency_options,
+                                  },
+                              },
                               values => {
                                          items => $iterator,
                                          offer => '10',
