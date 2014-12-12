@@ -1,5 +1,17 @@
 Revision history for Template::Flute
 
+0.0151 Fri Dec 12 17:23:20 2014 CET
+
+    [BUG FIXES]
+
+    * Fix wrong behaviour with skip and filters (Marco Pessotto,
+      Stefan Hornburg, Jeff Boes, GH #73, #74).
+
+    [DOCUMENTATION]
+
+    * Add link to "INCLUDE FILES" section which points to description of include
+      attribute for value elements (Stefan Hornburg).
+
 0.0150 Sat Nov 29 09:33:18 2014 CET
 
     [ENHANCEMENTS]

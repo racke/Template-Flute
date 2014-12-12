@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0150
+    Version 0.0151
 
 SYNOPSIS
         use Template::Flute;
@@ -399,7 +399,8 @@ SPECIFICATION
 
         include
             Processes the template file named in this attribute. This
-            implies the hook operation.
+            implies the hook operation. See INCLUDE FILES for more
+            information.
 
     form
         Form elements are tied through specification to HTML forms.
