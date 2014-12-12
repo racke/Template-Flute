@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Data::Dumper;
 
 my ($spec, $html, $flute, $out, $expected);
@@ -196,3 +196,70 @@ EXPECTED
 
 $expected =~ s/\n//g;
 like $out, qr/\Q$expected\E/, "Params as expected" or diag $out;
+
+subtest 'currency_filter' => sub {
+    eval "use Number::Format";
+
+    if ($@) {
+        plan skip_all => "Missing Number::Format module.";
+    }
+
+    $spec =<<'SPEC';
+<specification>
+<list name="items" iterator="items">
+  <param name="price" filter="currency" skip="empty" />
+  <param name="good" />
+</list>
+<value name="offer" filter="currency" />
+<value name="emptyoffer" filter="currency" skip="empty" />
+</specification>
+SPEC
+
+    $html =<<'HTML';
+<ul>
+<li class="items">
+Price of <span class="good">Good</span> is <span class="price">NOPRICE</span>
+</li>
+</ul>
+<p class="offer">OFFER</p>
+<p class="emptyoffer">EMPTY</p>
+HTML
+
+    $iterator = [
+        {
+            price => 1,
+            good => 'first',
+        },
+        {
+            price => undef ,
+            good => 'second',
+        },
+        {
+            price => ' ',
+            good => 'third'
+        }
+    ];
+
+    my %currency_options = (int_curr_symbol => 'EUR',
+                            mon_thousands_sep => '.',
+                            mon_decimal_point => ',',
+                            p_sep_by_space => 1);
+
+    $flute = Template::Flute->new(template => $html,
+                                  specification => $spec,
+                                  filters => {
+                                      currency => {
+                                          options => \%currency_options,
+                                      },
+                                  },
+                                  values => {
+                                      items => $iterator,
+                                      offer => '10',
+                                      emptyoffer => ' ',
+                                  });
+    $out = $flute->process;
+    like $out, qr/first.*EUR\s+1,00.*second.*NOPRICE.*third.*NOPRICE/s,
+        "Skip empty works with filter currency";
+    like $out, qr/offer">EUR\s+10,00/, "Found the value";
+    like $out, qr/emptyoffer">EMPTY/, "Found the skipped value";
+};
