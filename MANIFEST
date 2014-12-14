@@ -118,6 +118,7 @@ t/lists/param-wildcards.t
 t/lists/params.t
 t/lists/placement.t
 t/lists/separator.t
+t/lists/share-iterator.t
 t/lists/toggle_param.t
 t/object.t
 t/paging/simple.t
