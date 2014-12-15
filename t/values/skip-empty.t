@@ -243,6 +243,7 @@ HTML
     my %currency_options = (int_curr_symbol => 'EUR',
                             mon_thousands_sep => '.',
                             mon_decimal_point => ',',
+                            p_cs_precedes => 0,
                             p_sep_by_space => 1);
 
     $flute = Template::Flute->new(template => $html,
@@ -258,8 +259,8 @@ HTML
                                       emptyoffer => ' ',
                                   });
     $out = $flute->process;
-    like $out, qr/first.*EUR\s+1,00.*second.*NOPRICE.*third.*NOPRICE/s,
+    like $out, qr/first.*1,00\s+EUR.*second.*NOPRICE.*third.*NOPRICE/s,
         "Skip empty works with filter currency";
-    like $out, qr/offer">EUR\s+10,00/, "Found the value";
+    like $out, qr/offer">10,00\s+EUR/, "Found the value";
     like $out, qr/emptyoffer">EMPTY/, "Found the skipped value";
 };
