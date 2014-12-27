@@ -1,5 +1,18 @@
 Revision history for Template::Flute
 
+0.0160 Sat Dec 27 12:46:00 2014 CET
+
+    [BUG FIXES]
+
+    * Add Cache iterator subclass to fix problems with multiple lists
+      sharing the same iterator (Stefan Hornburg).
+    * Force currency options to fix test failures (Marco Pessotto, GH #76, 77).
+
+    [TESTS]
+
+    * Add simple test for value replacement inside HTML input element
+      (Stefan Hornburg).
+
 0.0151 Fri Dec 12 17:23:20 2014 CET
 
     [BUG FIXES]
