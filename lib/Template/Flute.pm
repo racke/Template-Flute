@@ -9,6 +9,7 @@ use Template::Flute::Utils;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 use Template::Flute::Iterator;
+use Template::Flute::Iterator::Cache;
 use Template::Flute::Increment;
 use Template::Flute::Pager;
 use Template::Flute::Paginator;
@@ -549,8 +550,8 @@ sub _sub_process {
 	}
 	
 	my $classes = $specification->{classes};
-	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip);
-	
+	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip, %iter_names);
+
 	# Read one layer of spec
 	my $spec_elements = {};
 	for my $elt ( $spec_xml->descendants() ){
@@ -558,14 +559,27 @@ sub _sub_process {
 		$spec_elements->{$type} ||= [];
 
         # check whether to skip sublists on this level
-        if ($type eq 'list' && $elt->parent->tag eq 'list') {
-            if ($elt->parent ne $spec_xml) {
+        if ($type eq 'list') {
+            if ($elt->parent->tag eq 'list'
+                    && $elt->parent ne $spec_xml) {
                 $skip{$elt} = 1;
+            }
+            else {
+                push @{$iter_names{$elt->att('iterator')}}, $elt;
             }
         }
 		push @{$spec_elements->{$type}}, $elt;
 		
 	}	
+
+    while (my ($name, $value) = each %iter_names) {
+        if (@$value > 1) {
+            my $iter_cached = Template::Flute::Iterator::Cache->new(
+                iterator => $specification->iterator($name),
+            );
+            $specification->set_iterator($name, $iter_cached);
+        };
+    }
 
     my $cut_container = 0;
 
@@ -749,6 +763,10 @@ sub _sub_process {
 			}
 			$count++;
 		}
+
+        if (blessed $spec_iter && $spec_iter->isa('Template::Flute::Iterator::Cache')) {
+            $spec_iter->reset;
+        }
 
 		$element_template->cut(); # Remove template element
 
