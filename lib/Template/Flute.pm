@@ -1966,7 +1966,7 @@ HTML output:
 =head3 Default value for dropdowns
 
 You can specify the dropdown item which is selected by
-default with the C<iterator_default> attribute.
+default with the C<iterator_default>) attribute.
 
 Template:
 
