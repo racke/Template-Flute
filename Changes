@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0161 Tue Feb 17 13:07:14 2015 CET
+
+    [BUG FIXES]
+
+    * Prevent Perl warning caused by undefined value in $original_attribute
+      (Stefan Hornburg).
+
+    [DOCUMENTATION]
+
+    * Fix typo and missing parenthesis in main POD (Stefan Hornburg).
+
 0.0160 Sat Dec 27 12:46:00 2014 CET
 
     [BUG FIXES]
