@@ -207,6 +207,11 @@ sub _translate_string {
     }
     # return undef if no text is left
     return unless length($text);
+
+    # collapse the whitespace inside, discarding it for the
+    # purpose of localization.
+    $text =~ s/\s+/ /g;
+
     # translate and restore spaces
     return $ws_before . $i18n->localize($text) . $ws_after;
 }
