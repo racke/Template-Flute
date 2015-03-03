@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0162 Tue Mar  3 10:06:04 2015 CET
+
+    [ENHANCEMENTS]
+
+    * Collapse whitespace inside strings before translation
+      (GH #83, #84, Marco Pessotto).
+
 0.0161 Tue Feb 17 13:07:14 2015 CET
 
     [BUG FIXES]
