@@ -28,6 +28,7 @@ sub new {
 	if (exists $sob->{iterator}) {
 		$self->{iterator} = {name => $sob->{iterator}};
 	}
+    $self->{limit} = $sob->{limit} if defined $sob->{limit};
 	
 	bless $self;
 	
@@ -35,7 +36,7 @@ sub new {
 		$self->inputs_add($spec->list_inputs($name));
 		$self->filters_add($spec->list_filters($name));
 		$self->sorts_add($spec->list_sorts($name));
-
+        
         if ($lf = $spec->list_paging($name)) {
             $self->paging_add($lf);
         }

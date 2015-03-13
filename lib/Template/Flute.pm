@@ -713,6 +713,9 @@ sub _sub_process {
 		while (my $record_values = $iter_records->next) {
 
             $count_iterations++;
+            last
+                if defined $list->{limit}
+                && $count_iterations > $list->{limit};
 
             # cut the separators away before copying
             for my $sep (@{$list->{separators}}) {
@@ -2042,6 +2045,48 @@ Output:
    </body>
   </html>
 
+
+=head3 Limit lists
+
+Sometimes you may wish to limit the number or iterations through you list.
+
+Specification:
+
+    <specification>
+        <list name="images" iterator="images" limit="1">
+            <param name="image" target="src" field="image_url" />
+        </list>
+    </specification>
+
+Template:
+
+    <div class="images">
+        <img class="image" src="/images/bottle.jpg" />
+    </div>
+
+Code:
+
+    $images = [
+        { image_url => '/images/bottle1.jpg' },
+        { image_url => '/images/bottle2.jpg' },
+        { image_url => '/images/bottle3.jpg' },
+    ];
+
+    $flute = Template::Flute->new(
+        template      => $html,
+        specification => $spec,
+        values        => { images => $images },
+    );
+
+    $out = $flute->process;
+
+Output:
+
+    <html><head></head><body>
+        <div class="images">
+            <img class="image" src="/images/bottle1.jpg" />
+        </div>
+    </body></html>
 
 =head1 LISTS
 
