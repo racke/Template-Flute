@@ -573,6 +573,8 @@ sub _sub_process {
 	}	
 
     while (my ($name, $value) = each %iter_names) {
+        next if $name =~ /\./;
+
         if (@$value > 1) {
             my $iter_cached = Template::Flute::Iterator::Cache->new(
                 iterator => $specification->iterator($name),
