@@ -17,6 +17,8 @@ Creates Template::Flute::Container object.
 
 use Template::Flute::Expression;
 
+our %expression_cache;
+
 # Constructor
 sub new {
 	my ($class, $sob, $spec, $name) = @_;
@@ -104,8 +106,15 @@ sub visible {
 		return undef;
 	    }
 	    else {
-		$self->{_expr_parser} ||= Template::Flute::Expression->new($key);
-		$ret = $self->{_expr_parser}->evaluate($self->{values});
+            if (! exists $self->{_expr_parser}) {
+                # check the cache
+                if (! exists $expression_cache{$key}) {
+                    $expression_cache{$key} = Template::Flute::Expression->new($key);
+                }
+
+                $self->{_expr_parser} =  $expression_cache{$key};
+            }
+       		$ret = $self->{_expr_parser}->evaluate($self->{values});
 
 		if ($ret) {
 		    return 1;
