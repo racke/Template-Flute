@@ -232,7 +232,7 @@ sub _translate_attribute {
 
 
 sub translate {
-	my ($self, $i18n) = @_;
+	my ($self, $i18n, @translate_attributes) = @_;
 	my ($root, @text_elts, $i18n_ret, $parent_gi, $parent_i18n,
 	    %parents, $text, $ws_before, $ws_after);
 
@@ -260,18 +260,35 @@ sub translate {
 		$elt->set_text($i18n_ret);
 	}
 
-    # scan the input as well, but only of selected type to avoid
-    # mangling the user input
-    my @inputs = $root->descendants('input');
-    foreach my $elt (@inputs) {
-        my $type = $elt->att('type');
-
-        # placeholders are safe to translate
-        $self->_translate_attribute($i18n, $elt, 'placeholder');
-
-        # submit values are not really safe, but anyway....
-        if ($type and $type eq 'submit') {
-            $self->_translate_attribute($i18n, $elt, 'value');
+    foreach my $attr (@translate_attributes) {
+        if ($attr =~ m/\./) {
+            my ($tag, $el_att, %conditions) = split(/\./, $attr);
+            if ($tag && $el_att) {
+                my $xpath = $tag . '[@' . $el_att . ']';
+                my @elements = $root->descendants($xpath);
+              TRX_ATT_EL:
+                foreach my $el (@elements) {
+                    foreach my $att_cond (keys %conditions) {
+                        my $cond_val = $conditions{$att_cond};
+                        die "undefined condition on translate attribute $attr"
+                          unless defined $cond_val;
+                        my $el_val = $el->att($att_cond);
+                        next TRX_ATT_EL unless defined $el_val;
+                        next TRX_ATT_EL unless $el_val eq $cond_val;
+                    }
+                    # still here? good.
+                    $self->_translate_attribute($i18n, $el, $el_att);
+                }
+            }
+            else {
+                die "Invalid translate_attributes configuration: $attr";
+            }
+        }
+        else {
+            my @elements = $root->descendants('*[@'. $attr . ']');
+            foreach my $el (@elements) {
+                $self->_translate_attribute($i18n, $el, $attr);
+            }
         }
     }
 

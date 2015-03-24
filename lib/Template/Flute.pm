@@ -199,6 +199,19 @@ Hash reference of filter functions.
 
 L<Template::Flute::I18N> object.
 
+=item translate_attributes
+
+An arrayref of attribute names to translate. If the name has a dot, it
+is interpreted as tagname + attribute, so C<placeholder>" will
+unconditionally translate all the placeholders, while
+C<input.placeholder> only the placeholder found on the input tag.
+
+Additional dotted values compose conditions for attributes. E.g.
+C<input.value.type.submit> means all the value attributes with
+attribute C<type> set to C<submit>.
+
+Defaults to C<['input.value.type.submit', 'placeholder']>
+
 =item iterators
 
 Hash references of iterators.
@@ -295,7 +308,9 @@ sub new {
 	$filter_class = {};
     $filter_objects = {};
     
-	$self = {iterators => {}, @_, 
+	$self = {iterators => {},
+             translate_attributes => [qw/placeholder input.value.type.submit/],
+             @_,
              _filter_subs => $filter_subs,
              _filter_opts => $filter_opts,
              _filter_class => $filter_class,
@@ -475,7 +490,8 @@ sub process {
 	
 	if ($self->{i18n}) {
 		# translate static text first
-		$self->{template}->translate($self->{i18n});
+		$self->{template}->translate($self->{i18n},
+                                     @{$self->{translate_attributes}});
 	}
 
 	my $html = $self->_sub_process(
