@@ -3,8 +3,10 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 1;
+use Test::More tests => 4;
 use Template::Flute;
+use Data::Dumper;
+use XML::Twig;
 
 my $spec = q{<specification></specification>};
 
@@ -31,4 +33,8 @@ my $html = q{
 
 my $flute = Template::Flute->new( specification => $spec, template => $html );
 my $out = $flute->process;
-like $out, qr{<body>\s*<nav};
+unlike $out, qr{/body><nav}, "Template ok";
+like $out, qr{<body>\s*<nav}, "Template processing ok";
+my $twig = XML::Twig->new->safe_parse_html($html);
+like $twig->sprint, qr{<body>\s*<nav}, "XML::Twing prints the parsed html ok";
+unlike $twig->sprint, qr{/body><nav}, "XML::Twing prints the parsed html ok";
