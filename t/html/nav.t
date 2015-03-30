@@ -3,10 +3,13 @@
 use strict;
 use warnings;
 use utf8;
-use Test::More tests => 16;
+use Test::More tests => 18;
 use Template::Flute;
 use Data::Dumper;
 use XML::Twig;
+use HTML::TreeBuilder;
+
+
 
 my $spec = q{<specification></specification>};
 
@@ -64,3 +67,18 @@ $out = $flute->process;
 unlike $out, qr{/body><nav}, "Template ok";
 like $out, qr{<body>\s*<nav}, "Template processing ok";
 like $out, qr{</nav></body};
+
+my $tree= HTML::TreeBuilder->new;
+$tree->ignore_ignorable_whitespace( 0);
+$tree->ignore_unknown( 0);
+$tree->no_space_compacting( 1);
+$tree->store_comments( 1);
+$tree->store_pis(1);
+$tree->parse($html);
+$tree->eof;
+
+my $tree_html = $tree->as_HTML;
+like $tree_html, qr{<body>\s*<nav}, "Template processing ok";
+like $tree_html, qr{</nav></body};
+
+
