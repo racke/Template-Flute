@@ -56,17 +56,17 @@ unlike $out, qr{/body><nav}, "Template ok";
 like $out, qr{<body>\s*<nav}, "Template processing ok";
 like $out, qr{</nav></body};
 
-$wrappedhtml = '<body>' . $html . '</body>';
+$wrappedhtml = '<div>' . $html . '</div>';
 $twig = XML::Twig->new->safe_parse_html($wrappedhtml);
-like $twig->sprint, qr{<body>\s*<nav}, "XML::Twing prints the parsed html ok";
-unlike $twig->sprint, qr{/body><nav}, "XML::Twing prints the parsed html ok";
-like $twig->sprint, qr{</nav></body};
+like $twig->sprint, qr{<body>\s*<div>\s*<nav}, "XML::Twing prints the wrapped html ok";
+unlike $twig->sprint, qr{/body><nav}, "XML::Twing prints the wrapped html ok";
+like $twig->sprint, qr{</nav>\s*</div>\s*</body};
 
 $flute = Template::Flute->new( specification => $spec, template => $wrappedhtml );
 $out = $flute->process;
-unlike $out, qr{/body><nav}, "Template ok";
-like $out, qr{<body>\s*<nav}, "Template processing ok";
-like $out, qr{</nav></body};
+unlike $out, qr{</body><nav}, "Template ok with wrapping ";
+like $out, qr{<body>\s*<div>\s*<nav}s, "Template processing ok wrapping ok";
+like $out, qr{</nav>\s*</div>\s*</body}s, "Wrapping is ok";
 
 my $tree= HTML::TreeBuilder->new;
 $tree->ignore_ignorable_whitespace( 0);
@@ -81,4 +81,9 @@ my $tree_html = $tree->as_HTML;
 like $tree_html, qr{<body>\s*<nav}, "Template processing ok";
 like $tree_html, qr{</nav></body};
 
+$tree = HTML::TreeBuilder->new;
+$tree->ignore_unknown( 0);
+$tree->parse('<nav class="navbar navbar-default">
+    <div class="container-fluid">Test</div></nav>');
+print $tree->as_HTML;
 
