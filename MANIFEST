@@ -73,6 +73,7 @@ t/filters/nobreak_single.t
 t/filters/strip.t
 t/filters/subs.t
 t/filters/upper.t
+t/html/nav.t
 t/values/append.t
 t/values/bad_objects.t
 t/values/basic.t
