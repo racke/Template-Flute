@@ -1,5 +1,26 @@
 Revision history for Template::Flute
 
+0.0170 Tue Mar 31 22:08:11 2015 CEST
+
+    [ENHANCEMENTS]
+
+    * Add configuration option for attributes which can be translated
+      (Marco Pessotto, GH #89).
+    * Cache expressions (Peter Mottram, Stefan Hornburg, GH #81).
+    * Add limit support to <list> (William Carr, GH #86).
+
+    [BUG FIXES]
+
+    * Stringify objects as final value of a dotted value specification
+      (Sam Batschelet, Stefan Hornburg, GH #93).
+    * Skip caching of iterators which belong to child lists
+      (Peter Mottram, Stefan Hornburg, GH #87).
+
+    [TESTS]
+
+    * Add test to demonstrate failure of subsequent calls to process
+      (William Carr, Stefan Hornburg)
+
 0.0162 Tue Mar  3 10:06:04 2015 CET
 
     [ENHANCEMENTS]
