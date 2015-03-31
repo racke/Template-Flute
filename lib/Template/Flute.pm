@@ -2340,6 +2340,10 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to Peter Mottram (GH #81, #87).
+
+Thanks to William Carr (GH #86, #91).
+
 Thanks to David Precious (bigpresh) for writing a much clearer introduction for
 Template::Flute.
 
@@ -2351,7 +2355,7 @@ Template::Flute::Filter::JsonVar class.
 
 Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
 
-Thanks to Sam Batschelet helping me with a bug causing duplicate form fields (GH #14).
+Thanks to Sam Batschelet (GH #14, #93).
 
 Thanks to Terrence Brannon for spotting a documentation mix-up.
 
