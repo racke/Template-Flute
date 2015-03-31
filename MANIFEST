@@ -112,6 +112,7 @@ t/iterators/20-json.t
 t/iterators/cache.t
 t/iterators/paginator.t
 t/lists/append.t
+t/lists/double-process.t
 t/lists/global-containers.t
 t/lists/increments.t
 t/lists/limit.t
