@@ -21,7 +21,7 @@ if ($@) {
     plan skip_all => "Missing DateTime::Format::ISO8601 module.";
 }
 
-plan tests => 5;
+plan tests => 7;
 
 my ($xml, $html, $flute, $ret);
 
@@ -40,6 +40,39 @@ $flute = Template::Flute->new(specification => $xml,
 			      template => $html,
 			      filters => {date => {options => {format => '%m/%d/%Y'}}},
 			      values => {text => '2011-10-30T06:07:07'});
+
+$ret = $flute->process();
+
+ok($ret =~ m%<div class="text">10/30/2011</div>%, "Output: $ret");
+
+# date filter with DateTime object
+my $dt = DateTime->new(year => 2011,
+                       month => 10,
+                       day => 30,
+                   );
+
+$flute = Template::Flute->new(specification => $xml,
+                              template => $html,
+                              filters => {date => {options => {format => '%m/%d/%Y'}}},
+                              values => {text => $dt},
+                          );
+
+$ret = $flute->process();
+
+ok($ret =~ m%<div class="text">10/30/2011</div>%, "Output: $ret");
+
+# date filter with DateTime object in structure
+my $xml_deep = <<EOF;
+<specification name="filters">
+<value name="text" field="order.date" filter="date"/>
+</specification>
+EOF
+
+$flute = Template::Flute->new(specification => $xml_deep,
+                              template => $html,
+                              filters => {date => {options => {format => '%m/%d/%Y'}}},
+                              values => {order => {date => $dt}},
+                          );
 
 $ret = $flute->process();
 
@@ -89,4 +122,3 @@ $flute = Template::Flute->new(specification => $xml,
                               );
 
 ok($ret =~ m%<div class="text"></div>%, "Output: $ret");
-
