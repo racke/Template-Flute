@@ -1436,7 +1436,7 @@ sub value {
                 }
             }
 
-            if (ref $raw_value) {
+            if (ref $raw_value && ! $self->_is_record_object($raw_value)) {
                 # second case: don't pass back stringified reference
                 $raw_value = '';
             }
