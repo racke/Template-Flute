@@ -5,6 +5,7 @@ use warnings;
 
 use DateTime;
 use DateTime::Format::ISO8601;
+use Scalar::Util qw/blessed/;
 
 use base 'Template::Flute::Filter';
 
@@ -83,18 +84,23 @@ sub filter {
         }
     }
 
-    # parsing date
-    eval {
-        $dt = DateTime::Format::ISO8601->parse_datetime($date);
-    };
+    if (defined blessed $date && $date->isa('DateTime')) {
+        $dt = $date;
+    }
+    else {
+        # parsing date
+        eval {
+            $dt = DateTime::Format::ISO8601->parse_datetime($date);
+        };
 
-    if ($@) {
-        if ($self->{strict}->{invalid}) {
-            die $@;
-        }
-        else {
-            # replace invalid dates with empty string
-            return '';
+        if ($@) {
+            if ($self->{strict}->{invalid}) {
+                die $@;
+            }
+            else {
+                # replace invalid dates with empty string
+                return '';
+            }
         }
     }
 

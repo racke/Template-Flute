@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0162
+    Version 0.0170
 
 SYNOPSIS
         use Template::Flute;
@@ -156,6 +156,18 @@ CONSTRUCTOR
 
     i18n
         Template::Flute::I18N object.
+
+    translate_attributes
+        An arrayref of attribute names to translate. If the name has a dot,
+        it is interpreted as tagname + attribute, so `placeholder'" will
+        unconditionally translate all the placeholders, while
+        `input.placeholder' only the placeholder found on the input tag.
+
+        Additional dotted values compose conditions for attributes. E.g.
+        `input.value.type.submit' means all the value attributes with
+        attribute `type' set to `submit'.
+
+        Defaults to `['input.value.type.submit', 'placeholder']'
 
     iterators
         Hash references of iterators.
@@ -677,6 +689,48 @@ ITERATORS
        </body>
       </html>
 
+    Limit lists
+    Sometimes you may wish to limit the number or iterations through you
+    list.
+
+    Specification:
+
+        <specification>
+            <list name="images" iterator="images" limit="1">
+                <param name="image" target="src" field="image_url" />
+            </list>
+        </specification>
+
+    Template:
+
+        <div class="images">
+            <img class="image" src="/images/bottle.jpg" />
+        </div>
+
+    Code:
+
+        $images = [
+            { image_url => '/images/bottle1.jpg' },
+            { image_url => '/images/bottle2.jpg' },
+            { image_url => '/images/bottle3.jpg' },
+        ];
+
+        $flute = Template::Flute->new(
+            template      => $html,
+            specification => $spec,
+            values        => { images => $images },
+        );
+
+        $out = $flute->process;
+
+    Output:
+
+        <html><head></head><body>
+            <div class="images">
+                <img class="image" src="/images/bottle1.jpg" />
+            </div>
+        </body></html>
+
 LISTS
     Lists can be accessed after parsing the specification and the HTML
     template through the HTML template object:
@@ -877,6 +931,10 @@ SUPPORT
         http://search.cpan.org/dist/Template-Flute/
 
 ACKNOWLEDGEMENTS
+    Thanks to Peter Mottram (GH #81, #87).
+
+    Thanks to William Carr (GH #86, #91).
+
     Thanks to David Precious (bigpresh) for writing a much clearer
     introduction for Template::Flute.
 
@@ -889,8 +947,7 @@ ACKNOWLEDGEMENTS
     Thanks to Ton Verhagen for being a big supporter of my projects in all
     aspects.
 
-    Thanks to Sam Batschelet helping me with a bug causing duplicate form
-    fields (GH #14).
+    Thanks to Sam Batschelet (GH #14, #93).
 
     Thanks to Terrence Brannon for spotting a documentation mix-up.
 

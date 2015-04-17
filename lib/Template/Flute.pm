@@ -20,11 +20,11 @@ Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
-Version 0.0162
+Version 0.0170
 
 =cut
 
-our $VERSION = '0.0162';
+our $VERSION = '0.0170';
 
 =head1 SYNOPSIS
 
@@ -199,6 +199,19 @@ Hash reference of filter functions.
 
 L<Template::Flute::I18N> object.
 
+=item translate_attributes
+
+An arrayref of attribute names to translate. If the name has a dot, it
+is interpreted as tagname + attribute, so C<placeholder>" will
+unconditionally translate all the placeholders, while
+C<input.placeholder> only the placeholder found on the input tag.
+
+Additional dotted values compose conditions for attributes. E.g.
+C<input.value.type.submit> means all the value attributes with
+attribute C<type> set to C<submit>.
+
+Defaults to C<['input.value.type.submit', 'placeholder']>
+
 =item iterators
 
 Hash references of iterators.
@@ -295,7 +308,9 @@ sub new {
 	$filter_class = {};
     $filter_objects = {};
     
-	$self = {iterators => {}, @_, 
+	$self = {iterators => {},
+             translate_attributes => [qw/placeholder input.value.type.submit/],
+             @_,
              _filter_subs => $filter_subs,
              _filter_opts => $filter_opts,
              _filter_class => $filter_class,
@@ -475,7 +490,8 @@ sub process {
 	
 	if ($self->{i18n}) {
 		# translate static text first
-		$self->{template}->translate($self->{i18n});
+		$self->{template}->translate($self->{i18n},
+                                     @{$self->{translate_attributes}});
 	}
 
 	my $html = $self->_sub_process(
@@ -1436,7 +1452,7 @@ sub value {
                 }
             }
 
-            if (ref $raw_value) {
+            if (ref $raw_value && ! $self->_is_record_object($raw_value)) {
                 # second case: don't pass back stringified reference
                 $raw_value = '';
             }
@@ -2324,6 +2340,10 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to Peter Mottram (GH #81, #87).
+
+Thanks to William Carr (GH #86, #91).
+
 Thanks to David Precious (bigpresh) for writing a much clearer introduction for
 Template::Flute.
 
@@ -2335,7 +2355,7 @@ Template::Flute::Filter::JsonVar class.
 
 Thanks to Ton Verhagen for being a big supporter of my projects in all aspects.
 
-Thanks to Sam Batschelet helping me with a bug causing duplicate form fields (GH #14).
+Thanks to Sam Batschelet (GH #14, #93).
 
 Thanks to Terrence Brannon for spotting a documentation mix-up.
 
