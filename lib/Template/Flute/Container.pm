@@ -3,6 +3,8 @@ package Template::Flute::Container;
 use strict;
 use warnings;
 
+use Scalar::Util qw/blessed/;
+
 =head1 NAME
 
 Template::Flute::Container - Container object for Template::Flute templates.
@@ -96,14 +98,17 @@ sub visible {
 	if ($key = $self->{sob}->{value}) {
 	    # check whether this is an expression or a simple value
 	    if ($key =~ /^\w[0-9\w_-]*$/) {
-		if (exists $self->{values}) {
-			if ($self->{values}->{$key}) {
-				return 1;
-			}
-			return 0;
-		}
+            # value holds method
+            return $self->{values}->$key
+                if blessed($self->{values}) && $self->{values}->can($key); 
+    		if (exists $self->{values}) {
+    			if ($self->{values}->{$key}) {
+    				return 1;
+    			}
+    			return 0;
+    		}
 
-		return undef;
+    		return undef;
 	    }
 	    else {
             if (! exists $self->{_expr_parser}) {
