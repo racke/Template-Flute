@@ -35,7 +35,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 use Template::Flute;
 
 my ( $spec, $html, $flute, $out );
@@ -48,8 +48,8 @@ $spec = <<'EOS';
         <list name="prices" iterator="prices">
             <param name="price" />
             <param name="sale_price" class="sale-price" />
-            <container name="on-sale" value="on_sale" />
             <container name="not-on-sale" value="!on_sale" />
+            <container name="on-sale" value="on_sale" />
         </list>
     </list>
 </specification>
@@ -102,7 +102,15 @@ ok( $ct_count == 2, 'Test for container count' )
 my $ct      = $ct_arr[0];
 my $ct_name = $ct->name;
 my $ct_list = $ct->list;
+ok( $ct_name eq 'on-sale', 'Test for container name' )
+    || diag "Wrong container name: $ct_name\n";
 
+ok( $ct_list eq 'prices', 'Test for container list' )
+    || diag "Wrong container list: $ct_list\n";
+
+$ct      = $ct_arr[1];
+$ct_name = $ct->name;
+$ct_list = $ct->list;
 ok( $ct_name eq 'not-on-sale', 'Test for container name' )
     || diag "Wrong container name: $ct_name\n";
 
