@@ -35,7 +35,7 @@ package main;
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 2;
 use Template::Flute;
 
 my ( $spec, $html, $flute, $out );
@@ -95,30 +95,10 @@ $out = $flute->process();
 
 my @ct_arr   = $flute->template->containers;
 my $ct_count = scalar @ct_arr;
-
 ok( $ct_count == 2, 'Test for container count' )
     || diag "Wrong number of containers: $ct_count\n";
 
-my $ct      = $ct_arr[0];
-my $ct_name = $ct->name;
-my $ct_list = $ct->list;
-ok( $ct_name eq 'on-sale', 'Test for container name' )
-    || diag "Wrong container name: $ct_name\n";
-
-ok( $ct_list eq 'prices', 'Test for container list' )
-    || diag "Wrong container list: $ct_list\n";
-
-$ct      = $ct_arr[1];
-$ct_name = $ct->name;
-$ct_list = $ct->list;
-ok( $ct_name eq 'not-on-sale', 'Test for container name' )
-    || diag "Wrong container name: $ct_name\n";
-
-ok( $ct_list eq 'prices', 'Test for container list' )
-    || diag "Wrong container list: $ct_list\n";
-
 ok( $out
-        =~ m%<div class="items"><span class="itemid">540876</span> <span class="title">Freemark Abbey Merlot 2012</span><div class="prices"><div class="on-sale"><span class="strikethough price">35.99</span><span class="sale-price">24.97</span></div></div></div><div class="items"><span class="itemid">555024</span> <span class="title">Rancho Sisquoc Cabernet Sauvignon 2009</span><div class="prices"><div class="not-on-sale"><span class="price">24.99</span></div></div></div><div class="items"><span class="itemid">555518</span> <span class="title">Paul Hobbs Russian River Valley Pinot Noir 2013</span><div class="prices"><div class="on-sale"><span class="strikethough price">64.99</span><span class="sale-price">46.88</span></div></div></div>%,
-    'Test for container within list.'
-) || diag "Mismatch on elements: $out";
-
+        =~ m{<div class="items"><span class="itemid">540876</span> <span class="title">Freemark Abbey Merlot 2012</span><div class="prices"><div class="on-sale"><span class="strikethough price">35.99</span><span class="sale-price">24.97</span></div></div></div><div class="items"><span class="itemid">555024</span> <span class="title">Rancho Sisquoc Cabernet Sauvignon 2009</span><div class="prices"><div class="not-on-sale"><span class="price">24.99</span></div></div></div><div class="items"><span class="itemid">555518</span> <span class="title">Paul Hobbs Russian River Valley Pinot Noir 2013</span><div class="prices"><div class="on-sale"><span class="strikethough price">64.99</span><span class="sale-price">46.88</span></div></div></div>},
+    q{container test via method}
+);

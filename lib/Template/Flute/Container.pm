@@ -3,8 +3,6 @@ package Template::Flute::Container;
 use strict;
 use warnings;
 
-use Scalar::Util qw/blessed/;
-
 =head1 NAME
 
 Template::Flute::Container - Container object for Template::Flute templates.
@@ -17,6 +15,7 @@ Creates Template::Flute::Container object.
 
 =cut
 
+use base 'Template::Flute';
 use Template::Flute::Expression;
 
 our %expression_cache;
@@ -100,7 +99,7 @@ sub visible {
 	    if ($key =~ /^\w[0-9\w_-]*$/) {
             # value holds method
             return $self->{values}->$key
-                if blessed($self->{values}) && $self->{values}->can($key); 
+                if $self->_is_record_object($self->{values}) && $self->{values}->can($key); 
     		if (exists $self->{values}) {
     			if ($self->{values}->{$key}) {
     				return 1;
