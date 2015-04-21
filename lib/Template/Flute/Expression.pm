@@ -3,7 +3,8 @@ package Template::Flute::Expression;
 use strict;
 use warnings;
 
-use Scalar::Util qw/reftype blessed/;
+use base 'Template::Flute';
+use Scalar::Util qw/reftype/;
 
 =head1 NAME
 
@@ -186,7 +187,7 @@ sub _value {
 	&& defined($values_ref->{$name})
 	&& $values_ref->{$name} =~ /\S/) {
 	$value = $values_ref->{$name};
-    } elsif (blessed($values_ref) && $values_ref->can($name)) {
+    } elsif ($self->_is_record_object($values_ref) && $values_ref->can($name)) {
         $value = $values_ref->$name;
     }
     else {
