@@ -1,5 +1,14 @@
 Revision history for Template::Flute
 
+0.0171 Wed Apr 22 12:12:25 2015 CEST
+
+    [BUG FIXES]
+
+    * Clear out HTML element in case an empty value is passed for op=hook
+      (Stefan Hornburg).
+    * Prevent reparsing of DateTime objects in the date filter
+      (Stefan Hornburg).
+
 0.0170 Tue Mar 31 22:08:11 2015 CEST
 
     [ENHANCEMENTS]
