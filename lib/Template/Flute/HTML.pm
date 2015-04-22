@@ -845,6 +845,7 @@ sub hook_html {
 	my ($parser, $html, $body, @children, @ret, $elt_hook);
 
 	unless (defined $value && $value =~ /\S/) {
+        $elt->cut_children;
 		return '';
 	}
 	
