@@ -2247,6 +2247,11 @@ Requires L<Locales> module.
 JSON to Javascript variable filter, see L<Template::Flute::Filter::JsonVar>.
 Requires L<JSON> module.
 
+=item lower_dash
+
+Replaces spaces with dashes (-) and makes lowercase.
+see L<Template::Flute::Filter::LowerDash>.
+
 =back
 
 Filter classes are loaded at runtime for efficiency and to keep the

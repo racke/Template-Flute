@@ -26,7 +26,7 @@ sub filter {
     
     (my $value = shift) =~ s/\s/-/g;
 
-    return uc($value);
+    return lc($value);
 }
 
 =head1 AUTHOR
