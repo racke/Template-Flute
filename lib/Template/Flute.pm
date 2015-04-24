@@ -1156,7 +1156,18 @@ sub _filter {
     unless (exists $self->{_filter_objects}->{$name}) {
         # try to bootstrap filter
 	    unless ($class = $self->{_filter_class}->{$name}) {
-            $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
+            my @out;
+
+            for my $frag (split(/_/, $name)) {
+                if ($frag eq 'html') {
+                    push @out, 'HTML';
+                }
+                else {
+                    push @out, ucfirst($frag);
+                }
+            }
+
+            $mod_name = join('', @out);
             $class = "Template::Flute::Filter::$mod_name";
 	    }
 
