@@ -29,7 +29,7 @@ my @tests =
 for my $t (@tests) {
     $flute = Template::Flute->new(specification => $xml,
                                   template => $html,
-                                  values => {text => 'Foo $t->{entity} Bar'});
+                                  values => {text => "Foo $t->{entity} Bar"});
 
     $ret = $flute->process();
 
