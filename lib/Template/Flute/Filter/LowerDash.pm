@@ -24,7 +24,7 @@ LowerDashcase filter.
 sub filter {
     my $self = shift;
     
-    (my $value = shift) =~ s/\s/-/g;
+    (my $value = shift) =~ s/\s+/-/g;
 
     return lc($value);
 }
