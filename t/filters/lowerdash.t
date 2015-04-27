@@ -4,7 +4,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 use Template::Flute;
 
@@ -20,8 +20,9 @@ my $html = <<EOF;
 EOF
 
 my $tests = {
-    'Red Wine'              => 'red-wine',
-    'Red Wine is Delicious' => 'red-wine-is-delicious',
+    'Red Wine'                     => 'red-wine',
+    'Red Wine is Delicious'        => 'red-wine-is-delicious',
+    'Red Wine    is     Delicious' => 'red-wine-is-delicious',
 };
 for my $key ( keys %$tests ) {
     my $flute = Template::Flute->new(
@@ -30,5 +31,6 @@ for my $key ( keys %$tests ) {
         values        => { text => $key }
     );
     my $ret = $flute->process();
-    ok( $ret =~ m{<div class="text">$tests->{$key}</div>}, qq{lower_dash filter: $ret} );
+    ok( $ret =~ m{<div class="text">$tests->{$key}</div>},
+        qq{lower_dash filter: $ret} );
 }
