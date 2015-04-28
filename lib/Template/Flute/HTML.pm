@@ -862,6 +862,14 @@ sub hook_html {
 
 	$elt->cut_children();
 
+    if (my $head_elt = $html->root->first_child('head')) {
+        # preserve useful elements like <script> inside HTML snippets (GH #99).
+        @children = $head_elt->cut_children;
+        for my $h_elt (@children) {
+            $h_elt->paste(last_child => $elt);
+        }
+    }
+
     my $fc = $html->root()->first_child('body');
 
     if ($elt->gi eq 'select' && $fc->first_child->gi eq 'select') {
