@@ -1,5 +1,17 @@
 Revision history for Template::Flute
 
+0.0180 Wed Apr 29 09:33:14 2015 CEST
+
+    [BUG FIXES]
+
+    * Apply fix for <script> vanishes when inserted with op="hook"
+      (Stefan Hornburg, GH #99).
+
+    [ENHANCEMENTS]
+
+    * Add lower_dash filter (William Carr, GH #86).
+    * Allow usage of method in container's value attribute (William Carr, GH #95).
+
 0.0171 Wed Apr 22 12:12:25 2015 CEST
 
     [BUG FIXES]

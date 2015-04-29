@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0171
+    Version 0.0180
 
 SYNOPSIS
         use Template::Flute;
@@ -853,6 +853,10 @@ FILTERS
     json_var
         JSON to Javascript variable filter, see
         Template::Flute::Filter::JsonVar. Requires JSON module.
+
+    lower_dash
+        Replaces spaces with dashes (-) and makes lowercase. see
+        Template::Flute::Filter::LowerDash.
 
     Filter classes are loaded at runtime for efficiency and to keep the
     number of dependencies for Template::Flute as small as possible.
