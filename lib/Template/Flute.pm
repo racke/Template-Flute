@@ -20,11 +20,11 @@ Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
-Version 0.0170
+Version 0.0180
 
 =cut
 
-our $VERSION = '0.0170';
+our $VERSION = '0.0180';
 
 =head1 SYNOPSIS
 
@@ -2246,6 +2246,11 @@ Requires L<Locales> module.
 
 JSON to Javascript variable filter, see L<Template::Flute::Filter::JsonVar>.
 Requires L<JSON> module.
+
+=item lower_dash
+
+Replaces spaces with dashes (-) and makes lowercase.
+see L<Template::Flute::Filter::LowerDash>.
 
 =back
 

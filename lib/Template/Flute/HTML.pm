@@ -845,6 +845,7 @@ sub hook_html {
 	my ($parser, $html, $body, @children, @ret, $elt_hook);
 
 	unless (defined $value && $value =~ /\S/) {
+        $elt->cut_children;
 		return '';
 	}
 	
@@ -860,6 +861,14 @@ sub hook_html {
         _fix_script_tags($html);
 
 	$elt->cut_children();
+
+    if (my $head_elt = $html->root->first_child('head')) {
+        # preserve useful elements like <script> inside HTML snippets (GH #99).
+        @children = $head_elt->cut_children;
+        for my $h_elt (@children) {
+            $h_elt->paste(last_child => $elt);
+        }
+    }
 
     my $fc = $html->root()->first_child('body');
 

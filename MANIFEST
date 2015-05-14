@@ -15,6 +15,7 @@ lib/Template/Flute/Filter/Eol.pm
 lib/Template/Flute/Filter/CountryName.pm
 lib/Template/Flute/Filter/JsonVar.pm
 lib/Template/Flute/Filter/LanguageName.pm
+lib/Template/Flute/Filter/LowerDash.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Replace.pm
 lib/Template/Flute/Filter/Strip.pm
@@ -68,6 +69,7 @@ t/filters/currency.t
 t/filters/date.t
 t/filters/eol.t
 t/filters/json.t
+t/filters/lowerdash.t
 t/filters/multi.t
 t/filters/nobreak_single.t
 t/filters/strip.t
@@ -77,6 +79,7 @@ t/values/append.t
 t/values/bad_objects.t
 t/values/basic.t
 t/values/checkboxes.t
+t/values/hook-script.t
 t/values/input.t
 t/values/js.t
 t/values/multiple.t
@@ -95,6 +98,7 @@ t/i18n/01-simple.t
 t/containers/basic.t
 t/containers/dotted-value.t
 t/containers/list.t
+t/containers/object.t
 t/containers/value.t
 t/forms/01-name.t
 t/forms/02-link.t
