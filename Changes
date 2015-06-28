@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0181 Sun Jun 28 13:52:46 2015 CEST
+
+    [ENHANCEMENTS]
+
+    * Add date_text option to Date filter (Stefan Hornburg)
+
 0.0180 Wed Apr 29 09:33:14 2015 CEST
 
     [BUG FIXES]
