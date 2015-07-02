@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Template::Flute;
 
 my ($spec, $html, $flute, $out);
@@ -44,6 +44,22 @@ $out = $flute->process;
 
 like ($out, qr%<div class="test">FOO&amp;BAR</div>%,
     "value with op=append and joiner=&");
+
+# simple append with joiner without value
+$spec = q{<specification>
+<value name="test" op="append" joiner="&amp;"/>
+</specification>
+};
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {test => ''},
+                             );
+
+$out = $flute->process;
+
+like ($out, qr%<div class="test">FOO</div>%,
+    "value with op=append, joiner=& and empty value");
 
 # simple append with joiner which doesn't escape
 $spec = q{<specification>

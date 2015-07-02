@@ -669,7 +669,9 @@ sub _elt_indicate_replacements {
             $elt->{"flute_$name"}->{rep_sub} = sub {
                 my ($elt, $str) = @_;
 				$str ||= '';
-                $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
+                if (! $joiner || $str =~ /\S/) {
+                    $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
+                }
             };
         }
         elsif ($sob->{op} eq 'toggle' && exists $sob->{args}
