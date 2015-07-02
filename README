@@ -2,7 +2,7 @@ NAME
     Template::Flute - Modern designer-friendly HTML templating Engine
 
 VERSION
-    Version 0.0181
+    Version 0.0182
 
 SYNOPSIS
         use Template::Flute;
@@ -305,6 +305,10 @@ SPECIFICATION
         the HTML element.
 
            <value name="dancefloor" class="dancefloor-link" target="href"/>
+
+    joiner
+        String placed between the text and the appended value. The joiner
+        isn't added if the value is empty.
 
   ELEMENTS
     Possible elements in the specification are:

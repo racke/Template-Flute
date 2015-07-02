@@ -1,5 +1,16 @@
 Revision history for Template::Flute
 
+0.0182 Thu Jul  2 18:08:53 2015 CEST
+
+    [BUG FIXES]
+
+    * Fix stray joiner which showed up while appending empty value to text
+      (Stefan Hornburg).
+
+    [DOCUMENTATION]
+
+    * Add joiner attribute (Stefan Hornburg).
+
 0.0181 Sun Jun 28 13:52:46 2015 CEST
 
     [ENHANCEMENTS]
