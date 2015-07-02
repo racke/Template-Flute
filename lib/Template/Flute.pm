@@ -1622,6 +1622,11 @@ the HTML element.
 
    <value name="dancefloor" class="dancefloor-link" target="href"/>
 
+=item joiner
+
+String placed between the text and the appended value. The joiner
+isn't added if the value is empty.
+
 =back
 
 =head2 ELEMENTS
