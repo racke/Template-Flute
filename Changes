@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0183 Sun Jul  5 19:06:50 2015 CEST
+
+    [BUG FIXES]
+
+    * Fix crash caused by patterns with non-empty but "false" content
+      (Stefan Hornburg).
+
 0.0182 Thu Jul  2 18:08:53 2015 CEST
 
     [BUG FIXES]
