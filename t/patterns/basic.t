@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Data::Dumper;
 
 my ($spec, $html, $flute, $out, $expected);
@@ -68,6 +68,39 @@ EXPECTED
 
 $expected =~ s/\n//g;
 like $out, qr/\Q$expected\E/, "Interpolation param by pattern";
+
+# pattern with Perly false value
+$spec =<<'SPEC';
+<specification>
+<pattern name="pxt" type="string">0</pattern>
+<value name="cartline" pattern="pxt"/>
+</specification>
+SPEC
+
+my $html_false =<<'HTML';
+<p class="cartline">There are 0 items in your shopping cart.</p>
+<ul>
+  <li class="items">
+    <span class="number">1</span>
+    <span class="category">in category 123</span>
+  </li>
+</ul>
+HTML
+
+$flute = Template::Flute->new(template => $html_false,
+                              specification => $spec,
+                              values => {
+                                         cartline => "42",
+                                        });
+
+$out = $flute->process;
+
+$expected =<<'EXPECTED';
+<p class="cartline">There are 42 items in your shopping cart.</p>
+EXPECTED
+
+$expected =~ s/\n//g;
+like $out, qr/\Q$expected\E/, "Interpolation value by pattern with false value";
 
 # multiple patterns
 
