@@ -47,7 +47,7 @@ isa_ok ($form, 'Template::Flute::Form');
 # check field count
 ok (scalar(@{$form->fields}) == 1, 'form field count');
 
-$form->fill({content => 'Hello World'});
+$form->fill({content => "Hello World\r\nHello There"});
 
 my $flute = new Template::Flute(specification => $ret,
 							  template => $html_object,
@@ -57,5 +57,5 @@ eval {
 	$ret = $flute->process();
 };
 
-ok($ret =~ /Hello World/, $ret);
+like $ret, qr/Hello World\r\nHello There/, "new line preserved" or diag $ret;
 
