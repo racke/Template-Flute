@@ -15,15 +15,22 @@ my $xml = <<EOF;
 EOF
 
 my $html = <<EOF;
+<script>test</script>
+<style>test</style>
+<p>test</p>
 <form name="textarea" id="textarea">
-<textarea class="content">
+<textarea class="content" placeholder="test">
 </textarea>
 </form>
 EOF
 
 sub translate {
     my $l = shift;
-    return $l;
+    my %trx = (
+               test => 'Translated',
+               'Hello World' => 'Translated Hello World',
+              );
+    return $trx{$l} || $l;
 }
 
 
@@ -49,6 +56,10 @@ sub translate {
     my ($form) = $flute->template->forms;
     $form->fill({content => "Hello World\r\nHello There"});
     my $out =  $flute->process;
+    diag $out;
     like $out, qr/Hello World\r\nHello There/, "new line preserved" or diag $out;
+    unlike $out, qr/<(script|style)>Translated/, "No style/script translated";
+    like $out, qr/placeholder="Translated/, "placeholder translated";
+    like $out, qr/<p>Translated/, "Paragraph translated";
 }
 

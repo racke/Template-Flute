@@ -242,9 +242,12 @@ sub translate {
 
 	for my $elt (@text_elts) {
 		$parent_gi = $elt->parent->gi();
-
-		next if $parent_gi eq 'style'
-            || $parent_gi eq 'script';
+        my %exclude = (
+                       style => 1,
+                       script => 1,
+                       textarea => 1,
+                      );
+        next if $exclude{$parent_gi};
         
 		$parent_i18n = $elt->parent->att('i18n-key');
 		
