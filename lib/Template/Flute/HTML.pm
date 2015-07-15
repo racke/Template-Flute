@@ -210,10 +210,17 @@ sub _translate_string {
 
     # collapse the whitespace inside, discarding it for the
     # purpose of localization.
+    my $original = $text;
     $text =~ s/\s+/ /g;
-
+    my $translated = $i18n->localize($text);
+    if ($translated eq $text) {
+        $text = $original;
+    }
+    else {
+        $text = $translated;
+    }
     # translate and restore spaces
-    return $ws_before . $i18n->localize($text) . $ws_after;
+    return $ws_before . $text . $ws_after;
 }
 
 sub _translate_attribute {
