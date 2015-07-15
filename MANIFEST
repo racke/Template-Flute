@@ -144,6 +144,7 @@ t/files/i18n.xml
 t/i18n/02-includes.t
 t/i18n/03-attributes.t
 t/i18n/04-whitespace.t
+t/i18n/05-textarea.t
 t/testfiles/bad/admin.html
 t/testfiles/bad/admin.xml
 t/testfiles/bad/checkout-giftinfo.html
