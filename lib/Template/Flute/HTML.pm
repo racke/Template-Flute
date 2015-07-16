@@ -210,10 +210,17 @@ sub _translate_string {
 
     # collapse the whitespace inside, discarding it for the
     # purpose of localization.
+    my $original = $text;
     $text =~ s/\s+/ /g;
-
+    my $translated = $i18n->localize($text);
+    if ($translated eq $text) {
+        $text = $original;
+    }
+    else {
+        $text = $translated;
+    }
     # translate and restore spaces
-    return $ws_before . $i18n->localize($text) . $ws_after;
+    return $ws_before . $text . $ws_after;
 }
 
 sub _translate_attribute {
@@ -242,9 +249,12 @@ sub translate {
 
 	for my $elt (@text_elts) {
 		$parent_gi = $elt->parent->gi();
-
-		next if $parent_gi eq 'style'
-            || $parent_gi eq 'script';
+        my %exclude = (
+                       style => 1,
+                       script => 1,
+                       textarea => 1,
+                      );
+        next if $exclude{$parent_gi};
         
 		$parent_i18n = $elt->parent->att('i18n-key');
 		
