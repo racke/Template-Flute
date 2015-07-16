@@ -1428,7 +1428,12 @@ sub value {
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
                  uri => $self->{uri},
          );
-		
+        if ( $value->{specification_file} ) {
+            $args{specification_file}
+                = Template::Flute::Utils::derive_filename(
+                $self->{template_file} || $value->{include},
+                $value->{specification_file}, 1 );
+        }
 		$raw_value = Template::Flute->new(%args)->process();
 	}
 	elsif (exists $value->{field}) {
@@ -2316,6 +2321,11 @@ The result replaces the inner HTML of the following C<div> tag:
         Sample content
     </div>
 
+You may also specify a C<specification_file> parameter to use a specification file which is different than the one
+implied by the name of the include file.
+
+    <value name="mini-cart" specification_file="cart.xml" include="mini-cart.html" />
+    
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
