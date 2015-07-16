@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.0184 Thu Jul 16 09:33:23 2015 CEST
+
+    [BUG FIXES]
+
+    * Remove BOM when processing files (Marco Pessotto, GH #102, #103).
+    * Fix lost newlines for textarea values (Marco Pessotto, GH #105, #106).
+
 0.0183 Sun Jul  5 19:06:50 2015 CEST
 
     [BUG FIXES]
