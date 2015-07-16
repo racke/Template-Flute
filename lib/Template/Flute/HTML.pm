@@ -382,6 +382,10 @@ sub _parse_template {
 		$self->{file} = $template;
 		$encoding = $spec_object->encoding();
 		$html_content = Path::Tiny::path($template)->slurp({binmode => ":encoding($encoding)"});
+        my $first_char = substr($html_content, 0, 1);
+        if ($first_char eq "\x{feff}") {
+            substr($html_content, 0, 1, '');
+        }
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
