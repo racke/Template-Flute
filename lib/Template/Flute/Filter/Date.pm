@@ -45,6 +45,15 @@ Example for accepting empty dates:
 
     options => {strict => {empty => 0}}
 
+=item date_text
+
+This option can be used to supply strings for empty and/or
+invalid dates. It also overrides the C<strict> option.
+
+Example for empty dates:
+
+    options => {date_text => {empty => 'Not yet scheduled'}}
+
 =back
 
 =cut
@@ -55,6 +64,8 @@ sub init {
     $self->{format} = $args{options}->{format} || '%c';
     $self->{strict} = $args{options}->{strict} || {empty => 1,
                                                    invalid => 1};
+    $self->{date_text} = $args{options}->{date_text}
+        || {empty => '', invalid => ''};
 }
 
 =head2 filter
@@ -75,6 +86,9 @@ sub filter {
     }
 
     if (! defined $date || $date !~ /\S/) {
+        if (my $date_text = $self->{date_text}->{empty}) {
+            return $date_text;
+        }
         if (! $self->{strict}->{empty}) {
             # accept empty strings for dates
             return '';
@@ -94,6 +108,9 @@ sub filter {
         };
 
         if ($@) {
+            if (my $date_text = $self->{date_text}->{invalid}) {
+                return $date_text;
+            }
             if ($self->{strict}->{invalid}) {
                 die $@;
             }

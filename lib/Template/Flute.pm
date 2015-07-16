@@ -20,11 +20,11 @@ Template::Flute - Modern designer-friendly HTML templating Engine
 
 =head1 VERSION
 
-Version 0.0180
+Version 0.0184
 
 =cut
 
-our $VERSION = '0.0180';
+our $VERSION = '0.0184';
 
 =head1 SYNOPSIS
 
@@ -1626,6 +1626,11 @@ HTML attribute to fill the value instead of replacing the body of
 the HTML element.
 
    <value name="dancefloor" class="dancefloor-link" target="href"/>
+
+=item joiner
+
+String placed between the text and the appended value. The joiner
+isn't added if the value is empty.
 
 =back
 

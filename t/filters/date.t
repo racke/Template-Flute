@@ -21,7 +21,7 @@ if ($@) {
     plan skip_all => "Missing DateTime::Format::ISO8601 module.";
 }
 
-plan tests => 7;
+plan tests => 9;
 
 my ($xml, $html, $flute, $ret);
 
@@ -89,6 +89,25 @@ like(exception{$ret = $flute->process()},
      qr/Empty date/,
      'Died as excepted on an empty date.');
 
+my %config = (date => {
+    options => {
+        format => '%m/%d/%Y',
+        date_text => {
+            empty => 'Not yet scheduled',
+        }
+    },
+});
+
+$flute = Template::Flute->new(specification => $xml,
+                              template => $html,
+                              filters => \%config,
+                              );
+
+$ret = $flute->process();
+
+ok($ret =~ m%<div class="text">Not yet scheduled</div>%,
+   "Empty date with date text.")
+    || diag "Output: $ret";
 
 # date filter (missing date with different strict setting)
 
@@ -113,6 +132,25 @@ like(exception{$ret = $flute->process()},
      qr/Invalid day of month/,
      'Died as excepted on an invalid date.');
 
+%config = (date => {
+    options => {
+        format => '%m/%d/%Y',
+        date_text => {
+            invalid => 'Invalid date',
+        }
+    },
+});
+
+$flute = Template::Flute->new(specification => $xml,
+                              template => $html,
+                              filters => \%config,
+                              values => {text => '2011-11-31T06:07:07'},
+                              );
+
+$ret = $flute->process();
+
+ok($ret =~ m%<div class="text">Invalid date</div>%, "Invalid date with date_text") || diag "Output: $ret.";
+
 # date filter (invalid date with different strict setting)
 $flute = Template::Flute->new(specification => $xml,
 			      template => $html,
@@ -120,5 +158,7 @@ $flute = Template::Flute->new(specification => $xml,
                                                    strict => {invalid => 0}}}},
 			      values => {text => '2011-11-31T06:07:07'},
                               );
+
+$ret = $flute->process();
 
 ok($ret =~ m%<div class="text"></div>%, "Output: $ret");

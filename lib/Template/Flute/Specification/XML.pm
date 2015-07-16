@@ -132,7 +132,12 @@ sub _pattern_handler {
     # print "###"  .  $elt->sprint . "###\n";
     my $name = $elt->att('name') or die "Missing name for pattern";
     my $type = $elt->att('type') or die "Missing type for pattern $name";
-    my $content = $elt->text     or die "Missing content for pattern $name";
+    my $content = $elt->text;
+
+    if (! defined $content || length($content) == 0) {
+        die "Missing content for pattern $name";
+    }
+
     # print "### $name $type $content ###\n";
     # always conver the content to a compiled regexp
     my $regexp;

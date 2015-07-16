@@ -210,10 +210,17 @@ sub _translate_string {
 
     # collapse the whitespace inside, discarding it for the
     # purpose of localization.
+    my $original = $text;
     $text =~ s/\s+/ /g;
-
+    my $translated = $i18n->localize($text);
+    if ($translated eq $text) {
+        $text = $original;
+    }
+    else {
+        $text = $translated;
+    }
     # translate and restore spaces
-    return $ws_before . $i18n->localize($text) . $ws_after;
+    return $ws_before . $text . $ws_after;
 }
 
 sub _translate_attribute {
@@ -242,9 +249,12 @@ sub translate {
 
 	for my $elt (@text_elts) {
 		$parent_gi = $elt->parent->gi();
-
-		next if $parent_gi eq 'style'
-            || $parent_gi eq 'script';
+        my %exclude = (
+                       style => 1,
+                       script => 1,
+                       textarea => 1,
+                      );
+        next if $exclude{$parent_gi};
         
 		$parent_i18n = $elt->parent->att('i18n-key');
 		
@@ -372,6 +382,10 @@ sub _parse_template {
 		$self->{file} = $template;
 		$encoding = $spec_object->encoding();
 		$html_content = Path::Tiny::path($template)->slurp({binmode => ":encoding($encoding)"});
+        my $first_char = substr($html_content, 0, 1);
+        if ($first_char eq "\x{feff}") {
+            substr($html_content, 0, 1, '');
+        }
 		unless ($encoding eq 'utf8') {
 			$html_content = encode('utf8', $html_content);
 		}
@@ -669,7 +683,9 @@ sub _elt_indicate_replacements {
             $elt->{"flute_$name"}->{rep_sub} = sub {
                 my ($elt, $str) = @_;
 				$str ||= '';
-                $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
+                if (! $joiner || $str =~ /\S/) {
+                    $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
+                }
             };
         }
         elsif ($sob->{op} eq 'toggle' && exists $sob->{args}

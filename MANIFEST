@@ -78,6 +78,7 @@ t/filters/upper.t
 t/values/append.t
 t/values/bad_objects.t
 t/values/basic.t
+t/values/bom.t
 t/values/checkboxes.t
 t/values/hook-script.t
 t/values/input.t
@@ -141,9 +142,14 @@ t/test-twig.t
 t/uri-adjust.t
 t/files/i18n.html
 t/files/i18n.xml
+t/files/bom.xml
+t/files/bom.html
+t/files/bom-included.xml
+t/files/bom-included.html
 t/i18n/02-includes.t
 t/i18n/03-attributes.t
 t/i18n/04-whitespace.t
+t/i18n/05-textarea.t
 t/testfiles/bad/admin.html
 t/testfiles/bad/admin.xml
 t/testfiles/bad/checkout-giftinfo.html

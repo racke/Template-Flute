@@ -1,5 +1,36 @@
 Revision history for Template::Flute
 
+0.0184 Thu Jul 16 09:33:23 2015 CEST
+
+    [BUG FIXES]
+
+    * Remove BOM when processing files (Marco Pessotto, GH #102, #103).
+    * Fix lost newlines for textarea values (Marco Pessotto, GH #105, #106).
+
+0.0183 Sun Jul  5 19:06:50 2015 CEST
+
+    [BUG FIXES]
+
+    * Fix crash caused by patterns with non-empty but "false" content
+      (Stefan Hornburg).
+
+0.0182 Thu Jul  2 18:08:53 2015 CEST
+
+    [BUG FIXES]
+
+    * Fix stray joiner which showed up while appending empty value to text
+      (Stefan Hornburg).
+
+    [DOCUMENTATION]
+
+    * Add joiner attribute (Stefan Hornburg).
+
+0.0181 Sun Jun 28 13:52:46 2015 CEST
+
+    [ENHANCEMENTS]
+
+    * Add date_text option to Date filter (Stefan Hornburg)
+
 0.0180 Wed Apr 29 09:33:14 2015 CEST
 
     [BUG FIXES]
