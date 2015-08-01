@@ -108,7 +108,7 @@ sub list {
 }
 
 =head2 forms
-	
+
 Returns list of L<Template::Flute::Form> objects for this template.
 
 =cut

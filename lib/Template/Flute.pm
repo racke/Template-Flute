@@ -156,7 +156,7 @@ Parse template with L<Template::Flute::HTML> object.
     $flute->process();
 
 =back
-	
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -1679,7 +1679,7 @@ The following operations are supported for param elements:
 =over 4
 
 =item append
- 
+
 Appends the param value to the text found in the HTML template.
 
 =item target
@@ -2047,13 +2047,13 @@ Code:
   @colors = ({code => 'red', name => 'Red'},
              {code => 'black', name => 'Black'},
             );
-  
+
   $flute = Template::Flute->new(template => $html,
                                 specification => $spec,
                                 iterators => {colors => \@colors},
                                 values => { color => 'black' },
                                );
-  
+
   $out = $flute->process();
 
 Output:
