@@ -1722,7 +1722,7 @@ Uses value from increment instead of a value from the iterator.
 
 Value elements are replaced with a single value present in the values hash
 passed to the constructor of this class or later set with the
-L<set_values|/set_values_HASHREF> method.
+L<set_values|/set_values HASHREF> method.
 
 The following operations are supported for value elements:
 
