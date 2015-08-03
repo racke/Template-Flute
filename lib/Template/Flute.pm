@@ -2316,6 +2316,31 @@ The result replaces the inner HTML of the following C<div> tag:
         Sample content
     </div>
 
+=head1 INSTALLATION
+
+C<Template::Flute> can be installed from the latest release on CPAN, or if
+you wish for the very latest version, you can also install from the sources
+on GitHub.
+
+=head2 FROM CPAN
+
+To install from CPAN, simply use the C<cpanm> utility:
+
+    $ cpanm Template::Flute
+
+=head2 FROM SOURCE
+
+To install from source, first clone the repository, install the required
+dependencies, and build:
+
+    $ git clone https://github.com/racke/Template-Flute
+    $ cd Template-Flute
+    $ cpanm --installdeps .
+    $ perl Makefile.PL
+    $ make
+    $ make test     # optional, but still a good idea
+    $ make install
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
