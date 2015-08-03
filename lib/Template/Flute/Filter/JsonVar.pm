@@ -1,5 +1,8 @@
 package Template::Flute::Filter::JsonVar;
 
+use strict;
+use warnings;
+
 use base 'Template::Flute::Filter';
 use JSON;
 
