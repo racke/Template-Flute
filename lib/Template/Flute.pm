@@ -187,10 +187,6 @@ HTML template file.
 
 L<Template::Flute::HTML> object or template as string.
 
-=item database
-
-L<Template::Flute::Database::Rose> object.
-
 =item filters
 
 Hash reference of filter functions.
