@@ -90,7 +90,7 @@ The resulting output would be:
 
 In other words, rather than including a templating language within your
 templates which your designers must master and which could interfere with
-previews in WYSWYG tools, CSS selectors in the template are tied to your
+previews in WYSIWYG tools, CSS selectors in the template are tied to your
 data structures or objects by a specification provided by the programmer.
 
 
