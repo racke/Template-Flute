@@ -156,7 +156,7 @@ Parse template with L<Template::Flute::HTML> object.
     $flute->process();
 
 =back
-	
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -1679,7 +1679,7 @@ The following operations are supported for param elements:
 =over 4
 
 =item append
- 
+
 Appends the param value to the text found in the HTML template.
 
 =item target
@@ -1722,7 +1722,7 @@ Uses value from increment instead of a value from the iterator.
 
 Value elements are replaced with a single value present in the values hash
 passed to the constructor of this class or later set with the
-L<set_values|/set_values_HASHREF> method.
+L<set_values|/set_values HASHREF> method.
 
 The following operations are supported for value elements:
 
@@ -2047,13 +2047,13 @@ Code:
   @colors = ({code => 'red', name => 'Red'},
              {code => 'black', name => 'Black'},
             );
-  
+
   $flute = Template::Flute->new(template => $html,
                                 specification => $spec,
                                 iterators => {colors => \@colors},
                                 values => { color => 'black' },
                                );
-  
+
   $out = $flute->process();
 
 Output:
