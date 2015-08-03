@@ -6,7 +6,6 @@ Makefile.PL
 README
 lib/Template/Flute.pm
 lib/Template/Flute/Increment.pm
-lib/Template/Flute/Iterator/Rose.pm
 lib/Template/Flute/Config.pm
 lib/Template/Flute/Filter.pm
 lib/Template/Flute/Filter/Currency.pm
@@ -26,7 +25,6 @@ lib/Template/Flute/Specification.pm
 lib/Template/Flute/UriAdjust.pm
 lib/Template/Flute/Container.pm
 lib/Template/Flute/List.pm
-lib/Template/Flute/Database/Rose.pm
 lib/Template/Flute/Expression.pm
 lib/Template/Flute/Form.pm
 lib/Template/Flute/I18N.pm
