@@ -156,7 +156,7 @@ Parse template with L<Template::Flute::HTML> object.
     $flute->process();
 
 =back
-	
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -307,7 +307,7 @@ sub new {
 	$filter_opts = {};
 	$filter_class = {};
     $filter_objects = {};
-    
+
 	$self = {iterators => {},
              translate_attributes => [qw/placeholder input.value.type.submit/],
              @_,
@@ -318,7 +318,7 @@ sub new {
 	};
 
 	bless $self, $class;
-	
+
 	if (exists $self->{specification}
 		&& ! ref($self->{specification})) {
 		# specification passed as string
@@ -372,7 +372,7 @@ sub _set_pattern {
 sub _bootstrap {
 	my ($self, $snippet) = @_;
 	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
-	
+
 	unless ($self->{specification}) {
 		unless ($self->{specification_file}) {
 			# try to derive specification file name from template file name
@@ -392,11 +392,11 @@ sub _bootstrap {
 sub _bootstrap_specification {
 	my ($self, $source, $specification) = @_;
 	my ($parser_name, $parser_spec, $spec_file);
-	
+
 	if ($parser_name = $self->{specification_parser}) {
 		# load parser class
 		my $class;
-			
+
 		if ($parser_name =~ /::/) {
 			$class = $parser_name;
 		} else {
@@ -418,7 +418,7 @@ sub _bootstrap_specification {
 	} else {
 		$parser_spec = new Template::Flute::Specification::XML;
 	}
-	
+
 	if ($source eq 'file') {
 		unless ($self->{specification} = $parser_spec->parse_file($specification)) {
 			die "$0: error parsing $specification: " . $parser_spec->error() . "\n";
@@ -431,13 +431,13 @@ sub _bootstrap_specification {
 		}
 	}
 
-	
+
 	my ($name, $iter);
-	
+
 	while (($name, $iter) = each %{$self->{iterators}}) {
 		$self->{specification}->set_iterator($name, $iter);
 	}
-	
+
     if (my %patterns = $self->{specification}->patterns) {
         foreach my $k (keys %patterns) {
             $self->_set_pattern($k, $patterns{$k});
@@ -452,7 +452,7 @@ sub _bootstrap_template {
 	my ($template_object);
 
 	$template_object = new Template::Flute::HTML(uri => $self->{uri});
-	
+
 	if ($source eq 'file') {
 		$template_object->parse_file($template, $self->{specification}, $snippet);
 		$self->{template} = $template_object;
@@ -482,12 +482,12 @@ Returns HTML output.
 
 sub process {
 	my ($self, $params) = @_;
-	
+
 
 	unless ($self->{template}) {
 		$self->_bootstrap($params->{snippet});
 	}
-	
+
 	if ($self->{i18n}) {
 		# translate static text first
 		$self->{template}->translate($self->{i18n},
@@ -495,11 +495,11 @@ sub process {
 	}
 
 	my $html = $self->_sub_process(
-		$self->{template}->{xml}, 
-		$self->{specification}->{xml}->root, 
+		$self->{template}->{xml},
+		$self->{specification}->{xml}->root,
 		$self->{'values'},
 		$self->{specification},
-		$self->{template}, 
+		$self->{template},
         0,
         0,
 		);
@@ -556,7 +556,7 @@ sub _sub_process {
 	my ($template, %list_active);
 	# Use root spec or sub-spec
 	my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>", 1);
-	
+
 	if($root_template){
 		$template = $root_template;
 	}
@@ -564,7 +564,7 @@ sub _sub_process {
 		$template = new Template::Flute::HTML;
 		$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification, 1);
 	}
-	
+
 	my $classes = $specification->{classes};
 	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip, %iter_names);
 
@@ -585,8 +585,8 @@ sub _sub_process {
             }
         }
 		push @{$spec_elements->{$type}}, $elt;
-		
-	}	
+
+	}
 
     while (my ($name, $value) = each %iter_names) {
         next if $name =~ /\./;
@@ -639,7 +639,7 @@ sub _sub_process {
 		my $iterator = $elt->{'att'}->{'iterator'} || '';
 		my $sub_spec = $elt->copy();
 		my $element_template = $classes->{$spec_class}->[0]->{elts}->[0];
-		
+
 		unless($element_template){
 			next;
 		}
@@ -799,7 +799,7 @@ sub _sub_process {
     }
 
 	# Values
-	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){	
+	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){
         if ($elt->tag eq 'param') {
             my $name = $spec_xml->att('name');
 
@@ -828,7 +828,7 @@ sub _sub_process {
 		my $spec_id = $elt->{'att'}->{'id'};
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
-		
+
 		# Use CLASS or ID if set
 		my $spec_clases = [];
 		if ($spec_id){
@@ -837,7 +837,7 @@ sub _sub_process {
 		else {
 			$spec_clases = $classes->{$spec_class};
 		}
-		
+
 		for my $spec_class (@$spec_clases){
             # check if it's a form and it's already filled
             if (exists $spec_class->{form} && $spec_class->{form}) {
@@ -900,7 +900,7 @@ sub _sub_process {
         }
     }
 
-	return $count ? $template->{xml}->root() : $template->{xml};	
+	return $count ? $template->{xml}->root() : $template->{xml};
 }
 
 sub _replace_within_elts {
@@ -926,7 +926,7 @@ sub _replace_within_elts {
                 $elt->paste(first_child => $elt->former_parent);
             }
         }
-        
+
 		if ($zref->{rep_sub}) {
 			# call subroutine to handle this element
 			$zref->{rep_sub}->($elt, $rep_str);
@@ -969,7 +969,7 @@ sub _replace_within_elts {
 		} elsif ($zref->{rep_elt}) {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
-		} else {			
+		} else {
         	$elt->set_text($rep_str) if defined $rep_str;
 		}
 	}
@@ -983,7 +983,7 @@ Processes HTML template and returns L<Template::Flute::HTML> object.
 
 sub process_template {
 	my ($self) = @_;
-	
+
 	unless ($self->{template}) {
 		$self->_bootstrap();
 	}
@@ -1035,7 +1035,7 @@ sub _replace_record {
 		}
 		#debug "$name has value ";
 		#debug "'$rep_str'";
-		
+
 		# Template specified value if value defined
 		if ($value->{value}) {
             if ($rep_str) {
@@ -1093,7 +1093,7 @@ sub _replace_record {
 			$value->{increment}->increment();
 		}
 		#return undef unless defined $rep_str;
-		
+
 		if (ref($value->{op}) eq 'CODE') {
 		    _replace_within_elts($value, $rep_str, $value->{op}, $elts);
 		}
@@ -1152,7 +1152,7 @@ sub _filter {
         $filter = $self->{_filter_subs}->{$name};
         return $filter->($value);
     }
-    
+
     unless (exists $self->{_filter_objects}->{$name}) {
         # try to bootstrap filter
 	    unless ($class = $self->{_filter_class}->{$name}) {
@@ -1178,7 +1178,7 @@ sub _filter {
     }
 
     $filter_obj = $self->{_filter_objects}->{$name};
-    
+
     if ($filter_obj->can('twig')) {
 		$element->{op} = sub {$filter_obj->twig(@_)};
     }
@@ -1419,7 +1419,7 @@ sub value {
 		else {
 			$include_file = $value->{include};
 		}
-		
+
 		# process template and include it
 		%args = (template_file => $include_file,
 			 auto_iterators => $self->{auto_iterators},
@@ -1428,7 +1428,7 @@ sub value {
 			 values => $value->{field} ? $self->{values}->{$value->{field}} : $self->{values},
                  uri => $self->{uri},
          );
-		
+
 		$raw_value = Template::Flute->new(%args)->process();
 	}
 	elsif (exists $value->{field}) {
@@ -1485,7 +1485,7 @@ sub value {
 	if (wantarray) {
 		return ($raw_value, $rep_str);
 	}
-	
+
 	return $rep_str;
 }
 
@@ -1679,7 +1679,7 @@ The following operations are supported for param elements:
 =over 4
 
 =item append
- 
+
 Appends the param value to the text found in the HTML template.
 
 =item target
@@ -1785,7 +1785,7 @@ is usually more convenient.
 
 =item filter
 
-=item sort	
+=item sort
 
 =item i18n
 
@@ -2047,13 +2047,13 @@ Code:
   @colors = ({code => 'red', name => 'Red'},
              {code => 'black', name => 'Black'},
             );
-  
+
   $flute = Template::Flute->new(template => $html,
                                 specification => $spec,
                                 iterators => {colors => \@colors},
                                 values => { color => 'black' },
                                );
-  
+
   $out = $flute->process();
 
 Output:
