@@ -26,7 +26,7 @@ my $spec =<<'SPEC';
  <value name="struct" field="mystruct.key" />
 </specification>
 SPEC
-  
+
 my $html =<<'EOF';
 <html>
   <body>

@@ -61,7 +61,7 @@ $html = <<'EOH';
     <div class="prices">
         <div class="on-sale">
             <span class="strikethough price">$109.99</span>
-            <span class="sale-price">$99.99</span> 
+            <span class="sale-price">$99.99</span>
         </div>
         <div class="not-on-sale">
             <span class="price">$109.99</span>

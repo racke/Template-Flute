@@ -11,12 +11,12 @@ use Template::Flute::I18N;
 
 my (%german_map, $i18n, $spec, $template, $flute, $output);
 
-%german_map = (Cart=> 'Warenkorb', Price => 'Preis', 
+%german_map = (Cart=> 'Warenkorb', Price => 'Preis',
 	       CART => 'Einkaufswagen');
 
 sub translate {
 	my $text = shift;
-	
+
 	return $german_map{$text};
 };
 
