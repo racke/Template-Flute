@@ -65,7 +65,7 @@ sub filter {
             $name = $self->{object}->get_territory_from_code($code);
         }
     }
-    
+
     return $name;
 }
 

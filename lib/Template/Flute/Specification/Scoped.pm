@@ -47,11 +47,11 @@ Parses text from STRING or SCALARREF and returns L<Template::Flute::Specificatio
 object in case of success.
 
 =cut
-	
+
 sub parse {
 	my ($self, $text) = @_;
 	my ($scoped, $config);
-	
+
 	# create Config::Scoped parser and parse text
 	$scoped = new Config::Scoped;
 
@@ -89,8 +89,8 @@ sub parse_file {
 
 =head2 create_specification [ HASHREF ]
 
-Takes a L<Config::Scoped> hash reference and returns a 
-L<Template::Flute::Specification> object.  Mostly used for parse and 
+Takes a L<Config::Scoped> hash reference and returns a
+L<Template::Flute::Specification> object.  Mostly used for parse and
 parse_file methods.
 
 =cut
@@ -105,7 +105,7 @@ sub create_specification {
 	if ($encoding = $config->{specification}->{encoding}) {
 		$spec->encoding($encoding);
 	}
-	
+
 	# lists
 	while (($key, $value) = each %{$config->{list}}) {
 		$value->{name} = $key;
@@ -119,7 +119,7 @@ sub create_specification {
 		while (($key, $value) = each %{$config->{$cname}}) {
 			$list = delete $value->{list};
 			$value->{name} = $key;
-		
+
 			if ($list) {
 				if (exists $list{$list}) {
 					push @{$list{$list}->{$cname}}, {%$value};
@@ -179,7 +179,7 @@ sub _add_error {
 	my (%error);
 
 	%error = @args;
-	
+
 	unshift (@{$self->{errors}}, \%error);
 }
 

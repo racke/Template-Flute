@@ -68,7 +68,7 @@ sub filter {
             $name = $self->{object}->get_language_from_code($code);
         }
     }
-    
+
     return $name;
 }
 

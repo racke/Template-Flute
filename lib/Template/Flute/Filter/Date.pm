@@ -60,7 +60,7 @@ Example for empty dates:
 
 sub init {
     my ($self, %args) = @_;
-    
+
     $self->{format} = $args{options}->{format} || '%c';
     $self->{strict} = $args{options}->{strict} || {empty => 1,
                                                    invalid => 1};

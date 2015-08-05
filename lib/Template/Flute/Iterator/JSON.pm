@@ -43,7 +43,7 @@ sub new {
 	my ($json, $json_struct, $self, $key, $value);
 
 	$self = {};
-	
+
 	bless ($self, $class);
 
 	if (@args == 1) {
@@ -57,14 +57,14 @@ sub new {
 
 		$json_struct = from_json($json);
 		$self->_seed_iterator($json_struct);
-		
+
 		return $self;
 	}
-	
+
 	while (@args) {
 		$key = shift(@args);
 		$value = shift(@args);
-		
+
 		$self->{$key} = $value;
 	}
 
@@ -75,7 +75,7 @@ sub new {
 	else {
 		die "Missing JSON file.";
 	}
-	
+
 	return $self;
 }
 
@@ -92,7 +92,7 @@ sub _seed_iterator {
                 $value = $self->{selector}->{$key};
 
                 for my $record (@$json_struct) {
-                    if (exists $record->{$key} 
+                    if (exists $record->{$key}
                         && $record->{$key} eq $value) {
                         $self->seed($record->{$self->{children}});
                         return;
@@ -117,7 +117,7 @@ sub _seed_iterator {
         $self->seed();
         return;
     }
-    
+
     $self->seed($json_struct);
 }
 
@@ -139,7 +139,7 @@ sub _tree {
 sub _parse_json_from_file {
 	my ($self, $file) = @_;
 	my ($json_fh, $json_struct, $json_txt);
-	
+
 	# read from JSON file
 	unless (open $json_fh, '<', $file) {
 		die "$0: failed to open JSON file $file: $!\n";

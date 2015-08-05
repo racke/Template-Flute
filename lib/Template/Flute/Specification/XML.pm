@@ -66,7 +66,7 @@ sub parse {
 		return;
 	}
 	$self->{spec}->{xml} = $xml;
-	
+
 	return $self->{spec};
 }
 
@@ -76,13 +76,13 @@ Parses file and returns L<Template::Flute::Specification> object in
 case of success.
 
 =cut
-	
+
 sub parse_file {
 	my ($self, $file) = @_;
 	my ($twig, $xml);
 
 	$twig = $self->_initialize;
-	
+
 	$self->{spec}->{xml} = $twig->safe_parsefile($file);
 
 	unless ($self->{spec}->{xml}) {
@@ -96,10 +96,10 @@ sub parse_file {
 sub _initialize {
 	my $self = shift;
 	my (%handlers, $twig);
-	
+
 	# initialize stash
 	$self->{stash} = [];
-	
+
 	# specification object
 	$self->{spec} = new Template::Flute::Specification;
 
@@ -109,7 +109,7 @@ sub _initialize {
 				 list => sub {$self->_list_handler($_[1])},
 				 paging => sub {$self->_paging_handler($_[1])},
  				 filter => sub {$self->_stash_handler($_[1])},
- 				 separator => sub {$self->_stash_handler($_[1])},		     
+ 				 separator => sub {$self->_stash_handler($_[1])},
 				 form => sub {$self->_form_handler($_[1])},
 				 param => sub {$self->_stash_handler($_[1])},
 				 value => sub {$self->_stash_handler($_[1])},
@@ -119,7 +119,7 @@ sub _initialize {
 				 sort => sub {$self->_sort_handler($_[1])},
                  pattern => sub { $self->_pattern_handler($_[1]) },
 				 );
-	
+
 	# twig parser object
 	$twig = new XML::Twig (twig_handlers => \%handlers);
 
@@ -179,9 +179,9 @@ sub _spec_handler {
 sub _container_handler {
 	my ($self, $elt) = @_;
 	my ($name, %container);
-	
+
 	$name = $elt->att('name');
-	
+
 	$container{container} = $elt->atts();
 
     if ($elt->parent && $elt->parent->gi ne 'specification') {
@@ -199,11 +199,11 @@ sub _container_handler {
 sub _list_handler {
 	my ($self, $elt) = @_;
 	my ($name, %list);
-	
+
 	$name = $elt->att('name');
 
 	$list{list} = $elt->atts();
-	
+
 	# flush elements from stash into list hash
 	$self->_stash_flush($elt, \%list);
 
@@ -244,7 +244,7 @@ sub _sort_handler {
 	my (@ops, $name);
 
 	$name = $elt->att('name');
-	
+
 	for my $child ($elt->children()) {
 		if ($child->gi() eq 'field') {
 			push (@ops, {type => 'field',
@@ -259,13 +259,13 @@ sub _sort_handler {
 	unless (@ops) {
 		die "Empty sort $name.\n";
 	}
-	
+
 	$elt->set_att('ops', \@ops);
 
     # flush elements from stash
 	$self->_stash_flush($elt, {});
-    
-	push @{$self->{stash}}, $elt;	
+
+	push @{$self->{stash}}, $elt;
 }
 
 sub _stash_handler {
@@ -277,14 +277,14 @@ sub _stash_handler {
 sub _form_handler {
 	my ($self, $elt) = @_;
 	my ($name, %form);
-	
+
 	$name = $elt->att('name');
-	
+
 	$form{form} = $elt->atts();
 
 	# flush elements from stash into form hash
 	$self->_stash_flush($elt, \%form);
-		
+
 	# add form to specification object
 	$self->{spec}->form_add(\%form);
 }
@@ -294,7 +294,7 @@ sub _value_handler {
 	my (%value);
 
 	$value{value} = $elt->atts();
-	
+
 	$self->{spec}->value_add(\%value);
 }
 
@@ -303,7 +303,7 @@ sub _i18n_handler {
 	my (%i18n);
 
 	$i18n{value} = $elt->atts();
-	
+
 	$self->{spec}->i18n_add(\%i18n);
 }
 
@@ -351,7 +351,7 @@ sub _add_error {
 	my (%error);
 
 	%error = @args;
-	
+
 	unshift (@{$self->{errors}}, \%error);
 }
 
