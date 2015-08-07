@@ -52,8 +52,8 @@ subtest "Read JSON from file" => sub {
     my $json_file_iter = Template::Flute::Iterator::JSON->new(file => $json_file);
 
     isa_ok $json_file_iter, 'Template::Flute::Iterator';
-    is $json_iter->count, 2, "Iterator count is correct";
-    isa_ok $json_iter->next, 'HASH', "Next item is a hash";
+    is $json_file_iter->count, 2, "Iterator count is correct";
+    isa_ok $json_file_iter->next, 'HASH', "Next item is a hash";
 
     {
         eval {Template::Flute::Iterator::JSON->new(file => "non-existent-file") };
