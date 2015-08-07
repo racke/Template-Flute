@@ -15,7 +15,7 @@ if ($@) {
 
 require Template::Flute::Iterator::JSON;
 
-plan tests => 5;
+plan tests => 6;
 
 my $json = q{[
 {"sku": "orange", "image": "orange.jpg"},
@@ -61,6 +61,27 @@ subtest "Read JSON from file" => sub {
         eval {Template::Flute::Iterator::JSON->new() };
         like $@, qr/Missing JSON file/, "Fails without JSON string, ref or file";
     }
+
+};
+
+subtest "Read UTF8 JSON from file" => sub {
+    plan tests => 5;
+
+    my $json = q{[
+    {"sku": "Größenmaßstäbe", "images": ["mètre.jpg", "el_módulo.png"]},
+    {"sku": "Fußgängerübergänge", "images": ["surépaisseur.jpg", "transición.png"]}
+    ]};
+    my ($json_fh, $json_file) = tempfile;
+    binmode( $json_fh, ":enoding(UTF-8)" );
+    print $json_fh $json, "\n";
+    close $json_fh;
+    my $json_file_iter = Template::Flute::Iterator::JSON->new(file => $json_file);
+    is $json_file_iter->count, 2, "Iterator count is correct";
+    isa_ok $json_file_iter->next, 'HASH', "Next item is a hash";
+    isa_ok $json_file_iter->next, 'HASH', "The following item is also a hash";
+    is $json_file_iter->next, undef, "Iterating past the end gives undef";
+    $json_file_iter->reset;
+    isa_ok $json_file_iter->next, 'HASH', "First item is a hash after reset";
 };
 
 subtest "Selector option" => sub {
