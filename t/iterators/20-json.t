@@ -15,34 +15,30 @@ if ($@) {
 
 require Template::Flute::Iterator::JSON;
 
-plan tests => 9;
+plan tests => 5;
 
-my ($json, $json_iter);
-
-$json = q{[
+my $json = q{[
 {"sku": "orange", "image": "orange.jpg"},
 {"sku": "pomelo", "image": "pomelo.jpg"}
 ]};
 
-# JSON string as is
-$json_iter = Template::Flute::Iterator::JSON->new($json);
+subtest "JSON string as is" => sub {
+    my $json_iter = Template::Flute::Iterator::JSON->new($json);
 
-isa_ok($json_iter, 'Template::Flute::Iterator');
+    isa_ok($json_iter, 'Template::Flute::Iterator');
 
-ok($json_iter->count == 2);
+    ok($json_iter->count == 2);
 
-isa_ok($json_iter->next, 'HASH');
+    isa_ok($json_iter->next, 'HASH');
+};
 
-# JSON string as scalar
-$json_iter = Template::Flute::Iterator::JSON->new(\$json);
+subtest "JSON string as scalar" => sub {
+    my $json_iter = Template::Flute::Iterator::JSON->new(\$json);
+    isa_ok($json_iter, 'Template::Flute::Iterator');
+    ok($json_iter->count == 2);
+    isa_ok($json_iter->next, 'HASH');
+};
 
-isa_ok($json_iter, 'Template::Flute::Iterator');
-
-ok($json_iter->count == 2);
-
-isa_ok($json_iter->next, 'HASH');
-
-# JSON from file
 subtest "Read JSON from file" => sub {
     plan tests => 5;
 
