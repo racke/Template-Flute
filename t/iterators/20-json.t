@@ -72,7 +72,7 @@ subtest "Read UTF8 JSON from file" => sub {
     {"sku": "Fußgängerübergänge", "images": ["surépaisseur.jpg", "transición.png"]}
     ]};
     my ($json_fh, $json_file) = tempfile;
-    binmode( $json_fh, ":enoding(UTF-8)" );
+    binmode( $json_fh, ":encoding(UTF-8)" );
     print $json_fh $json, "\n";
     close $json_fh;
     my $json_file_iter = Template::Flute::Iterator::JSON->new(file => $json_file);
