@@ -11,7 +11,4 @@ unless ( $ENV{RELEASE_TESTING} ) {
 
 try_load_class('Test::CheckManifest', {-version => 0.9})
     or plan skip_all => "Test::CheckManifest 0.9 required";
-# T::CM imports its functions into the caller's scope, hence, in order to
-# use the test functions, we still need to 'use' it.
-use Test::CheckManifest;
-ok_manifest();
+Test::CheckManifest::ok_manifest();
