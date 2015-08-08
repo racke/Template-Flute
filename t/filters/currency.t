@@ -36,7 +36,8 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">USD 30.00</div>%, "Output: $ret");
+ok($ret =~ m%<div class="text">USD 30.00</div>%, "Currency filter without options")
+    || diag "Output: $ret";
 
 # currency filter (options: int_curr_symbol)
 %currency_options = (int_curr_symbol => '$');
@@ -48,7 +49,8 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">\$ 30.00</div>%, "Output: $ret");
+ok($ret =~ m%<div class="text">\$ 30.00</div>%, "Currency filter with currency symbol option")
+    || diag "Output: $ret";
 
 # currency filter (European style of display)
 %currency_options = (int_curr_symbol => 'EUR',
@@ -64,4 +66,5 @@ $flute = Template::Flute->new(specification => $xml,
 
 $ret = $flute->process();
 
-ok($ret =~ m%<div class="text">10.200,00 EUR</div>%, "Output: $ret");
+ok($ret =~ m%<div class="text">10.200,00 EUR</div>%, "Currency filter with European style of display")
+    || diag "Output: $ret";
