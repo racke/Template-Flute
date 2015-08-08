@@ -19,7 +19,11 @@ WriteMakefile(
         'Test::Fatal' => 0,
     },
     PREREQ_PM => {
+	'Config::Any' => 0,
+	'Config::Scoped' => 0,
         'Data::Transpose' => 0.0009,
+	'HTML::Entities' => 0,
+	'JSON' => 0,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
         'HTML::TreeBuilder' => 0,
