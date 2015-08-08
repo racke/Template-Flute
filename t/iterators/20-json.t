@@ -6,12 +6,10 @@ use strict;
 use warnings;
 use Test::More;
 use File::Temp qw(tempfile);
+use Class::Load qw(try_load_class);
 
-eval "use JSON";
-
-if ($@) {
-	plan skip_all => "No JSON module.";
-}
+try_load_class('JSON')
+    or plan skip_all => "No JSON module.";
 
 require Template::Flute::Iterator::JSON;
 

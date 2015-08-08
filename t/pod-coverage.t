@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Class::Load qw(try_load_class);
 
 unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
@@ -8,15 +9,16 @@ unless ( $ENV{RELEASE_TESTING} ) {
 
 # Ensure a recent version of Test::Pod::Coverage
 my $min_tpc = 1.08;
-eval "use Test::Pod::Coverage $min_tpc";
-plan skip_all => "Test::Pod::Coverage $min_tpc required for testing POD coverage"
-    if $@;
+try_load_class('Test::Pod::Coverage', {-version => $min_tpc})
+    or plan skip_all => "Test::Pod::Coverage $min_tpc required for testing POD coverage";
+# T::P::C imports its functions into the caller's scope, hence, in order to
+# use the test functions, we still need to 'use' it.
+use Test::Pod::Coverage;
 
 # Test::Pod::Coverage doesn't require a minimum Pod::Coverage version,
 # but older versions don't recognize some common documentation styles
 my $min_pc = 0.18;
-eval "use Pod::Coverage $min_pc";
-plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
-    if $@;
+try_load_class('Pod::Coverage', {-version => $min_pc})
+    or plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage";
 
 all_pod_coverage_ok({also_private => ['BUILDARGS'],});
