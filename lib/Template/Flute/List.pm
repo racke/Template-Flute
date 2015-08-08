@@ -19,29 +19,29 @@ Creates Template::Flute::List object.
 sub new {
 	my ($class, $sob, $static, $spec, $name) = @_;
 	my ($self, $lf);
-	
+
 	$class = shift;
 	$static ||= [];
-	
+
 	$self = {sob => $sob, static => $static, valid_input => undef};
 
 	if (exists $sob->{iterator}) {
 		$self->{iterator} = {name => $sob->{iterator}};
 	}
     $self->{limit} = $sob->{limit} if defined $sob->{limit};
-	
+
 	bless $self;
-	
+
 	if ($spec && $name) {
 		$self->inputs_add($spec->list_inputs($name));
 		$self->filters_add($spec->list_filters($name));
 		$self->sorts_add($spec->list_sorts($name));
-        
+
         if ($lf = $spec->list_paging($name)) {
             $self->paging_add($lf);
         }
 	}
-	
+
 	return $self;
 }
 
@@ -52,7 +52,7 @@ sub new {
 Add parameters from PARAMS to list.
 
 =cut
-	
+
 sub params_add {
 	my ($self, $params) = @_;
 
@@ -127,7 +127,7 @@ sub sorts_add {
 Add paging from PAGING to list.
 
 =cut
-	
+
 sub paging_add {
 	my ($self, $paging) = @_;
 
@@ -152,14 +152,14 @@ Returns list iterator object when called without ARG.
 Returns list iterator name when called with ARG 'name'.
 
 =cut
-	
+
 sub iterator {
 	my ($self, $arg) = @_;
 
 	if (defined $arg && $arg eq 'name') {
 		return $self->{iterator}->{name};
 	}
-	
+
 	return $self->{iterator}->{object};
 }
 
@@ -171,7 +171,7 @@ Sets list iterator object to ITERATOR.
 
 sub set_iterator {
 	my ($self, $iterator) = @_;
-	
+
 	$self->{iterator}->{object} = $iterator;
 }
 
@@ -192,14 +192,14 @@ sub set_static_class {
 Apply static class for ROW_POS.
 
 =cut
-	
+
 sub static_class {
 	my ($self, $row_pos) = @_;
 	my ($idx);
 
 	if (@{$self->{static}}) {
 		$idx = $row_pos % scalar(@{$self->{static}});
-		
+
 		return $self->{static}->[$idx];
 	}
 }
@@ -254,10 +254,10 @@ sub input {
 	if ((! $params || ! (keys %$params)) && $self->{valid_input} == 1) {
 		return 1;
 	}
-	
+
 	$error_count = 0;
 	$params ||= {};
-	
+
 	for my $input (values %{$self->{inputs}}) {
 		if ($input->{optional} && (! defined $params->{$input->{name}}
 			|| $params->{$input->{name}} !~ /\S/)) {
@@ -294,7 +294,7 @@ sub query {
 	my (%query, $found_table, $found_param, $name, %cols);
 
 	%query = (tables => [], columns => {}, query => []);
-	
+
 	if ($self->{sob}->{table}) {
 		push @{$query{tables}}, $self->{sob}->{table};
 		$found_table = 1;
@@ -307,7 +307,7 @@ sub query {
 		else {
 			$name = $_->{name};
 		}
-		
+
 		push @{$query{columns}->{$self->{sob}->{table}}}, $name;
 		$cols{$name} = 1;
 		$found_param = 1;
@@ -325,7 +325,7 @@ sub query {
 		if ($_->{optional} && ! exists $_->{value}) {
 			next;
 		}
-		
+
 		if (exists $_->{op}) {
 			# specific operator
 			push @{$query{query}}, $name => {$_->{op} => $_->{value}};
@@ -333,7 +333,7 @@ sub query {
 		else {
 			push @{$query{query}}, $name => $_->{value};
 		}
-		
+
 		# qualifiers need to be present in column specification
 		unless (exists $cols{$name}) {
 			push @{$query{columns}->{$self->{sob}->{table}}}, $name;
@@ -349,7 +349,7 @@ sub query {
 			}
 		}
 	}
-	
+
 	# sorting
 	if (exists $self->{sorts}->{default}) {
 		my @sort;
@@ -377,7 +377,7 @@ sub query {
 			$query{limit} = $self->{limits}->{plus} + 1;
 		}
 	}
-	
+
 	if ($found_table && $found_param) {
 		return \%query;
 	}
@@ -401,7 +401,7 @@ sub set_limit {
 Set global filter for list to NAME.
 
 =cut
-	
+
 sub set_filter {
 	my ($self, $name) = @_;
 
@@ -413,15 +413,15 @@ sub set_filter {
 Run row filter on ROW if applicable.
 
 =cut
-	
+
 sub filter {
 	my ($self, $flute, $row) = @_;
 	my ($new_row);
-	
+
 	if ($self->{filters}) {
 		if (ref($self->{filters}) eq 'HASH') {
 			$new_row = $row;
-			
+
 			for my $f (keys %{$self->{filters}}) {
 				$new_row = $flute->filter($f, $new_row);
 				return unless $new_row;
@@ -432,7 +432,7 @@ sub filter {
 
 		return $flute->filter($self->{filters}, $row);
 	}
-	
+
 	return $row;
 }
 

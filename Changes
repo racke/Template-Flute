@@ -494,7 +494,7 @@ Revision history for Template::Flute
 
     [BUG FIXES]
 
-    * Use XML:Twig's parse_html method only for root templates and 
+    * Use XML:Twig's parse_html method only for root templates and
       parse for inner snippets (Grega Pompe, GH #15).
     * Fix parsing method for templates passed as a scalar reference.
     * Prevent warning from uninitialized iterator attribute.
@@ -523,16 +523,16 @@ Revision history for Template::Flute
 
     * Add test for append operation on element text within lists.
 
-0.0065 Thu Sep 12 21:44:47 2013 CEST 
+0.0065 Thu Sep 12 21:44:47 2013 CEST
 
     [BUG FIXES]
 
     * Reset iterator after using it for a dropdown to allow multiple elements sharing the same iterator.
-      
+
     [DOCUMENTATION]
 
-    * Fix wrong specification in first example of the description 
-      (GH #12, Grega Pompe). 
+    * Fix wrong specification in first example of the description
+      (GH #12, Grega Pompe).
 
 0.0064 Fri Aug 16 12:31:54 2013 CEST
 
@@ -586,7 +586,7 @@ Revision history for Template::Flute
     [BUG FIXES]
 
     * Fix json_var filter by using JSON module.
-    
+
 0.0060 Thu Jan 24 14:30:26 2013 CET
 
     [BUG FIXES]
@@ -640,7 +640,7 @@ Revision history for Template::Flute
 0.0040 Wed Jun  6 18:25:28 2012 CEST
 
     [ENHANCEMENTS]
- 
+
     * Add language name filter.
     * Add support for flat trees.
 
@@ -785,14 +785,14 @@ Revision history for Template::Flute
 
     [BUG FIXES]
 
-    * Let HTML templates handled by File::Slurp and the encoding 
+    * Let HTML templates handled by File::Slurp and the encoding
       determined by the specification.
-    * Turn second bless in Template::Flute's constructor into a 
+    * Turn second bless in Template::Flute's constructor into a
       simple return.
 
     [DOCUMENTATION]
 
-    * Add documentation about iterators parameter for Template::Flute's 
+    * Add documentation about iterators parameter for Template::Flute's
       constructor.
 
 0.0008 Tue May 31 21:56:38 2011 CEST
@@ -812,7 +812,7 @@ Revision history for Template::Flute
     * Prevent crashes from parsing empty strings for the hook operator.
     * Prevent warning caused by undefined $value in Template::Flute::HTML's
       set_selected method.
-    * Prevent warning caused by undefined $rep_str in Template::Flute's 
+    * Prevent warning caused by undefined $rep_str in Template::Flute's
       _replace_within_elts method.
 
     [TESTS]
@@ -823,13 +823,13 @@ Revision history for Template::Flute
 
     [API CHANGES]
 
-    * Renamed Template::Flute::Specification method element_by_class 
+    * Renamed Template::Flute::Specification method element_by_class
       to elements_by_class to match the changed return value.
- 
+
     [ENHANCEMENTS]
 
     * Allows two elements like params or values to tie to the same class.
-    * Enable passing specification and/or template as string to the 
+    * Enable passing specification and/or template as string to the
       Template::Flute constructor.
     * Add support for field attribute to value element.
 
@@ -882,7 +882,7 @@ Revision history for Template::Flute
 0.0003  Tue Mar 29 15:52:11 2011 CEST
 
     [ENHANCEMENTS]
-    
+
     * Add auto_iterators parameter to Template::Flute class.
     * Add seed method to Template::Flute::Iterator class.
     * Add hook operation to value elements.
@@ -899,8 +899,8 @@ Revision history for Template::Flute
 0.0002  Mon Mar 14 08:39:23 2011 CET
 
     [BUG FIXES]
-	
-	* Add missing modules Template::Flute::Utils and 
+
+	* Add missing modules Template::Flute::Utils and
       Template::Flute::Container to MANIFEST.
 
 0.0001  Sun Mar 13 15:40:50 2011 CET

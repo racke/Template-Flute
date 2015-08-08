@@ -58,9 +58,9 @@ for my $t (@tests) {
                                   );
 
     #isa_ok($tf, 'Template::Flute');
-    
+
     my $out = $tf->process;
-    
+
     ok ($out =~ /$t->{match}/)
         || diag "Out: $out.";
 }

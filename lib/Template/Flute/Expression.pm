@@ -55,7 +55,7 @@ Evaluates to value C<foo> or reverse of value C<bar>.
 Evaluates to value C<foo> and reverse of value C<bar>.
 
 =back
-    
+
 =cut
 
 use Parse::RecDescent;
@@ -90,7 +90,7 @@ expression : andor | dottedvar | notdottedvar | var | notvar
 
 =head1 METHODS
 
-=head2 evaluate 
+=head2 evaluate
 
     $expr->evaluate({foo => 'bar'});
 
@@ -102,7 +102,7 @@ and returns the result.
 sub evaluate {
     my ($self, $value_ref) = @_;
     my ($tree);
-    
+
     $self->{values} = $value_ref;
     $tree = $self->_build();
     $self->_walk($tree);
@@ -182,8 +182,8 @@ sub _value {
     if (! ref($values_ref)) {
         $values_ref = $self->{values};
     }
-    
-    if (exists($values_ref->{$name}) 
+
+    if (exists($values_ref->{$name})
 	&& defined($values_ref->{$name})
 	&& $values_ref->{$name} =~ /\S/) {
 	$value = $values_ref->{$name};

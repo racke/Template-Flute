@@ -51,15 +51,15 @@ for my $spec (@test_specs) {
     if ($spec->{count} % $spec->{page_size}) {
         $expected++;
     }
-    
-    ok($count == $expected, 
+
+    ok($count == $expected,
        "Page count with $spec->{count} items and $spec->{page_size} per page.")
         || diag "Page count $count instead of $expected.";
-    
+
     $count = count_exhausted($iter);
     $expected = $spec->{page_size};
 
-    ok($count == $expected, 
+    ok($count == $expected,
        "Exhausted count with $spec->{count} items and $spec->{page_size} per page.")
         || diag "Exhausted count $count instead of $expected.";
 }
@@ -68,7 +68,7 @@ for my $spec (@test_specs) {
 sub generate_iterator {
     my $count = shift;
     my @arr;
-    
+
     for (1 .. $count) {
         push @arr, {value => $_};
     }
@@ -80,7 +80,7 @@ sub generate_iterator {
 sub count_exhausted {
     my $iter = shift;
     my $count = 0;
-    
+
     while ($iter->next) {
         $count++;
     }

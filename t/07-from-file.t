@@ -12,7 +12,7 @@ use Template::Flute;
 
 my ($xml, $html, $flute, $spec, $template, $output);
 
-$flute = Template::Flute->new(specification_file => dirname(__FILE__) . '/files/test.xml', 
+$flute = Template::Flute->new(specification_file => dirname(__FILE__) . '/files/test.xml',
 							  template_file => dirname(__FILE__) . '/files/test.html',
 							  values => {email => 'racke@linuxia.de'});
 $flute->process();

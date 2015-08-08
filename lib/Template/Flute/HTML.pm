@@ -46,7 +46,7 @@ sub new {
 
 	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
 			 params => {}, values => {}, query => {}, file => undef};
-	
+
 	bless $self;
 }
 
@@ -255,9 +255,9 @@ sub translate {
                        textarea => 1,
                       );
         next if $exclude{$parent_gi};
-        
+
 		$parent_i18n = $elt->parent->att('i18n-key');
-		
+
 		if ($parent_i18n) {
 			$i18n_ret = $i18n->localize($parent_i18n);
 		}
@@ -322,7 +322,7 @@ Returns name of template file.
 
 sub file {
 	my $self = shift;
-	
+
 	return $self->{file};
 }
 
@@ -336,7 +336,7 @@ of a L<Template::Flute::Specification> object SPECOBJECT.
 sub parse {
 	my ($self, $template, $spec_object, $snippet) = @_;
 	my ($object);
-	
+
 	if (ref($template) eq 'SCALAR') {
 		$object = $self->_parse_template($template, $spec_object, $snippet);
 	}
@@ -353,7 +353,7 @@ Parses HTML template from file FILENAME with the help
 of a L<Template::Flute::Specification> object SPECOBJECT.
 
 =cut
-	
+
 sub parse_file {
 	my ($self, $template_file, $spec_object, $snippet) = @_;
 
@@ -365,13 +365,13 @@ sub _parse_template {
 	my ($twig, %twig_args, $xml, $object, $list, $html_content, $encoding);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
-		
+
 	%twig_args = (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
 
 	if ($XML::Twig::VERSION > 3.39) {
 	    $twig_args{output_html_doctype} = 1;
 	}
-	
+
 	$twig = new XML::Twig (%twig_args);
 
 	if (ref($template) eq 'SCALAR') {
@@ -399,7 +399,7 @@ sub _parse_template {
         }
 		die "Invalid HTML template: $html_content: $@ $failure\n";
 	}
-	
+
         _fix_script_tags($xml);
 
 	$self->{xml} = $object->{xml} = $xml;
@@ -445,7 +445,7 @@ sub _parse_handler {
     }
 	# don't act on elements without class, id or name attribute
 	return unless $class_names || $id || $elt_name;
-	
+
 	# weed out "static" classes
 	if ($class_names) {
 		for my $class (split(/\s+/, $class_names)) {
@@ -457,7 +457,7 @@ sub _parse_handler {
 			}
 		}
 	}
-	
+
 	if ($id) {
         $sob_ref = $spec_object->elements_by_id($id);
         for my $sob (@$sob_ref) {
@@ -468,13 +468,13 @@ sub _parse_handler {
 
 	if ($elt_name) {
 	    $sob_ref = $spec_object->elements_by_name($elt_name);
-	
+
 	    for my $sob (@$sob_ref) {
 		$name = $sob->{name} || $elt_name;
 		$self->_elt_handler($sob, $elt, $gi, $spec_object, $name);
 	    }
 	}
-	
+
 	for my $class (@classes) {
 		$sob_ref = $spec_object->elements_by_class($class);
 		for my $sob (@$sob_ref) {
@@ -500,14 +500,14 @@ sub _elt_handler {
 
 	    return $self;
 	}
-	
+
 	if ($sob->{type} eq 'list') {
 		my $iter;
-		
+
 		if (exists $self->{lists}->{$name}) {
 		    # record static classes
 		    my ($list, $first_static, $first_classes);
-		    
+
 		    $list = $self->{lists}->{$name};
 
 		    if ($first_static = $list->static_class(0)) {
@@ -518,18 +518,18 @@ sub _elt_handler {
 		    }
 
 		    $list->set_static_class(@$static_classes);
-				
+
 		    # discard repeated lists
 		    $elt->cut();
 		    return;
 		}
-			
+
 		$sob->{elts} = [$elt];
 
 		# weed out parameters which aren't descendants of list element
 		for my $p (@{$self->{params}->{$name}->{array}}) {
 			my @p_new;
-			
+
 			for my $p_elt (@{$p->{elts}}) {
 				for my $a ($p_elt->ancestors()) {
 					if ($a eq $elt) {
@@ -541,13 +541,13 @@ sub _elt_handler {
 
 			$p->{elts} = \@p_new;
 		}
-		
+
 		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
         $self->{lists}->{$name}->paging_add($self->{paging}->{$name});
 		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
 		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
-			
+
 		if (exists $sob->{iterator}) {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
 				$self->{lists}->{$name}->set_iterator($iter);
@@ -557,7 +557,7 @@ sub _elt_handler {
 		if (exists $sob->{filter}) {
 			$self->{lists}->{$name}->set_filter($sob->{filter});
 		}
-		
+
 		return $self;
 	}
 
@@ -591,7 +591,7 @@ sub _elt_handler {
 		    $self->{paging}->{$sob->{list}} = $sob;
         }
     }
-    
+
 	if ($sob->{type} eq 'form') {
         # only HTML <form> elements can be tied to 'form'
         return $self if $elt->tag ne 'form';
@@ -602,12 +602,12 @@ sub _elt_handler {
 
 		$self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
 		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
-			
+
 		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
-			
+
 		return $self;
 	}
-	
+
 	if ($sob->{type} eq 'param') {
 		push (@{$sob->{elts}}, $elt);
 
@@ -616,7 +616,7 @@ sub _elt_handler {
 		if ($sob->{increment}) {
 			# create increment object and record it for increment updates
 			my $inc = new Template::Flute::Increment (increment => $sob->{increment});
-			
+
 			$sob->{increment} = $inc;
 			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
 		}
@@ -631,12 +631,12 @@ sub _elt_handler {
 		push (@{$sob->{elts}}, $elt);
 
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-		
+
 		$self->{values}->{$name} = $sob;
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';
-        
+
 		# match for form field found in HTML
 		push (@{$sob->{elts}}, $elt);
 
@@ -668,7 +668,7 @@ sub _elt_handler {
 sub _elt_indicate_replacements {
 	my ($self, $sob, $elt, $gi, $name, $spec_object) = @_;
 	my ($elt_text, $att_orig);
-    
+
 	if (exists $sob->{op}) {
 		if ($sob->{op} eq 'hook') {
 			$elt->{"flute_$name"}->{rep_sub} = \&hook_html;
@@ -700,7 +700,7 @@ sub _elt_indicate_replacements {
             };
         }
 	}
-	
+
 	if ($sob->{target}) {
 		if (exists $sob->{op}) {
 			if ($sob->{op} eq 'append') {
@@ -715,7 +715,7 @@ sub _elt_indicate_replacements {
 				}
 			}
 		}
-			
+
 		$elt->{"flute_$name"}->{rep_att} = $sob->{target};
 	} elsif ($gi eq 'img') {
 		# replace src attribute instead of text
@@ -724,7 +724,7 @@ sub _elt_indicate_replacements {
 		my $type = $elt->att('type');
 		# replace value attribute instead of text
 		$elt->{"flute_$name"}->{rep_att} = 'value';
-			
+
 	} elsif ($gi eq 'select') {
 		if ($sob->{iterator}) {
 			$elt->{"flute_$name"}->{rep_sub} = sub {
@@ -752,7 +752,7 @@ sub _set_selected {
 	my (@children, $eltval, $optref, $cond);
 
 	@children = $elt->children('option');
-	
+
 	if ($iter) {
 		# remove existing children
 		if (exists $sob->{keep} && $sob->{keep} eq 'empty_value') {
@@ -761,7 +761,7 @@ sub _set_selected {
 		else {
 			$cond = '';
 		}
-		
+
 		$elt->cut_children($cond);
 
 		if (! $value) {
@@ -781,7 +781,7 @@ sub _set_selected {
             $label_k = $sob->{iterator_name_key};
         }
 
-		# get options from iterator		
+		# get options from iterator
 		$iter->reset();
 		while ($optref = $iter->next()) {
 
@@ -823,7 +823,7 @@ sub _set_selected {
                 $record_value eq $value) {
                 $att{selected} = 'selected';
             }
-			
+
 			$elt->insert_new_elt('last_child', 'option',
 									 \%att, $text);
 		}
@@ -838,7 +838,7 @@ sub _set_selected {
 			unless (length($eltval)) {
 				$eltval = $node->text();
 			}
-		
+
 			if ($eltval eq $value) {
 				$node->set_att('selected', 'selected');
 			}
@@ -855,7 +855,7 @@ Parse HTML provided by VALUE and replace any children of ELT
 with the result.
 
 =cut
-	
+
 sub hook_html {
 	my ($elt, $value) = @_;
 	my ($parser, $html, $body, @children, @ret, $elt_hook);
@@ -864,7 +864,7 @@ sub hook_html {
         $elt->cut_children;
 		return '';
 	}
-	
+
 	$parser = new XML::Twig ();
 	unless ($html = $parser->safe_parse_html($value)) {
         my $failure = '';
@@ -897,7 +897,7 @@ sub hook_html {
 	for my $elt_hook (@children) {
 		$elt_hook->paste(last_child => $elt);
 	}
-	
+
 	return;
 }
 

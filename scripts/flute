@@ -74,7 +74,7 @@ be repeated (for different names).
 
 =item --check
 
-Report template/specification inconsistencies. 
+Report template/specification inconsistencies.
 
 =back
 
@@ -116,7 +116,7 @@ if ($opts{combine}) {
 
 	require Template::Flute::PDF;
 	require Template::Flute::PDF::Import;
-		
+
 	# combine PDF's from commandline
 	my ($pdf, $import);
 
@@ -152,7 +152,7 @@ if ($opts{iterator}) {
 	if ($opts{iterator} =~ s%^(\w+)=%%) {
 		$name = $1;
 	}
-	
+
 	if ($opts{iterator} =~ m%^(.*?/)*(.+)\.json$%) {
 		# JSON iterator
 		unless (defined $name) {
@@ -180,7 +180,7 @@ if ($opts{pdf}) {
 	require Template::Flute::PDF;
 
 	$flute->process();
-	
+
 	my $pdf = Template::Flute::PDF->new(
                                         template => $flute->template,
                                         file => $opts{pdf},

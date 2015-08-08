@@ -45,11 +45,11 @@ as array or array reference.
 sub new {
 	my ($proto, @args) = @_;
 	my ($class, $self);
-	
+
 	$class = ref($proto) || $proto;
 
 	$self = {};
-	
+
 	bless $self, $class;
 
 	$self->seed(@args);
@@ -72,7 +72,7 @@ sub next {
 	if ($self->{INDEX} <= $self->{COUNT}) {
 		return $self->{DATA}->[$self->{INDEX}++];
 	}
-	
+
 	return;
 };
 
@@ -81,7 +81,7 @@ sub next {
 Returns number of elements.
 
 =cut
-	
+
 sub count {
 	my ($self) = @_;
 
@@ -144,7 +144,7 @@ Whether results should be unique (optional).
 =back
 
 =cut
-    
+
 sub sort {
     my ($self, $sort, $unique) = @_;
     my (@data, @tmp);

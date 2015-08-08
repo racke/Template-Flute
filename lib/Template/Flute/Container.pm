@@ -24,13 +24,13 @@ our %expression_cache;
 sub new {
 	my ($class, $sob, $spec, $name) = @_;
 	my ($self);
-	
+
 	$class = shift;
-	
+
 	$self = {sob => $sob};
 
 	bless $self;
-	
+
 	return $self;
 }
 
@@ -63,7 +63,7 @@ sub list {
 Passes current values to this container.
 
 =cut
-	
+
 sub set_values {
 	my ($self, $values) = @_;
 
@@ -88,18 +88,18 @@ Determines whether the container is visible. Possible return values are 1 (visib
 0 (hidden) or undef if the specification for the container misses a value attribute.
 
 =cut
-	
+
 # visible
 sub visible {
 	my ($self) = @_;
 	my ($key, $ret);
-	
+
 	if ($key = $self->{sob}->{value}) {
 	    # check whether this is an expression or a simple value
 	    if ($key =~ /^\w[0-9\w_-]*$/) {
             # value holds method
             return $self->{values}->$key
-                if $self->_is_record_object($self->{values}) && $self->{values}->can($key); 
+                if $self->_is_record_object($self->{values}) && $self->{values}->can($key);
     		if (exists $self->{values}) {
     			if ($self->{values}->{$key}) {
     				return 1;
@@ -147,5 +147,5 @@ by the Free Software Foundation; or the Artistic License.
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
-	
+
 1;

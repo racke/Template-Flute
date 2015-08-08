@@ -94,7 +94,7 @@ Set or get the encoding of the HTML template
 which is parsed according to this specification.
 
 =cut
-	
+
 sub encoding {
 	my $self = shift;
 
@@ -150,7 +150,7 @@ sub container_add {
 Add list specified by hash reference LIST.
 
 =cut
-	
+
 sub list_add {
 	my ($self, $new_listref) = @_;
 	my ($listref, $list_name, $class);
@@ -220,7 +220,7 @@ sub list_add {
 		$class = $paging->{class} || $paging->{name};
 		$self->{classes}->{$class} = [{%{$paging}, type => 'paging', list => $list_name}];
 	}
-	
+
 	return $listref;
 }
 
@@ -241,7 +241,7 @@ sub paging_add {
         $class = $element->{class} || $element->{name};
         push @{$self->{classes}->{$class}}, {%{$element}, element_type => $element->{type}, type => 'element', list => $new_pagingref->{paging}->{list}, paging => $name};
     }
-    
+
 	$class = $new_pagingref->{paging}->{class} || $name;
 
 	push @{$self->{classes}->{$class}}, {%{$new_pagingref->{paging}}, type => 'paging'};
@@ -254,20 +254,20 @@ sub paging_add {
 Add form specified by hash reference FORM.
 
 =cut
-	
+
 sub form_add {
 	my ($self, $new_formref) = @_;
 	my ($formref, $form_name, $form_link, $form_loc, $field_loc, $id, $class);
 
 	$form_name = $new_formref->{form}->{name};
 	$form_link = $new_formref->{form}->{link} || '';
-	
+
 	$formref = $self->{forms}->{$new_formref->{form}->{name}} = {input => {}};
 
 	my @checks = qw/id class/;
 
 	$form_loc = {%{$new_formref->{form}}, type => 'form'};
-	
+
 	if ($id = $new_formref->{form}->{id}) {
 	    $self->{ids}->{$id} = [$form_loc];
 	}
@@ -281,20 +281,20 @@ sub form_add {
 	}
 	else {
 	    $class = $form_name;
-	    
+
 	    $self->{classes}->{$class} = [$form_loc];
 	}
-	
+
 	# loop through inputs for this form
 	for my $input (@{$new_formref->{input}}) {
 		$formref->{input}->{$input->{name}} = $input;
 	}
-	
+
 	# loop through params for this form
 	for my $param (@{$new_formref->{param}}) {
 		$class = $param->{class} || $param->{name};
 
-		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', form => $form_name};	
+		push @{$self->{classes}->{$class}}, {%{$param}, type => 'param', form => $form_name};
 	}
 
 	# loop through fields for this form
@@ -314,7 +314,7 @@ sub form_add {
 		push @{$self->{classes}->{$field->{name}}}, $field_loc;
 	    }
 	}
-	
+
 	return $formref;
 }
 
@@ -323,7 +323,7 @@ sub form_add {
 Add value specified by hash reference VALUE.
 
 =cut
-	
+
 sub value_add {
 	my ($self, $new_valueref) = @_;
 	my ($valueref, $value_name, $id, $class);
@@ -344,7 +344,7 @@ sub value_add {
     }
 
 	$valueref = $self->{values}->{$new_valueref->{value}->{name}} = {};
-	
+
 	if ($id = $new_valueref->{value}->{id}) {
 		push @{$self->{ids}->{$id}}, {%{$new_valueref->{value}}, type => 'value'};
 	}
@@ -355,23 +355,23 @@ sub value_add {
 	}
 
 	return $valueref;
-}	
+}
 
 =head2 i18n_add I18N
 
 Add i18n specified by hash reference I18N.
 
 =cut
-	
+
 sub i18n_add {
 	my ($self, $new_i18nref) = @_;
 	my ($i18nref, $i18n_name, $id, $class);
 
 	$i18n_name = $new_i18nref->{value}->{name}
 	  || $new_i18nref->{value}->{class};
-	
+
 	$i18nref = $self->{i18n}->{$i18n_name} = {};
-	
+
 	if ($id = $new_i18nref->{value}->{id}) {
 		push @{$self->{ids}->{$id}}, {%{$new_i18nref->{value}}, type => 'i18n'};
 	}
@@ -380,7 +380,7 @@ sub i18n_add {
 
 		push @{$self->{classes}->{$class}}, {%{$new_i18nref->{value}}, type => 'i18n'};
 	}
-	
+
 	return $i18nref;
 }
 
@@ -430,7 +430,7 @@ sub list_iterator {
 Returns inputs for list named NAME or undef.
 
 =cut
-	
+
 sub list_inputs {
 	my ($self, $list_name) = @_;
 
@@ -512,7 +512,7 @@ sub set_iterator {
 	if ($iter_ref eq 'ARRAY') {
 		$iter = new Template::Flute::Iterator($iter);
 	}
-	
+
 	$self->{iters}->{$name} = $iter;
 }
 
@@ -598,7 +598,7 @@ sub elements_by_id {
 Returns paging for list NAME.
 
 =cut
-	
+
 sub list_paging {
 	my ($self, $list_name) = @_;
     my ($name, $paging_ref);
@@ -609,7 +609,7 @@ sub list_paging {
                 return $paging_ref;
             }
         }
-	}	
+	}
 }
 
 =head2 dangling
@@ -710,5 +710,5 @@ by the Free Software Foundation; or the Artistic License.
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
-	
+
 1;
