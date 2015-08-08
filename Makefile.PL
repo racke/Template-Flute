@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.48;
 
 WriteMakefile(
     NAME                => 'Template::Flute',
@@ -11,6 +11,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    MIN_PERL_VERSION => '5.8.0',
     BUILD_REQUIRES => {
 	'Class::Load' => 0,
 	'Test::CheckManifest' => 0,
