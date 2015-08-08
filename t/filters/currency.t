@@ -8,12 +8,10 @@ use warnings;
 use POSIX;
 use Test::More;
 use Template::Flute;
+use Class::Load qw(try_load_class);
 
-eval "use Number::Format";
-
-if ($@) {
-    plan skip_all => "Missing Number::Format module.";
-}
+try_load_class('Number::Format')
+    or plan skip_all => "Missing Number::Format module.";
 
 plan tests => 3;
 

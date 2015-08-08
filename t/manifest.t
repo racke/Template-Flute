@@ -3,11 +3,15 @@
 use strict;
 use warnings;
 use Test::More;
+use Class::Load qw(try_load_class);
 
 unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
 }
 
-eval "use Test::CheckManifest 0.9";
-plan skip_all => "Test::CheckManifest 0.9 required" if $@;
+try_load_class('Test::CheckManifest', {-version => 0.9})
+    or plan skip_all => "Test::CheckManifest 0.9 required";
+# T::CM imports its functions into the caller's scope, hence, in order to
+# use the test functions, we still need to 'use' it.
+use Test::CheckManifest;
 ok_manifest();

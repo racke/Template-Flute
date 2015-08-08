@@ -5,6 +5,7 @@ use warnings;
 use Template::Flute;
 use Test::More tests => 5;
 use Data::Dumper;
+use Class::Load qw(try_load_class);
 
 my ($spec, $html, $flute, $out, $expected);
 
@@ -198,11 +199,8 @@ $expected =~ s/\n//g;
 like $out, qr/\Q$expected\E/, "Params as expected" or diag $out;
 
 subtest 'currency_filter' => sub {
-    eval "use Number::Format";
-
-    if ($@) {
-        plan skip_all => "Missing Number::Format module.";
-    }
+    try_load_class('Number::Format')
+        or plan skip_all => "Missing Number::Format module.";
 
     $spec =<<'SPEC';
 <specification>
