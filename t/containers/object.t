@@ -3,6 +3,9 @@
 # Test for containers with object method values.
 package Price;
 
+use strict;
+use warnings;
+
 sub new {
     my $class = shift;
     my $id    = shift;
