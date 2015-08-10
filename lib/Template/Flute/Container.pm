@@ -25,8 +25,6 @@ sub new {
 	my ($class, $sob, $spec, $name) = @_;
 	my ($self);
 	
-	$class = shift;
-	
 	$self = {sob => $sob};
 
 	bless $self;

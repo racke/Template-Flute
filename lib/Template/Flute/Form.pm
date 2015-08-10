@@ -20,7 +20,6 @@ sub new {
 	my ($class, $sob, $static) = @_;
 	my ($self);
 	
-	$class = shift;
 	$self = {sob => $sob, static => $static, valid_input => undef};
 
     # retrieve values for action and method attributes
