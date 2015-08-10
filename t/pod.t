@@ -13,8 +13,5 @@ unless ( $ENV{RELEASE_TESTING} ) {
 my $min_tp = 1.22;
 try_load_class('Test::Pod', {-version => $min_tp})
     or plan skip_all => "Test::Pod $min_tp required for testing POD";
-# T::P imports its functions into the caller's scope, hence, in order to
-# use the test functions, we still need to 'use' it.
-use Test::Pod;
 
-all_pod_files_ok();
+Test::Pod::all_pod_files_ok();

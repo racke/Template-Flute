@@ -11,9 +11,6 @@ unless ( $ENV{RELEASE_TESTING} ) {
 my $min_tpc = 1.08;
 try_load_class('Test::Pod::Coverage', {-version => $min_tpc})
     or plan skip_all => "Test::Pod::Coverage $min_tpc required for testing POD coverage";
-# T::P::C imports its functions into the caller's scope, hence, in order to
-# use the test functions, we still need to 'use' it.
-use Test::Pod::Coverage;
 
 # Test::Pod::Coverage doesn't require a minimum Pod::Coverage version,
 # but older versions don't recognize some common documentation styles
@@ -21,4 +18,4 @@ my $min_pc = 0.18;
 try_load_class('Pod::Coverage', {-version => $min_pc})
     or plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage";
 
-all_pod_coverage_ok({also_private => ['BUILDARGS'],});
+Test::Pod::Coverage::all_pod_coverage_ok({also_private => ['BUILDARGS'],});
