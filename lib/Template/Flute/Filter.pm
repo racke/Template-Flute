@@ -36,7 +36,7 @@ sub init {
 
 =head2 filter
 
-No-op filter, supposed to be overriden in subclass.
+No-op filter, supposed to be overridden in subclass.
 
 =cut
 

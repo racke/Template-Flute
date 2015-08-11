@@ -17,7 +17,7 @@ Template::Flute::Filter::Date - Date filter
 
 Date filter based on L<DateTime>.
 
-=head1 PREREQUSITES
+=head1 PREREQUISITES
 
 L<DateTime> and L<DateTime::Format::ISO8601> modules.
 
