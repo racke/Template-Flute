@@ -36,7 +36,7 @@ sub new {
 	%params = @_;
 
 	$self = \%params;
-	bless $self;
+	bless $self, $class;
 }
 
 =head1 METHODS

@@ -41,7 +41,7 @@ sub new {
         $self->{method} = 'GET';
     }
 
-	bless $self;
+	bless $self, $class;
 }
 
 =head1 METHODS

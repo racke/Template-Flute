@@ -29,7 +29,7 @@ sub new {
 	}
     $self->{limit} = $sob->{limit} if defined $sob->{limit};
 	
-	bless $self;
+	bless $self, $class;
 	
 	if ($spec && $name) {
 		$self->inputs_add($spec->list_inputs($name));

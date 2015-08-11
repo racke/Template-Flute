@@ -47,7 +47,7 @@ sub new {
 	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
 			 params => {}, values => {}, query => {}, file => undef};
 	
-	bless $self;
+	bless $self, $class;
 }
 
 =head1 METHODS
