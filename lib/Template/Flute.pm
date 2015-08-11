@@ -1429,11 +1429,9 @@ sub value {
 	}
 	elsif (exists $value->{field}) {
         if (ref($value->{field}) eq 'ARRAY') {
-            my $lookup;
-
             $raw_value = $ref_value;
 
-            for $lookup (@{$value->{field}}) {
+            for my $lookup (@{$value->{field}}) {
                 if (ref($raw_value)) {
                     if ($self->_is_record_object($raw_value)) {
                         $raw_value = $raw_value->$lookup;
