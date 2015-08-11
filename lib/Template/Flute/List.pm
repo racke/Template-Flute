@@ -20,7 +20,6 @@ sub new {
 	my ($class, $sob, $static, $spec, $name) = @_;
 	my ($self, $lf);
 	
-	$class = shift;
 	$static ||= [];
 	
 	$self = {sob => $sob, static => $static, valid_input => undef};
