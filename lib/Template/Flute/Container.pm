@@ -27,7 +27,7 @@ sub new {
 	
 	$self = {sob => $sob};
 
-	bless $self;
+	bless $self, $class;
 	
 	return $self;
 }

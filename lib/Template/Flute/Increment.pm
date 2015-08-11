@@ -55,7 +55,7 @@ sub new {
 		$self->{increment} = 1;
 	}
 	
-	bless $self;
+	bless $self, $class;
 
 	return $self;
 }

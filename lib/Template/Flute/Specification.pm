@@ -55,7 +55,7 @@ sub new {
     # named patterns
     $self->{patterns} = {};
 
-	bless $self;
+	bless $self, $class;
 }
 
 sub _ids {
