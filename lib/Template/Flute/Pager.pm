@@ -12,23 +12,23 @@ Template::Flute::Pager - Data::Page class for Template::Flute
 
 =head1 SYNOPSIS
 
-    $paginator = Template::Flute::Paginator->new;
+    $pager = Template::Flute::Pager->new;
 
     # set page size
-    $paginator->page_size(10);
+    $pager->page_size(10);
 
     # retrieve number of pages
-    $paginator->pages;
+    $pager->pages;
 
-    # retrieve current page (starting with 1)
-    $paginator->current_page;
+    # retrieve current page (numering starts at 1)
+    $pager->current_page;
 
     # retrieve global position numbers for current page
-    $paginator->position_first;
-    $paginator->position_last;
+    $pager->position_first;
+    $pager->position_last;
 
-    # select a page (starting with 1)
-    $paginator->select_page;
+    # select a page (numbering starts at 1)
+    $pager->select_page(5);
 
 =head1 ATTRIBUTES
 
