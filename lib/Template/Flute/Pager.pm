@@ -112,7 +112,7 @@ sub current_page {
 
 =head2 select_page {
 
-Select page, starting from 1.
+Select page.  Page numbering starts at 1.
 
 =cut
 
@@ -125,6 +125,8 @@ sub select_page {
 
 =head2 position_first
 
+Returns global position number of first item on current page.
+
 =cut
 
 sub position_first {
@@ -134,6 +136,8 @@ sub position_first {
 }
 
 =head2 position_last
+
+Returns global position number of last item on current page.
 
 =cut
 
