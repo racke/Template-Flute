@@ -24,7 +24,7 @@ subtest "Initialisation with a cart of items" => sub {
         },
     ];
 
-    my $iter = new Template::Flute::Iterator($cart);
+    my $iter = Template::Flute::Iterator->new($cart);
     isa_ok($iter, 'Template::Flute::Iterator');
 
     ok($iter->count == 2);
@@ -35,7 +35,7 @@ subtest "Initialisation with a cart of items" => sub {
 subtest "Initialisation with a seed item" => sub {
     plan tests => 1;
 
-    my $iter = new Template::Flute::Iterator;
+    my $iter = Template::Flute::Iterator->new;
     $iter->seed(
         {
             isbn => '978-0-9779201-5-0',
