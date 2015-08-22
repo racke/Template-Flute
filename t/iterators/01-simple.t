@@ -27,9 +27,9 @@ subtest "Initialisation with a cart of items" => sub {
     my $iter = Template::Flute::Iterator->new($cart);
     isa_ok($iter, 'Template::Flute::Iterator');
 
-    ok($iter->count == 2);
+    ok($iter->count == 2, "Item count is correct");
 
-    isa_ok($iter->next, 'HASH');
+    isa_ok($iter->next, 'HASH', "Next item is a hash reference");
 };
 
 subtest "Initialisation with a seed item" => sub {
@@ -44,7 +44,7 @@ subtest "Initialisation with a seed item" => sub {
         }
     );
 
-    ok($iter->count == 1);
+    ok($iter->count == 1, "Item count is correct");
 };
 
 subtest "Sort an iterator" => sub {
