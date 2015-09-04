@@ -354,24 +354,6 @@ sub fill {
 	}
 }
 
-=head2 finalize ELT
-
-Finalizes form.
-
-=cut
-
-sub finalize {
-	my ($self, $elt) = @_;
-
-	for (qw/action method/) {
-		if (exists $self->{$_} && $self->{$_}) {
-			$elt->set_att($_, $self->{$_});
-		}
-	}
-
-	return;
-}
-
 =head2 query
 
 Returns Perl structure for database query based on
