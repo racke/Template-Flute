@@ -1,5 +1,46 @@
 Revision history for Template::Flute
 
+0.0190
+
+    [CLEANUP]
+
+    * Replace MooX::Types::MooseLike with Type::Tiny
+      (Stefan Hornburg, GH #136).
+    * Remove Flute::Form->finalize (Paul Cochrane, GH #134).
+    * Localise loop variable's scope to the loop's scope
+      (Paul Cochrane, GH #128).
+    * Use two argument form of bless (Paul Cochrane, GH #127).
+    * Remove superfluous arg shift onto $class variable
+      (Paul Cochrane, GH #126).
+    * Convert plain 'utf8' to 'encoding(utf-8)' (Paul Cochrane, GH #122).
+    * Use Class::Load instead of eval { use Class::Name }
+      (Paul Cochrane, GH #120).
+    * Add missing email address to copyright statements (Paul Cochrane).
+    * Update copyright year to 2015 (Paul Cochrane).
+    * Add missing strictures to Template::Flute::Filter::JsonVar
+      (Paul Cochrane, GH #114).
+    * Fix typo and remove superfluous trailing whitespace from
+      Template::Flute (Paul Cochrane, GH #110).
+    * Add installation instructions (Paul Cochrane, GH #109).
+
+    [DOCUMENTATION]
+
+    * Fix Pager class docs (Paul Cochrane, GH #132).
+    * Fix two typos in module POD (Paul Cochrane, GH #129).
+
+    [TESTS]
+
+    * Add diagnosis to form name test in case of failure (Stefan Hornburg).
+    * Add more iterator tests (Paul Cochrane, GH #116, #133).
+    * Add strict and warnings where missing in tests (Paul Cochrane, GH #125).
+    * Use Travis containers when running CI jobs (Paul Cochrane, GH #124).
+    * Use full package name for test functions not imported into test script
+      (Paul Cochrane, GH #123).
+    * Use diag in currency filter tests (Stefan Hornburg).
+    * Check utf8 JSON input in Iterator::JSON (Paul Cochrane, GH #118, #119).
+    * Check $flute->process call in "Hello world" test for an exception
+      (Stefan Hornburg).
+
 0.0184 Thu Jul 16 09:33:23 2015 CEST
 
     [BUG FIXES]
