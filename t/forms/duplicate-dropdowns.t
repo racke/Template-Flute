@@ -62,7 +62,7 @@ ok scalar(@forms), "Found forms";
 foreach my $f ($flute->template->forms) {
     # this is what basically the TemplateFlute does.
     $f->fill({role => 1});
-    foreach my $elt (@{$f->{sob}->{elts}})  {
+    foreach my $elt (@{$f->elts})  {
         like $elt->sprint, qr{\Q$expected\E}, "form before processing looks good";
     }
 }
@@ -72,7 +72,7 @@ like $flute->process, qr{\Q$expected\E}, "form in the output looks good";
 
 
 foreach my $f ($flute->template->forms) {
-    foreach my $elt (@{$f->{sob}->{elts}})  {
+    foreach my $elt (@{$f->elts})  {
         like $elt->sprint, qr{\Q$expected\E}, "form after processing looks good";
     }
 }
