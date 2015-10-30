@@ -1,10 +1,9 @@
 package Template::Flute::List;
 
+use Sub::Quote;
 use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Int Str/;
-
-use strict;
-use warnings;
+use namespace::clean;
 
 with 'Template::Flute::Role::Elements';
 
@@ -66,6 +65,7 @@ has limit => (
     is => 'ro',
     isa => Int,
     default => 0,
+    coerce => quote_sub(q{ defined $_[0] ? $_[0] : 0 }),
 );
 
 =head2 static
@@ -87,14 +87,6 @@ has static => (
 Creates Template::Flute::List object.
 
 =cut
-
-sub BUILDARGS {
-    my ( $class, @args ) = @_;
-    my $params = { @args };
-
-    delete $params->{limit} if ! defined $params->{limit};
-    return $params; 
-}
 
 # # Constructor
 # sub new {
