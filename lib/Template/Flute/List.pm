@@ -1,7 +1,7 @@
 package Template::Flute::List;
 
 use Moo;
-use Types::Standard qw/ArrayRef Int/;
+use Types::Standard qw/ArrayRef InstanceOf Int Str/;
 
 use strict;
 use warnings;
@@ -22,6 +22,8 @@ Name of the list.
 
 has name => (
     is => 'ro',
+    isa => Str,
+    required => 1,
 );
 
 =head2 iterator_name
@@ -32,16 +34,26 @@ Name of the iterator for this list.
 
 has iterator_name => (
     is => 'ro',
+    isa => Str,
+    required => 1,
 );
 
 =head2 iterator_object
 
 Iterator object for this list.
 
+=over
+
+=item writer: set_iterator
+
+=back
+
 =cut
 
 has iterator_object => (
-    is => 'rwp',
+    is => 'ro',
+    isa => InstanceOf['Template::Flute::Iterator'],
+    writer => 'set_iterator',
 );
 
 =head2 limit
@@ -212,18 +224,6 @@ sub iterator {
 	}
 
 	return $self->iterator_object;
-}
-
-=head2 set_iterator ITERATOR
-
-Sets list iterator object to ITERATOR.
-
-=cut
-
-sub set_iterator {
-	my ($self, $iterator) = @_;
-
-	$self->_set_iterator_object($iterator);
 }
 
 =head2 set_static_class CLASS
