@@ -29,6 +29,7 @@ WriteMakefile(
         'Type::Tiny' => 0,
         'namespace::clean' => 0,
         'Scalar::Util' => 0,
+        'Sub::Quote' => 0,
         'URI' => 0,
     },
     EXE_FILES => [ 'scripts/flute' ],
