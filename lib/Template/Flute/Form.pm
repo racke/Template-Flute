@@ -2,6 +2,7 @@ package Template::Flute::Form;
 
 use Moo;
 use Types::Standard qw/ArrayRef HashRef InstanceOf/;
+use MooX::HandlesVia;
 
 use strict;
 use warnings;
@@ -81,6 +82,53 @@ has fields => (
     isa => ArrayRef [ InstanceOf ['Template::Flute::Form::Field'] ],
 );
 
+=head2 params
+
+Form parameters
+
+=over
+
+=item writer: params_add
+
+=back
+
+=cut
+
+has params => (
+    is => 'ro',
+    writer => 'params_add',
+);
+
+=head2 inputs
+
+Form inputs.
+
+=over
+
+=item writer: inputs_add
+
+=back
+
+=cut
+	
+has inputs => (
+    is => 'ro',
+    isa => HashRef,
+    writer => 'inputs_add',
+);
+
+after 'inputs_add' => sub {
+	$_[0]->valid_input(0);
+};
+
+=head2 valid_input
+
+=cut
+
+has valid_input => (
+    is => 'rw',
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -112,18 +160,6 @@ sub BUILDARGS {
 
 =head1 METHODS
 
-=head2 params_add PARAMS
-
-Add parameters from PARAMS to form.
-
-=cut
-	
-sub params_add {
-	my ($self, $params) = @_;
-
-	$self->{params} = $params || [];
-}
-
 =head2 fields_add FIELDS
 
 Add fields from FIELDS to form.
@@ -144,21 +180,6 @@ Add fields from FIELDS to form.
 # 	$self->{fields} = $fields || [];
 # }
 
-=head2 inputs_add INPUTS
-
-Add inputs from INPUTS to form.
-
-=cut
-	
-sub inputs_add {
-	my ($self, $inputs) = @_;
-
-	if (ref($inputs) eq 'HASH') {
-		$self->{inputs} = $inputs;
-		$self->{valid_input} = 0;
-	}
-}
-
 =head2 elt
 
 Returns corresponding HTML template element of the form.
@@ -171,55 +192,32 @@ sub elt {
 	return $self->elts->[0];
 }
 
-=head2 params
-
-Returns form parameters.
-
-=cut
-	
-sub params {
-	my ($self) = @_;
-
-	return $self->{params};
-}
-
-=head2 inputs
-
-Returns form inputs.
-
-=cut
-	
-sub inputs {
-	my ($self) = @_;
-
-	return $self->{inputs};
-}
-
-=head2 input PARAMS
+=head2 unused_input PARAMS
 
 Verifies that input parameters are sufficient.
 Returns 1 in case of success, 0 otherwise.
 
 =cut	
 
-sub input {
+sub unused_input {
 	my ($self, $params) = @_;
 	my ($error_count);
 
-	if (! $params && $self->{valid_input} == 1) {
+	if (! $params && $self->valid_input == 1) {
 		return 1;
 	}
 	
 	$error_count = 0;
 	$params ||= {};
 	
-	for my $input (values %{$self->{inputs}}) {
-		if ($input->{required} && ! $params->{$input->{name}}) {
-			warn "Missing input for $input->{name}.\n";
+	for my $input (values %{$self->inputs}) {
+        my $name = $input->{name};
+		if ($input->{required} && ! $params->$name) {
+			warn "Missing input for $name.\n";
 			$error_count++;
 		}
 		else {
-			$input->{value} = $params->{$input->{name}};
+			$input->{value} = $params->$name;
 		}
 	}
 
@@ -227,7 +225,7 @@ sub input {
 		return 0;
 	}
 
-	$self->{valid_input} = 1;
+	$self->valid_input(1);
 	return 1;
 }
 
