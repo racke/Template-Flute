@@ -1,5 +1,8 @@
 package Template::Flute::Specification;
 
+use Moo;
+use Types::Standard qw/HashRef Str/;
+
 use strict;
 use warnings;
 
@@ -22,6 +25,27 @@ Template::Flute::Specification - Specification class for Template::Flute
 
 Specification class for L<Template::Flute>.
 
+=head1 ATTRIBUTES
+
+=head2 encoding
+
+Encoding of the HTML template which is parsed according to this specification,
+using C<utf8> as default.
+
+=cut
+
+has encoding => (
+    is => 'rw',
+    isa => Str,
+    default => 'utf8',
+);
+
+has patterns => (
+    is => 'ro',
+    isa => HashRef,
+    default => sub {{}},
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -32,31 +56,31 @@ Creates Template::Flute::Specification object.
 
 # Constructor
 
-sub new {
-	my ($class, $self);
-	my (%params);
+# sub new {
+# 	my ($class, $self);
+# 	my (%params);
 
-	$class = shift;
-	%params = (encoding => 'utf8', @_);
+# 	$class = shift;
+# 	%params = (encoding => 'utf8', @_);
 
-	$self = \%params;
+# 	$self = \%params;
 
-	# lookup hash for elements by class
-	$self->{classes} = {};
+# 	# lookup hash for elements by class
+# 	$self->{classes} = {};
 
-	# lookup hash for elements by id
-	$self->{ids} = {};
+# 	# lookup hash for elements by id
+# 	$self->{ids} = {};
 
-	# lookup hash for elements by name attribute
-	$self->{names} = {};
+# 	# lookup hash for elements by name attribute
+# 	$self->{names} = {};
 
-	$self->{pagings} = {};
+# 	$self->{pagings} = {};
 
-    # named patterns
-    $self->{patterns} = {};
+#     # named patterns
+#     $self->{patterns} = {};
 
-	bless $self, $class;
-}
+# 	bless $self, $class;
+# }
 
 sub _ids {
     return keys %{shift->{ids}};
@@ -86,23 +110,6 @@ sub name {
 	}
 
 	return $self->{name};
-}
-
-=head2 encoding ENCODING
-
-Set or get the encoding of the HTML template
-which is parsed according to this specification.
-
-=cut
-	
-sub encoding {
-	my $self = shift;
-
-	if (scalar @_ > 0) {
-		$self->{encoding} = shift;
-	}
-
-	return $self->{encoding};
 }
 
 =head2 container_add CONTAINER
@@ -404,12 +411,6 @@ sub pattern_add {
     $self->{patterns}->{$name} = $regexp;
     # print Dumper($self->{patterns});
 }
-
-sub patterns {
-    return %{shift->{patterns}};
-}
-
-
 
 =head2 list_iterator NAME
 

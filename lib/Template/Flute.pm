@@ -434,7 +434,7 @@ sub _bootstrap_specification {
 		$self->{specification}->set_iterator($name, $iter);
 	}
 
-    if (my %patterns = $self->{specification}->patterns) {
+    if (my %patterns = %{$self->{specification}->patterns}) {
         foreach my $k (keys %patterns) {
             $self->_set_pattern($k, $patterns{$k});
         }
