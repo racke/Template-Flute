@@ -28,12 +28,24 @@ has name => (
 
 Form action.
 
+=over
+
+=item writer: set_action
+
+=back
+
 =cut
 
 has action => (
-    is => 'rwp',
+    is => 'ro',
     default => '',
+    writer  => 'set_action',
 );
+
+after 'set_action' => sub {
+    my ( $self, $arg ) = @_;
+    $self->elt->set_att( 'action', $arg );
+};
 
 =head2 method
 
@@ -224,20 +236,6 @@ sub iterators {
     }
 
     return \%iterators;
-}
-
-
-=head2 set_action ACTION
-
-Sets from action to ACTION.
-
-=cut
-
-sub set_action {
-	my ($self, $action) = @_;
-
-	$self->elt->set_att('action', $action);
-	$self->_set_action($action);
 }
 
 =head2 set_method METHOD
