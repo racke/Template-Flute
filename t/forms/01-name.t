@@ -46,6 +46,7 @@ $form = $html_object->form('test');
 
 isa_ok ($form, 'Template::Flute::Form');
 
-ok ($form->name, 'test');
+ok ($form->name, 'test')
+    || diag "Form name is ", $form->name;
 
 
