@@ -1,11 +1,72 @@
 package Template::Flute::List;
 
+use Moo;
+use Types::Standard qw/ArrayRef Int/;
+
 use strict;
 use warnings;
+
+with 'Template::Flute::Role::Elements';
 
 =head1 NAME
 
 Template::Flute::List - List object for Template::Flute templates.
+
+=head1 ATTRIBUTES
+
+=head2 name
+
+Name of the list.
+
+=cut
+
+has name => (
+    is => 'ro',
+);
+
+=head2 iterator_name
+
+Name of the iterator for this list.
+
+=cut
+
+has iterator_name => (
+    is => 'ro',
+);
+
+=head2 iterator_object
+
+Iterator object for this list.
+
+=cut
+
+has iterator_object => (
+    is => 'rwp',
+);
+
+=head2 limit
+
+Limit the number of iterations for your list.
+
+=cut
+
+has limit => (
+    is => 'ro',
+    isa => Int,
+    default => 0,
+);
+
+=head2 static
+
+Static elements.
+
+=cut
+
+has static => (
+    is => 'ro',
+    isa => ArrayRef,
+    default => sub {[]},
+);
 
 =head1 CONSTRUCTOR
 
@@ -15,34 +76,37 @@ Creates Template::Flute::List object.
 
 =cut
 
-# Constructor
-sub new {
-	my ($class, $sob, $static, $spec, $name) = @_;
-	my ($self, $lf);
-	
-	$static ||= [];
-	
-	$self = {sob => $sob, static => $static, valid_input => undef};
+sub BUILDARGS {
+    my ( $class, @args ) = @_;
+    my $params = { @args };
 
-	if (exists $sob->{iterator}) {
-		$self->{iterator} = {name => $sob->{iterator}};
-	}
-    $self->{limit} = $sob->{limit} if defined $sob->{limit};
-	
-	bless $self, $class;
-	
-	if ($spec && $name) {
-		$self->inputs_add($spec->list_inputs($name));
-		$self->filters_add($spec->list_filters($name));
-		$self->sorts_add($spec->list_sorts($name));
-        
-        if ($lf = $spec->list_paging($name)) {
-            $self->paging_add($lf);
-        }
-	}
-	
-	return $self;
+    delete $params->{limit} if ! defined $params->{limit};
+    return $params; 
 }
+
+# # Constructor
+# sub new {
+# 	my ($class, $sob, $static, $spec, $name) = @_;
+# 	my ($self, $lf);
+	
+# 	$static ||= [];
+	
+# 	$self = {sob => $sob, static => $static, valid_input => undef};
+
+# 	bless $self, $class;
+	
+# 	if ($spec && $name) {
+# 		$self->inputs_add($spec->list_inputs($name));
+# 		$self->filters_add($spec->list_filters($name));
+# 		$self->sorts_add($spec->list_sorts($name));
+        
+#         if ($lf = $spec->list_paging($name)) {
+#             $self->paging_add($lf);
+#         }
+# 	}
+	
+# 	return $self;
+# }
 
 =head1 METHODS
 
@@ -133,18 +197,6 @@ sub paging_add {
 	$self->{paging} = $paging;
 }
 
-=head2 name
-
-Returns name of the list.
-
-=cut
-
-sub name {
-	my ($self) = @_;
-
-	return $self->{sob}->{name};
-}
-
 =head2 iterator [ARG]
 
 Returns list iterator object when called without ARG.
@@ -156,10 +208,10 @@ sub iterator {
 	my ($self, $arg) = @_;
 
 	if (defined $arg && $arg eq 'name') {
-		return $self->{iterator}->{name};
+		return $self->iterator_name;
 	}
-	
-	return $self->{iterator}->{object};
+
+	return $self->iterator_object;
 }
 
 =head2 set_iterator ITERATOR
@@ -170,8 +222,8 @@ Sets list iterator object to ITERATOR.
 
 sub set_iterator {
 	my ($self, $iterator) = @_;
-	
-	$self->{iterator}->{object} = $iterator;
+
+	$self->_set_iterator_object($iterator);
 }
 
 =head2 set_static_class CLASS
