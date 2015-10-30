@@ -2,7 +2,6 @@ package Template::Flute::Form;
 
 use Moo;
 use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Str Undef/;
-use MooX::HandlesVia;
 
 use strict;
 use warnings;
