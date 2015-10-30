@@ -80,6 +80,24 @@ has static => (
     default => sub {[]},
 );
 
+=head2 params
+
+A list can have multiple params
+
+=over
+
+=item writer: params_add
+
+=back
+
+=cut
+
+has params => (
+    is => 'ro',
+    isa => ArrayRef,
+    writer => 'params_add',
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -113,18 +131,6 @@ Creates Template::Flute::List object.
 # }
 
 =head1 METHODS
-
-=head2 params_add PARAMS
-
-Add parameters from PARAMS to list.
-
-=cut
-	
-sub params_add {
-	my ($self, $params) = @_;
-
-	$self->{params} = $params || [];
-}
 
 =head2 separators_add SEPARATORS
 
@@ -257,18 +263,6 @@ sub elt {
 	my ($self) = @_;
 
 	return $self->{sob}->{elts}->[0];
-}
-
-=head2 params
-
-Returns list parameters.
-
-=cut
-
-sub params {
-	my ($self) = @_;
-
-	return $self->{params};
 }
 
 =head2 separators
