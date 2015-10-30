@@ -1,11 +1,61 @@
 package Template::Flute::Form;
 
+use Moo;
+use Types::Standard qw/ArrayRef HashRef InstanceOf/;
+
 use strict;
 use warnings;
+
+with 'Template::Flute::Role::Elements';
 
 =head1 NAME
 
 Template::Flute::Form - Form object for Template::Flute templates.
+
+=head1 ATTRIBUTES
+
+=head2 name
+
+Form name.
+
+=cut
+
+has name => (
+    is => 'ro',
+);
+
+=head2 action
+
+Form action.
+
+=cut
+
+has action => (
+    is => 'rwp',
+    default => '',
+);
+
+=head2 method
+
+Form method.
+
+=cut
+
+has method => (
+    is => 'rwp',
+    default => 'GET',
+);
+
+=head2 fields
+
+List of form fields.
+
+=cut
+
+has fields => (
+    is => 'ro',
+    isa => ArrayRef [ InstanceOf ['Template::Flute::Form::Field'] ],
+);
 
 =head1 CONSTRUCTOR
 
@@ -15,34 +65,26 @@ Creates Template::Flute::Form object.
 
 =cut
 
-# Constructor
-sub new {
-	my ($class, $sob, $static) = @_;
-	my ($self);
-	
-	$self = {sob => $sob, static => $static, valid_input => undef};
+sub BUILDARGS {
+    my ($class, @args) = @_;
+    my $params = { @args };
 
     # retrieve values for action and method attributes
-    my $action = $self->{sob}->{elts}->[0]->att('action');
+    my $action = $params->{elts}->[0]->att('action');
 
     if (defined $action) {
-        $self->{action} = $action;
-    }
-    else {
-        $self->{action} = '';
+        $params->{action} = $action;
     }
 
-    my $method = $self->{sob}->{elts}->[0]->att('method');
+    my $method = $params->{elts}->[0]->att('method');
 
     if (defined $method && $method =~ /\S/) {
-        $self->{method} = uc($method);
-    }
-    else {
-        $self->{method} = 'GET';
+        $params->{method} = uc($method);
     }
 
-	bless $self, $class;
+    return $params;
 }
+
 
 =head1 METHODS
 
@@ -64,19 +106,19 @@ Add fields from FIELDS to form.
 
 =cut
 	
-sub fields_add {
-	my ($self, $fields) = @_;
-	my (%field_iters);
+# sub fields_add {
+# 	my ($self, $fields) = @_;
+# 	my (%field_iters);
 
-	for my $field (@$fields) {
-		if ($field->{iterator}) {
-			$field_iters{$field->{iterator}} = $field->{name};
-		}
-	}
+# 	for my $field (@$fields) {
+# 		if ($field->{iterator}) {
+# 			$field_iters{$field->{iterator}} = $field->{name};
+# 		}
+# 	}
 
-	$self->{iterators} = \%field_iters;
-	$self->{fields} = $fields || [];
-}
+# 	$self->{iterators} = \%field_iters;
+# 	$self->{fields} = $fields || [];
+# }
 
 =head2 inputs_add INPUTS
 
@@ -93,18 +135,6 @@ sub inputs_add {
 	}
 }
 
-=head2 name
-
-Returns name of the form.
-
-=cut
-
-sub name {
-	my ($self) = @_;
-
-	return $self->{sob}->{name};
-}
-
 =head2 elt
 
 Returns corresponding HTML template element of the form.
@@ -114,19 +144,7 @@ Returns corresponding HTML template element of the form.
 sub elt {
 	my ($self) = @_;
 
-	return $self->{sob}->{elts}->[0];
-}
-
-=head2 fields
-
-Returns form fields.
-
-=cut
-
-sub fields {
-	my ($self) = @_;
-
-	return $self->{fields};
+	return $self->elts->[0];
 }
 
 =head2 params
@@ -197,21 +215,17 @@ Returns names of all iterators used by the fields for this form.
 
 sub iterators {
 	my ($self) = @_;
+    my (%iterators, $name);
 
-	return keys(%{$self->{iterators}});
+    for my $field (@{$self->fields}) {
+        if (my $name = $field->iterator) {
+            $iterators{$name} = $name;
+        }
+    }
+
+    return \%iterators;
 }
 
-=head2 action
-
-Returns current form action.
-
-=cut
-
-sub action {
-	my ($self) = @_;
-
-	return $self->{action};
-}
 
 =head2 set_action ACTION
 
@@ -222,21 +236,9 @@ Sets from action to ACTION.
 sub set_action {
 	my ($self, $action) = @_;
 
-	$self->{sob}->{elts}->[0]->set_att('action', $action);
-	$self->{action} = $action;
+	$self->elt->set_att('action', $action);
+	$self->_set_action($action);
 }
-
-=head2 method
-
-Returns current form method, e.g. GET or POST.
-
-=cut
-
-sub method {
-    my ($self) = @_;
-
-    return $self->{method};
-};
 
 =head2 set_method METHOD
 
@@ -247,8 +249,8 @@ Sets form method to METHOD, e.g. GET or POST.
 sub set_method {
 	my ($self, $method) = @_;
 
-	$self->{sob}->{elts}->[0]->set_att('method', $method);
-	$self->{method} = $method;
+	$self->elt->set_att('method', $method);
+	$self->_set_method($method);
 }
 
 =head2 fill PARAMS
@@ -279,7 +281,7 @@ sub fill {
 	my ($f, @elts, $value, $zref, $type);
     $self->_set_filled;
 	for my $f (@{$self->fields()}) {
-		@elts = @{$f->{elts}};
+		@elts = @{$f->elts};
 
 		if (exists $href->{$f->{name}}
 			&& defined $href->{$f->{name}}) {
