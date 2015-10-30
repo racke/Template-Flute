@@ -27,6 +27,7 @@ WriteMakefile(
         'Moo' => 1.001000,
         # InstanceOf using isa
         'Type::Tiny' => 0,
+        'namespace::clean' => 0,
         'Scalar::Util' => 0,
         'URI' => 0,
     },
