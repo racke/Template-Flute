@@ -728,8 +728,8 @@ sub _sub_process {
 
             $count_iterations++;
             last
-                if defined $list->{limit}
-                && $count_iterations > $list->{limit};
+                if $list->limit > 0
+                && $count_iterations > $list->limit;
 
             # cut the separators away before copying
             for my $sep (@{$list->{separators}}) {
