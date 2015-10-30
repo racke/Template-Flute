@@ -9,5 +9,6 @@
 \.bak$
 \.bak/
 \.old$
+\.swp$
 ^lib/Template/Flute/PDF
 ^lib/Template/Flute/Filter/Boolean.pm
