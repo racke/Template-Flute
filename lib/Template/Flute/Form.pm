@@ -38,16 +38,26 @@ Form action.
 =cut
 
 has action => (
-    is => 'ro',
+    is => 'lazy',
     isa => Str,
-    default => '',
-    writer  => 'set_action',
+    writer => 'set_action',
 );
 
 after 'set_action' => sub {
     my ( $self, $arg ) = @_;
     $self->elt->set_att( 'action', $arg );
 };
+
+sub _build_action {
+    my $self = shift;
+
+    my $action = $self->elt->att('action');
+
+    if ( defined $action ) {
+        return $action;
+    }
+    return '';
+}
 
 =head2 method
 
@@ -62,16 +72,25 @@ Form method.
 =cut
 
 has method => (
-    is => 'ro',
+    is => 'lazy',
     isa => Str,
-    default => 'GET',
-    writer  => 'set_method',
+    writer => 'set_method',
 );
 
 after 'set_method' => sub {
     my ( $self, $arg ) = @_;
     $self->elt->set_att( 'method', $arg );
 };
+
+sub _build_method {
+    my $self = shift;
+
+    my $method = $self->elt->att('method');
+    if ( defined $method && $method =~ /\S/ ) {
+        return uc($method);
+    }
+    return 'GET';
+}
 
 =head2 fields
 
@@ -151,34 +170,6 @@ has is_filled => (
     default => 0,
     writer => 'set_filled',
 );
-
-=head1 CONSTRUCTOR
-
-=head2 new
-
-Creates Template::Flute::Form object.
-
-=cut
-
-sub BUILDARGS {
-    my ($class, @args) = @_;
-    my $params = { @args };
-
-    # retrieve values for action and method attributes
-    my $action = $params->{elts}->[0]->att('action');
-
-    if (defined $action) {
-        $params->{action} = $action;
-    }
-
-    my $method = $params->{elts}->[0]->att('method');
-
-    if (defined $method && $method =~ /\S/) {
-        $params->{method} = uc($method);
-    }
-
-    return $params;
-}
 
 
 =head1 METHODS
