@@ -134,6 +134,25 @@ has valid_input => (
     isa => Bool,
 );
 
+=head2 is_filled
+
+Returns true if you have called L</fill> on the form.
+
+=over
+
+=item writer: set_filled
+
+=back
+
+=cut
+
+has is_filled => (
+    is => 'ro',
+    isa => Bool,
+    default => 0,
+    writer => 'set_filled',
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -257,29 +276,12 @@ sub iterators {
 
 Fills form with parameters from hash reference PARAMS.
 
-=head2 is_filled
-
-Return true if you called fill on the form.
-
 =cut
-
-
-# fill - fills form fields
-
-sub _set_filled {
-    my $self = shift;
-    $self->{_form_is_filled} = 1;
-}
-
-sub is_filled {
-    my $self = shift;
-    return $self->{_form_is_filled};
-}
 
 sub fill {
 	my ($self, $href) = @_;
 	my ($f, @elts, $value, $zref, $type);
-    $self->_set_filled;
+    $self->set_filled(1);
 	for my $f (@{$self->fields()}) {
 		@elts = @{$f->elts};
 
