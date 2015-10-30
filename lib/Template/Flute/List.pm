@@ -2,7 +2,7 @@ package Template::Flute::List;
 
 use Sub::Quote;
 use Moo;
-use Types::Standard qw/ArrayRef InstanceOf Int Str/;
+use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Int Str Undef/;
 use namespace::clean;
 
 with 'Template::Flute::Role::Elements';
@@ -98,6 +98,55 @@ has params => (
     writer => 'params_add',
 );
 
+=head2 separators
+
+list separators.
+
+=over
+
+=item writer: separators_add
+
+=back
+
+=cut
+
+has separators  => (
+    is => 'ro',
+    isa => Undef | ArrayRef,
+    writer => 'separators_add',
+);
+
+=head2 inputs
+
+Form inputs.
+
+=over
+
+=item writer: inputs_add
+
+=back
+
+=cut
+
+has inputs => (
+    is => 'ro',
+    isa => HashRef,
+    writer => 'inputs_add',
+);
+
+after 'inputs_add' => sub {
+    $_[0]->valid_input(0);
+};
+
+=head2 valid_input
+
+=cut
+
+has valid_input => (
+    is => 'rw',
+    isa => Bool,
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -131,33 +180,6 @@ Creates Template::Flute::List object.
 # }
 
 =head1 METHODS
-
-=head2 separators_add SEPARATORS
-
-Add separators from SEPARATORS to list:
-
-=cut
-
-sub separators_add {
-    my ($self, $separators) = @_;
-
-    $self->{separators} = $separators || [];
-}
-
-=head2 inputs_add INPUTS
-
-Add inputs from INPUTS to list.
-
-=cut
-
-sub inputs_add {
-	my ($self, $inputs) = @_;
-
-	if (ref($inputs) eq 'HASH') {
-		$self->{inputs} = $inputs;
-		$self->{valid_input} = 0;
-	}
-}
 
 =head2 increments_add INCREMENTS
 
@@ -233,7 +255,7 @@ Set static class for list to CLASS.
 sub set_static_class {
 	my ($self, $class) = @_;
 
-	push(@{$self->{static}}, $class);
+	push(@{$self->static}, $class);
 }
 
 =head2 static_class ROW_POS
@@ -246,10 +268,10 @@ sub static_class {
 	my ($self, $row_pos) = @_;
 	my ($idx);
 
-	if (@{$self->{static}}) {
-		$idx = $row_pos % scalar(@{$self->{static}});
+	if (@{$self->static}) {
+		$idx = $row_pos % scalar(@{$self->static});
 		
-		return $self->{static}->[$idx];
+		return $self->static->[$idx];
 	}
 }
 
@@ -265,18 +287,6 @@ sub elt {
 	return $self->{sob}->{elts}->[0];
 }
 
-=head2 separators
-
-Return list separators.
-
-=cut
-
-sub separators {
-    my ($self) = @_;
-
-    return $self->{separators};
-}
-
 =head2 input PARAMS
 
 Verifies that input parameters are sufficient.
@@ -288,14 +298,14 @@ sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
 
-	if ((! $params || ! (keys %$params)) && $self->{valid_input} == 1) {
+	if ((! $params || ! (keys %$params)) && $self->valid_input == 1) {
 		return 1;
 	}
 	
 	$error_count = 0;
 	$params ||= {};
 	
-	for my $input (values %{$self->{inputs}}) {
+	for my $input (values %{$self->inputs}) {
 		if ($input->{optional} && (! defined $params->{$input->{name}}
 			|| $params->{$input->{name}} !~ /\S/)) {
 			# skip optional inputs without a value
@@ -315,7 +325,7 @@ sub input {
 		return 0;
 	}
 
-	$self->{valid_input} = 1;
+	$self->valid_input(1);
 	return 1;
 }
 
