@@ -217,12 +217,12 @@ sub unused_input {
 	
 	for my $input (values %{$self->inputs}) {
         my $name = $input->{name};
-		if ($input->{required} && ! $params->$name) {
+		if ($input->{required} && ! $params->{$name}) {
 			warn "Missing input for $name.\n";
 			$error_count++;
 		}
 		else {
-			$input->{value} = $params->$name;
+			$input->{value} = $params->{$name};
 		}
 	}
 
