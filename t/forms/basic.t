@@ -34,7 +34,7 @@ my @form_att_tests = ({html => q{<form name="sort" action="/search">},
                    },
                   );
 
-plan tests => 3 * scalar(@form_att_tests);
+plan tests => 8 * scalar(@form_att_tests);
 
 for my $test (@form_att_tests) {
     my $flute = Template::Flute->new(specification => $sort_form_spec,
@@ -46,6 +46,7 @@ for my $test (@form_att_tests) {
     my $form = $flute->template->form('sort');
 
     isa_ok($form, 'Template::Flute::Form');
+    ok(scalar(@{$form->elts} == 1), "Checking number of form elements.");
 
     my $action = $form->action;
 
@@ -56,4 +57,32 @@ for my $test (@form_att_tests) {
 
     ok(defined $method && $method eq $test->{method}, 'Return value of method method')
         || diag "$method instead of $test->{method}";
+
+    $form->set_action('/action');
+
+    $action = $form->action;
+
+    ok(defined $action && $action eq '/action',
+       'Return value of action method after setting to /action')
+        || diag "$action instead of /action";
+
+    my $attval = $form->elt->att('action');
+
+    ok(defined $attval && $attval eq '/action',
+       'Value of element action attribute after setting to /action')
+        || diag "$attval instead of /action";
+
+    $form->set_method('POST');
+
+    $method = $form->method;
+
+    ok(defined $method && $method eq 'POST',
+       'Return value of method method after setting to POST')
+        || diag "$method instead of POST";
+
+    $attval = $form->elt->att('method');
+
+    ok(defined $attval && $attval eq 'POST',
+       'Value of element method attribute after setting to POST')
+        || diag "$attval instead of POST";
 }
