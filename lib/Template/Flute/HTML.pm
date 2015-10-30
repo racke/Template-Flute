@@ -12,6 +12,7 @@ use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
+use Template::Flute::Form::Field;
 use Template::Flute::UriAdjust;
 
 use Scalar::Util qw/blessed/;
@@ -542,7 +543,14 @@ sub _elt_handler {
 			$p->{elts} = \@p_new;
 		}
 		
-		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
+        #		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
+        $self->{lists}->{$name} = Template::Flute::List->new(
+            name => $name,
+            iterator_name => $sob->{iterator},
+            limit => $sob->{limit},
+            static => [join(' ', @$static_classes)],
+        );
+        
 		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
         $self->{lists}->{$name}->paging_add($self->{paging}->{$name});
 		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
@@ -598,9 +606,14 @@ sub _elt_handler {
 
 		$sob->{elts} = [$elt];
 
-		$self->{forms}->{$name} = new Template::Flute::Form ($sob);
+		$self->{forms}->{$name} = Template::Flute::Form->new(
+            name => $name,
+            elts => [$elt],
+            fields => [ map {Template::Flute::Form::Field->new($_)}
+                            @{$self->{fields}->{$name}->{array}}
+                        ],
+        );
 
-		$self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
 		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
 			
 		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
