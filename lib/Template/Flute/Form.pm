@@ -375,14 +375,14 @@ sub query {
 		$found = 1;
 	}
 
-	for (@{$self->{params}}) {
+	for (@{$self->params}) {
 		push @{$query{columns}->{$self->{sob}->{table}}}, $_->{name};
 		$cols{$_->{name}} = 1;
 		$found = 1;
 	}
 
 	# qualifier based on the input
-	for (values %{$self->{inputs}}) {
+	for (values %{$self->inputs}) {
 		if ($_->{value}) {
 			push @{$query{query}}, $_->{name} => $_->{value};
 
