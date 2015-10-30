@@ -1,7 +1,7 @@
 package Template::Flute::Iterator::Cache;
 
 use Moo;
-use MooX::Types::MooseLike::Base qw/ArrayRef InstanceOf Int/;
+use Types::Standard qw/ArrayRef InstanceOf Int/;
 
 use base 'Template::Flute::Iterator';
 
