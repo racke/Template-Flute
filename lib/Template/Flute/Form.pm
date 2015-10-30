@@ -51,12 +51,24 @@ after 'set_action' => sub {
 
 Form method.
 
+=over
+
+=item writer: set_method
+
+=back
+
 =cut
 
 has method => (
-    is => 'rwp',
+    is => 'ro',
     default => 'GET',
+    writer  => 'set_method',
 );
+
+after 'set_method' => sub {
+    my ( $self, $arg ) = @_;
+    $self->elt->set_att( 'method', $arg );
+};
 
 =head2 fields
 
@@ -236,19 +248,6 @@ sub iterators {
     }
 
     return \%iterators;
-}
-
-=head2 set_method METHOD
-
-Sets form method to METHOD, e.g. GET or POST.
-
-=cut
-
-sub set_method {
-	my ($self, $method) = @_;
-
-	$self->elt->set_att('method', $method);
-	$self->_set_method($method);
 }
 
 =head2 fill PARAMS
