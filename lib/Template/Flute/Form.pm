@@ -1,7 +1,7 @@
 package Template::Flute::Form;
 
 use Moo;
-use Types::Standard qw/ArrayRef HashRef InstanceOf/;
+use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Str Undef/;
 use MooX::HandlesVia;
 
 use strict;
@@ -23,6 +23,7 @@ Form name.
 
 has name => (
     is => 'ro',
+    isa => Str,
 );
 
 =head2 action
@@ -39,6 +40,7 @@ Form action.
 
 has action => (
     is => 'ro',
+    isa => Str,
     default => '',
     writer  => 'set_action',
 );
@@ -62,6 +64,7 @@ Form method.
 
 has method => (
     is => 'ro',
+    isa => Str,
     default => 'GET',
     writer  => 'set_method',
 );
@@ -96,6 +99,7 @@ Form parameters
 
 has params => (
     is => 'ro',
+    isa => Undef | ArrayRef,
     writer => 'params_add',
 );
 
@@ -127,6 +131,7 @@ after 'inputs_add' => sub {
 
 has valid_input => (
     is => 'rw',
+    isa => Bool,
 );
 
 =head1 CONSTRUCTOR
