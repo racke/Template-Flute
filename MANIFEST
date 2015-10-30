@@ -19,6 +19,7 @@ lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Replace.pm
 lib/Template/Flute/Filter/Strip.pm
 lib/Template/Flute/Filter/Upper.pm
+lib/Template/Flute/Role/Elements.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
@@ -27,6 +28,7 @@ lib/Template/Flute/Container.pm
 lib/Template/Flute/List.pm
 lib/Template/Flute/Expression.pm
 lib/Template/Flute/Form.pm
+lib/Template/Flute/Form/Field.pm
 lib/Template/Flute/I18N.pm
 lib/Template/Flute/Iterator.pm
 lib/Template/Flute/Iterator/Cache.pm
