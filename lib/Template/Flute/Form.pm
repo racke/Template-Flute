@@ -354,47 +354,6 @@ sub fill {
 	}
 }
 
-=head2 query
-
-Returns Perl structure for database query based on
-the specification.
-
-=cut
-
-sub query {
-	my ($self) = @_;
-	my (%query, $found, %cols);
-
-	%query = (tables => [], columns => {}, query => []);
-	
-	if ($self->{sob}->{table}) {
-		push @{$query{tables}}, $self->{sob}->{table};
-		$found = 1;
-	}
-
-	for (@{$self->{params}}) {
-		push @{$query{columns}->{$self->{sob}->{table}}}, $_->{name};
-		$cols{$_->{name}} = 1;
-		$found = 1;
-	}
-
-	# qualifier based on the input
-	for (values %{$self->{inputs}}) {
-		if ($_->{value}) {
-			push @{$query{query}}, $_->{name} => $_->{value};
-
-			# qualifiers need to be present in column specification
-			unless (exists $cols{$_->{name}}) {
-				push @{$query{columns}->{$self->{sob}->{table}}}, $_->{name};
-			}
-		}
-	}
-	
-	if ($found) {
-		return \%query;
-	}
-}
-
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
