@@ -1,7 +1,8 @@
 package Template::Flute::Value;
 
 use Moo;
-use Types::Standard qw/Str Undef/;
+use Types::Standard qw/ArrayRef InstanceOf Str Undef/;
+use Type::Utils qw/enum/;
 
 =head1 NAME
 
@@ -74,6 +75,29 @@ has joiner => (
     is      => 'ro',
     isa     => Str,
     default => '',
+);
+
+=head2 op
+
+operation
+
+=cut
+
+has op => (
+    is => 'ro',
+    isa => enum(ValueOp => ['append', 'hook', 'toggle']),
+);
+
+=head2 elts
+
+Stores associated L<XML::Twig::Elt>s.
+
+=cut
+
+has elts => (
+    is      => 'ro',
+    isa     => ArrayRef [ InstanceOf 'XML::Twig::Elt' ],
+    default => sub { [] },
 );
 
 1;
