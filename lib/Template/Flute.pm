@@ -2369,6 +2369,9 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to Paul Cochrane for his tremendous amount of pull requests
+issued during the GitHub challenge.
+
 Thanks to Peter Mottram (GH #81, #87).
 
 Thanks to William Carr (GH #86, #91).
