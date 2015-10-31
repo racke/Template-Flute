@@ -795,7 +795,71 @@ sub _sub_process {
     }
 
 	# Values
-	for my $elt ( @{$spec_elements->{value}}, @{$spec_elements->{param}}, @{$spec_elements->{field}} ){
+    for my $value ($template->values) {
+        my $spec_id = $value->id;
+		my $spec_name = $value->name;
+		my $spec_class = $value->class ? $value->class : $spec_name;
+
+		# Use CLASS or ID if set
+		my $spec_clases = [];
+		if ($spec_id){
+			$spec_clases = $specification->{ids}->{$spec_id};
+		}
+		else {
+			$spec_clases = $classes->{$spec_class};
+		}
+
+		for my $spec_class (@$spec_clases){
+            # check if it's a form and it's already filled
+            if (exists $spec_class->{form} && $spec_class->{form}) {
+                my $form = $self->template->form($spec_class->{form});
+                next if $form && $form->is_filled;
+            }
+            # check if we need an iterator for this element
+            if ($self->{auto_iterators} && $spec_class->{iterator}) {
+                my ($iter_name, $iter);
+
+                $iter_name = $spec_class->{iterator};
+
+                unless ($specification->iterator($iter_name)) {
+                    my $maybe_iter = $self->{values}->{$iter_name};
+
+                    if (defined blessed $maybe_iter) {
+                        if ($maybe_iter->can('next') &&
+                                $maybe_iter->can('count')) {
+                            $iter = $maybe_iter;
+                        }
+                        else {
+                            die "Object cannot be used as iterator for value $spec_name: ", ref($maybe_iter);
+                        }
+                    }
+                    elsif (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+                        $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                    }
+                    else {
+                        $iter = Template::Flute::Iterator->new([]);
+                    }
+                    $specification->set_iterator($iter_name, $iter);
+                }
+            }
+
+			# Increment count
+			$spec_class->{increment} = new Template::Flute::Increment(
+				increment => $spec_class->{increment}->{increment},
+				start => $count
+			) if $spec_class->{increment};
+
+            my $field = $spec_class->{'field'};
+
+            if (defined $field && ! ref($field) && $field =~ /\./) {
+                $spec_class->{'field'} = [split /\./, $field];
+            }
+
+            $self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
+		}
+    }
+
+	for my $elt ( @{$spec_elements->{param}}, @{$spec_elements->{field}} ){
         if ($elt->tag eq 'param') {
             my $name = $spec_xml->att('name');
 
