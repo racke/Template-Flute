@@ -1,7 +1,7 @@
 package Template::Flute::Increment;
 
-use strict;
-use warnings;
+use Moo;
+use Types::Standard qw/Int/;
 
 =head1 NAME
 
@@ -9,82 +9,86 @@ Template::Flute::Increment - Increment class for Template::Flute
 
 =head1 SYNOPSIS
 
-     $increment = new Template::Flute::Increment(start => 4, increment => 2);
+    $increment = new Template::Flute::Increment(start => 4, step => 2);
+    $increment->increment;  # 6
 
-=head1 CONSTRUCTOR
+=head1 ACCESSORS
 
-=head2 new
-
-Create a Template::Flute::Increment object with the following parameters:
-
-=over 4
-
-=item start INT
+=head2 start
 
 Start value for the increment. Defaults to 1.
 
-=item increment INT
+=cut
+
+has start => (
+    is => 'ro',
+    isa => Int,
+    default => 1,
+);
+
+=head2 step
 
 Value added to the increment with each call of the increment method.
 Defaults to 1.
+
+=cut
+
+has step => (
+    is      => 'ro',
+    isa     => Int,
+    default => 1,
+);
+
+=head2 value
+
+current value of the increment.
+
+=over
+
+=item writer: update_value
 
 =back
 
 =cut
 
-sub new {
-	my ($class, $self);
-	my (%params);
-	
-	$class = shift;
-	%params = @_;
+has value => (
+    is     => 'lazy',
+    isa    => Int,
+    writer => 'update_value',
+);
 
-	# initial value
-	if (exists $params{start}) {
-		$self->{value} = $params{start};
-	}
-	else {
-		$self->{value} = 1;
-	}
+sub _build_value {
+    return $_[0]->start;
+}
 
-	# increment
-	if (exists $params{increment}) {
-		$self->{increment} = $params{increment};
-	}
-	else {
-		$self->{increment} = 1;
-	}
-	
-	bless $self, $class;
-
-	return $self;
+sub BUILDARGS {
+    my $class = shift;
+    my %args;
+    if ( @_ % 2 ) {
+        %args = %{ $_[0] };
+    }
+    else {
+        %args = @_;
+    }
+    # backwards compatibility with pre-Moo class which had iterator as
+    # attribute and method
+    if ( defined $args{iterator} && !defined $args{step} ) {
+        $args{step} = $args{iterator};
+    }
+    return \%args;
 }
 
 =head1 METHODS
 
-=head2 value
-
-Returns current value of the increment.
-
-=cut
-
-sub value {
-	my $self = shift;
-
-	return $self->{value};
-}
-
 =head2 increment
 
-Applies increment to value of the increment.
+Adds L</step> to L</value> of increment.
 
 =cut
 
 sub increment {
 	my $self = shift;
-
-	$self->{value} += $self->{increment};
-	return $self->{value};
+	$self->update_value( $self->value + $self->step );
 }
 
 =head1 AUTHOR
@@ -104,4 +108,3 @@ See http://dev.perl.org/licenses/ for more information.
 =cut
 
 1;
-

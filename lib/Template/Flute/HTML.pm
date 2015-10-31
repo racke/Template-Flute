@@ -14,6 +14,7 @@ use Template::Flute::List;
 use Template::Flute::Form;
 use Template::Flute::Form::Field;
 use Template::Flute::UriAdjust;
+use Template::Flute::Value;
 
 use Scalar::Util qw/blessed/;
 
@@ -645,7 +646,7 @@ sub _elt_handler {
 
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 		
-		$self->{values}->{$name} = $sob;
+		$self->{values}->{$name} = Template::Flute::Value->new($sob);
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';

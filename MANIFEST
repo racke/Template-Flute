@@ -37,6 +37,7 @@ lib/Template/Flute/Pager.pm
 lib/Template/Flute/Paginator.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
+lib/Template/Flute/Value.pm
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
