@@ -171,4 +171,5 @@ t/testfiles/good/product.html
 t/testfiles/good/product.xml
 t/testfiles/good/registration.html
 t/testfiles/good/registration.xml
+t/unit/value.t
 scripts/flute

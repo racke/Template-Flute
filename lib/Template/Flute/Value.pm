@@ -1,8 +1,8 @@
 package Template::Flute::Value;
 
 use Moo;
-use Types::Standard qw/ArrayRef InstanceOf Str Undef/;
-use Type::Utils qw/enum/;
+use Types::Standard qw/ArrayRef Enum InstanceOf Str Undef/;
+use Types::Common::String qw/NonEmptySimpleStr/;
 
 =head1 NAME
 
@@ -18,7 +18,7 @@ Name of the value object.
 
 has name => (
     is       => 'ro',
-    isa      => Str,
+    isa      => NonEmptySimpleStr,
     required => 1,
 );
 
@@ -33,7 +33,7 @@ to relate to the class in the HTML template.
 
 has class => (
     is  => 'lazy',
-    isa => Str,
+    isa => NonEmptySimpleStr,
 );
 
 sub _build_class {
@@ -49,7 +49,7 @@ attribute for the specification element.
 
 has id => (
     is  => 'ro',
-    isa => Str | Undef,
+    isa => NonEmptySimpleStr | Undef,
 );
 
 =head2 target
@@ -61,7 +61,7 @@ HTML element.
 
 has target => (
     is  => 'ro',
-    isa => Str | Undef,
+    isa => NonEmptySimpleStr | Undef,
 );
 
 =head2 joiner
@@ -84,8 +84,8 @@ operation
 =cut
 
 has op => (
-    is => 'ro',
-    isa => enum(ValueOp => ['append', 'hook', 'toggle']),
+    is  => 'ro',
+    isa => Enum [ 'append', 'hook', 'toggle' ],
 );
 
 =head2 elts
