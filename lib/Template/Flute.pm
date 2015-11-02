@@ -797,8 +797,8 @@ sub _sub_process {
 	# Values
     for my $value ($template->values) {
         my $spec_id = $value->id;
-		my $spec_name = $value->name;
-		my $spec_class = $value->class ? $value->class : $spec_name;
+		my $name = $value->name;
+		my $class = $value->class;
 
 		# Use CLASS or ID if set
 		my $spec_clases = [];
@@ -806,7 +806,7 @@ sub _sub_process {
 			$spec_clases = $specification->{ids}->{$spec_id};
 		}
 		else {
-			$spec_clases = $classes->{$spec_class};
+			$spec_clases = $classes->{$class};
 		}
 
 		for my $spec_class (@$spec_clases){
@@ -830,7 +830,7 @@ sub _sub_process {
                             $iter = $maybe_iter;
                         }
                         else {
-                            die "Object cannot be used as iterator for value $spec_name: ", ref($maybe_iter);
+                            die "Object cannot be used as iterator for value $name: ", ref($maybe_iter);
                         }
                     }
                     elsif (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
@@ -855,7 +855,11 @@ sub _sub_process {
                 $spec_class->{'field'} = [split /\./, $field];
             }
 
-            $self->_replace_record($spec_name, $values, $spec_class, $spec_class->{elts});
+            # Parameters:
+            # name: name of the specification element
+            # values: hashref with values to fill into
+
+            $self->_replace_record($name, $values, $spec_class, $spec_class->{elts});
 		}
     }
 
