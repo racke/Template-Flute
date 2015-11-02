@@ -7,12 +7,14 @@ use Encode;
 use Path::Tiny ();
 use XML::Twig;
 use HTML::Entities;
+use Hash::MultiValue;
 
 use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
 use Template::Flute::Form::Field;
+use Template::Flute::Value;
 use Template::Flute::UriAdjust;
 use Template::Flute::Value;
 
@@ -48,7 +50,9 @@ sub new {
 
 	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
 			 params => {}, values => {}, query => {}, file => undef};
-	
+
+    $self->{values} = Hash::MultiValue->new;
+
 	bless $self, $class;
 }
 
@@ -145,7 +149,7 @@ Returns list of values for this template.
 sub values {
 	my ($self) = @_;
 
-	return values %{$self->{values}};
+	return $self->{values}->values;
 }
 
 =head2 iterators
@@ -642,11 +646,10 @@ sub _elt_handler {
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
         $self->{paging_elements}->{$sob->{paging}}->{$sob->{element_type}} = $sob;
 	} elsif ($sob->{type} eq 'value') {
-		push (@{$sob->{elts}}, $elt);
-
+        $sob->{elts} = [$elt];
+        $sob->{iterator_name} = $sob->{iterator};
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-		
-		$self->{values}->{$name} = Template::Flute::Value->new($sob);
+		$self->{values}->add( $name, Template::Flute::Value->new($sob) );
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';

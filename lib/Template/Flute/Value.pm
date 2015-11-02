@@ -22,6 +22,30 @@ has name => (
     required => 1,
 );
 
+=head2 type
+
+Type of the value object.
+
+=cut
+
+has type => (
+    is       => 'ro',
+    isa      => Enum [ 'value' ] || undef,
+    default  => 'value',
+);
+
+=head2 field
+
+Field used to lookup the value.
+
+=cut
+
+has field => (
+    is       => 'ro',
+    isa      => ArrayRef | NonEmptySimpleStr,
+);
+
+
 =head2 class
 
 Class of corresponding elements in the HTML template.
@@ -86,6 +110,62 @@ operation
 has op => (
     is  => 'ro',
     isa => Enum [ 'append', 'hook', 'toggle' ],
+);
+
+=head2 pattern
+
+Name of pattern used for this element.
+
+=cut
+
+has pattern => (
+    is => 'ro',
+    isa => NonEmptySimpleStr,
+);
+
+=head2 filter
+
+Name of filter used for this value.
+
+=cut
+
+has filter => (
+  is => 'ro',
+  isa => NonEmptySimpleStr,
+);
+
+=head2 include
+
+Name of include file.
+
+=cut
+
+has include => (
+    is  => 'ro',
+    isa => NonEmptySimpleStr,
+);
+
+=head2 iterator_name
+
+Name of iterator for this value.
+
+=cut
+
+has iterator_name => (
+    is  => 'ro',
+    isa => NonEmptySimpleStr | Undef,
+);
+
+=head2 skip
+
+If set to C<empty> and value is an empty string,
+replacement will be skipped.
+
+=cut
+
+has skip => (
+  is => 'ro',
+  isa => Enum [ 'empty' ],
 );
 
 =head2 elts

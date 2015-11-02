@@ -800,67 +800,35 @@ sub _sub_process {
 		my $name = $value->name;
 		my $class = $value->class;
 
-		# Use CLASS or ID if set
-		my $spec_clases = [];
-		if ($spec_id){
-			$spec_clases = $specification->{ids}->{$spec_id};
-		}
-		else {
-			$spec_clases = $classes->{$class};
-		}
+        # check if we need an iterator for this element
+        if ($self->{auto_iterators} && defined $value->iterator_name) {
+            my ($iter_name, $iter);
 
-		for my $spec_class (@$spec_clases){
-            # check if it's a form and it's already filled
-            if (exists $spec_class->{form} && $spec_class->{form}) {
-                my $form = $self->template->form($spec_class->{form});
-                next if $form && $form->is_filled;
-            }
-            # check if we need an iterator for this element
-            if ($self->{auto_iterators} && $spec_class->{iterator}) {
-                my ($iter_name, $iter);
+            $iter_name = $value->iterator_name;
 
-                $iter_name = $spec_class->{iterator};
+            unless ($specification->iterator($iter_name)) {
+                my $maybe_iter = $self->{values}->{$iter_name};
 
-                unless ($specification->iterator($iter_name)) {
-                    my $maybe_iter = $self->{values}->{$iter_name};
-
-                    if (defined blessed $maybe_iter) {
-                        if ($maybe_iter->can('next') &&
-                                $maybe_iter->can('count')) {
-                            $iter = $maybe_iter;
-                        }
-                        else {
-                            die "Object cannot be used as iterator for value $name: ", ref($maybe_iter);
-                        }
-                    }
-                    elsif (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
-                        $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                if (defined blessed $maybe_iter) {
+                    if ($maybe_iter->can('next') &&
+                            $maybe_iter->can('count')) {
+                        $iter = $maybe_iter;
                     }
                     else {
-                        $iter = Template::Flute::Iterator->new([]);
+                        die "Object cannot be used as iterator for value $name: ", ref($maybe_iter);
                     }
-                    $specification->set_iterator($iter_name, $iter);
                 }
+                elsif (ref($self->{values}->{$iter_name}) eq 'ARRAY') {
+                    $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
+                }
+                else {
+                    $iter = Template::Flute::Iterator->new([]);
+                }
+                $specification->set_iterator($iter_name, $iter);
             }
+        }
 
-			# Increment count
-			$spec_class->{increment} = new Template::Flute::Increment(
-				increment => $spec_class->{increment}->{increment},
-				start => $count
-			) if $spec_class->{increment};
-
-            my $field = $spec_class->{'field'};
-
-            if (defined $field && ! ref($field) && $field =~ /\./) {
-                $spec_class->{'field'} = [split /\./, $field];
-            }
-
-            # Parameters:
-            # name: name of the specification element
-            # values: hashref with values to fill into
-
-            $self->_replace_record($name, $values, $spec_class, $spec_class->{elts});
-		}
+        $self->_replace_record($name, $values, $value, $value->elts);
     }
 
 	for my $elt ( @{$spec_elements->{param}}, @{$spec_elements->{field}} ){
