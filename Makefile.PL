@@ -26,6 +26,7 @@ WriteMakefile(
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
         'MooX::HandlesVia' => 0,
+        'Hash::MultiValue' => 0,
         # InstanceOf using isa
         'Type::Tiny' => 0,
         'namespace::clean' => 0,
