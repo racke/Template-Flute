@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More;
 use Template::Flute;
 
 my ($spec, $html, $flute, $out);
@@ -14,6 +14,20 @@ $spec = q{<specification>
 };
 
 $html = q{<div class="test">TEST</div>};
+
+$flute = Template::Flute->new(template => $html,
+                              specification => $spec,
+                              values => {test => 'test'},
+                          );
+
+my $template = $flute->template;
+my @values = $template->values;
+
+ok (@values == 1, "Number of values found.");
+
+my $testval = $values[0];
+
+isa_ok($testval, 'Template::Flute::Value');
 
 for my $value (0, 1, ' ', 'test') {
     $flute = Template::Flute->new(template => $html,
@@ -157,3 +171,5 @@ $out = $flute->process();
 ok ($out =~ m%<div class="test"></div>%,
     "dotted value test (three levels, wrong key)")
     || diag $out;
+
+done_testing;
