@@ -16,7 +16,7 @@ use Template::Flute::Form;
 use Template::Flute::Form::Field;
 use Template::Flute::Value;
 use Template::Flute::UriAdjust;
-use Template::Flute::Value;
+use Template::Flute::Param;
 
 use Scalar::Util qw/blessed/;
 
@@ -639,7 +639,8 @@ sub _elt_handler {
 			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
 		}
 
-		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
+		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name}
+            = Template::Flute::Param->new($sob);
 		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
     } elsif ($sob->{type} eq 'element') {
         push (@{$sob->{elts}}, $elt);
