@@ -40,7 +40,7 @@ subtest "JSON string as scalar" => sub {
 subtest "Read JSON from file" => sub {
     plan tests => 5;
 
-    my ($json_fh, $json_file) = tempfile;
+    my ($json_fh, $json_file) = tempfile("XXXXXXXXXX", UNLINK => 1);
     print $json_fh $json, "\n";
     close $json_fh;
     my $json_file_iter = Template::Flute::Iterator::JSON->new(file => $json_file);
@@ -69,7 +69,7 @@ subtest "Read UTF8 JSON from file" => sub {
     {"sku": "Größenmaßstäbe", "images": ["mètre.jpg", "el_módulo.png"]},
     {"sku": "Fußgängerübergänge", "images": ["surépaisseur.jpg", "transición.png"]}
     ]};
-    my ($json_fh, $json_file) = tempfile;
+    my ($json_fh, $json_file) = tempfile("XXXXXXXXXX", UNLINK => 1);
     binmode( $json_fh, ":encoding(UTF-8)" );
     print $json_fh $json, "\n";
     close $json_fh;
@@ -90,7 +90,7 @@ subtest "Selector option" => sub {
     {"sku": "pomelo", "images": ["pomelo.jpg", "pomelo.png"]}
     ]};
 
-    my ($json_fh, $json_file) = tempfile;
+    my ($json_fh, $json_file) = tempfile("XXXXXXXXXX", UNLINK => 1);
     print $json_fh $json, "\n";
     close $json_fh;
 
@@ -127,7 +127,7 @@ subtest "'*' selector option" => sub {
     {"sku": "pomelo", "images": ["pomelo.jpg", "pomelo.png"]}
     ]};
 
-    my ($json_fh, $json_file) = tempfile;
+    my ($json_fh, $json_file) = tempfile("XXXXXXXXXX", UNLINK => 1);
     print $json_fh $json, "\n";
     close $json_fh;
 
