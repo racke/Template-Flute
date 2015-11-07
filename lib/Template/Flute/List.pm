@@ -68,6 +68,16 @@ has limit => (
     coerce => quote_sub(q{ defined $_[0] ? $_[0] : 0 }),
 );
 
+=head2 limits
+
+=cut
+
+has limits => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub {+{}},
+);
+
 =head2 static
 
 Static elements.
@@ -147,6 +157,70 @@ has valid_input => (
     isa => Bool,
 );
 
+=head2 increments
+
+=over
+
+=item writer: increments_add
+
+=back
+
+=cut
+
+has increments => (
+    is     => 'ro',
+    isa    => ArrayRef | Undef,
+    writer => 'increments_add',
+);
+
+=head2 filters
+
+=over
+
+=item writer: filters_add
+
+=back
+
+=cut
+
+has filters => (
+    is     => 'ro',
+    isa    => ArrayRef | Undef,
+    writer => 'filters_add',
+);
+
+=head2 sorts
+
+=over
+
+=item writer: sorts_add
+
+=back
+
+=cut
+
+has sorts => (
+    is => 'ro',
+    isa => ArrayRef | Undef,
+    writer => 'sorts_add',
+);
+
+=head2 paging
+
+=over
+
+=item writer: paging_add
+
+=back
+
+=cut
+	
+has paging => (
+    is => 'ro',
+    isa => HashRef | Undef,
+    writer => 'paging_add',
+);
+    
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -180,54 +254,6 @@ Creates Template::Flute::List object.
 # }
 
 =head1 METHODS
-
-=head2 increments_add INCREMENTS
-
-Add increments from INCREMENTS to list.
-
-=cut
-
-sub increments_add {
-	my ($self, $increments) = @_;
-
-	$self->{increments} = $increments;
-}
-
-=head2 filters_add FILTERS
-
-Add filters from FILTERS to list.
-
-=cut
-
-sub filters_add {
-	my ($self, $filters) = @_;
-
-	$self->{filters} = $filters;
-}
-
-=head2 sorts_add SORT
-
-Add sort from SORT to list.
-
-=cut
-
-sub sorts_add {
-	my ($self, $sort) = @_;
-
-	$self->{sorts} = $sort;
-}
-
-=head2 paging_add PAGING
-
-Add paging from PAGING to list.
-
-=cut
-	
-sub paging_add {
-	my ($self, $paging) = @_;
-
-	$self->{paging} = $paging;
-}
 
 =head2 iterator [ARG]
 
@@ -339,7 +365,7 @@ Set list limit for type TYPE to LIMIT.
 sub set_limit {
 	my ($self, $type, $limit) = @_;
 
-	$self->{limits}->{$type} = $limit;
+	$self->limits->{$type} = $limit;
 }
 
 =head2 set_filter NAME
@@ -364,11 +390,11 @@ sub filter {
 	my ($self, $flute, $row) = @_;
 	my ($new_row);
 	
-	if ($self->{filters}) {
-		if (ref($self->{filters}) eq 'HASH') {
+	if ($self->filters) {
+		if (ref($self->filters) eq 'HASH') {
 			$new_row = $row;
 			
-			for my $f (keys %{$self->{filters}}) {
+			for my $f (keys %{$self->filters}) {
 				$new_row = $flute->filter($f, $new_row);
 				return unless $new_row;
 			}
@@ -376,7 +402,7 @@ sub filter {
 			return $new_row;
 		}
 
-		return $flute->filter($self->{filters}, $row);
+		return $flute->filter($self->filters, $row);
 	}
 	
 	return $row;
@@ -391,7 +417,7 @@ Increment all increments of the list.
 sub increment {
 	my ($self) = @_;
 
-	for my $inc (@{$self->{increments}}) {
+	for my $inc (@{$self->increments}) {
 		$inc->increment();
 	}
 }
