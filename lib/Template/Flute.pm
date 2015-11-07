@@ -705,7 +705,7 @@ sub _sub_process {
             }
         }
         else {
-            $iter_records = Template::Flute::Iterator->new(@$records);
+            $iter_records = Template::Flute::Iterator->new($records);
         }
 
         if ($list->{paging}) {
@@ -822,7 +822,7 @@ sub _sub_process {
                     $iter = Template::Flute::Iterator->new($self->{values}->{$iter_name});
                 }
                 else {
-                    $iter = Template::Flute::Iterator->new([]);
+                    $iter = Template::Flute::Iterator->new();
                 }
                 $specification->set_iterator($iter_name, $iter);
             }
