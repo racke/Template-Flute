@@ -177,11 +177,16 @@ sub BUILDARGS {
     my ( $class, @args ) = @_;
     my %args;
 
-    if (ref($args[0]) eq 'ARRAY') {
-        $args{data} = $args[0];
-    }
-    else {
-        %args = @args;
+    if (@args) {
+        if ( ref( $args[0] ) eq 'ARRAY' ) {
+            $args{data} = $args[0];
+        }
+        elsif ( @args % 2 == 0 ) {
+            %args = @args;
+        }
+        else {
+            # unexpected args - no nothing
+        }
     }
 
     return \%args;
