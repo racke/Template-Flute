@@ -61,6 +61,10 @@ has children => (
     isa => Str | Undef,
 );
 
+=head1 METHODS
+
+=cut
+
 sub BUILDARGS {
 	my ($class, @args) = @_;
 	my %args;
@@ -100,6 +104,13 @@ sub BUILDARGS {
 	
 	return \%args;
 }
+
+=head2 BUILD
+
+Converts L</json> to Perl structure and applies L</selector> and
+L</children> if they are defined.
+
+=cut
 
 sub BUILD {
     my $self = shift;
