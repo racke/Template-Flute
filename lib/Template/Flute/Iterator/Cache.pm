@@ -15,19 +15,13 @@ This iterator is used for caching another iterator which is used multiple
 times in a list. We can safely use reset method on the caching iterator,
 but not always on the original iterator.
 
+Extends L<Template::Flute::Iterator>.
+
 =head1 ATTRIBUTES
 
 =head2 iterator
 
 Original iterator (required).
-
-=head2 index
-
-Current position.
-
-=head2 data
-
-Cached data.
 
 =head2 filled
 
