@@ -83,7 +83,7 @@ subtest "Read UTF8 JSON from file" => sub {
 };
 
 subtest "Selector option" => sub {
-    plan tests => 8;
+    plan tests => 9;
 
     my $json = q{[
     {"sku": "orange", "images": ["orange.jpg", "orange.png"]},
@@ -108,8 +108,8 @@ subtest "Selector option" => sub {
     $json_file_iter = Template::Flute::Iterator::JSON->new(
         file => $json_file, selector => \%selector, children => 'images');
     isa_ok $json_file_iter, 'Template::Flute::Iterator';
-    is $json_file_iter->count, undef,
-        "Unknown selector value returns undef";
+    is $json_file_iter->count, 0,
+        "Unknown selector value returns no items";
 
     %selector = ('sku' => "orange");
     $json_file_iter = Template::Flute::Iterator::JSON->new(
@@ -117,6 +117,8 @@ subtest "Selector option" => sub {
     isa_ok $json_file_iter, 'Template::Flute::Iterator';
     is $json_file_iter->count, 2,
         "Known children seeds iterator number of child elements in slected element";
+    is_deeply $json_file_iter->data, [ 'orange.jpg', 'orange.png' ],
+      "data contains expected children";
 };
 
 subtest "'*' selector option" => sub {

@@ -3,9 +3,12 @@ package Template::Flute::Iterator::JSON;
 use strict;
 use warnings;
 
-use JSON;
+use Moo;
+use JSON 'from_json';
+use Types::Standard qw/HashRef Str Undef/;
+use namespace::clean;
 
-use base 'Template::Flute::Iterator';
+extends 'Template::Flute::Iterator';
 
 =head1 NAME
 
@@ -28,73 +31,94 @@ Template::Flute::Iterator::JSON - Iterator class for JSON strings and files
 
 Template::Flute::Iterator::JSON is a subclass of L<Template::Flute::Iterator>.
 
-=head1 CONSTRUCTOR
+=head1 ATTRIBUTES
 
-=head2 new
-
-Creates an Template::Flute::Iterator::JSON object from a JSON string.
-
-The JSON string can be either passed as such or as scalar reference.
+=head2 json
 
 =cut
 
-sub new {
-	my ($class, @args) = @_;
-	my ($json, $json_struct, $self, $key, $value);
+has json => (
+    is       => 'ro',
+    isa      => Str,
+    required => 1,
+);
 
-	$self = {};
-	
-	bless ($self, $class);
+=head2 selector
+
+=cut
+
+has selector => (
+    is => 'ro',
+    isa => HashRef | Str | Undef,
+);
+
+=head2 children
+
+=cut
+
+has children => (
+    is => 'ro',
+    isa => Str | Undef,
+);
+
+sub BUILDARGS {
+	my ($class, @args) = @_;
+	my %args;
 
 	if (@args == 1) {
 		# single parameter => JSON is passed as string or scalar reference
 		if (ref($args[0]) eq 'SCALAR') {
-			$json = ${$args[0]};
+			$args{json} = ${$args[0]};
 		}
 		else {
-			$json = $args[0];
+			$args{json} = $args[0];
 		}
+	}
+    else {
+        %args = @args;
 
-		$json_struct = from_json($json);
-		$self->_seed_iterator($json_struct);
-		
-		return $self;
-	}
-	
-	while (@args) {
-		$key = shift(@args);
-		$value = shift(@args);
-		
-		$self->{$key} = $value;
-	}
+        die "Missing JSON file or string"
+          if ( !defined $args{json} && !defined $args{file} );
 
-	if ($self->{file}) {
-		$json_struct = $self->_parse_json_from_file($self->{file});
-		$self->_seed_iterator($json_struct);
-	}
-	else {
-		die "Missing JSON file.";
-	}
+        if ( my $file = delete $args{file} ) {
+            my ( $json_fh, $json_txt );
+
+            # read from JSON file
+            unless ( open $json_fh, '<', $file ) {
+                die "$0: failed to open JSON file $file: $!\n";
+            }
+
+            while (<$json_fh>) {
+                $json_txt .= $_;
+            }
+
+            close $json_fh;
+
+            $args{json} = $json_txt;
+        }
+    }
 	
-	return $self;
+	return \%args;
 }
 
-sub _seed_iterator {
-    my ($self, $json_struct) = @_;
+sub BUILD {
+    my $self = shift;
 
-    if (exists $self->{selector}) {
-        if (ref($self->{selector}) eq 'HASH') {
+    my $json_struct = from_json( $self->json );
+
+    if (defined $self->selector) {
+        if (ref($self->selector) eq 'HASH') {
             my (@k, $key, $value);
 
             # loop through top level elements and locate selector
-            if ((@k = keys %{$self->{selector}})) {
+            if ((@k = keys %{$self->selector})) {
                 $key = $k[0];
-                $value = $self->{selector}->{$key};
+                $value = $self->selector->{$key};
 
                 for my $record (@$json_struct) {
                     if (exists $record->{$key} 
                         && $record->{$key} eq $value) {
-                        $self->seed($record->{$self->{children}});
+                        $self->seed($record->{$self->children});
                         return;
                     }
                 }
@@ -102,19 +126,18 @@ sub _seed_iterator {
 
             return;
         }
-        elsif ($self->{selector} eq '*') {
+        elsif ($self->selector eq '*') {
             # find all elements
-            $self->seed($self->_tree($json_struct, $self->{children}, $self->{sort}));
+            $self->seed( $self->_tree( $json_struct, $self->children ) );
 
-            if ($self->{sort}) {
-                $self->sort($self->{sort}, $self->{unique});
-            }
+#            if ($self->{sort}) {
+#                $self->sort($self->{sort}, $self->{unique});
+#            }
 
             return;
         }
 
-        # no matches for selector, seed iterator with empty list
-        $self->seed();
+        # no matches for selector
         return;
     }
     
@@ -122,7 +145,7 @@ sub _seed_iterator {
 }
 
 sub _tree {
-    my ($self, $json_struct, $children, $sort) = @_;
+    my ($self, $json_struct, $children) = @_;
     my (@leaves);
 
     for my $record (@$json_struct) {
@@ -136,26 +159,6 @@ sub _tree {
     return \@leaves;
 }
 
-sub _parse_json_from_file {
-	my ($self, $file) = @_;
-	my ($json_fh, $json_struct, $json_txt);
-	
-	# read from JSON file
-	unless (open $json_fh, '<', $file) {
-		die "$0: failed to open JSON file $file: $!\n";
-	}
-
-	while (<$json_fh>) {
-		$json_txt .= $_;
-	}
-
-	close $json_fh;
-
-	# parse JSON
-	$json_struct = from_json($json_txt);
-
-	return $json_struct;
-}
 
 =head1 AUTHOR
 
