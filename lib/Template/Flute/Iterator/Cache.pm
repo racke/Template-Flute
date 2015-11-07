@@ -3,7 +3,7 @@ package Template::Flute::Iterator::Cache;
 use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Int/;
 
-use base 'Template::Flute::Iterator';
+extends 'Template::Flute::Iterator';
 
 =head1 NAME
 
@@ -41,18 +41,6 @@ has iterator => (
     is => 'ro',
 );
 
-has index => (
-    isa => Int,
-    default => 0,
-    is => 'rwp',
-);
-
-has data => (
-    isa => ArrayRef,
-    is => 'rwp',
-    default => sub {[]},
-);
-
 has filled => (
     is => 'rwp',
     default => 0,
@@ -85,7 +73,7 @@ sub next {
     if ($self->filled) {
         # grab record from cache
         if ($index < $self->count) {
-            $self->_set_index($index + 1);
+            $self->set_index($index + 1);
             return $self->data->[$index];
         }
         return undef;
@@ -94,24 +82,12 @@ sub next {
     # grab record from original iterator and store it
     if ($record = $self->iterator->next) {
         push @{$self->data}, $record;
-        $self->_set_index($index + 1);
+        $self->set_index($index + 1);
         return $record;
     }
 
     $self->_set_filled(1);
     return undef;
-}
-
-=head2 reset
-
-Resets the iterator.
-
-=cut
-
-sub reset {
-    my $self = shift;
-
-    $self->_set_index(0);
 }
 
 =head1 AUTHOR
