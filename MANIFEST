@@ -35,6 +35,7 @@ lib/Template/Flute/Iterator/Cache.pm
 lib/Template/Flute/Iterator/JSON.pm
 lib/Template/Flute/Pager.pm
 lib/Template/Flute/Paginator.pm
+lib/Template/Flute/Param.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
 lib/Template/Flute/Value.pm
