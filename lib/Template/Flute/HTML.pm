@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Moo;
-use Types::Standard qw/ArrayRef InstanceOf/;
+use Types::Standard qw/ArrayRef InstanceOf Undef/;
 
 use Encode;
 use Path::Tiny ();
@@ -45,6 +45,17 @@ L<Template::Flute::Form::Param> params objects for this template.
 has params => (
     is => 'ro',
     isa => ArrayRef [ InstanceOf ['Template::Flute::Form::Param'] ],
+);
+
+=head2 uri
+
+Base URI for this template.
+
+=cut
+
+has uri => (
+    is => 'ro',
+    isa => InstanceOf ['URI'] | Undef,
 );
 
 has _values => (
@@ -422,7 +433,7 @@ sub _parse_handler {
 	$id = $elt->id();
 	$elt_name = $elt->att('name');
 
-    if ($self->{uri}) {
+    if ($self->uri) {
         my %targets = (a => {link_att => 'href'},
                        base => {link_att => 'href'},
                        img => {link_att => 'src'},
