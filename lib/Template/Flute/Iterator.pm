@@ -1,7 +1,7 @@
 package Template::Flute::Iterator;
 
-use strict;
-use warnings;
+use Moo;
+use Types::Standard qw/ArrayRef Int/;
 
 =head1 NAME
 
@@ -31,61 +31,93 @@ Template::Flute::Iterator - Generic iterator class for Template::Flute
                  title => 'Modern Perl',
                  quantity => 10});
 
-=head1 CONSTRUCTOR
+=head1 ATTRIBUTES
 
-=head2 new
+=head2 data
 
-Creates a Template::Flute::Iterator object. The elements of the
-iterator are hash references. They can be passed to the constructor
-as array or array reference.
+The data to be iterated over.
+
+=over
+
+=item writer: seed
+
+=back
 
 =cut
 
-# Constructor
-sub new {
-	my ($proto, @args) = @_;
-	my ($class, $self);
-	
-	$class = ref($proto) || $proto;
+has data => (
+    is     => 'ro',
+    isa    => ArrayRef,
+    coerce => sub { ref( $_[0] ) eq 'ARRAY' ? $_[0] : \@_ },
+    default => sub { [] },
+    writer  => 'seed',
+);
 
-	$self = {};
-	
-	bless $self, $class;
+after 'seed' => sub {
+    my $self = shift;
+    $self->set_index(0);
+    $self->clear_count;
+};
 
-	$self->seed(@args);
+=head2 count
 
-	return $self;
+Returns number of elements in L</data>.
+
+=over
+
+=item clearer: clear_count
+
+=back
+
+=cut
+
+has count => (
+    is       => 'lazy',
+    isa      => Int,
+    init_arg => undef,
+    clearer  => 1,
+);
+
+sub _build_count {
+    return scalar @{ $_[0]->data };
 }
+
+=head2 index
+
+The current index within L</data> that the iterator points to.
+
+=over
+
+=item writer: set_index
+
+=back
+
+=cut
+
+has index => (
+    is       => 'ro',
+    isa      => Int,
+    default  => 0,
+    init_arg => undef,
+    writer   => 'set_index',
+);
 
 =head1 METHODS
 
 =head2 next
 
-Returns next record or undef.
+Returns next record or undef if iterator is exhausted.
 
 =cut
 
 sub next {
-	my ($self) = @_;
-
-
-	if ($self->{INDEX} <= $self->{COUNT}) {
-		return $self->{DATA}->[$self->{INDEX}++];
-	}
-	
-	return;
-};
-
-=head2 count
-
-Returns number of elements.
-
-=cut
-	
-sub count {
-	my ($self) = @_;
-
-	return $self->{COUNT};
+    my $self  = shift;
+    my $index = $self->index;
+    if ( $index <= $self->count ) {
+        $self->set_index( $index + 1 );
+        return $self->data->[$index];
+    }
+    return undef;
 }
 
 =head2 reset
@@ -94,35 +126,8 @@ Resets iterator.
 
 =cut
 
-# Reset method - rewind index of iterator
 sub reset {
-	my ($self) = @_;
-
-	$self->{INDEX} = 0;
-
-	return $self;
-}
-
-=head2 seed
-
-Seeds iterator.
-
-=cut
-
-sub seed {
-	my ($self, @args) = @_;
-
-	if (ref($args[0]) eq 'ARRAY') {
-		$self->{DATA} = $args[0];
-	}
-	else {
-		$self->{DATA} = \@args;
-	}
-
-	$self->{INDEX} = 0;
-	$self->{COUNT} = scalar(@{$self->{DATA}});
-
-	return $self->{COUNT};
+    $_[0]->set_index(0);
 }
 
 =head2 sort
@@ -146,10 +151,10 @@ Whether results should be unique (optional).
 =cut
     
 sub sort {
-    my ($self, $sort, $unique) = @_;
-    my (@data, @tmp);
+    my ( $self, $sort, $unique ) = @_;
+    my ( @data, @tmp );
 
-    @data = sort {lc($a->{$sort}) cmp lc($b->{$sort})} @{$self->{DATA}};
+    @data = sort { lc( $a->{$sort} ) cmp lc( $b->{$sort} ) } @{ $self->data };
 
     if ($unique) {
         my $sort_value = '';
@@ -160,11 +165,31 @@ sub sort {
             push (@tmp, $record);
         }
 
-        $self->{DATA} = \@tmp;
+        $self->seed(\@tmp);
     }
     else {
-        $self->{DATA} = \@data;
+        $self->seed(\@data);
     }
+}
+
+
+sub BUILDARGS {
+    my ( $class, @args ) = @_;
+    my %args;
+
+    if (@args) {
+        if ( ref( $args[0] ) eq 'ARRAY' ) {
+            $args{data} = $args[0];
+        }
+        elsif ( @args % 2 == 0 ) {
+            %args = @args;
+        }
+        else {
+            # unexpected args - no nothing
+        }
+    }
+
+    return \%args;
 }
 
 =head1 AUTHOR

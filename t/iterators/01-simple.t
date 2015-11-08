@@ -9,7 +9,9 @@ use Test::More tests => 4;
 use Template::Flute::Iterator;
 
 subtest "Initialisation with a cart of items" => sub {
-    plan tests => 3;
+    plan tests => 6;
+
+    my $item;
 
     my $cart = [
         {
@@ -29,7 +31,11 @@ subtest "Initialisation with a cart of items" => sub {
 
     ok($iter->count == 2, "Item count is correct");
 
-    isa_ok($iter->next, 'HASH', "Next item is a hash reference");
+    isa_ok($item = $iter->next, 'HASH', "Next item is a hash reference");
+    cmp_ok($item->{title}, 'eq', 'The Pragmatic Programmer', "got 'The Pragmatic Programmer'");
+
+    isa_ok($item = $iter->next, 'HASH', "Next item is a hash reference");
+    cmp_ok($item->{title}, 'eq', 'Pro Git', "got 'Pro Git'");
 };
 
 subtest "Initialisation with a seed item" => sub {

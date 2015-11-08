@@ -3,7 +3,7 @@ package Template::Flute::Iterator::Cache;
 use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Int/;
 
-use base 'Template::Flute::Iterator';
+extends 'Template::Flute::Iterator';
 
 =head1 NAME
 
@@ -15,19 +15,13 @@ This iterator is used for caching another iterator which is used multiple
 times in a list. We can safely use reset method on the caching iterator,
 but not always on the original iterator.
 
+Extends L<Template::Flute::Iterator>.
+
 =head1 ATTRIBUTES
 
 =head2 iterator
 
 Original iterator (required).
-
-=head2 index
-
-Current position.
-
-=head2 data
-
-Cached data.
 
 =head2 filled
 
@@ -39,18 +33,6 @@ has iterator => (
     isa => InstanceOf ['Template::Flute::Iterator'],
     required => 1,
     is => 'ro',
-);
-
-has index => (
-    isa => Int,
-    default => 0,
-    is => 'rwp',
-);
-
-has data => (
-    isa => ArrayRef,
-    is => 'rwp',
-    default => sub {[]},
 );
 
 has filled => (
@@ -85,7 +67,7 @@ sub next {
     if ($self->filled) {
         # grab record from cache
         if ($index < $self->count) {
-            $self->_set_index($index + 1);
+            $self->set_index($index + 1);
             return $self->data->[$index];
         }
         return undef;
@@ -94,24 +76,12 @@ sub next {
     # grab record from original iterator and store it
     if ($record = $self->iterator->next) {
         push @{$self->data}, $record;
-        $self->_set_index($index + 1);
+        $self->set_index($index + 1);
         return $record;
     }
 
     $self->_set_filled(1);
     return undef;
-}
-
-=head2 reset
-
-Resets the iterator.
-
-=cut
-
-sub reset {
-    my $self = shift;
-
-    $self->_set_index(0);
 }
 
 =head1 AUTHOR
