@@ -62,6 +62,6 @@ for my $t (@tests) {
     my $out = $tf->process;
     
     ok ($out =~ /$t->{match}/)
-        || diag "Out: $out.";
+        || diag "Expected to match: $t->{match}, Out: $out.";
 }
 
