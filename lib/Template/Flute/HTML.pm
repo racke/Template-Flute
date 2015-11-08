@@ -3,6 +3,9 @@ package Template::Flute::HTML;
 use strict;
 use warnings;
 
+use Moo;
+use Types::Standard qw/ArrayRef InstanceOf/;
+
 use Encode;
 use Path::Tiny ();
 use XML::Twig;
@@ -31,30 +34,25 @@ Template::Flute::HTML - HTML Template Parser
     $html_object->parse('<div class="example">Hello world</div>');
     $html_object->parse_file($html_file, $spec);
 
-=head1 CONSTRUCTOR
+=head1 ATTRIBUTES
 
-=head2 new
+=head2 params
 
-Create a Template::Flute::HTML object.
+L<Template::Flute::Form::Param> params objects for this template.
 
 =cut
 
-# constructor
+has params => (
+    is => 'ro',
+    isa => ArrayRef [ InstanceOf ['Template::Flute::Form::Param'] ],
+);
 
-sub new {
-	my ($class, $self);
-
-	$class = shift;
-
-    my %args = @_;
-
-	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
-			 params => {}, values => {}, query => {}, file => undef};
-
-    $self->{values} = Hash::MultiValue->new;
-
-	bless $self, $class;
-}
+has _values => (
+    is => 'ro',
+    isa => InstanceOf ['Hash::MultiValue'],
+    default => sub { Hash::MultiValue->new },
+    writer => 'set_values_store',
+);
 
 =head1 METHODS
 
@@ -149,7 +147,7 @@ Returns list of values for this template.
 sub values {
 	my ($self) = @_;
 
-	return $self->{values}->values;
+	return $self->_values->values;
 }
 
 =head2 iterators
@@ -554,9 +552,10 @@ sub _elt_handler {
             iterator_name => $sob->{iterator},
             limit => $sob->{limit},
             static => [join(' ', @$static_classes)],
+            params => $self->{params}->{$name}->{array},
         );
         
-		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+#		$self->{lists}->{$name}->params_add(
         $self->{lists}->{$name}->paging_add($self->{paging}->{$name});
 		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
 		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
@@ -639,9 +638,11 @@ sub _elt_handler {
 			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
 		}
 
+        my $param_object = Template::Flute::Param->new($sob);
 		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name}
-            = Template::Flute::Param->new($sob);
-		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
+            = $param_object;
+        
+		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $param_object);
     } elsif ($sob->{type} eq 'element') {
         push (@{$sob->{elts}}, $elt);
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
@@ -650,7 +651,7 @@ sub _elt_handler {
         $sob->{elts} = [$elt];
         $sob->{iterator_name} = $sob->{iterator};
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-		$self->{values}->add( $name, Template::Flute::Value->new($sob) );
+		$self->_values->add( $name, Template::Flute::Value->new($sob) );
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';
