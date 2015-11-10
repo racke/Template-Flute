@@ -2,6 +2,7 @@ package Template::Flute::Iterator;
 
 use Moo;
 use Types::Standard qw/ArrayRef Int/;
+use namespace::clean;
 
 =head1 NAME
 
