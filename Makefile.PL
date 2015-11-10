@@ -19,6 +19,7 @@ WriteMakefile(
         'Test::Fatal' => 0,
     },
     PREREQ_PM => {
+        'Class::XSAccessor' => 0,
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
