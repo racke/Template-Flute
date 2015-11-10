@@ -4,6 +4,7 @@ use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Int/;
 
 extends 'Template::Flute::Iterator';
+use namespace::clean;
 
 =head1 NAME
 

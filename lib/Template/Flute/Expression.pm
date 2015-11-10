@@ -5,6 +5,7 @@ use warnings;
 
 use base 'Template::Flute';
 use Scalar::Util qw/reftype/;
+use namespace::clean;
 
 =head1 NAME
 

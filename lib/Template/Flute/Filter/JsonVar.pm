@@ -5,6 +5,7 @@ use warnings;
 
 use base 'Template::Flute::Filter';
 use JSON;
+use namespace::clean;
 
 =head1 NAME
 

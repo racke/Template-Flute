@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 with 'Template::Flute::Role::Elements';
+use namespace::clean;
 
 =head1 NAME
 

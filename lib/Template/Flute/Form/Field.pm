@@ -2,6 +2,7 @@ package Template::Flute::Form::Field;
 
 use Moo;
 use Types::Standard qw/ArrayRef HashRef InstanceOf/;
+use namespace::clean;
 
 =head1 NAME
 

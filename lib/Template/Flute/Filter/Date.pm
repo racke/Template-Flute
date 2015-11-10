@@ -8,6 +8,7 @@ use DateTime::Format::ISO8601;
 use Scalar::Util qw/blessed/;
 
 use base 'Template::Flute::Filter';
+use namespace::clean;
 
 =head1 NAME
 
