@@ -5,13 +5,14 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Exception;
 
 use Template::Flute::Paginator;
 
 my @test_specs = ({count => 50, page_size => 10},
     {count => 31, page_size => 10});
 
-plan tests => 4 + 3 * scalar @test_specs;
+plan tests => 5 + 3 * scalar @test_specs;
 
 # basic tests
 my ($cart, $iter);
@@ -22,10 +23,10 @@ $cart = [{isbn => '978-0-2016-1622-4', title => 'The Pragmatic Programmer',
           title => 'Pro Git', quantity => 1},
  		];
 
-$iter = Template::Flute::Paginator->new($cart);
+lives_ok { $iter = Template::Flute::Paginator->new($cart) }
+"Create new Template::Flute::Paginator with arrayref as arg";
 
-isa_ok($iter, 'Template::Flute::Paginator')
-    || diag "Failed to create iterator: $@";
+isa_ok($iter, 'Template::Flute::Paginator');
 
 ok($iter->count == 2);
 

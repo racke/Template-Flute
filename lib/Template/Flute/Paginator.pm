@@ -1,14 +1,11 @@
 package Template::Flute::Paginator;
 
-use strict;
-use warnings;
-
 use Moo;
 use MooX::TypeTiny;
-use Sub::Quote;
+use Sub::Quote qw/quote_sub/;
 use Template::Flute::Iterator;
 use Types::Standard qw/Int/;
-use namespace::clean;
+use namespace::clean -except => [qw/new/];
 
 =head1 NAME
 
@@ -63,6 +60,8 @@ has page_size => (
 );
 
 =head2 page_position
+
+Index within the current page.
 
 =over
 
@@ -134,7 +133,7 @@ has current_page => (
 
 =head1 METHODS
 
-=head2 select_page {
+=head2 select_page
 
 Select page, starting from 1.
 
