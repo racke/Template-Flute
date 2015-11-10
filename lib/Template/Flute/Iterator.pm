@@ -175,21 +175,21 @@ sub sort {
 
 sub BUILDARGS {
     my ( $class, @args ) = @_;
-    my %args;
+    my %ret;
 
     if (@args) {
         if ( ref( $args[0] ) eq 'ARRAY' ) {
-            $args{data} = $args[0];
+            $ret{data} = $args[0];
         }
         elsif ( @args % 2 == 0 ) {
-            %args = @args;
+            %ret = @args;
         }
         else {
             # unexpected args - no nothing
         }
     }
 
-    return \%args;
+    return \%ret;
 }
 
 =head1 AUTHOR
