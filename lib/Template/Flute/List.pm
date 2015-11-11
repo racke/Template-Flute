@@ -221,38 +221,6 @@ has paging => (
     writer => 'paging_add',
 );
     
-=head1 CONSTRUCTOR
-
-=head2 new
-
-Creates Template::Flute::List object.
-
-=cut
-
-# # Constructor
-# sub new {
-# 	my ($class, $sob, $static, $spec, $name) = @_;
-# 	my ($self, $lf);
-	
-# 	$static ||= [];
-	
-# 	$self = {sob => $sob, static => $static, valid_input => undef};
-
-# 	bless $self, $class;
-	
-# 	if ($spec && $name) {
-# 		$self->inputs_add($spec->list_inputs($name));
-# 		$self->filters_add($spec->list_filters($name));
-# 		$self->sorts_add($spec->list_sorts($name));
-        
-#         if ($lf = $spec->list_paging($name)) {
-#             $self->paging_add($lf);
-#         }
-# 	}
-	
-# 	return $self;
-# }
-
 =head1 METHODS
 
 =head2 iterator [ARG]
