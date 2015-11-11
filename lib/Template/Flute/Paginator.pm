@@ -1,11 +1,10 @@
 package Template::Flute::Paginator;
 
 use Moo;
-use MooX::TypeTiny;
 use Sub::Quote qw/quote_sub/;
 use Template::Flute::Iterator;
 use Types::Standard qw/Int/;
-use namespace::clean -except => [qw/new/];
+use namespace::clean;
 
 =head1 NAME
 
