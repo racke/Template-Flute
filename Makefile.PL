@@ -17,6 +17,7 @@ WriteMakefile(
         'Test::Warn' => 0,
         'Test::Warnings' => 0,
         'Test::Fatal' => 0,
+        'Test::CleanNamespaces' => 0,
     },
     PREREQ_PM => {
         'Class::XSAccessor' => 0,
