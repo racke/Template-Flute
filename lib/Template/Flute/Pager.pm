@@ -4,7 +4,13 @@ use strict;
 use warnings;
 
 use Moo;
-use Sub::Quote;
+use Data::Page;
+use Safe::Isa;
+use Scalar::Util qw/blessed/;
+use Sub::Quote qw/quote_sub/;
+use Types::Standard qw/HasMethods InstanceOf Int/;
+
+use Template::Flute::Iterator;
 use namespace::clean;
 
 =head1 NAME
@@ -33,43 +39,168 @@ Template::Flute::Pager - Data::Page class for Template::Flute
 
 =head1 ATTRIBUTES
 
+=head2 pager
+
+Pager object.
+
+An instance of L<Data::Page>
+
+=over
+
+=item clearer: clear_pager
+
+=item predicate: has_pager
+
+=back
+
+=cut
+
+has pager => (
+    is        => 'lazy',
+    isa       => InstanceOf ['Data::Page'],
+    clearer   => 1,
+    predicate => 1,
+);
+
+sub _build_pager {
+    my $self = shift;
+    my $iterator = $self->iterator;
+    my $pager;
+
+    # try to use pager supplied by the iterator
+
+    if ( $iterator->can('pager') ) {
+        if ($iterator->can('is_paged')) {
+            # DBIC throws exception if we call pager on a resultset
+            # that is not paged so be paranoid
+            if ($iterator->is_paged) {
+                $pager = $iterator->pager;
+            }
+        }
+        else {
+            $pager = $iterator->pager;
+        }
+    }
+
+    # if we have a pager then return it
+
+    return $pager if $pager;
+
+    # if we got this far then create a new Data::Page object
+
+    return Data::Page->new( $self->count, $self->page_size,
+        $self->current_page );
+}
+
 =head2 iterator
 
-Pager iterator.
+Data iterator object which has data and should support the following methods:
+
+=over
+
+=item * next
+
+=back
 
 =cut
 
 has iterator => (
-    is => 'rw',
-    lazy => 1,
-#    default => quote_sub q{return Data::Pager->new;},
+    is     => 'ro',
+    isa    => HasMethods [ "count", "next" ],
+    writer => 'seed',
+#    coerce => sub {
+#        if ( Scalar::Util::blessed( $_[0] ) ) {
+#            return $_[0];
+#        }
+#        elsif ( {
+#        }
+#    },
+    coerce => quote_sub q{
+    Scalar::Util::blessed( $_[0] ) ? $_[0] : Template::Flute::Iterator->new(@_)
+    },
 );
+
+after 'seed' => sub {
+    my $self = shift;
+    $self->clear_count;
+    $self->clear_pager;
+};
 
 =head2 page_size
 
-Page size (defaults to 0).
+Page size (defaults to 20).
 
 =cut
 
 has page_size => (
-    is => 'rw',
-    lazy => 1,
-    default => quote_sub q{return 0;},
+    is      => 'lazy',
+    isa     => Int,
 );
+
+sub _build_page_size {
+    my $self = shift;
+    if ( $self->has_pager ) {
+        return $self->pager->entries_per_page;
+    }
+    else {
+        return 20;
+    }
+}
+
+=head2 current_page
+
+Pager page we want to display. Defaults to 1.
+
+=over
+
+=item writer:  select_page
+
+=back
+
+=cut
+
+has current_page => (
+    is     => 'lazy',
+    isa    => Int,
+    writer => 'select_page',
+);
+
+sub _build_current_page {
+    my $self = shift;
+    if ( $self->has_pager ) {
+        return $self->pager->current_page;
+    }
+    else {
+        return 1;
+    }
+}
+
+# set current_page in the pager and reset page_position to 0
+after 'select_page' => sub {
+    my ($self, $page) = @_;
+    $self->pager->current_page($page);
+    $self->set_page_position(0);
+};
 
 =head2 page_position
 
-Page position (defaults to 0).
+Returns the position on the current page (starts at 0).
+
+=over
+
+=item writer: set_page_position
+
+=back
 
 =cut
 
 has page_position => (
-    is => 'ro',
-    lazy => 1,
-    default => quote_sub q{return 0;},
+    is       => 'ro',
+    isa      => Int,
+    default  => 0,
+    init_arg => undef,
+    writer   => 'set_page_position',
 );
-
-=head1 METHODS
 
 =head2 pages
 
@@ -77,52 +208,46 @@ Returns number of pages.
 
 =cut
 
-sub pages {
+has pages => (
+    is       => 'lazy',
+    isa      => Int,
+    init_arg => undef,
+);
+
+sub _build_pages {
+    return $_[0]->pager->last_page;
+}
+
+=head2 count
+
+Returns total number of records.
+
+=over
+
+=item clearer: clear_count
+
+=back
+
+=cut
+
+has count => (
+    is      => 'lazy',
+    isa     => Int,
+    clearer => 1,
+);
+
+sub _build_count {
     my $self = shift;
-    my ($count, $pages);
-
-    $count = $self->iterator->total_entries;
-
-    if ($self->page_size > 0) {
-        $pages = int($count / $self->page_size);
-        if ($count % $self->page_size) {
-            $pages++;
-        }
-    }
-    elsif ($count > 0) {
-        $pages = 1;
+    if ( $self->has_pager ) {
+        return $self->pager->total_entries;
     }
     else {
-        $pages = 0;
+        return $self->iterator->count;
     }
-
-    return $pages;
 }
 
-=head2 current_page
+=head1 METHODS
 
-Returns current page, starting from 1.
-
-=cut
-
-sub current_page {
-    my $self = shift;
-
-    $self->iterator->current_page;
-}
-
-=head2 select_page {
-
-Select page.  Page numbering starts at 1.
-
-=cut
-
-sub select_page {
-    my ($self, $page) = @_;
-    my ($new_position, $distance);
-
-    $self->iterator->current_page($page);
-}
 
 =head2 position_first
 
@@ -131,9 +256,7 @@ Returns global position number of first item on current page.
 =cut
 
 sub position_first {
-    my $self = shift;
-
-    return ($self->current_page - 1) * $self->page_size + 1;
+    $_[0]->pager->first;
 }
 
 =head2 position_last
@@ -143,16 +266,7 @@ Returns global position number of last item on current page.
 =cut
 
 sub position_last {
-    my $self = shift;
-    my $position;
-
-    $position = $self->current_page * $self->page_size;
-
-    if ($position > $self->count) {
-        $position = $self->count;
-    }
-
-    return $position;
+    $_[0]->pager->last;
 }
 
 =head2 next
@@ -166,31 +280,19 @@ sub next {
 
     if ($self->page_size > 0) {
         if ($self->page_position < $self->page_size) {
-            $self->{page_position}++;
-            return $self->iterator->next_page;
+            $self->set_page_position($self->page_position + 1);
+            return $self->iterator->next;
         }
         else {
             # advance current page
-            $self->{current_page}++;
-            $self->{page_position} = 0;
+            $self->select_page( $self->current_page + 1 );
             return;
         }
     }
     else {
+        $self->set_page_position($self->page_position + 1);
         return $self->iterator->next;
     }
-}
-
-=head2 count
-
-Returns number of records.
-
-=cut
-
-sub count {
-    my $self = shift;
-
-    $self->iterator->total_entries;
 }
 
 =head2 reset
@@ -201,20 +303,24 @@ Resets iterator.
 
 sub reset {
     my $self = shift;
-
-    $self->iterator->current_page(1);
+    $self->select_page(1);
 }
 
-=head2 seed
+sub BUILDARGS {
+    my ( $class, @args ) = @_;
 
-Seeds the iterator.
-
-=cut
-
-sub seed {
-    my ($self, $data) = @_;
-
-    $self->iterator->seed($data);
+    if (ref($args[0]) eq 'ARRAY') {
+        # create iterator
+        my $data = shift @args;
+        my $iter = Template::Flute::Iterator->new(data => $data);
+        unshift @args, iterator => $iter;
+    }
+#    elsif ( @args == 1 ) {
+#        @args = ( iterator => $args[0] );
+#    }
+    my %ret = @args;
+    delete $ret{page_size} if !defined $ret{page_size};
+    return \%ret;
 }
 
 =head1 AUTHOR

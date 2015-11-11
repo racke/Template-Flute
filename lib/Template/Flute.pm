@@ -1222,36 +1222,12 @@ sub _filter {
 sub _paging {
     my ($self, $list, $iterator) = @_;
 
-    # turn iterator into paginator
-    my $page_size = $list->{paging}->{page_size} || 20;
+    my $pager = Template::Flute::Pager->new(
+        iterator  => $iterator,
+        page_size => $list->{paging}->{page_size},
+    );
 
-    my ($iter, $pager);
-
-    if (defined blessed($iterator)) {
-        # DBIx::Class::ResultSet objects have a pager method, but
-        # it throws an error without a limit through the rows attribute
-        if ($iterator->can('pager')) {
-            if ($iterator->can('is_paged')) {
-                if ($iterator->is_paged) {
-                    $pager = $iterator->pager;
-                }
-            }
-            else {
-                $pager = $iterator->pager;
-            }
-        }
-    }
-
-    if ($pager) {
-        $iter = Template::Flute::Pager->new(iterator => $pager,
-                                            page_size => $page_size);
-    }
-    else {
-        $iter = Template::Flute::Paginator->new(iterator => $iterator,
-                                                page_size => $page_size);
-    }
-
-    if ($iter->pages > 1) {
+    if ($pager->pages > 1) {
         my ($element_orig, $element_copy, %element_pos, $element_link,
             $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
@@ -1267,15 +1243,15 @@ sub _paging {
         }
         $paging_page ||= 1;
 
-        $iter->select_page($paging_page);
+        $pager->select_page($paging_page);
         # print "Page size is: " . $iter->page_size;
 
         $paging_min = 1;
-        $paging_max = $iter->pages;
+        $paging_max = $pager->pages;
 
         if ($slide_length > 0) {
             # determine the page numbers to show up
-            if ($iter->pages > $slide_length) {
+            if ($pager->pages > $slide_length) {
                 $paging_min = int($paging_page - $slide_length / 2);
 
                 if ($paging_min < 1) {
@@ -1312,7 +1288,7 @@ sub _paging {
             if ($element->{type} eq 'active') {
                 $element_active = $element_orig;
             } elsif ($element->{type} eq 'standard') {
-                for (1 .. $iter->pages) {
+                for (1 .. $pager->pages) {
                     next if $_ < $paging_min || $_ > $paging_max;
 
                     if ($_ == $paging_page) {
@@ -1356,16 +1332,16 @@ sub _paging {
                     $element_orig->cut;
                 }
             } elsif ($element->{type} eq 'last') {
-                if ($paging_page < $iter->pages) {
+                if ($paging_page < $pager->pages) {
                     # Adjust link
                     if ($element_link = $element_orig->first_descendant('a')) {
-                        $self->_paging_link($element_link, $paging_link, $iter->pages);
+                        $self->_paging_link($element_link, $paging_link, $pager->pages);
                     }
                 } else {
                     $element_orig->cut;
                 }
             } elsif ($element->{type} eq 'next') {
-                if ($paging_page < $iter->pages) {
+                if ($paging_page < $pager->pages) {
                     # Adjust link
                     if ($element_link = $element_orig->first_descendant('a')) {
                         $self->_paging_link($element_link, $paging_link, $paging_page + 1);
@@ -1390,7 +1366,7 @@ sub _paging {
             $paging_elt->cut;
         }
     }
-    return $iter;
+    return $pager;
 }
 
 sub _paging_link {
