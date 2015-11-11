@@ -1,7 +1,9 @@
 package Template::Flute::I18N;
 
-use strict;
-use warnings;
+use Moo;
+use Types::Standard qw/CodeRef/;
+use Sub::Quote qw/quote_sub/;
+use namespace::clean;
 
 =head1 NAME
 
@@ -19,36 +21,41 @@ Template::Flute::I18N - Localization class for Template::Flute
 
     $i18n = Template::Flute::I18N->new(\&translate);
 
+    # OR:
+
+    $i18n = Template::Flute::I18N->new(coderef => \&translate);
+
+    # then:
+
     $flute = Template::Flute(specification => ...,
                              template => ...,
                              i18n => $i18n);
 
-=head1 CONSTRUCTOR
+=head1 ATTRIBUTES
 
-=head2 new [CODEREF]
+=head2 coderef
 
-Create a new Template::Flute::I18N object. CODEREF is used by
-localize method for the text translation.
+Coderef used by L</localize> method for the text translation.
 
 =cut
 
-sub new {
-	my ($proto, @args) = @_;
-	my ($class, $self);
+has coderef => (
+    is      => 'ro',
+    isa     => CodeRef,
+    default => quote_sub q{},
+);
 
-	$class = ref($proto) || $proto;
-	$self = {};
-	
+sub BUILDARGS {
+	my ($class, @args) = @_;
+
 	if (ref($args[0]) eq 'CODE') {
 		# use first parameter as localization function
-		$self->{func} = shift(@args);
+        return { coderef => $args[0] };
 	}
 	else {
 		# noop translation
-		$self->{func} = sub {return;}
+        return {};
 	}
-
-	bless ($self, $class);
 }
 
 =head1 METHODS
@@ -65,7 +72,7 @@ sub localize {
 	my ($self, $text) = @_;
 	my ($trans);
 	
-	$trans = $self->{func}->($text);
+	$trans = $self->coderef->($text);
 
 	if (defined $trans && $trans =~ /\S/) {
 		return $trans;
