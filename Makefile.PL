@@ -17,8 +17,10 @@ WriteMakefile(
         'Test::Warn' => 0,
         'Test::Warnings' => 0,
         'Test::Fatal' => 0,
+        'Test::CleanNamespaces' => 0,
     },
     PREREQ_PM => {
+        'Class::XSAccessor' => 0,
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
@@ -26,6 +28,7 @@ WriteMakefile(
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
         'MooX::HandlesVia' => 0,
+        'MooX::TypeTiny' => 0,
         'Hash::MultiValue' => 0,
         # InstanceOf using isa
         'Type::Tiny' => 0,

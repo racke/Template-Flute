@@ -5,6 +5,7 @@ use warnings;
 
 use File::Basename;
 use File::Spec;
+use namespace::clean;
 
 =head1 NAME
 

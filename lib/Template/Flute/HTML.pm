@@ -22,6 +22,7 @@ use Template::Flute::UriAdjust;
 use Template::Flute::Param;
 
 use Scalar::Util qw/blessed/;
+use namespace::clean;
 
 =head1 NAME
 

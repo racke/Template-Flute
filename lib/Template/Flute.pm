@@ -13,6 +13,7 @@ use Template::Flute::Iterator::Cache;
 use Template::Flute::Increment;
 use Template::Flute::Pager;
 use Template::Flute::Paginator;
+use namespace::clean;
 
 =head1 NAME
 

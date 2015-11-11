@@ -1,11 +1,11 @@
 package Template::Flute::Paginator;
 
-use strict;
-use warnings;
-
 use Moo;
-use Sub::Quote;
+use MooX::TypeTiny;
+use Sub::Quote qw/quote_sub/;
 use Template::Flute::Iterator;
+use Types::Standard qw/Int/;
+use namespace::clean -except => [qw/new/];
 
 =head1 NAME
 
@@ -33,25 +33,50 @@ Template::Flute::Paginator - Generic paginator class for Template::Flute
 
 =cut
 
+=head1 ATTRIBUTES
+
+=head2 iterator
+
+An instance of some kind of iterator for example: L<Template::Flute::Iterator>
+or L<Data::Transpose::Iterator>
+
+=cut
+
 has iterator => (
-    is => 'rw',
-    lazy => 1,
+    is      => 'ro',
     default => quote_sub q{return Template::Flute::Iterator->new;},
 );
 
+=head2 page_size
+
+Number of items per page.
+
+=cut
+
 has page_size => (
-    is => 'rw',
-    lazy => 1,
-    default => quote_sub q{return 0;},
+    is => 'ro',
+    isa => Int,
+    default => 0,
 );
+
+=head2 page_position
+
+Index within the current page.
+
+=over
+
+=item writer: set_page_position
+
+=back
+
+=cut
 
 has page_position => (
     is => 'ro',
-    lazy => 1,
-    default => quote_sub q{return 0;},
+    isa => Int,
+    default => 0,
+    writer => 'set_page_position',
 );
-
-=head1 METHODS
 
 =head2 pages
 
@@ -59,7 +84,13 @@ Returns number of pages.
 
 =cut
 
-sub pages {
+has pages => (
+    is       => 'lazy',
+    isa      => Int,
+    init_arg => undef,
+);
+
+sub _build_pages {
     my $self = shift;
     my ($count, $pages);
 
@@ -85,19 +116,24 @@ sub pages {
 
 Returns current page, starting from 1.
 
+=over
+
+=item writer: set_current_page
+
+=back
+
 =cut
 
-sub current_page {
-    my $self = shift;
+has current_page => (
+    is      => 'ro',
+    isa     => Int,
+    default => 1,
+    writer  => 'set_current_page',
+);
 
-    unless (exists $self->{current_page}) {
-        $self->{current_page} = 1;
-    }
+=head1 METHODS
 
-    return $self->{current_page};
-}
-
-=head2 select_page {
+=head2 select_page
 
 Select page, starting from 1.
 
@@ -157,13 +193,13 @@ sub next {
 
     if ($self->page_size > 0) {
         if ($self->page_position < $self->page_size) {
-            $self->{page_position}++;
+            $self->set_page_position( $self->page_position + 1 );
             return $self->iterator->next;
         }
         else {
             # advance current page
-            $self->{current_page}++;
-            $self->{page_position} = 0;
+            $self->set_current_page( $self->current_page + 1 );
+            $self->set_page_position(0);
             return;
         }
     }
@@ -203,10 +239,9 @@ sub BUILDARGS {
     if (ref($args[0]) eq 'ARRAY') {
         # create iterator
         $data = shift @args;
-        $iter = Template::Flute::Iterator->new($data);
+        $iter = Template::Flute::Iterator->new(data => $data);
         unshift @args, iterator => $iter;
     }
-
     return {@args};
 }
 

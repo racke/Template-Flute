@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Template::Flute::Iterator;
+use namespace::clean;
 
 =head1 NAME
 

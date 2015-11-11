@@ -2,6 +2,7 @@ package Template::Flute::Increment;
 
 use Moo;
 use Types::Standard qw/Int/;
+use namespace::clean;
 
 =head1 NAME
 

@@ -5,6 +5,7 @@ use warnings;
 
 use Moo;
 use Sub::Quote;
+use namespace::clean;
 
 =head1 NAME
 

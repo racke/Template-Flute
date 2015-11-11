@@ -3,6 +3,7 @@ package Template::Flute::Value;
 use Moo;
 use Types::Standard qw/ArrayRef Enum InstanceOf Str Undef/;
 use Types::Common::String qw/NonEmptySimpleStr/;
+use namespace::clean;
 
 =head1 NAME
 

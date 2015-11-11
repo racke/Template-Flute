@@ -8,6 +8,7 @@ use URI::Escape;
 use URI::Escape (qw/uri_unescape/);
 
 use Moo;
+use namespace::clean;
 
 =head1 NAME
 

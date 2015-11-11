@@ -2,6 +2,7 @@ package Template::Flute::Role::Elements;
 
 use Moo::Role;
 use Types::Standard qw/ArrayRef InstanceOf/;
+use namespace::clean;
 
 =head2 elts
 
