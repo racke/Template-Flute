@@ -1,7 +1,7 @@
 package Template::Flute::List;
 
-use Sub::Quote;
 use Moo;
+use Sub::Quote;
 use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Int Str Undef/;
 use namespace::clean;
 use MooX::StrictConstructor;

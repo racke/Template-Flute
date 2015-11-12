@@ -2,6 +2,7 @@ package Template::Flute::Paginator;
 
 use Moo;
 extends 'Template::Flute::Pager';
+
 use namespace::clean;
 use MooX::StrictConstructor;
 

@@ -1,8 +1,5 @@
 package Template::Flute::HTML;
 
-use strict;
-use warnings;
-
 use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Undef/;
 

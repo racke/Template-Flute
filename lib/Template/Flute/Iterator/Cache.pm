@@ -1,9 +1,9 @@
 package Template::Flute::Iterator::Cache;
 
 use Moo;
-use Types::Standard qw/Bool InstanceOf/;
-
 extends 'Template::Flute::Iterator';
+
+use Types::Standard qw/Bool InstanceOf/;
 use namespace::clean;
 use MooX::StrictConstructor;
 

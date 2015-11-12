@@ -1,15 +1,12 @@
 package Template::Flute::Iterator::JSON;
 
-use strict;
-use warnings;
-
 use Moo;
+extends 'Template::Flute::Iterator';
+
 use JSON 'from_json';
 use Types::Standard qw/HashRef Str Undef/;
 use namespace::clean;
 use MooX::StrictConstructor;
-
-extends 'Template::Flute::Iterator';
 
 =head1 NAME
 

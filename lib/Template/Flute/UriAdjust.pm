@@ -1,14 +1,10 @@
 package Template::Flute::UriAdjust;
 
-use strict;
-use warnings;
-
+use Moo;
 use URI;
 use URI::Escape;
 use URI::Escape (qw/uri_unescape/);
 use Types::Standard qw/InstanceOf Str/;
-
-use Moo;
 use namespace::clean;
 use MooX::StrictConstructor;
 

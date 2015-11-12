@@ -2,10 +2,6 @@ package Template::Flute::Specification;
 
 use Moo;
 use Types::Standard qw/HashRef Str/;
-
-use strict;
-use warnings;
-
 use Template::Flute::Iterator;
 use namespace::clean;
 use MooX::StrictConstructor;
