@@ -459,14 +459,7 @@ sub value_add {
 
     $self->values->add($value->name => $value);
 
-	if ($id = $value->id) {
-		push @{$self->{ids}->{$id}}, $value;
-	}
-	else {
-		$class = $value->class;
-
-		push @{$self->{classes}->{$class}}, $value;
-	}
+    $self->_assign_objects($value);
 
     return $value;
 }
@@ -790,6 +783,21 @@ sub dangling {
         }
     }
     return @empty;
+}
+
+# assign objects to the class, id and name hashes
+
+sub _assign_objects {
+    my ($self, $object) = @_;
+
+	if (my $id = $object->id) {
+		push @{$self->{ids}->{$id}}, $object;
+	}
+	else {
+		my $class = $object->class;
+
+		push @{$self->{classes}->{$class}}, $object;
+	}
 }
 
 =head1 AUTHOR
