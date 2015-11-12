@@ -249,16 +249,8 @@ sub container_add {
 
 	# loop through values for this container
 	for my $value (@{$new_containerref->{value}}) {
-        if ($value->{id}) {
-            push @{$self->ids->{$value->{id}}}, {%{$value}, type => 'value', container => $container_name};
-        }
-        else {
-            $class = $value->{class} || $value->{name};
-            unless ($class) {
-                die "Neither class nor name for value within container $container_name.\n";
-            }
-            push @{$self->classes->{$class}}, {%{$value}, type => 'value', container => $container_name};
-        }
+        # create value object
+        $self->value_add($value);
 	}
 
 	return $containerref;
