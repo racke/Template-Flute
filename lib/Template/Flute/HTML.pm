@@ -659,9 +659,8 @@ sub _elt_handler {
         $self->{paging_elements}->{$sob->{paging}}->{$sob->{element_type}} = $sob;
 	} elsif ($sob->{type} eq 'value') {
         $sob->{elts} = [$elt];
-        $sob->{iterator_name} = $sob->{iterator};
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-		$self->_values->add( $name, Template::Flute::Value->new($sob) );
+		$self->_values->add( $name, $sob );
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';
@@ -755,6 +754,11 @@ sub _elt_indicate_replacements {
 		$elt->{"flute_$name"}->{rep_att} = 'value';
 			
 	} elsif ($gi eq 'select') {
+        if (exists $sob->{iterator_name}) {
+            # Value objects don't provide iterator attribute
+            $sob->{iterator} = $sob->{iterator_name};
+        }
+        
 		if ($sob->{iterator}) {
 			$elt->{"flute_$name"}->{rep_sub} = sub {
 				_set_selected($_[0], $_[1],

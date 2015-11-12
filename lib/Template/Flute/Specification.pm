@@ -1,8 +1,15 @@
 package Template::Flute::Specification;
 
 use Moo;
-use Types::Standard qw/HashRef Str/;
+use Types::Standard qw/HashRef InstanceOf Str/;
+use Hash::MultiValue;
+
+use strict;
+use warnings;
+
 use Template::Flute::Iterator;
+use Template::Flute::Value;
+
 use namespace::clean;
 use MooX::StrictConstructor;
 
@@ -177,8 +184,8 @@ lookup hash for values by name
 
 has values => (
     is => 'ro',
-    isa => HashRef,
-    default => sub {{}},
+    isa => InstanceOf ['Hash::MultiValue'],
+    default => sub {return Hash::MultiValue->new;},
 );
 
 =head1 CONSTRUCTOR
@@ -438,36 +445,39 @@ Add value specified by hash reference VALUE.
 	
 sub value_add {
 	my ($self, $new_valueref) = @_;
-	my ($valueref, $value_name, $id, $class);
+	my ($value, $value_name, $id, $class);
 
-	$value_name = $new_valueref->{value}->{name};
-
-    unless (defined $value_name && $value_name =~ /\S/) {
-        die "Value needs a name attribute.";
-    }
-
-    if (exists $new_valueref->{value}->{include}) {
+    if (exists $new_valueref->{include}) {
 		# include implies hooking resulting value
-		$new_valueref->{value}->{op} = 'hook';
+		$new_valueref->{op} = 'hook';
 	}
-	elsif (exists $new_valueref->{value}->{field}
-           && $new_valueref->{value}->{field} =~ /\./) {
-        $new_valueref->{value}->{field} = [split /\./, $new_valueref->{value}->{field}];
+    elsif (exists $new_valueref->{field}
+               && $new_valueref->{field} =~ /\./) {
+        $new_valueref->{field} = [split /\./, $new_valueref->{field}];
     }
 
-	$valueref = $self->values->{$new_valueref->{value}->{name}} = {};
-	
-	if ($id = $new_valueref->{value}->{id}) {
-		push @{$self->ids->{$id}}, {%{$new_valueref->{value}}, type => 'value'};
+    if (exists $new_valueref->{iterator}) {
+        $new_valueref->{iterator_name} = delete $new_valueref->{iterator};
+    }
+
+    # create Value object
+    $value = Template::Flute::Value->new(
+        $new_valueref
+    );
+
+    $self->values->add($value->name => $value);
+
+	if ($id = $value->id) {
+		push @{$self->{ids}->{$id}}, $value;
 	}
 	else {
-		$class = $new_valueref->{value}->{class} || $value_name;
+		$class = $value->class;
 
-		push @{$self->classes->{$class}}, {%{$new_valueref->{value}}, type => 'value'};
+		push @{$self->{classes}->{$class}}, $value;
 	}
 
-	return $valueref;
-}	
+    return $value;
+}
 
 =head2 i18n_add I18N
 

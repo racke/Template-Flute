@@ -302,11 +302,8 @@ sub _form_handler {
 
 sub _value_handler {
 	my ($self, $elt) = @_;
-	my (%value);
 
-	$value{value} = $elt->atts();
-	
-	$self->spec->value_add(\%value);
+	$self->spec->value_add($elt->atts);
 }
 
 sub _i18n_handler {
