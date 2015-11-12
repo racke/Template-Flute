@@ -604,8 +604,8 @@ sub _sub_process {
             next if $container->list;
 
             $container->set_values($values) if $values;
-            unless ($container->visible()) {
-                for my $elt (@{$container->elts()}) {
+            unless ($container->visible) {
+                for my $elt (@{$container->elts}) {
                     $elt->cut();
                 }
             }
@@ -617,9 +617,9 @@ sub _sub_process {
             next if $container->list ne $spec_xml->att('name');
 
             $container->set_values($values) if $values;
-            unless ($container->visible()) {
+            unless ($container->visible) {
                 $cut_container = 1;
-                for my $elt (@{$container->elts()}) {
+                for my $elt (@{$container->elts}) {
                     $elt->cut();
                 }
             }
@@ -925,8 +925,8 @@ sub _sub_process {
     # cut again the invisible containers, after the values are interpolated
     if ($level == 0) {
         for my $container ($template->containers()) {
-            unless ($container->visible()) {
-                for my $elt (@{$container->elts()}) {
+            unless ($container->visible) {
+                for my $elt (@{$container->elts}) {
                     $elt->cut();
                 }
             }
