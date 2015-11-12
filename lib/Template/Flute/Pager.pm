@@ -5,8 +5,7 @@ use warnings;
 
 use Moo;
 use Data::Page;
-use Safe::Isa;
-use Scalar::Util qw/blessed/;
+use Scalar::Util;
 use Sub::Quote qw/quote_sub/;
 use Types::Standard qw/HasMethods InstanceOf Int/;
 
@@ -108,13 +107,6 @@ has iterator => (
     is     => 'ro',
     isa    => HasMethods [ "count", "next" ],
     writer => 'seed',
-#    coerce => sub {
-#        if ( Scalar::Util::blessed( $_[0] ) ) {
-#            return $_[0];
-#        }
-#        elsif ( {
-#        }
-#    },
     coerce => quote_sub q{
     Scalar::Util::blessed( $_[0] ) ? $_[0] : Template::Flute::Iterator->new(@_)
     },
@@ -179,6 +171,15 @@ sub _build_current_page {
 after 'select_page' => sub {
     my ($self, $page) = @_;
     $self->pager->current_page($page);
+    if ( $self->iterator->can("is_paged") && $self->iterator->is_paged ) {
+        $self->iterator->page($page);
+    }
+    else {
+        $self->iterator->reset;
+        for (1..$self->position_first-1) {
+            $self->iterator->next;
+        }
+    }
     $self->set_page_position(0);
 };
 
@@ -253,6 +254,8 @@ sub _build_count {
 
 Returns global position number of first item on current page.
 
+NOTE: First position on first page is 1 (not zero-based)
+
 =cut
 
 sub position_first {
@@ -262,6 +265,8 @@ sub position_first {
 =head2 position_last
 
 Returns global position number of last item on current page.
+
+NOTE: First position on first page is 1 (not zero-based)
 
 =cut
 
@@ -315,10 +320,8 @@ sub BUILDARGS {
         my $iter = Template::Flute::Iterator->new(data => $data);
         unshift @args, iterator => $iter;
     }
-#    elsif ( @args == 1 ) {
-#        @args = ( iterator => $args[0] );
-#    }
     my %ret = @args;
+    # catch and remove undef page size
     delete $ret{page_size} if !defined $ret{page_size};
     return \%ret;
 }
