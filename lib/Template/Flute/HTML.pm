@@ -1,8 +1,5 @@
 package Template::Flute::HTML;
 
-use strict;
-use warnings;
-
 use Moo;
 use Types::Standard qw/ArrayRef InstanceOf Undef/;
 
@@ -23,6 +20,7 @@ use Template::Flute::Param;
 
 use Scalar::Util qw/blessed/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

@@ -1,11 +1,11 @@
 package Template::Flute::Specification::XML;
 
-use strict;
-use warnings;
-
-use XML::Twig;
-
+use Moo;
 use Template::Flute::Specification;
+use Types::Standard qw/InstanceOf/;
+use XML::Twig;
+use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -18,6 +18,20 @@ Template::Flute::Specification::XML - XML Specification Parser
     $spec = $xml->parse_file($specification_file);
     $spec = $xml->parse($specification_text);
 
+=head1 ATTRIBUTES
+
+=head2 spec
+
+L<Template::Flute::Specification> specification object.
+
+=cut
+
+has spec => (
+    is      => 'ro',
+    isa     => InstanceOf ['Template::Flute::Specification'],
+    default => sub { return Template::Flute::Specification->new },
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -28,16 +42,16 @@ Create a Template::Flute::Specification::XML object.
 
 # Constructor
 
-sub new {
-	my ($class, $self);
-	my (%params);
-
-	$class = shift;
-	%params = @_;
-
-	$self = \%params;
-	bless $self, $class;
-}
+#sub new {
+#	my ($class, $self);
+#	my (%params);
+#
+#	$class = shift;
+#	%params = @_;
+#
+#	$self = \%params;
+#	bless $self, $class;
+#}
 
 =head1 METHODS
 
@@ -65,9 +79,9 @@ sub parse {
 		$self->_add_error(error => $@);
 		return;
 	}
-	$self->{spec}->{xml} = $xml;
+	$self->spec->{xml} = $xml;
 	
-	return $self->{spec};
+	return $self->spec;
 }
 
 =head2 parse_file STRING
@@ -83,14 +97,14 @@ sub parse_file {
 
 	$twig = $self->_initialize;
 	
-	$self->{spec}->{xml} = $twig->safe_parsefile($file);
+	$self->spec->{xml} = $twig->safe_parsefile($file);
 
-	unless ($self->{spec}->{xml}) {
+	unless ($self->spec->{xml}) {
 		$self->_add_error(file => $file, error => $@);
 		return;
 	}
 
-	return $self->{spec};
+	return $self->spec;
 }
 
 sub _initialize {
@@ -100,9 +114,6 @@ sub _initialize {
 	# initialize stash
 	$self->{stash} = [];
 	
-	# specification object
-	$self->{spec} = new Template::Flute::Specification;
-
 	# twig handlers
 	%handlers = (specification => sub {$self->_spec_handler($_[1])},
  				 container => sub {$self->_container_handler($_[1])},
@@ -150,7 +161,7 @@ sub _pattern_handler {
     else {
         die "Wrong pattern type $type! Only string and regexp are supported";
     }
-    $self->{spec}->pattern_add({ name => $name, regexp => $regexp });
+    $self->spec->pattern_add({ name => $name, regexp => $regexp });
 }
 
 sub _spec_handler {
@@ -158,11 +169,11 @@ sub _spec_handler {
 	my ($value);
 
 	if ($value = $elt->att('name')) {
-		$self->{spec}->name($value);
+		$self->spec->rename($value);
 	}
 
 	if ($value = $elt->att('encoding')) {
-		$self->{spec}->encoding($value);
+		$self->spec->encoding($value);
 	}
 
 	# add values remaining on the stash
@@ -192,7 +203,7 @@ sub _container_handler {
         $self->_stash_flush($elt, \%container);
 
         # add container to specification object
-        $self->{spec}->container_add(\%container);
+        $self->spec->container_add(\%container);
     }
 }
 
@@ -208,7 +219,7 @@ sub _list_handler {
 	$self->_stash_flush($elt, \%list);
 
 	# add list to specification object
-	$self->{spec}->list_add(\%list);
+	$self->spec->list_add(\%list);
 }
 
 sub _paging_handler {
@@ -236,7 +247,7 @@ sub _paging_handler {
 
 	$paging{paging}->{elements} = \%paging_elts;
 
-    $self->{spec}->paging_add(\%paging);
+    $self->spec->paging_add(\%paging);
 }
 
 sub _sort_handler {
@@ -286,7 +297,7 @@ sub _form_handler {
 	$self->_stash_flush($elt, \%form);
 		
 	# add form to specification object
-	$self->{spec}->form_add(\%form);
+	$self->spec->form_add(\%form);
 }
 
 sub _value_handler {
@@ -295,7 +306,7 @@ sub _value_handler {
 
 	$value{value} = $elt->atts();
 	
-	$self->{spec}->value_add(\%value);
+	$self->spec->value_add(\%value);
 }
 
 sub _i18n_handler {
@@ -304,7 +315,7 @@ sub _i18n_handler {
 
 	$i18n{value} = $elt->atts();
 	
-	$self->{spec}->i18n_add(\%i18n);
+	$self->spec->i18n_add(\%i18n);
 }
 
 sub _stash_flush {

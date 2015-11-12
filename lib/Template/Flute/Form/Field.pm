@@ -1,8 +1,9 @@
 package Template::Flute::Form::Field;
 
 use Moo;
-use Types::Standard qw/ArrayRef HashRef InstanceOf/;
+use Types::Standard qw/ArrayRef HashRef InstanceOf Str/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -18,6 +19,7 @@ Type of form field.
 
 has type => (
     is => 'ro',
+    isa => Str,
 );
 
 =head2 name
@@ -28,6 +30,34 @@ Name of form field.
 
 has name => (
     is => 'ro',
+    isa => Str,
+);
+
+=head2 id
+
+=cut
+
+has id => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 form
+
+=cut
+
+has form => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 keep
+
+=cut
+
+has keep => (
+    is => 'ro',
+    isa => Str,
 );
 
 =head2 iterator
@@ -38,6 +68,34 @@ Name of iterator for this form field (if any).
 
 has iterator => (
     is => 'ro',
+    isa => Str,
+);
+
+=head2 iterator_default
+
+=cut
+
+has iterator_default => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 iterator_name_key
+
+=cut
+
+has iterator_name_key => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 iterator_value_key
+
+=cut
+
+has iterator_value_key => (
+    is => 'ro',
+    isa => Str,
 );
 
 =head2 elts

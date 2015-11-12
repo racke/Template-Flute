@@ -1,10 +1,11 @@
 package Template::Flute::Iterator::Cache;
 
 use Moo;
-use Types::Standard qw/ArrayRef InstanceOf Int/;
-
 extends 'Template::Flute::Iterator';
+
+use Types::Standard qw/Bool InstanceOf/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -39,6 +40,7 @@ has iterator => (
 has filled => (
     is => 'rwp',
     default => 0,
+    isa => Bool,
 );
 
 =head1 METHODS

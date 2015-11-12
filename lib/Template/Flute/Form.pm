@@ -1,13 +1,11 @@
 package Template::Flute::Form;
 
 use Moo;
-use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Str Undef/;
-
-use strict;
-use warnings;
-
 with 'Template::Flute::Role::Elements';
+
+use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Str Undef/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
