@@ -21,6 +21,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Class::XSAccessor' => 0,
+        'Data::Page' => 0,
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
@@ -32,6 +33,7 @@ WriteMakefile(
         'Hash::MultiValue' => 0,
         # InstanceOf using isa
         'Type::Tiny' => 0,
+        'Type::Tiny::XS' => 0,
         'namespace::clean' => 0,
         'Scalar::Util' => 0,
         'Sub::Quote' => 0,

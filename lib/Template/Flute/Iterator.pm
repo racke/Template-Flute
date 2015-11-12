@@ -49,7 +49,7 @@ The data to be iterated over.
 has data => (
     is     => 'ro',
     isa    => ArrayRef,
-    coerce => sub { ref( $_[0] ) eq 'ARRAY' ? $_[0] : \@_ },
+    coerce => sub { ref( $_[0] ) eq 'ARRAY' ? $_[0] : [$_[0]] },
     default => sub { [] },
     writer  => 'seed',
 );
@@ -173,24 +173,15 @@ sub sort {
     }
 }
 
-
 sub BUILDARGS {
     my ( $class, @args ) = @_;
-    my %ret;
 
-    if (@args) {
-        if ( ref( $args[0] ) eq 'ARRAY' ) {
-            $ret{data} = $args[0];
-        }
-        elsif ( @args % 2 == 0 ) {
-            %ret = @args;
-        }
-        else {
-            # unexpected args - no nothing
-        }
+    if ( @args == 1 ) {
+        return { data => $args[0] };
     }
-
-    return \%ret;
+    else {
+        return {@args};
+    }
 }
 
 =head1 AUTHOR
