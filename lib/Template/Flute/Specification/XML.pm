@@ -1,11 +1,11 @@
 package Template::Flute::Specification::XML;
 
-use strict;
-use warnings;
+use Moo;
+extends 'Template::Flute::Specification';
 
 use XML::Twig;
-
-use Template::Flute::Specification;
+use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -28,16 +28,16 @@ Create a Template::Flute::Specification::XML object.
 
 # Constructor
 
-sub new {
-	my ($class, $self);
-	my (%params);
-
-	$class = shift;
-	%params = @_;
-
-	$self = \%params;
-	bless $self, $class;
-}
+#sub new {
+#	my ($class, $self);
+#	my (%params);
+#
+#	$class = shift;
+#	%params = @_;
+#
+#	$self = \%params;
+#	bless $self, $class;
+#}
 
 =head1 METHODS
 
