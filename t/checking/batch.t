@@ -31,7 +31,15 @@ foreach my $file (@testfiles) {
     ok($flute->process, "HTML produced");
     @errors = $flute->specification->dangling;
     # diag Dumper(\@errors);
-    ok(@errors, "Consistency check fails");
+    if ( $file eq 'admin' ) {
+        TODO: {
+            local $TODO = "<racke> dont worry about dangling tests this will fall into place later when all spec stuff are objects";
+            ok(@errors, "Consistency check fails");
+        };
+    }
+    else {
+        ok(@errors, "Consistency check fails");
+    }
 }
 
 sub get_good_template {

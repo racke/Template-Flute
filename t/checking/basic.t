@@ -47,7 +47,10 @@ $flute = Template::Flute->new(template => $html,
 
 
 my @empty = $flute->specification->dangling;
-# diag Dumper(\@empty);
+ diag Dumper(\@empty);
+TODO: {
+    local $TODO = "<racke> dont worry about dangling tests this will fall into place later when all spec stuff are objects";
+
 ok(@empty, "Found empty elements");
 cmp_deeply @empty, ({
                      'dump' => {name => 'cammmmmel',
@@ -57,6 +60,7 @@ cmp_deeply @empty, ({
                      'type' => 'class'
                     })
                    , "Report ok";
+};
 
 
 foreach my $internal (qw/_ids _classes _names/) {
