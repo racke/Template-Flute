@@ -110,7 +110,8 @@ operation
 
 has op => (
     is  => 'ro',
-    isa => Enum [ 'append', 'hook', 'toggle' ],
+    isa => Enum [ 'append', 'hook', 'replace', 'toggle' ],
+    default => 'replace',
 );
 
 =head2 pattern
