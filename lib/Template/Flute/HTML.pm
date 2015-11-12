@@ -505,11 +505,18 @@ sub _elt_handler {
 
 	if ($sob->{type} eq 'container') {
 	    if (exists $self->{containers}->{$name}) {
-		push @{$self->{containers}->{$name}->{sob}->{elts}}, $elt;
+		push @{$self->{containers}->{$name}->elts}, $elt;
 	    }
 	    else {
-		$sob->{elts} = [$elt];
-		$self->{containers}->{$name} = new Template::Flute::Container ($sob, $spec_object, $name);
+            # FIXME: why do we also need to set $sob->{elts} ?
+            $sob->{elts} = [$elt];
+            $self->{containers}->{$name} = Template::Flute::Container->new(
+                elts  => [$elt],
+                list  => $sob->{list},
+                name  => $name,
+                spec  => $spec_object,
+                value => $sob->{value}
+            );
 	    }
 
 	    return $self;

@@ -1,50 +1,53 @@
 package Template::Flute::Container;
 
-use strict;
-use warnings;
+use Moo;
+use base 'Template::Flute';
+use Types::Standard qw/ArrayRef HashRef InstanceOf Object Str Undef/;
+use Template::Flute::Expression;
+
+use namespace::clean;
+use MooX::StrictConstructor;
+
+our %expression_cache;
 
 =head1 NAME
 
 Template::Flute::Container - Container object for Template::Flute templates.
 
-=head1 CONSTRUCTOR
+=head1 ATTRIBUTES
 
-=head2 new
+=head2 elts
 
-Creates Template::Flute::Container object.
-
-=cut
-
-use base 'Template::Flute';
-use Template::Flute::Expression;
-
-our %expression_cache;
-
-# Constructor
-sub new {
-	my ($class, $sob, $spec, $name) = @_;
-	my ($self);
-	
-	$self = {sob => $sob};
-
-	bless $self, $class;
-	
-	return $self;
-}
-
-=head1 METHODS
-
-=head2 name
-
-Returns name of the container.
+corresponding HTML template elements for this container.
 
 =cut
 
-sub name {
-	my ($self) = @_;
+has elts => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+);
 
-	return $self->{sob}->{name};
-}
+=head2 expression_parser
+
+Possibly an instance of L<Template::Flute::Expression>.
+
+=over
+
+=item predicate: has_expression_parser
+
+=item writer set_expression_parser
+
+=back
+
+=cut
+
+has expression_parser => (
+    is        => 'ro',
+    isa       => InstanceOf ['Template::Flute::Expression'],
+    writer    => 'set_expression_parser',
+    predicate => 1,
+);
 
 =head2 list
 
@@ -52,33 +55,68 @@ Name of list this container belongs to or undef for top level containers.
 
 =cut
 
-sub list {
-    return shift->{sob}->{list};
-}
+has list => (
+    is  => 'ro',
+    isa => Str | Undef,
+);
 
-=head2 set_values
+=head2 name
 
-Passes current values to this container.
-
-=cut
-	
-sub set_values {
-	my ($self, $values) = @_;
-
-	$self->{values} = $values;
-}
-
-=head2 elts
-
-Returns corresponding HTML template elements for this container.
+container name
 
 =cut
 
-sub elts {
-	my ($self) = @_;
+has name => (
+    is       => 'ro',
+    isa      => Str,
+    required => 1,
+);
 
-	return $self->{sob}->{elts};
-}
+=head2 spec
+
+L<Template::Flute::Specification> object.
+
+=cut
+
+#FIXME: perhaps this attr is not needed
+
+has spec => (
+    is       => 'ro',
+    isa      => InstanceOf ['Template::Flute::Specification'],
+    weak_ref => 1,
+);
+
+=head2 value
+
+Value we check against to decide whether to display container.
+
+=cut
+
+has value => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 values
+
+=over
+
+=item predicate: has_values
+
+=item writer: set_values
+
+=back
+
+=cut
+
+has values => (
+    is        => 'ro',
+    isa       => HashRef | Object,
+    predicate => 1,
+    writer    => 'set_values',
+);
+
+=head1 METHODS
 
 =head2 visible
 
@@ -92,14 +130,14 @@ sub visible {
 	my ($self) = @_;
 	my ($key, $ret);
 	
-	if ($key = $self->{sob}->{value}) {
+	if ($key = $self->value) {
 	    # check whether this is an expression or a simple value
 	    if ($key =~ /^\w[0-9\w_-]*$/) {
             # value holds method
-            return $self->{values}->$key
-                if $self->_is_record_object($self->{values}) && $self->{values}->can($key); 
-    		if (exists $self->{values}) {
-    			if ($self->{values}->{$key}) {
+            return $self->values->$key
+                if $self->_is_record_object($self->values) && $self->values->can($key); 
+    		if ($self->has_values) {
+    			if ($self->values->{$key}) {
     				return 1;
     			}
     			return 0;
@@ -108,15 +146,15 @@ sub visible {
     		return undef;
 	    }
 	    else {
-            if (! exists $self->{_expr_parser}) {
+            if ( !$self->has_expression_parser ) {
                 # check the cache
                 if (! exists $expression_cache{$key}) {
                     $expression_cache{$key} = Template::Flute::Expression->new($key);
                 }
 
-                $self->{_expr_parser} =  $expression_cache{$key};
+                $self->set_expression_parser( $expression_cache{$key} );
             }
-       		$ret = $self->{_expr_parser}->evaluate($self->{values});
+       		$ret = $self->expression_parser->evaluate($self->values);
 
 		if ($ret) {
 		    return 1;

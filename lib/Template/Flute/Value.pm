@@ -201,7 +201,7 @@ has scope => (
 
 =head2 container
 
-FIXME: when/why do we use this?
+Name of container that this value is inside (if any).
 
 =cut
 
