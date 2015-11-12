@@ -158,7 +158,7 @@ sub _spec_handler {
 	my ($value);
 
 	if ($value = $elt->att('name')) {
-		$self->{spec}->name($value);
+		$self->{spec}->rename($value);
 	}
 
 	if ($value = $elt->att('encoding')) {
