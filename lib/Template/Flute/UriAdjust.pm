@@ -6,9 +6,11 @@ use warnings;
 use URI;
 use URI::Escape;
 use URI::Escape (qw/uri_unescape/);
+use Types::Standard qw/InstanceOf Str/;
 
 use Moo;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -34,7 +36,8 @@ Base path.
 =cut
 
 has adjust => (
-    is => 'rw',
+    is => 'ro',
+    isa => InstanceOf['URI'],
     required => 1,
 );
 
@@ -45,7 +48,8 @@ URI to be adjusted.
 =cut
 
 has uri => (
-    is => 'rw',
+    is => 'ro',
+    isa => Str,
     required => 1,
 );
 
@@ -56,7 +60,8 @@ URI scheme (defaults to C<http>).
 =cut
 
 has scheme => (
-    is => 'rw',
+    is => 'ro',
+    isa => Str,
     default => 'http',
 );
 

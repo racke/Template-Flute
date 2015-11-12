@@ -8,6 +8,7 @@ use warnings;
 
 use Template::Flute::Iterator;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

@@ -8,6 +8,7 @@ use warnings;
 
 with 'Template::Flute::Role::Elements';
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

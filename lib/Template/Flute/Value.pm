@@ -4,6 +4,7 @@ use Moo;
 use Types::Standard qw/ArrayRef Enum InstanceOf Str Undef/;
 use Types::Common::String qw/NonEmptySimpleStr/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -156,6 +157,66 @@ Name of iterator for this value.
 has iterator_name => (
     is  => 'ro',
     isa => NonEmptySimpleStr | Undef,
+);
+
+=head2 iterator
+
+FIXME: when/why do we use this?
+
+=cut
+
+has iterator => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 iterator_name_key
+
+=cut
+
+has iterator_name_key => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 iterator_value_key
+
+=cut
+
+has iterator_value_key => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 scope
+
+FIXME: when/why do we use this?
+
+=cut
+
+has scope => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 container
+
+FIXME: when/why do we use this?
+
+=cut
+
+has container => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 args
+
+=cut
+
+has args => (
+    is => 'ro',
+    isa => Str,
 );
 
 =head2 skip

@@ -11,6 +11,7 @@ use Types::Standard qw/HasMethods InstanceOf Int/;
 
 use Template::Flute::Iterator;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

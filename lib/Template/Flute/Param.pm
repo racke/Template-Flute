@@ -4,6 +4,7 @@ use Moo;
 use Types::Standard qw/ArrayRef Enum InstanceOf Str Undef/;
 use Types::Common::String qw/NonEmptySimpleStr/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -179,6 +180,42 @@ has elts => (
     is      => 'ro',
     isa     => ArrayRef [ InstanceOf 'XML::Twig::Elt' ],
     default => sub { [] },
+);
+
+=head2 list
+
+=cut
+
+has list => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 args
+
+=cut
+
+has args => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 container
+
+=cut
+
+has container => (
+    is => 'ro',
+    isa => Str,
+);
+
+=head2 increment
+
+=cut
+
+has increment => (
+    is => 'ro',
+    isa => InstanceOf['Template::Flute::Increment'],
 );
 
 1;

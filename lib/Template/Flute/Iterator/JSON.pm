@@ -7,6 +7,7 @@ use Moo;
 use JSON 'from_json';
 use Types::Standard qw/HashRef Str Undef/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 extends 'Template::Flute::Iterator';
 

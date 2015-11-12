@@ -4,6 +4,7 @@ use Sub::Quote;
 use Moo;
 use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Int Str Undef/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 with 'Template::Flute::Role::Elements';
 

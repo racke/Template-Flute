@@ -3,6 +3,7 @@ package Template::Flute::Increment;
 use Moo;
 use Types::Standard qw/Int/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -75,6 +76,11 @@ sub BUILDARGS {
     # attribute and method
     if ( defined $args{iterator} && !defined $args{step} ) {
         $args{step} = $args{iterator};
+    }
+    # FIXME: some guess work here... :(
+    if ( exists $args{increment} ) {
+        $args{step} = $args{increment} if defined $args{increment};
+        delete $args{increment};
     }
     return \%args;
 }

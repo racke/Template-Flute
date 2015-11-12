@@ -4,6 +4,7 @@ use Moo;
 use Types::Standard qw/CodeRef/;
 use Sub::Quote qw/quote_sub/;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
