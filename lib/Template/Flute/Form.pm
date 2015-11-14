@@ -1,6 +1,7 @@
 package Template::Flute::Form;
 
 use Moo;
+with 'Template::Flute::Role::Base';
 with 'Template::Flute::Role::Elements';
 
 use Types::Standard qw/ArrayRef Bool Enum HashRef InstanceOf Str Undef/;
