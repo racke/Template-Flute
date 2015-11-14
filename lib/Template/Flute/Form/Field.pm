@@ -1,6 +1,9 @@
 package Template::Flute::Form::Field;
 
 use Moo;
+with 'Template::Flute::Role::Base';
+with 'Template::Flute::Role::Elements';
+
 use Types::Standard qw/ArrayRef HashRef InstanceOf Str/;
 use namespace::clean;
 use MooX::StrictConstructor;
@@ -29,15 +32,6 @@ Name of form field.
 =cut
 
 has name => (
-    is => 'ro',
-    isa => Str,
-);
-
-=head2 id
-
-=cut
-
-has id => (
     is => 'ro',
     isa => Str,
 );
@@ -96,18 +90,6 @@ has iterator_name_key => (
 has iterator_value_key => (
     is => 'ro',
     isa => Str,
-);
-
-=head2 elts
-
-List of twig elements.
-
-=cut
-
-has elts => (
-    is => 'ro',
-    isa => ArrayRef [ InstanceOf ['XML::Twig::Elt'] ],
-    weak_ref => 1,
 );
 
 1;
