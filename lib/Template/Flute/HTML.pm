@@ -627,22 +627,19 @@ sub _elt_handler {
 
 		$sob->{elts} = [$elt];
 
-		$self->{forms}->{$name} = Template::Flute::Form->new(
-            name => $name,
-            elts => [$elt],
-            fields => [ map {Template::Flute::Form::Field->new($_)}
-                            @{$self->{fields}->{$name}->{array}}
-                        ],
-        );
+        $self->{forms}->{$name} = $sob;
 
 		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
-			
-		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
-			
+
+        if (my $input = $spec_object->form_inputs($name)) {
+            $self->{forms}->{$name}->inputs_add($input);
+        }
+
 		return $self;
 	}
 	
 	if ($sob->{type} eq 'param') {
+        
 		push (@{$sob->{elts}}, $elt);
 
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);

@@ -7,6 +7,8 @@ use Hash::MultiValue;
 use strict;
 use warnings;
 
+use Template::Flute::Specification::Node;
+
 use Template::Flute::Iterator;
 use Template::Flute::Value;
 
@@ -369,16 +371,50 @@ Add form specified by hash reference FORM.
 sub form_add {
 	my ($self, $new_formref) = @_;
 	my ($formref, $form_name, $form_link, $form_loc, $field_loc, $id, $class);
+    my (@form_fields);
 
+    my $form_node = $self->node;
+    $new_formref->{form}->{specification_node} = $form_node;
 	$form_name = $new_formref->{form}->{name};
 	$form_link = $new_formref->{form}->{link} || '';
-	
-	$formref = $self->forms->{$new_formref->{form}->{name}} = {input => {}};
+
+    # loop through fields for this form
+	for my $field (@{$new_formref->{field}}) {
+        $field_loc = Template::Flute::Form::Field->new(
+            %$field,
+            form => $form_name,
+            specification_node => $form_node->add_child,
+        );
+
+        push @form_fields, $field_loc;
+
+	    if (exists $field->{id}) {
+            push @{$self->ids->{$field->{id}}}, $field_loc;
+	    }
+	    elsif (exists $field->{class}) {
+            push @{$self->classes->{$field->{class}}}, $field_loc;
+	    }
+	    elsif ($form_link eq 'name') {
+            push @{$self->names->{$field->{name}}}, $field_loc;
+	    }
+	    else {
+            push @{$self->classes->{$field->{name}}}, $field_loc;
+	    }
+	}
+
+    $new_formref->{form}->{fields} = \@form_fields;
+
+    # create new form element
+    my $form = Template::Flute::Form->new(
+        $new_formref->{form},
+    );
+
+	$formref = $self->forms->{$form->{name}} = $form;
 
 	my @checks = qw/id class/;
 
-	$form_loc = {%{$new_formref->{form}}, type => 'form'};
-	
+	$form_loc = $form;
+
 	if ($id = $new_formref->{form}->{id}) {
 	    $self->ids->{$id} = [$form_loc];
 	}
@@ -406,24 +442,6 @@ sub form_add {
 		$class = $param->{class} || $param->{name};
 
 		push @{$self->classes->{$class}}, {%{$param}, type => 'param', form => $form_name};
-	}
-
-	# loop through fields for this form
-	for my $field (@{$new_formref->{field}}) {
-	    $field_loc = {%{$field}, type => 'field', form => $form_name};
-
-	    if (exists $field->{id}) {
-		push @{$self->ids->{$field->{id}}}, $field_loc;
-	    }
-	    elsif (exists $field->{class}) {
-		push @{$self->classes->{$field->{class}}}, $field_loc;
-	    }
-	    elsif ($form_link eq 'name') {
-		push @{$self->names->{$field->{name}}}, $field_loc;
-	    }
-	    else {
-		push @{$self->classes->{$field->{name}}}, $field_loc;
-	    }
 	}
 	
 	return $formref;
@@ -783,6 +801,11 @@ sub dangling {
         }
     }
     return @empty;
+}
+
+sub node {
+    my $self = shift;
+    return Template::Flute::Specification::Node->new(@_);
 }
 
 # assign objects to the class, id and name hashes
