@@ -3,7 +3,7 @@ package Template::Flute::Form;
 use Moo;
 with 'Template::Flute::Role::Elements';
 
-use Types::Standard qw/ArrayRef Bool HashRef InstanceOf Str Undef/;
+use Types::Standard qw/ArrayRef Bool Enum HashRef InstanceOf Str Undef/;
 use namespace::clean;
 use MooX::StrictConstructor;
 
@@ -90,6 +90,18 @@ sub _build_method {
     }
     return 'GET';
 }
+
+=head2 link
+
+If C<link> is set to C<name>, HTML elements will be
+linked through the C<name> attribute.
+
+=cut
+
+has link => (
+    is => 'ro',
+    isa => Enum [ 'name' ] || undef,
+);
 
 =head2 fields
 
