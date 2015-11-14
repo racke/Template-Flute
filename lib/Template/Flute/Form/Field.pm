@@ -4,7 +4,7 @@ use Moo;
 with 'Template::Flute::Role::Base';
 with 'Template::Flute::Role::Elements';
 
-use Types::Standard qw/ArrayRef HashRef InstanceOf Str/;
+use Types::Standard qw/ArrayRef Enum HashRef InstanceOf Str/;
 use namespace::clean;
 use MooX::StrictConstructor;
 
@@ -22,7 +22,8 @@ Type of form field.
 
 has type => (
     is => 'ro',
-    isa => Str,
+    isa      => Enum [ 'field' ] || undef,
+    default  => 'field',
 );
 
 =head2 name
