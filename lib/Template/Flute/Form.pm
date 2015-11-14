@@ -25,6 +25,18 @@ has name => (
     isa => Str,
 );
 
+=head2 type
+
+Type of the form object.
+
+=cut
+
+has type => (
+    is       => 'ro',
+    isa      => Enum [ 'form' ] || undef,
+    default  => 'form',
+);
+
 =head2 action
 
 Form action.
