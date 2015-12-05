@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.48;
 
 WriteMakefile(
     NAME                => 'Template::Flute',
@@ -11,15 +11,24 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    MIN_PERL_VERSION => '5.8.0',
     BUILD_REQUIRES => {
+	'Class::Load' => 0,
+	'Test::CheckManifest' => 0,
         'Test::Deep' => 0,
         'Test::More' => 0,
+	'Test::Pod' => 0.18,
+	'Test::Pod::Coverage' => 1.08,
         'Test::Warn' => 0,
         'Test::Warnings' => 0,
         'Test::Fatal' => 0,
     },
     PREREQ_PM => {
+	'Config::Any' => 0,
+	'Config::Scoped' => 0,
         'Data::Transpose' => 0.0009,
+	'HTML::Entities' => 0,
+	'JSON' => 0,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
         'HTML::TreeBuilder' => 0,
