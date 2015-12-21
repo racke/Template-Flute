@@ -172,7 +172,7 @@ Specification file name.
 =item specification_parser
 
 Select specification parser. This can be either the full class name
-like L<MyApp::Specification::Parser> or the last part for classes residing
+like C<MyApp::Specification::Parser> or the last part for classes residing
 in the Template::Flute::Specification namespace.
 
 =item specification
