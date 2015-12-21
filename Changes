@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.0191 Mon Dec 21 14:29:26 2015 CET
+
+    [BUG FIXES]
+
+    * Add prerequisite on Class::Load (Stefan Hornburg/Racke, GH #155).
+
 0.0190 Sat Oct 31 09:58:54 2015 CET
 
     [CLEANUP]
