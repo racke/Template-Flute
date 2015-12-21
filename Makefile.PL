@@ -12,6 +12,7 @@ WriteMakefile(
       : ()),
     PL_FILES            => {},
     BUILD_REQUIRES => {
+        'Class::Load' => 0,
         'Test::Deep' => 0,
         'Test::More' => 0,
         'Test::Warn' => 0,
