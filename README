@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    Version 0.0191
+    Version 0.0192
 
 SYNOPSIS
 
@@ -1062,6 +1062,10 @@ SUPPORT
 
 ACKNOWLEDGEMENTS
 
+    Thanks to Nitish Bezzala (GH #157).
+
+    Thanks to Mohammad S Anwar (GH #156).
+
     Thanks to Paul Cochrane for his tremendous amount of pull requests
     issued during the GitHub challenge.
 
@@ -1093,7 +1097,7 @@ HISTORY
 
 LICENSE AND COPYRIGHT
 
-    Copyright 2010-2015 Stefan Hornburg (Racke) <racke@linuxia.de>.
+    Copyright 2010-2016 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of either: the GNU General Public License as published

@@ -1,5 +1,20 @@
 Revision history for Template::Flute
 
+0.0192 Tue Feb  2 19:00:14 2016 CET
+
+    [BUG FIXES]
+
+    * Fix deprecation warnings "Unescaped left brace in regex is deprecated"
+      (Nitish Bezzala, GH #157).
+
+    * Fix broken link in the POD for Template::Flute
+      (Mohammad S Anwar, GH #156).
+
+    [TESTS]
+
+    * Add Perl 5.22 to Travis CI configuration (Stefan Hornburg/Racke).
+
+
 0.0191 Mon Dec 21 14:29:26 2015 CET
 
     [BUG FIXES]
