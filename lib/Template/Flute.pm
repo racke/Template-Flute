@@ -2369,6 +2369,10 @@ L<http://search.cpan.org/dist/Template-Flute/>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to Nitish Bezzala (GH #157).
+
+Thanks to Mohammad S Anwar (GH #156).
+
 Thanks to Paul Cochrane for his tremendous amount of pull requests
 issued during the GitHub challenge.
 
