@@ -382,10 +382,12 @@ has _specification => (
     init_arg => 'specification',
 );
 
+# FIXME: Due to GH#54 (see below) we need a writer which we'll make private
 has specification => (
-    is      => 'ro',
+    is      => 'rwp',
     isa     => InstanceOf['Template::Flute::Specification'],
-    lazy    => 1,
+    lazy => 1,
+    init_arg => undef,
     default => sub {
         my $self = shift;
         my $ret;
@@ -415,13 +417,6 @@ has specification => (
         $self->_trigger_specification($ret);
         return $ret;
     },
-    init_arg => undef,
-    # FIXME: Due to GH#54 (see below) we cannot use a trigger since
-    # _set_specification used in this way should not cause the trigger
-    # actions since we expect iterators and patterns to have been built
-    # already.
-    #trigger  => 1,                   
-    writer   => '_set_specification',
 );
 
 sub _trigger_specification {
@@ -556,6 +551,12 @@ sub BUILDARGS {
     }
 
     return \%args;
+}
+
+sub BUILD {
+    my $self = shift;
+    $self->specification;
+    $self->template;
 }
 
 #sub new {
