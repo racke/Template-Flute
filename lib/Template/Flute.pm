@@ -541,7 +541,6 @@ sub BUILDARGS {
 
     while ( my ( $name, $value ) = each %{ $args{filters} } ) {
         if ( ref($value) eq 'CODE' ) {
-        p $value;
             # passing subroutine
             $args{filter_subs}->{$name} = $value;
             next;
