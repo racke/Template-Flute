@@ -326,30 +326,31 @@ has filters => (
     default => sub { +{} },
 );
 
-has _filter_class => (
+has filter_class => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has _filter_objects => (
+has filter_objects => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has _filter_opts => (
+has filter_opts => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has _filter_subs => (
+has filter_subs => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
+# FIXME: find & fix code that passes in i18n as undef
 has i18n => (
     is  => 'ro',
     isa => Maybe[InstanceOf ['Template::Flute::I18N']],
@@ -517,6 +518,8 @@ has translate_attributes => (
     default => sub { [ 'placeholder', 'input.value.type.submit' ] },
 );
 
+# FIXME: find & fix code that passes in uri as undef
+# FIXME: perhaps stringify in coerce so we don't have to accept URI objects?
 has uri => (
     is  => 'ro',
     isa => Maybe [ InstanceOf ['URI'] | Str ],
@@ -537,7 +540,6 @@ sub BUILDARGS {
       unless ( exists $args{template} || exists $args{template_file} );
 
     while ( my ( $name, $value ) = each %{ $args{filters} } ) {
-        use DDP;
         if ( ref($value) eq 'CODE' ) {
         p $value;
             # passing subroutine
@@ -1411,23 +1413,23 @@ sub _filter {
     my ($self, $name, $element, $value) = @_;
 	my ($filter, $mod_name, $class, $filter_obj, $filter_sub);
 
-    if (exists $self->_filter_subs->{$name}) {
-        $filter = $self->_filter_subs->{$name};
+    if (exists $self->filter_subs->{$name}) {
+        $filter = $self->filter_subs->{$name};
         return $filter->($value);
     }
 
-    unless (exists $self->_filter_objects->{$name}) {
+    unless (exists $self->filter_objects->{$name}) {
         # try to bootstrap filter
-	    unless ($class = $self->_filter_class->{$name}) {
+	    unless ($class = $self->filter_class->{$name}) {
             $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
             $class = "Template::Flute::Filter::$mod_name";
 	    }
 
-        $self->_filter_objects->{$name} =
-          use_module($class)->new( options => $self->_filter_opts->{$name} );
+        $self->filter_objects->{$name} =
+          use_module($class)->new( options => $self->filter_opts->{$name} );
     }
 
-    $filter_obj = $self->_filter_objects->{$name};
+    $filter_obj = $self->filter_objects->{$name};
 
     if ($filter_obj->can('twig')) {
 		$element->{op} = sub {$filter_obj->twig(@_)};
