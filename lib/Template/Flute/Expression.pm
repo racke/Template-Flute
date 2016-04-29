@@ -3,8 +3,12 @@ package Template::Flute::Expression;
 use strict;
 use warnings;
 
-use base 'Template::Flute';
+use Parse::RecDescent;
 use Scalar::Util qw/reftype/;
+use Template::Flute::Types qw/HashRef Maybe Object/;
+use Moo;
+with 'Template::Flute::Role::Core';
+use namespace::clean;
 
 =head1 NAME
 
@@ -13,6 +17,14 @@ Template::Flute::Expression - Parser for expressions
 =head1 CONSTRUCTOR
 
 =head2 new
+
+Takes a single argument:
+
+=over
+
+=item expression
+
+=back
 
 Creates Template::Flute::Expression object.
 
@@ -58,16 +70,7 @@ Evaluates to value C<foo> and reverse of value C<bar>.
     
 =cut
 
-use Parse::RecDescent;
-
-sub new {
-    my ($class, $self);
-
-    $class = shift;
-    $self = {expression => shift};
-    bless $self, $class;
-
-    $self->{_rd} = Parse::RecDescent->new(q{
+my $grammar = q{
 <autoaction: { [@item] } >
 
 var : /\w[a-z0-9_]*/
@@ -83,10 +86,28 @@ notdottedvar: '!' dottedvar
 term: var | notvar | dottedvar | notdottedvar
 
 expression : andor | dottedvar | notdottedvar | var | notvar
-});
-
-    return $self;
 };
+
+# FIXME: (SysPete 29/4/16) Keep old api for now.
+sub BUILDARGS {
+    my $class = shift;
+    return { expression => shift };
+}
+
+has expression => (
+    is => 'ro',
+    required => 1,
+);
+
+has _rd => (
+    is => 'ro',
+    init_arg => undef,
+    default => sub { Parse::RecDescent->new($grammar) },
+);
+
+has '+values' => (
+    isa => Maybe [ HashRef | Object ],
+);
 
 =head1 METHODS
 
@@ -103,7 +124,7 @@ sub evaluate {
     my ($self, $value_ref) = @_;
     my ($tree);
     
-    $self->{values} = $value_ref;
+    $self->set_values($value_ref);
     $tree = $self->_build();
     $self->_walk($tree);
 }
@@ -112,7 +133,7 @@ sub _build {
     my ($self) = @_;
     my ($tree);
 
-    $tree = $self->{_rd}->expression($self->{expression});
+    $tree = $self->_rd->expression($self->expression);
 
     return $tree;
 }
@@ -180,7 +201,7 @@ sub _value {
     my ($value);
 
     if (! ref($values_ref)) {
-        $values_ref = $self->{values};
+        $values_ref = $self->values;
     }
     
     if (exists($values_ref->{$name}) 
