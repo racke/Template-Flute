@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Template::Flute::Types qw/ArrayRef Bool HashRef InstanceOf Str/;
 use Moo;
+with 'Template::Flute::Role::Component';
 use namespace::clean;
 
 =head1 NAME
@@ -15,16 +16,6 @@ Template::Flute::Form - Form object for Template::Flute templates.
 =head2 new
 
 Creates Template::Flute::Form object.
-
-Arguments:
-
-=over
-
-=item sob
-
-=item static
-
-=back
 
 =cut
 
@@ -65,13 +56,6 @@ has is_filled => (
     writer => '_set_is_filled',
 );
 
-has inputs => (
-    is      => 'ro',
-    isa     => HashRef,
-    trigger => sub { $_[0]->_set_valid_input(0) },
-    writer  => 'inputs_add',
-);
-
 has iterators => (
     is      => 'ro',
     isa     => HashRef,
@@ -90,40 +74,6 @@ has method => (
     trigger => sub { $_[0]->elt->set_att( 'method', $_[1] ) },
 );
 
-has name => (
-    is => 'ro',
-    isa => Str,
-    lazy => 1,
-    default => sub { $_[0]->sob->{name} },
-);
-
-has params => (
-    is      => 'ro',
-    isa     => ArrayRef,
-    default => sub { [] },
-    coerce  => sub { defined $_[0] ? $_[0] : [] },
-    writer  => 'params_add',
-);
-
-has sob => (
-    is       => 'ro',
-    isa      => HashRef,
-    required => 1,
-);
-
-has static => (
-    is       => 'ro',
-    required => 1,
-);
-
-has _valid_input => (
-    is       => 'ro',
-    isa      => Bool,
-    default  => undef,
-    init_arg => undef,
-    writer   => '_set_valid_input',
-);
-
 # FIXME: (SysPete 29/4/16) Keep old api for now.
 sub BUILDARGS {
     my ( $class, $sob, $static ) = @_;
@@ -131,23 +81,9 @@ sub BUILDARGS {
     return { sob => $sob, static => $static };
 }
 
-=head1 METHODS
-
-=head2 params_add PARAMS
-
-Add parameters from PARAMS to form.
-
 =head2 fields_add FIELDS
 
 Add fields from FIELDS to form.
-
-=head2 inputs_add INPUTS
-
-Add inputs from INPUTS to form.
-
-=head2 name
-
-Returns name of the form.
 
 =head2 elt
 
@@ -156,10 +92,6 @@ Returns corresponding HTML template element of the form.
 =head2 fields
 
 Returns form fields.
-
-=head2 params
-
-Returns form parameters.
 
 =head2 inputs
 

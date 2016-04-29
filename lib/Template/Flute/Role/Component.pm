@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use Carp;
-use Template::Flute::Types qw/ArrayRef Bool HashRef/;
+use Template::Flute::Types qw/ArrayRef Bool HashRef Str/;
 use Moo::Role;
 
 =head1 NAME
@@ -32,7 +32,26 @@ has inputs => (
     writer  => 'inputs_add',
 );
 
+=head2 name
+
+Name associated with the component.
+
+Defaults to the value of the C<name> key in L</sob>.
+
+=cut
+
+has name => (
+    is      => 'ro',
+    isa     => Str,
+    lazy    => 1,
+    default => sub { $_[0]->sob->{name} },
+);
+
 =head2 params
+
+Array reference of params.
+
+Defaults to an empty array reference.
 
 =over
 
@@ -51,6 +70,10 @@ has params => (
 );
 
 =head2 sob
+
+Special Object (?). These things get everywhere.
+
+A hash reference. Required.
 
 =cut
 
