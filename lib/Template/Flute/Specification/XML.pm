@@ -4,8 +4,10 @@ use strict;
 use warnings;
 
 use XML::Twig;
-
 use Template::Flute::Specification;
+use Template::Flute::Types qw/ArrayRef Specification Twig/;
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -28,17 +30,53 @@ Create a Template::Flute::Specification::XML object.
 
 # Constructor
 
-sub new {
-	my ($class, $self);
-	my (%params);
+has errors => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+);
 
-	$class = shift;
-	%params = @_;
+has spec => (
+    is      => 'ro',
+    isa     => Specification,
+    lazy    => 1,
+    default => sub { Template::Flute::Specification->new },
+);
 
-	$self = \%params;
-	bless $self, $class;
-}
+has stash => (
+    is      => 'rw',
+    isa     => ArrayRef,
+    default => sub { [] },
+);
 
+has twig => (
+    is      => 'ro',
+    isa     => Twig,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        XML::Twig->new(
+            twig_handlers =>
+              {
+                specification => sub { $self->_spec_handler( $_[1] ) },
+                container     => sub { $self->_container_handler( $_[1] ) },
+                list          => sub { $self->_list_handler( $_[1] ) },
+                paging        => sub { $self->_paging_handler( $_[1] ) },
+                filter        => sub { $self->_stash_handler( $_[1] ) },
+                separator     => sub { $self->_stash_handler( $_[1] ) },
+                form          => sub { $self->_form_handler( $_[1] ) },
+                param         => sub { $self->_stash_handler( $_[1] ) },
+                value         => sub { $self->_stash_handler( $_[1] ) },
+                field         => sub { $self->_stash_handler( $_[1] ) },
+                i18n          => sub { $self->_i18n_handler( $_[1] ) },
+                input         => sub { $self->_stash_handler( $_[1] ) },
+                sort          => sub { $self->_sort_handler( $_[1] ) },
+                pattern       => sub { $self->_pattern_handler( $_[1] ) },
+              }
+        );
+    },
+);
+	
 =head1 METHODS
 
 =head2 parse [ STRING | SCALARREF ]
@@ -52,22 +90,20 @@ sub parse {
 	my ($self, $text) = @_;
 	my ($twig, $xml);
 
-	$twig = $self->_initialize;
-
 	if (ref($text) eq 'SCALAR') {
-		$xml = $twig->safe_parse($$text);
+		$xml = $self->twig->safe_parse($$text);
 	}
 	else {
-		$xml = $twig->parse($text);
+		$xml = $self->twig->parse($text);
 	}
 
 	unless ($xml) {
 		$self->_add_error(error => $@);
 		return;
 	}
-	$self->{spec}->{xml} = $xml;
+	$self->spec->{xml} = $xml;
 	
-	return $self->{spec};
+	return $self->spec;
 }
 
 =head2 parse_file STRING
@@ -81,51 +117,15 @@ sub parse_file {
 	my ($self, $file) = @_;
 	my ($twig, $xml);
 
-	$twig = $self->_initialize;
-	
-	$self->{spec}->{xml} = $twig->safe_parsefile($file);
+	$self->spec->{xml} = $self->twig->safe_parsefile($file);
 
-	unless ($self->{spec}->{xml}) {
+	unless ($self->spec->{xml}) {
 		$self->_add_error(file => $file, error => $@);
 		return;
 	}
 
-	return $self->{spec};
+	return $self->spec;
 }
-
-sub _initialize {
-	my $self = shift;
-	my (%handlers, $twig);
-	
-	# initialize stash
-	$self->{stash} = [];
-	
-	# specification object
-	$self->{spec} = new Template::Flute::Specification;
-
-	# twig handlers
-	%handlers = (specification => sub {$self->_spec_handler($_[1])},
- 				 container => sub {$self->_container_handler($_[1])},
-				 list => sub {$self->_list_handler($_[1])},
-				 paging => sub {$self->_paging_handler($_[1])},
- 				 filter => sub {$self->_stash_handler($_[1])},
- 				 separator => sub {$self->_stash_handler($_[1])},		     
-				 form => sub {$self->_form_handler($_[1])},
-				 param => sub {$self->_stash_handler($_[1])},
-				 value => sub {$self->_stash_handler($_[1])},
- 				 field => sub {$self->_stash_handler($_[1])},
-				 i18n => sub {$self->_i18n_handler($_[1])},
-				 input => sub {$self->_stash_handler($_[1])},
-				 sort => sub {$self->_sort_handler($_[1])},
-                 pattern => sub { $self->_pattern_handler($_[1]) },
-				 );
-	
-	# twig parser object
-	$twig = new XML::Twig (twig_handlers => \%handlers);
-
-	return $twig;
-}
-
 
 sub _pattern_handler {
     my ($self, $elt) = @_;
@@ -150,7 +150,7 @@ sub _pattern_handler {
     else {
         die "Wrong pattern type $type! Only string and regexp are supported";
     }
-    $self->{spec}->pattern_add({ name => $name, regexp => $regexp });
+    $self->spec->pattern_add({ name => $name, regexp => $regexp });
 }
 
 sub _spec_handler {
@@ -158,15 +158,15 @@ sub _spec_handler {
 	my ($value);
 
 	if ($value = $elt->att('name')) {
-		$self->{spec}->name($value);
+		$self->spec->name($value);
 	}
 
 	if ($value = $elt->att('encoding')) {
-		$self->{spec}->encoding($value);
+		$self->spec->encoding($value);
 	}
 
 	# add values remaining on the stash
-	for my $stash_elt (@{$self->{stash}}) {
+	for my $stash_elt (@{$self->stash}) {
 	    if ($stash_elt->gi() eq 'value') {
 		$self->_value_handler($stash_elt);
 	    }
@@ -192,7 +192,7 @@ sub _container_handler {
         $self->_stash_flush($elt, \%container);
 
         # add container to specification object
-        $self->{spec}->container_add(\%container);
+        $self->spec->container_add(\%container);
     }
 }
 
@@ -208,7 +208,7 @@ sub _list_handler {
 	$self->_stash_flush($elt, \%list);
 
 	# add list to specification object
-	$self->{spec}->list_add(\%list);
+	$self->spec->list_add(\%list);
 }
 
 sub _paging_handler {
@@ -236,7 +236,7 @@ sub _paging_handler {
 
 	$paging{paging}->{elements} = \%paging_elts;
 
-    $self->{spec}->paging_add(\%paging);
+    $self->spec->paging_add(\%paging);
 }
 
 sub _sort_handler {
@@ -265,13 +265,13 @@ sub _sort_handler {
     # flush elements from stash
 	$self->_stash_flush($elt, {});
     
-	push @{$self->{stash}}, $elt;	
+	push @{$self->stash}, $elt;	
 }
 
 sub _stash_handler {
 	my ($self, $elt) = @_;
 
-	push @{$self->{stash}}, $elt;
+	push @{$self->stash}, $elt;
 }
 
 sub _form_handler {
@@ -286,7 +286,7 @@ sub _form_handler {
 	$self->_stash_flush($elt, \%form);
 		
 	# add form to specification object
-	$self->{spec}->form_add(\%form);
+	$self->spec->form_add(\%form);
 }
 
 sub _value_handler {
@@ -295,7 +295,7 @@ sub _value_handler {
 
 	$value{value} = $elt->atts();
 	
-	$self->{spec}->value_add(\%value);
+	$self->spec->value_add(\%value);
 }
 
 sub _i18n_handler {
@@ -304,7 +304,7 @@ sub _i18n_handler {
 
 	$i18n{value} = $elt->atts();
 	
-	$self->{spec}->i18n_add(\%i18n);
+	$self->spec->i18n_add(\%i18n);
 }
 
 sub _stash_flush {
@@ -312,7 +312,7 @@ sub _stash_flush {
 	my (@stash);
 
 	# examine stash
-	for my $item_elt (@{$self->{stash}}) {
+	for my $item_elt (@{$self->stash}) {
 		# check whether we are really the parent
 		if ($item_elt->parent() eq $elt) {
 			push (@{$hashref->{$item_elt->gi()}}, $item_elt->atts());
@@ -327,10 +327,14 @@ sub _stash_flush {
 	}
 
 	# clear stash
-	$self->{stash} = \@stash;
+	$self->stash(\@stash);
 
 	return;
 }
+
+=head2 errors
+
+Returns all errors as an array reference.
 
 =head2 error
 
@@ -341,8 +345,8 @@ Returns last error.
 sub error {
 	my ($self) = @_;
 
-	if (@{$self->{errors}}) {
-		return $self->{errors}->[0]->{error};
+	if (@{$self->errors}) {
+		return $self->errors->[0]->{error};
 	}
 }
 
@@ -352,7 +356,7 @@ sub _add_error {
 
 	%error = @args;
 	
-	unshift (@{$self->{errors}}, \%error);
+	unshift (@{$self->errors}, \%error);
 }
 
 =head1 AUTHOR

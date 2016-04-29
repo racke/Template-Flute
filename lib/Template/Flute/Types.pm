@@ -35,6 +35,9 @@ An instance of L<URI>.
 
 =cut
 
+declare 'Elt',
+  as InstanceOf ['XML::Twig::Elt'];
+
 declare 'HtmlParser',
   as InstanceOf ['Template::Flute::HTML'];
 
@@ -43,6 +46,9 @@ declare 'ReadableFilePath',
 
 declare 'Specification',
   as InstanceOf ['Template::Flute::Specification'];
+
+declare 'Twig',
+  as InstanceOf ['XML::Twig'];
 
 declare 'URI',
   as InstanceOf ['URI'];
