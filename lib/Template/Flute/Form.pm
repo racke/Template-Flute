@@ -2,7 +2,7 @@ package Template::Flute::Form;
 
 use strict;
 use warnings;
-use Template::Flute::Types -types;
+use Template::Flute::Types qw/ArrayRef Bool HashRef InstanceOf Str/;
 use Moo;
 use namespace::clean;
 
