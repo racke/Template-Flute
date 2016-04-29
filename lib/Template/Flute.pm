@@ -17,6 +17,7 @@ use Template::Flute::Paginator;
 use Template::Flute::Types -types;
 
 use Moo;
+with 'Template::Flute::Role::Core';
 use namespace::clean;
 
 =head1 NAME
@@ -164,6 +165,9 @@ Parse template with L<Template::Flute::HTML> object.
 
 =head1 CONSTRUCTOR
 
+See L<Template::Flute::Role::Core> for other attributes that are composed into
+this class.
+
 =head2 new
 
 Create a Template::Flute object with the following parameters:
@@ -217,36 +221,9 @@ Defaults to C<['input.value.type.submit', 'placeholder']>
 
 Hash references of iterators.
 
-=item values
-
-Hash reference of values to be used by the process method.
-
 =item auto_iterators
 
 Builds iterators automatically from values.
-
-=item autodetect
-
-A configuration option. It should be an hashref with a key C<disable>
-and a value with an arrayref with a list of B<classes> for objects
-which should be considered plain hashrefs instead. Example:
-
-  my $flute = Template::Flute->new(....
-                                   autodetect => { disable => [qw/My::Object/] },
-                                   ....
-                                  );
-
-Doing so, if you pass a value holding a C<My::Object> object, and you have a specification with something like this:
-
-  <specification>
-   <value name="name" field="object.method"/>
-  </specification>
-
-The value will be C<$object->{method}>, not C<$object->$method>.
-
-The object is checked with C<isa>.
-
-Classical example: C<Dancer::Session::Abstract>.
 
 =item uri
 
@@ -298,11 +275,6 @@ contain a cid with C<filename> "image.png".
 =cut
 
 # Constructor
-
-has autodetect => (
-    is  => 'ro',
-    isa => HashRef,
-);
 
 has auto_iterators => (
     is      => 'ro',
@@ -499,13 +471,6 @@ has translate_attributes => (
 has uri => (
     is  => 'ro',
     isa => Maybe [ InstanceOf ['URI'] | Str ],
-);
-
-has values => (
-    is      => 'ro',
-    isa     => HashRef,
-    writer  => 'set_values',
-    default => sub { +{} },
 );
 
 sub BUILDARGS {
@@ -1563,35 +1528,6 @@ sub value {
 }
 
 # internal helpers
-
-sub _is_record_object {
-    my ($self, $record) = @_;
-    my $class = blessed($record);
-    return unless defined $class;
-
-    # it's an object. Check if we have it in the blacklist
-    my @ignores = $self->_autodetect_ignores;
-    my $is_good_object = 1;
-    foreach my $i (@ignores) {
-        if ($record->isa($i)) {
-            $is_good_object = 0;
-            last;
-        }
-    }
-    return $is_good_object;
-}
-
-sub _autodetect_ignores {
-    my $self = shift;
-    my @ignores;
-    if ($self->autodetect and exists $self->autodetect->{disable}) {
-        @ignores = @{ $self->autodetect->{disable} };
-    }
-    foreach my $f (@ignores) {
-        croak "empty string in the disabled autodetections" unless length($f);
-    }
-    return @ignores;
-}
 
 sub _value_should_be_skipped {
     my ($self, $value, $replacement) = @_;
