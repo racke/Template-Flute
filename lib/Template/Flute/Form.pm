@@ -2,6 +2,9 @@ package Template::Flute::Form;
 
 use strict;
 use warnings;
+use Template::Flute::Types -types;
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -13,35 +16,119 @@ Template::Flute::Form - Form object for Template::Flute templates.
 
 Creates Template::Flute::Form object.
 
+Arguments:
+
+=over
+
+=item sob
+
+=item static
+
+=back
+
 =cut
 
-# Constructor
-sub new {
-	my ($class, $sob, $static) = @_;
-	my ($self);
-	
-	$self = {sob => $sob, static => $static, valid_input => undef};
+has action => (
+    is      => 'ro',
+    isa     => Str,
+    lazy    => 1,
+    writer  => 'set_action',
+    default => sub { $_[0]->elt->att('action') || '' },
+    trigger => sub { $_[0]->elt->set_att( 'action', $_[1] ) },
+);
 
-    # retrieve values for action and method attributes
-    my $action = $self->{sob}->{elts}->[0]->att('action');
+has elt => (
+    is      => 'ro',
+    isa     => InstanceOf ['XML::Twig::Elt'],
+    lazy    => 1,
+    default => sub { $_[0]->sob->{elts}->[0] },
+);
 
-    if (defined $action) {
-        $self->{action} = $action;
-    }
-    else {
-        $self->{action} = '';
-    }
+has fields => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    writer  => 'fields_add',
+    default => sub { [] },
+    trigger => sub {
+        my ( $self, $fields ) = @_;
+        for my $field (@$fields) {
+            if ( $field->{iterator} ) {
+                $self->iterators->{ $field->{iterator} } = $field->{name};
+            }
+        }
+    },
+);
 
-    my $method = $self->{sob}->{elts}->[0]->att('method');
+has is_filled => (
+    is     => 'ro',
+    isa    => Bool,
+    writer => '_set_is_filled',
+);
 
-    if (defined $method && $method =~ /\S/) {
-        $self->{method} = uc($method);
-    }
-    else {
-        $self->{method} = 'GET';
-    }
+has inputs => (
+    is      => 'ro',
+    isa     => HashRef,
+    trigger => sub { $_[0]->_set_valid_input(0) },
+    writer  => 'inputs_add',
+);
 
-	bless $self, $class;
+has iterators => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
+
+has method => (
+    is      => 'ro',
+    isa     => Str,
+    lazy    => 1,
+    writer  => 'set_method',
+    default => sub {
+        my $method = $_[0]->elt->att('method');
+        return defined($method) && $method =~ /\S/ ? uc($method) : 'GET';
+    },
+    trigger => sub { $_[0]->elt->set_att( 'method', $_[1] ) },
+);
+
+has name => (
+    is => 'ro',
+    isa => Str,
+    lazy => 1,
+    default => sub { $_[0]->sob->{name} },
+);
+
+has params => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+    coerce  => sub { defined $_[0] ? $_[0] : [] },
+    writer  => 'params_add',
+);
+
+has sob => (
+    is       => 'ro',
+    isa      => HashRef,
+    required => 1,
+);
+
+has static => (
+    is       => 'ro',
+    required => 1,
+);
+
+has _valid_input => (
+    is       => 'ro',
+    isa      => Bool,
+    default  => undef,
+    init_arg => undef,
+    writer   => '_set_valid_input',
+);
+
+# FIXME: (SysPete 29/4/16) Keep old api for now.
+sub BUILDARGS {
+    my ( $class, $sob, $static ) = @_;
+
+    return { sob => $sob, static => $static };
 }
 
 =head1 METHODS
@@ -50,108 +137,33 @@ sub new {
 
 Add parameters from PARAMS to form.
 
-=cut
-	
-sub params_add {
-	my ($self, $params) = @_;
-
-	$self->{params} = $params || [];
-}
-
 =head2 fields_add FIELDS
 
 Add fields from FIELDS to form.
-
-=cut
-	
-sub fields_add {
-	my ($self, $fields) = @_;
-	my (%field_iters);
-
-	for my $field (@$fields) {
-		if ($field->{iterator}) {
-			$field_iters{$field->{iterator}} = $field->{name};
-		}
-	}
-
-	$self->{iterators} = \%field_iters;
-	$self->{fields} = $fields || [];
-}
 
 =head2 inputs_add INPUTS
 
 Add inputs from INPUTS to form.
 
-=cut
-	
-sub inputs_add {
-	my ($self, $inputs) = @_;
-
-	if (ref($inputs) eq 'HASH') {
-		$self->{inputs} = $inputs;
-		$self->{valid_input} = 0;
-	}
-}
-
 =head2 name
 
 Returns name of the form.
-
-=cut
-
-sub name {
-	my ($self) = @_;
-
-	return $self->{sob}->{name};
-}
 
 =head2 elt
 
 Returns corresponding HTML template element of the form.
 
-=cut
-	
-sub elt {
-	my ($self) = @_;
-
-	return $self->{sob}->{elts}->[0];
-}
-
 =head2 fields
 
 Returns form fields.
-
-=cut
-
-sub fields {
-	my ($self) = @_;
-
-	return $self->{fields};
-}
 
 =head2 params
 
 Returns form parameters.
 
-=cut
-	
-sub params {
-	my ($self) = @_;
-
-	return $self->{params};
-}
-
 =head2 inputs
 
 Returns form inputs.
-
-=cut
-	
-sub inputs {
-	my ($self) = @_;
-
-	return $self->{inputs};
-}
 
 =head2 input PARAMS
 
@@ -164,14 +176,14 @@ sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
 
-	if (! $params && $self->{valid_input} == 1) {
-		return 1;
-	}
+    if ( !$params && $self->_valid_input ) {
+        return 1;
+    }
 	
 	$error_count = 0;
 	$params ||= {};
 	
-	for my $input (values %{$self->{inputs}}) {
+	for my $input (values %{$self->inputs}) {
 		if ($input->{required} && ! $params->{$input->{name}}) {
 			warn "Missing input for $input->{name}.\n";
 			$error_count++;
@@ -185,7 +197,7 @@ sub input {
 		return 0;
 	}
 
-	$self->{valid_input} = 1;
+    $self->_set_valid_input(1);
 	return 1;
 }
 
@@ -193,63 +205,21 @@ sub input {
 
 Returns names of all iterators used by the fields for this form.
 
-=cut
-
-sub iterators {
-	my ($self) = @_;
-
-	return keys(%{$self->{iterators}});
-}
-
 =head2 action
 
 Returns current form action.
-
-=cut
-
-sub action {
-	my ($self) = @_;
-
-	return $self->{action};
-}
 
 =head2 set_action ACTION
 
 Sets from action to ACTION.
 
-=cut
-
-sub set_action {
-	my ($self, $action) = @_;
-
-	$self->{sob}->{elts}->[0]->set_att('action', $action);
-	$self->{action} = $action;
-}
-
 =head2 method
 
 Returns current form method, e.g. GET or POST.
 
-=cut
-
-sub method {
-    my ($self) = @_;
-
-    return $self->{method};
-};
-
 =head2 set_method METHOD
 
 Sets form method to METHOD, e.g. GET or POST.
-
-=cut
-
-sub set_method {
-	my ($self, $method) = @_;
-
-	$self->{sob}->{elts}->[0]->set_att('method', $method);
-	$self->{method} = $method;
-}
 
 =head2 fill PARAMS
 
@@ -261,17 +231,9 @@ Return true if you called fill on the form.
 
 =cut
 
-
-# fill - fills form fields
-
 sub _set_filled {
     my $self = shift;
-    $self->{_form_is_filled} = 1;
-}
-
-sub is_filled {
-    my $self = shift;
-    return $self->{_form_is_filled};
+    $self->_set_is_filled(1);
 }
 
 sub fill {
