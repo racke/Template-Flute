@@ -19,6 +19,7 @@ lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Replace.pm
 lib/Template/Flute/Filter/Strip.pm
 lib/Template/Flute/Filter/Upper.pm
+lib/Template/Flute/Role/Core.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
