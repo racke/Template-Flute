@@ -350,7 +350,7 @@ has filter_subs => (
     default => sub { +{} },
 );
 
-# FIXME: find & fix code that passes in i18n as undef
+# FIXME: (SysPete 28/4/16) find & fix code that passes in i18n as undef
 has i18n => (
     is  => 'ro',
     isa => Maybe[InstanceOf ['Template::Flute::I18N']],
@@ -378,73 +378,65 @@ has scopes => (
 
 has _specification => (
     is       => 'ro',
-    isa      => InstanceOf['Template::Flute::Specification'] | Str,
+    isa      => Specification | Str,
     init_arg => 'specification',
 );
 
-# FIXME: Due to GH#54 (see below) we need a writer which we'll make private
+# FIXME: (SysPete 28/4/16) Due to GH#54 (see below) we need a writer which
+# we'll make private
 has specification => (
-    is      => 'rwp',
-    isa     => InstanceOf['Template::Flute::Specification'],
-    lazy => 1,
+    is       => 'rwp',
+    isa      => Specification,
+    lazy     => 1,
     init_arg => undef,
-    default => sub {
+    default  => sub {
         my $self = shift;
         my $ret;
 
         if ( ref( $self->_specification ) ) {
             $ret = $self->_specification;
-            $self->_trigger_specification($ret);
-            return $ret;
-        }
-
-        my $parser_spec = use_module( $self->specification_parser )->new;
-
-        if ( $self->_specification ) {
-            $ret = $parser_spec->parse( $self->_specification );
-            croak "Error parsing specification: ", $parser_spec->error()
-              unless $ret;
-        }
-        elsif ( $self->specification_file ) {
-            $ret = $parser_spec->parse_file( $self->specification_file );
-            croak "Error parsing specification file ",
-              $self->specification_file, ": ", $parser_spec->error()
-              unless $ret;
         }
         else {
-            croak "No specification or specification_file provided";
+            my $parser_spec = use_module( $self->specification_parser )->new;
+
+            if ( $self->_specification ) {
+                $ret = $parser_spec->parse( $self->_specification );
+            }
+            else {
+                $ret = $parser_spec->parse_file( $self->specification_file );
+            }
+
+            croak "Error parsing specification: ", $parser_spec->error
+              unless $ret;
         }
-        $self->_trigger_specification($ret);
+
+        # copy iterators into specification
+        while ( my ( $name, $iter ) = each %{ $self->iterators } ) {
+            $ret->set_iterator( $name, $iter );
+        }
+
+        # copy patterns from specification
+        if ( my %patterns = $ret->patterns ) {
+            foreach my $k ( keys %patterns ) {
+                $self->_set_pattern( $k, $patterns{$k} );
+            }
+        }
+
         return $ret;
     },
 );
 
-sub _trigger_specification {
-    my ( $self, $specification ) = @_;
-    # FIXME: possible circular references
-    while ( my ( $name, $iter ) = each %{ $self->iterators } ) {
-        $specification->set_iterator( $name, $iter );
-    }
-    if ( my %patterns = $specification->patterns ) {
-        foreach my $k ( keys %patterns ) {
-            $self->_set_pattern( $k, $patterns{$k} );
-        }
-    }
-}
-
 has specification_file => (
     is      => 'ro',
-    isa     => SpecificationFile,
+    isa     => ReadableFilePath,
     lazy    => 1,
     default => sub {
         my $self = shift;
-        if ( $self->template_file ) {
-            Template::Flute::Utils::derive_filename( $self->template_file,
-                '.xml' );
-        }
-        else {
-            return undef;
-        }
+
+        croak "No template_file supplied so cannot determine specification_file"
+          unless $self->template_file;
+
+        Template::Flute::Utils::derive_filename( $self->template_file, '.xml' );
     },
 );
 
@@ -459,46 +451,34 @@ has specification_parser => (
 
 has _template => (
     is       => 'ro',
-    isa      => InstanceOf ['Template::Flute::HTML'] | Str,
+    isa      => HtmlParser | Str,
     init_arg => 'template',
 );
 
 has template => (
     is       => 'ro',
-    isa      => InstanceOf ['Template::Flute::HTML'],
+    isa      => HtmlParser,
     lazy     => 1,
     init_arg => undef,
     default  => sub {
         my $self = shift;
 
-        croak "Neither template nor template_file supplied"
-          unless ( $self->_template || $self->template_file );
+        return $self->_template if ref( $self->_template );
 
-        return $self->_template
-          if ref( $self->_template ) eq 'Template::Flute::HTML';
-
-        my $ret;
         my $template_object = Template::Flute::HTML->new(uri => $self->uri);
 
-        if ( ref($self->_template) eq 'HASH' ) {
-            croak "template is a Hash Reference";
-        }
-        elsif ( $self->_template ) {
+        if ( $self->_template ) {
             $template_object->parse(
                 $self->_template, $self->specification
             );
-            $ret = $template_object;
         }
         else {
             $template_object->parse_file(
                 $self->template_file, $self->specification
             );
-            $ret = $template_object;
         }
 
-        croak "Missing Template::Flute template." unless $ret;
-
-        return $ret;
+        return $template_object;
     },
 );
 
@@ -513,8 +493,9 @@ has translate_attributes => (
     default => sub { [ 'placeholder', 'input.value.type.submit' ] },
 );
 
-# FIXME: find & fix code that passes in uri as undef
-# FIXME: perhaps stringify in coerce so we don't have to accept URI objects?
+# FIXME: (SysPete 28/4/16) find & fix code that passes in uri as undef
+# FIXME: (SysPete 28/4/16) perhaps stringify in coerce so we don't have
+# to accept URI objects?
 has uri => (
     is  => 'ro',
     isa => Maybe [ InstanceOf ['URI'] | Str ],
@@ -534,6 +515,7 @@ sub BUILDARGS {
     croak "Either 'template' or 'template_file' must be supplied"
       unless ( exists $args{template} || exists $args{template_file} );
 
+    # build the various filter_* attributes
     while ( my ( $name, $value ) = each %{ $args{filters} } ) {
         if ( ref($value) eq 'CODE' ) {
             # passing subroutine
@@ -555,65 +537,9 @@ sub BUILDARGS {
 
 sub BUILD {
     my $self = shift;
-    $self->specification;
+    # catch exception in lazy builders early by forcing template to build now
     $self->template;
 }
-
-#sub new {
-#	my ($class, $self, $filter_subs, $filter_opts, $filter_class, $filter_objects);
-#
-#	$class = shift;
-#
-#	$filter_subs = {};
-#	$filter_opts = {};
-#	$filter_class = {};
-#    $filter_objects = {};
-#
-#	$self = {iterators => {},
-#             translate_attributes => [qw/placeholder input.value.type.submit/],
-#             @_,
-#             _filter_subs => $filter_subs,
-#             _filter_opts => $filter_opts,
-#             _filter_class => $filter_class,
-#             _filter_objects => $filter_objects,
-#	};
-#
-#	bless $self, $class;
-#
-#	if (exists $self->{specification}
-#		&& ! ref($self->{specification})) {
-#		# specification passed as string
-#		$self->_bootstrap_specification('string', delete $self->{specification});
-#	}
-#
-#	if (exists $self->{template}
-#		&& ! ref($self->{template})
-#		&& ref($self->{specification})) {
-#		$self->_bootstrap_template('string', delete $self->{template});
-#	}
-#
-#	if (exists $self->{filters}) {
-#	    my ($name, $value);
-#
-#	    while (($name, $value) = each %{$self->{filters}}) {
-#		if (ref($value) eq 'CODE') {
-#		    # passing subroutine
-#		    $filter_subs->{$name} = $value;
-#		    next;
-#		}
-#		if (exists($value->{class})) {
-#		    # record filter class
-#		    $filter_class->{$name} = $value->{class};
-#		}
-#		if (exists($value->{options})) {
-#		    # record filter options
-#		    $filter_opts->{$name} = $value->{options};
-#		}
-#	    }
-#	}
-#
-#	return $self;
-#}
 
 sub _get_pattern {
     my ($self, $name) = @_;
@@ -625,110 +551,8 @@ sub _set_pattern {
     croak "Missing pattern name" unless $name;
     croak "pattern $name already exists!" if $self->patterns->{$name};
     croak "Missing pattern regexp for $name" unless $regexp;
-    # print "Adding pattern $name";
     $self->patterns->{$name} = $regexp;
 }
-
-
-#sub _bootstrap {
-#	my ($self, $snippet) = @_;
-#	my ($parser_name, $parser_spec, $spec_file, $spec, $template_file, $template_object);
-#
-#	unless ($self->{specification}) {
-#		unless ($self->{specification_file}) {
-#			# try to derive specification file name from template file name
-#			$self->{specification_file} = Template::Flute::Utils::derive_filename($self->{template_file}, '.xml');
-#
-#			unless (-f $self->{specification_file}) {
-#				die "Missing Template::Flute specification for template $self->{template_file}\n";
-#			}
-#		}
-#
-#		$self->_bootstrap_specification(file => $self->{specification_file});
-#	}
-#
-#	$self->_bootstrap_template(file => $self->{template_file}, $snippet);
-#}
-
-#sub _bootstrap_specification {
-#	my ($self, $source, $specification) = @_;
-#	my ($parser_name, $parser_spec, $spec_file);
-#
-#	if ($parser_name = $self->{specification_parser}) {
-#		# load parser class
-#		my $class;
-#
-#		if ($parser_name =~ /::/) {
-#			$class = $parser_name;
-#		} else {
-#			$class = "Template::Flute::Specification::$parser_name";
-#		}
-#
-#		eval "require $class";
-#		if ($@) {
-#			die "Failed to load class $class as specification parser: $@\n";
-#		}
-#
-#		eval {
-#			$parser_spec = $class->new();
-#		};
-#
-#		if ($@) {
-#			die "Failed to instantiate class $class as specification parser: $@\n";
-#		}
-#	} else {
-#		$parser_spec = new Template::Flute::Specification::XML;
-#	}
-#
-#	if ($source eq 'file') {
-#		unless ($self->{specification} = $parser_spec->parse_file($specification)) {
-#			die "$0: error parsing $specification: " . $parser_spec->error() . "\n";
-#		}
-#	}
-#	else {
-#		# text
-#		unless ($self->{specification} = $parser_spec->parse($specification)) {
-#			die "$0: error parsing $spec_file: " . $parser_spec->error() . "\n";
-#		}
-#	}
-#
-#
-#	my ($name, $iter);
-#
-#	while (($name, $iter) = each %{$self->{iterators}}) {
-#		$self->{specification}->set_iterator($name, $iter);
-#	}
-#
-#    if (my %patterns = $self->{specification}->patterns) {
-#        foreach my $k (keys %patterns) {
-#            $self->_set_pattern($k, $patterns{$k});
-#        }
-#    }
-#
-#	return $self->{specification};
-#}
-
-#sub _bootstrap_template {
-#	my ($self, $source, $template, $snippet) = @_;
-#	my ($template_object);
-#
-#	$template_object = new Template::Flute::HTML(uri => $self->{uri});
-#
-#	if ($source eq 'file') {
-#		$template_object->parse_file($template, $self->{specification}, $snippet);
-#		$self->{template} = $template_object;
-#	}
-#	elsif ($source eq 'string') {
-#		$template_object->parse($template, $self->{specification}, $snippet);
-#		$self->{template} = $template_object;
-#	}
-#
-#	unless ($self->{template}) {
-#		die "$0: Missing Template::Flute template.\n";
-#	}
-#
-#	return $self->{template};
-#}
 
 =head1 METHODS
 
@@ -743,11 +567,6 @@ Returns HTML output.
 
 sub process {
 	my ($self, $params) = @_;
-
-
-#	unless ($self->{template}) {
-#		$self->_bootstrap($params->{snippet});
-#	}
 
 	if ($self->i18n) {
 		# translate static text first
@@ -815,8 +634,6 @@ sub _sub_process {
 	my ($self, $html, $spec_xml,  $values, $spec, $root_template, $count, $level) = @_;
 	my ($template, %list_active);
 	# Use root spec or sub-spec
-	#my $specification = $spec || $self->_bootstrap_specification(string => "<specification>".$spec_xml->sprint."</specification>", 1);
-
     my $specification = $spec
       || use_module( $self->specification_parser )->new()
       ->parse( "<specification>" . $spec_xml->sprint . "</specification>" );
@@ -1804,6 +1621,17 @@ details.
 
 Returns specification object, see L<Template::Flute::Specification> for
 details.
+
+=head2 patterns
+
+Returns all patterns found in the specification.
+
+=cut
+
+# FIXME: (SysPete 28/4/16) (SysPete) What is scopes used for? I don't see
+# anything in the pod.
+
+=head2 scopes
 
 =head1 SPECIFICATION
 
