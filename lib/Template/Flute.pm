@@ -326,25 +326,25 @@ has filters => (
     default => sub { +{} },
 );
 
-has filter_class => (
+has _filter_class => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has filter_objects => (
+has _filter_objects => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has filter_opts => (
+has _filter_opts => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
 );
 
-has filter_subs => (
+has _filter_subs => (
     is      => 'ro',
     isa     => HashRef,
     default => sub { +{} },
@@ -515,20 +515,20 @@ sub BUILDARGS {
     croak "Either 'template' or 'template_file' must be supplied"
       unless ( exists $args{template} || exists $args{template_file} );
 
-    # build the various filter_* attributes
+    # build the various _filter_* attributes
     while ( my ( $name, $value ) = each %{ $args{filters} } ) {
         if ( ref($value) eq 'CODE' ) {
             # passing subroutine
-            $args{filter_subs}->{$name} = $value;
+            $args{_filter_subs}->{$name} = $value;
             next;
         }
         if ( exists( $value->{class} ) ) {
             # record filter class
-            $args{filter_class}->{$name} = $value->{class};
+            $args{_filter_class}->{$name} = $value->{class};
         }
         if ( exists( $value->{options} ) ) {
             # record filter options
-            $args{filter_opts}->{$name} = $value->{options};
+            $args{_filter_opts}->{$name} = $value->{options};
         }
     }
 
@@ -1230,23 +1230,23 @@ sub _filter {
     my ($self, $name, $element, $value) = @_;
 	my ($filter, $mod_name, $class, $filter_obj, $filter_sub);
 
-    if (exists $self->filter_subs->{$name}) {
-        $filter = $self->filter_subs->{$name};
+    if (exists $self->_filter_subs->{$name}) {
+        $filter = $self->_filter_subs->{$name};
         return $filter->($value);
     }
 
-    unless (exists $self->filter_objects->{$name}) {
+    unless (exists $self->_filter_objects->{$name}) {
         # try to bootstrap filter
-	    unless ($class = $self->filter_class->{$name}) {
+	    unless ($class = $self->_filter_class->{$name}) {
             $mod_name = join('', map {ucfirst($_)} split(/_/, $name));
             $class = "Template::Flute::Filter::$mod_name";
 	    }
 
-        $self->filter_objects->{$name} =
-          use_module($class)->new( options => $self->filter_opts->{$name} );
+        $self->_filter_objects->{$name} =
+          use_module($class)->new( options => $self->_filter_opts->{$name} );
     }
 
-    $filter_obj = $self->filter_objects->{$name};
+    $filter_obj = $self->_filter_objects->{$name};
 
     if ($filter_obj->can('twig')) {
 		$element->{op} = sub {$filter_obj->twig(@_)};
