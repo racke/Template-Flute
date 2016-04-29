@@ -556,6 +556,10 @@ sub _set_pattern {
 
 =head1 METHODS
 
+=head2 BUILD
+
+Force creation of template class as soon as object is instantiated.
+
 =head2 process [HASHREF]
 
 Processes HTML template, manipulates the HTML tree based on the
