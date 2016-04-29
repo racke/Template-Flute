@@ -416,7 +416,7 @@ has specification => (
         }
 
         # copy patterns from specification
-        if ( my %patterns = $ret->patterns ) {
+        if ( my %patterns = %{ $ret->patterns } ) {
             foreach my $k ( keys %patterns ) {
                 $self->_set_pattern( $k, $patterns{$k} );
             }
