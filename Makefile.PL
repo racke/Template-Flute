@@ -20,6 +20,7 @@ WriteMakefile(
         'Test::Fatal' => 0,
     },
     PREREQ_PM => {
+        'Carp' => 0,
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
@@ -30,6 +31,8 @@ WriteMakefile(
         'Type::Tiny' => 0,
         'Scalar::Util' => 0,
         'URI' => 0,
+        'Module::Runtime' => 0,
+        'namespace::clean' => 0,
     },
     EXE_FILES => [ 'scripts/flute' ],
     META_MERGE        => {
