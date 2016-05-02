@@ -294,7 +294,7 @@ sub _value_handler {
 	my (%value);
 
 	$value{value} = $elt->atts();
-	
+
 	$self->spec->value_add(\%value);
 }
 

@@ -50,13 +50,15 @@ my @empty = $flute->specification->dangling;
 # diag Dumper(\@empty);
 ok(@empty, "Found empty elements");
 cmp_deeply @empty, ({
-                     'dump' => {name => 'cammmmmel',
+                     'dump' => {
+                                class => 'cammmmmel',
+                                name => 'cammmmmel',
                                 type => 'value',
                             },
                      'name' => 'cammmmmel',
                      'type' => 'class'
                     })
-                   , "Report ok";
+                   , "Report ok" or diag explain @empty;
 
 
 foreach my $internal (qw/_ids _classes _names/) {

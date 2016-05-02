@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Template::Flute::Iterator;
+use Template::Flute::Value;
 use Template::Flute::Types qw/HashRef Str/;
 use Moo;
 use namespace::clean;
@@ -391,35 +392,18 @@ Add value specified by hash reference VALUE.
 	
 sub value_add {
 	my ($self, $new_valueref) = @_;
-	my ($valueref, $value_name, $id, $class);
+	my ($value_name, $class);
 
-	$value_name = $new_valueref->{value}->{name};
+    my $value = Template::Flute::Value->new( $new_valueref->{value} );
 
-    unless (defined $value_name && $value_name =~ /\S/) {
-        die "Value needs a name attribute.";
-    }
-
-    if (exists $new_valueref->{value}->{include}) {
-		# include implies hooking resulting value
-		$new_valueref->{value}->{op} = 'hook';
-	}
-	elsif (exists $new_valueref->{value}->{field}
-           && $new_valueref->{value}->{field} =~ /\./) {
-        $new_valueref->{value}->{field} = [split /\./, $new_valueref->{value}->{field}];
-    }
-
-	$valueref = $self->values->{$new_valueref->{value}->{name}} = {};
-	
-	if ($id = $new_valueref->{value}->{id}) {
-		push @{$self->ids->{$id}}, {%{$new_valueref->{value}}, type => 'value'};
+    if ( $value->id ) {
+		push @{$self->ids->{$value->id}}, $value;
 	}
 	else {
-		$class = $new_valueref->{value}->{class} || $value_name;
-
-		push @{$self->classes->{$class}}, {%{$new_valueref->{value}}, type => 'value'};
+		push @{$self->classes->{$value->class}}, $value;
 	}
 
-	return $valueref;
+	return $value;
 }	
 
 =head2 i18n_add I18N
@@ -740,7 +724,7 @@ sub dangling {
                         push @empty, {
                                       type => $internal,
                                       name => $struct,
-                                      dump => $el,
+                                      dump => {%$el}, # unwrap objects
                                      }
                     }
                 }
