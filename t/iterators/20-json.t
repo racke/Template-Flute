@@ -108,7 +108,7 @@ subtest "Selector option" => sub {
     $json_file_iter = Template::Flute::Iterator::JSON->new(
         file => $json_file, selector => \%selector, children => 'images');
     isa_ok $json_file_iter, 'Template::Flute::Iterator';
-    is $json_file_iter->count, undef,
+    is $json_file_iter->count, 0,
         "Unknown selector value returns undef";
 
     %selector = ('sku' => "orange");

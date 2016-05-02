@@ -1,11 +1,10 @@
 package Template::Flute::Iterator::Cache;
 
-use Template::Flute::Types qw/ArrayRef Bool Int Iterator/;
+use Template::Flute::Types qw/Bool Iterator/;
 use Moo;
+with 'Template::Flute::Role::Iterator';
 use namespace::clean;
 use MooX::StrictConstructor;
-
-use base 'Template::Flute::Iterator';
 
 =head1 NAME
 
@@ -43,18 +42,6 @@ has iterator => (
     required => 1,
 );
 
-has index => (
-    isa => Int,
-    default => 0,
-    is => 'rwp',
-);
-
-has data => (
-    isa => ArrayRef,
-    is => 'rwp',
-    default => sub {[]},
-);
-
 has filled => (
     is      => 'rwp',
     isa     => Bool,
@@ -66,7 +53,6 @@ has filled => (
 =head2 count
 
 Returns count of (original) iterator.
-
 =cut
 
 sub count {
@@ -103,18 +89,6 @@ sub next {
 
     $self->_set_filled(1);
     return undef;
-}
-
-=head2 reset
-
-Resets the iterator.
-
-=cut
-
-sub reset {
-    my $self = shift;
-
-    $self->_set_index(0);
 }
 
 =head1 AUTHOR

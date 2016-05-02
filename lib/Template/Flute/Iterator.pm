@@ -1,7 +1,10 @@
 package Template::Flute::Iterator;
 
-use strict;
-use warnings;
+use Template::Flute::Types qw/Int/;
+use Moo;
+with 'Template::Flute::Role::Iterator';
+use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
@@ -41,21 +44,27 @@ as array or array reference.
 
 =cut
 
-# Constructor
-sub new {
-	my ($proto, @args) = @_;
-	my ($class, $self);
-	
-	$class = ref($proto) || $proto;
-
-	$self = {};
-	
-	bless $self, $class;
-
-	$self->seed(@args);
-
-	return $self;
+sub BUILDARGS {
+    my $class = shift;
+    return { data => @_ == 1 && ref($_[0]) eq 'ARRAY' ? $_[0] : [@_] };
 }
+
+=head1 ATTRIBUTES
+
+=head2 count
+
+The number of items in L</data>.
+
+=cut
+
+has count => (
+    is       => 'ro',
+    isa      => Int,
+    lazy     => 1,
+    default  => sub { scalar @{ $_[0]->data } },
+    init_arg => undef,
+    clearer  => 1,
+);
 
 =head1 METHODS
 
@@ -66,105 +75,14 @@ Returns next record or undef.
 =cut
 
 sub next {
-	my ($self) = @_;
+    my ($self) = @_;
 
-
-	if ($self->{INDEX} <= $self->{COUNT}) {
-		return $self->{DATA}->[$self->{INDEX}++];
-	}
-	
-	return;
-};
-
-=head2 count
-
-Returns number of elements.
-
-=cut
-	
-sub count {
-	my ($self) = @_;
-
-	return $self->{COUNT};
-}
-
-=head2 reset
-
-Resets iterator.
-
-=cut
-
-# Reset method - rewind index of iterator
-sub reset {
-	my ($self) = @_;
-
-	$self->{INDEX} = 0;
-
-	return $self;
-}
-
-=head2 seed
-
-Seeds iterator.
-
-=cut
-
-sub seed {
-	my ($self, @args) = @_;
-
-	if (ref($args[0]) eq 'ARRAY') {
-		$self->{DATA} = $args[0];
-	}
-	else {
-		$self->{DATA} = \@args;
-	}
-
-	$self->{INDEX} = 0;
-	$self->{COUNT} = scalar(@{$self->{DATA}});
-
-	return $self->{COUNT};
-}
-
-=head2 sort
-
-Sorts records of the iterator.
-
-Parameters are:
-
-=over 4
-
-=item $sort
-
-Field used for sorting.
-
-=item $unique
-
-Whether results should be unique (optional).
-
-=back
-
-=cut
-    
-sub sort {
-    my ($self, $sort, $unique) = @_;
-    my (@data, @tmp);
-
-    @data = sort {lc($a->{$sort}) cmp lc($b->{$sort})} @{$self->{DATA}};
-
-    if ($unique) {
-        my $sort_value = '';
-
-        for my $record (@data) {
-            next if $record->{$sort} eq $sort_value;
-            $sort_value = $record->{$sort};
-            push (@tmp, $record);
-        }
-
-        $self->{DATA} = \@tmp;
+    if ( $self->index <= $self->count ) {
+        my $old_index = $self->index;
+        $self->_set_index( $old_index + 1 );
+        return $self->data->[ $old_index ];
     }
-    else {
-        $self->{DATA} = \@data;
-    }
+    return undef;
 }
 
 =head1 AUTHOR

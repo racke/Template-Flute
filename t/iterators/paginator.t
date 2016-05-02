@@ -34,7 +34,7 @@ isa_ok($iter->next, 'HASH');
 $iter->seed({isbn => '978-0-9779201-5-0', title => 'Modern Perl',
              quantity => 10});
 
-ok($iter->count == 1);
+cmp_ok $iter->count, '==', 1, "Iterator count is 1";
 
 # computed tests
 my ($count, $expected);
