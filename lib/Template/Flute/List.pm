@@ -152,6 +152,12 @@ has sorts => (
     },
 );
 
+=head2 specification
+
+A L<Template::Flute::Specification> object.
+
+=cut
+
 has specification => (
     is  => 'ro',
     isa => Specification,

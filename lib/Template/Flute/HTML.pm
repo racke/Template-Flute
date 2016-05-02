@@ -37,6 +37,24 @@ Template::Flute::HTML - HTML Template Parser
 
 Create a Template::Flute::HTML object.
 
+=head1 ATTRIBUTES
+
+=head2 fields
+
+=head2 increments
+
+=head2 paging
+
+=head2 paging_elements
+
+=head2 params
+
+=head2 query
+
+=head2 separators
+
+=head2 uri
+
 =cut
 
 # constructor
