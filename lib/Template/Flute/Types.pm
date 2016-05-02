@@ -35,14 +35,26 @@ An instance of L<URI>.
 
 =cut
 
+declare 'Container',
+  as InstanceOf ['Template::Flute::Container'];
+
 declare 'Elt',
   as InstanceOf ['XML::Twig::Elt'];
+
+declare 'Form',
+  as InstanceOf ['Template::Flute::Form'];
 
 declare 'HtmlParser',
   as InstanceOf ['Template::Flute::HTML'];
 
 declare 'Iterator',
   as InstanceOf ['Template::Flute::Iterator'];
+
+declare 'List',
+  as InstanceOf ['Template::Flute::List'];
+
+declare 'Param',
+  as InstanceOf ['Template::Flute::Param'];
 
 declare 'ReadableFilePath',
   constraint => quote_sub q{ -e $_ && -r $_ };
@@ -55,5 +67,8 @@ declare 'Twig',
 
 declare 'URI',
   as InstanceOf ['URI'];
+
+declare 'FluteValue',
+  as InstanceOf ['Template::Flute::Value'];
 
 1;
