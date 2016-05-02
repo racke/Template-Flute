@@ -1,10 +1,9 @@
 package Template::Flute::List;
 
-use strict;
-use warnings;
+use Carp;
 use Template::Flute::Types qw/ArrayRef Elt HashRef Int Maybe Specification Str/;
 use Moo;
-with 'Template::Flute::Role::Component';
+#with 'Template::Flute::Role::Component';
 use namespace::clean;
 use MooX::StrictConstructor;
 
@@ -29,10 +28,9 @@ The L<XML::Twig::Elt> associated with this list.
 =cut
 
 has elt => (
-    is      => 'ro',
-    isa     => Elt,
-    lazy    => 1,
-    default => sub { $_[0]->sob->{elts}->[0] },
+    is       => 'ro',
+    isa      => Elt,
+    required => 1,
 );
 
 #=head2 filter
@@ -57,8 +55,9 @@ has filters => (
     lazy    => 1,
     writer  => 'filters_add',
     default => sub {
-        return $_[0]->specification
-          && $_[0]->name ? $_[0]->specification->list_filters( $_[0]->name ) : {};
+        return $_[0]->specification && $_[0]->name
+          ? $_[0]->specification->list_filters( $_[0]->name )
+          : {};
     },
 );
 
@@ -73,25 +72,40 @@ has increments => (
     default => sub { [] },
 );
 
-# add lazy and default to inputs
-has '+inputs' => (
+=head2 inputs
+
+Hash reference of inputs.
+
+#=over
+#
+#=item writer: inputs_add
+#
+#=back
+
+=cut
+
+has inputs => (
+    is      => 'ro',
+    isa     => HashRef,
+    trigger => sub { $_[0]->_set_valid_input(0) },
+#    writer  => 'inputs_add',
     lazy    => 1,
     default => sub {
-        return $_[0]->specification
-          && $_[0]->name ? $_[0]->specification->list_inputs( $_[0]->name ) : {};
+        return $_[0]->specification && $_[0]->name
+          ? $_[0]->specification->list_inputs( $_[0]->name )
+          : {};
     },
 );
 
-has _iterator => (
+=head2 iterator
+
+The iterator for this list.
+
+=cut
+
+has iterator => (
     is       => 'ro',
-    isa      => Maybe [HashRef],
-    lazy     => 1,
-    init_arg => undef,
-    default  => sub {
-        exists $_[0]->sob->{iterator}
-          ? +{ name => $_[0]->sob->{iterator} }
-          : undef;
-    },
+    isa      => HashRef,
 );
 
 =head2 limit
@@ -100,9 +114,7 @@ has _iterator => (
 
 has limit => (
     is      => 'ro',
-    isa     => Maybe [Int],
-    lazy    => 1,
-    default => sub { $_[0]->sob->{limit} },
+    isa     => Int,
 );
 
 =head2 limits
@@ -115,6 +127,20 @@ has limits => (
     default => sub { +{} },
 );
 
+=head2 name
+
+Name associated with the component.
+
+Required.
+
+=cut
+
+has name => (
+    is       => 'ro',
+    isa      => Str,
+    required => 1,
+);
+
 =head2 paging
 
 =cut
@@ -124,6 +150,28 @@ has paging => (
     isa    => HashRef,
     writer => 'paging_add',
     default => sub { +{} },
+);
+
+=head2 params
+
+Array reference of params.
+
+Defaults to an empty array reference.
+
+=over
+
+=item writer: params_add
+
+=back
+
+=cut
+
+has params => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+    coerce  => sub { defined $_[0] ? $_[0] : [] },
+    writer  => 'params_add',
 );
 
 =head2 separators
@@ -163,6 +211,16 @@ has specification => (
     isa => Specification,
 );
 
+=head2 static
+
+=cut
+
+has static => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+);
+
 =head1 METHODS
 
 =head2 iterator [ARG]
@@ -172,26 +230,39 @@ Returns list iterator name when called with ARG 'name'.
 
 =cut
 	
-sub iterator {
-	my ($self, $arg) = @_;
+around iterator => sub {
+    my ( $orig, $self, $arg ) = @_;
+    my $iterator = $orig->($self);
+    if ( $arg && $arg eq 'name' ) {
+        return $iterator->{name};
+    }
+    else {
+        return $iterator->{object};
+    }
+};
 
-	if (defined $arg && $arg eq 'name') {
-		return $self->_iterator->{name};
-	}
-	
-	return $self->_iterator->{object};
-}
+#=head2 set_iterator ITERATOR
+#
+#Sets list iterator object to ITERATOR.
+#
+#=cut
+#
+#sub set_iterator {
+#	my ($self, $iterator) = @_;
+#	
+#	$self->_iterator->{object} = $iterator;
+#}
 
-=head2 set_iterator ITERATOR
+=head2 set_static_class $class
 
-Sets list iterator object to ITERATOR.
+Add C<$class> to L</static>.
 
 =cut
 
-sub set_iterator {
-	my ($self, $iterator) = @_;
-	
-	$self->_iterator->{object} = $iterator;
+sub set_static_class {
+    my ( $self, $class ) = @_;
+
+    push( @{ $self->static }, $class );
 }
 
 =head2 static_class ROW_POS

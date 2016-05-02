@@ -12,7 +12,8 @@ use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
-use Template::Flute::Types qw/ArrayRef HashRef Maybe Str Twig URI/;
+use Template::Flute::Types
+  qw/ArrayRef Container HashRef Map Maybe Str Twig URI/;
 use Template::Flute::UriAdjust;
 
 use Scalar::Util qw/blessed/;
@@ -61,7 +62,7 @@ Create a Template::Flute::HTML object.
 
 has _containers => (
     is        => 'ro',
-    isa       => HashRef,
+    isa       => Map[Str,Container],
     init_arg => undef,
     default   => sub { +{} },
 );
@@ -578,20 +579,42 @@ sub _parse_handler {
 	return $self;
 }
 
-    sub _elt_handler {
-        my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
+sub _elt_handler {
+    my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
-	if ($sob->{type} eq 'container') {
-	    if (exists $self->_containers->{$name}) {
-		push @{$self->_containers->{$name}->{sob}->{elts}}, $elt;
-	    }
-	    else {
-		$sob->{elts} = [$elt];
-		$self->_containers->{$name} = Template::Flute::Container->new($sob, $spec_object, $name);
-	    }
+    if ( $sob->{type} eq 'container' ) {
+        if ( exists $self->_containers->{$name} ) {
+            push @{ $self->_containers->{$name}->elts }, $elt;
+        }
+        else {
+            $sob->{elts} = [$elt];
 
-	    return $self;
-	}
+$self->_containers->{$name} = Template::Flute::Container->new($sob, $spec_object, $name);
+#            my %args = (
+#                sob   => $sob,
+#                value => $sob->{value},
+#                elts  => [$elt],
+#                list  => delete $sob->{list},
+#                name  => delete $sob->{name},
+#            );
+#            #$args{class} = delete $sob->{class} if $sob->{class};
+#            $args{id} = delete $sob->{id} if $sob->{id};
+#
+#            $self->_containers->{$name} =
+#              Template::Flute::Container->new(%args);
+#
+#            delete $sob->{type};
+#            delete $sob->{value};
+#            if (%$sob) {
+#                #print STDERR "\n** add container **\n";
+#                #use DDP;
+#                #p $sob;
+#            }
+
+        }
+
+        return $self;
+    }
 	
 	if ($sob->{type} eq 'list') {
 		my $iter;
@@ -634,33 +657,30 @@ sub _parse_handler {
 			$p->{elts} = \@p_new;
 		}
 		
-		$self->_lists->{$name} = Template::Flute::List->new(
-            sob => $sob,
-            static => $static_classes,
+        my %args = (
+            elt           => $sob->{elts}->[0],
+            static        => $static_classes,
             specification => $spec_object,
-            name => $name,
-            params => $self->params->{$name}->{array},
-            paging => $self->paging->{$name} || {},
-            separators => $self->separators->{$name}->{array} || [],
-            increments => $self->increments->{$name}->{array} || [],
+            name          => $name,
+            params        => $self->params->{$name}->{array},
+            paging        => $self->paging->{$name} || {},
+            separators    => $self->separators->{$name}->{array} || [],
+            increments    => $self->increments->{$name}->{array} || [],
+            $sob->{filter} ? ( filter => $sob->{filter} ) : (),
+            $sob->{limit}  ? ( limit  => $sob->{limit} )  : (),
         );
 
-#		$self->_lists->{$name} = Template::Flute::List->new($sob, [join(' ', @$static_classes)], $spec_object, $name);
-#		$self->_lists->{$name}->params_add($self->params->{$name}->{array});
-#        $self->_lists->{$name}->paging_add($self->paging->{$name}) if $self->paging->{$name};
-#		$self->_lists->{$name}->separators_add($self->separators->{$name}->{array}) if $self->separators->{$name};
-#		$self->_lists->{$name}->increments_add($self->increments->{$name}->{array}) if $self->increments->{$name}->{array};
-			
-		if (exists $sob->{iterator}) {
-			if ($iter = $spec_object->iterator($sob->{iterator})) {
-				$self->_lists->{$name}->set_iterator($iter);
-			}
-		}
+        if ( exists $sob->{iterator} ) {
+            if ( my $iter = $spec_object->iterator( $sob->{iterator} ) ) {
+                $args{iterator} = +{
+                    name   => $sob->{iterator},
+                    object => $iter
+                };
+            }
+        }
 
-		if (exists $sob->{filter}) {
-			$self->_lists->{$name}->set_filter($sob->{filter});
-		}
-		
+        $self->_lists->{$name} = Template::Flute::List->new( %args );
+
 		return $self;
 	}
 
