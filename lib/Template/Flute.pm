@@ -615,7 +615,7 @@ sub _sub_process {
 		$template->parse("<flutexml>".$html->sprint."</flutexml>", $specification, 1);
 	}
 
-	my $classes = $specification->{classes};
+	my $classes = $specification->classes;
 	my ($dbobj, $iter, $sth, $row, $lel, $query, %skip, %iter_names);
 
 	# Read one layer of spec
@@ -745,7 +745,7 @@ sub _sub_process {
             }
         }
 
-		my $list = $template->{_lists}->{$spec_name};
+		my $list = $template->list($spec_name);
 		my $count = 1;
         my $iter_records;
 
@@ -924,7 +924,7 @@ sub _sub_process {
             }
 
 			# Increment count
-			$spec_class->{increment} = new Template::Flute::Increment(
+			$spec_class->{increment} = Template::Flute::Increment->new(
 				increment => $spec_class->{increment}->{increment},
 				start => $count
 			) if $spec_class->{increment};
@@ -950,7 +950,7 @@ sub _sub_process {
         }
     }
 
-	return $count ? $template->{xml}->root() : $template->{xml};
+	return $count ? $template->xml->root() : $template->xml;
 }
 
 sub _replace_within_elts {
