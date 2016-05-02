@@ -7,6 +7,7 @@ use Template::Flute::Types qw/HashRef Object/;
 use Moo;
 with 'Template::Flute::Role::Core', 'Template::Flute::Role::Component';
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

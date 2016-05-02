@@ -27,6 +27,7 @@ WriteMakefile(
         'HTML::TreeBuilder' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
+        'MooX::StrictConstructor' => 0,
         # InstanceOf using isa
         'Type::Tiny' => 0,
         'Scalar::Util' => 0,

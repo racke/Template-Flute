@@ -9,6 +9,7 @@ use Template::Flute::Types qw/HashRef Str/;
 use Template::Flute::Value;
 use Moo;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

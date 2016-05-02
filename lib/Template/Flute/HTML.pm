@@ -18,6 +18,7 @@ use Template::Flute::UriAdjust;
 use Scalar::Util qw/blessed/;
 use Moo;
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 

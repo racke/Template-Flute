@@ -6,6 +6,7 @@ use Template::Flute::Types qw/ArrayRef Bool HashRef InstanceOf Str/;
 use Moo;
 with 'Template::Flute::Role::Component';
 use namespace::clean;
+use MooX::StrictConstructor;
 
 =head1 NAME
 
