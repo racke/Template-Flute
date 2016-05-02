@@ -21,9 +21,9 @@ foreach my $file (@testfiles) {
                                      template_file => get_good_template($file),
                                      specification_file => get_good_spec($file),
                                     );
-    ok($flute->process, "HTML produced");
+    ok($flute->process, "HTML produced for $file");
     my @errors = $flute->specification->dangling;
-    is_deeply(\@errors, [], "No errors found");
+    is_deeply(\@errors, [], "No errors found") or diag explain @errors;
     $flute = Template::Flute->new(
                                   template_file => get_bad_template($file),
                                   specification_file => get_bad_spec($file),
