@@ -41,6 +41,9 @@ declare 'Elt',
 declare 'HtmlParser',
   as InstanceOf ['Template::Flute::HTML'];
 
+declare 'Iterator',
+  as InstanceOf ['Template::Flute::Iterator'];
+
 declare 'ReadableFilePath',
   constraint => quote_sub q{ -e $_ && -r $_ };
 

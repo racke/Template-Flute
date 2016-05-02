@@ -1,7 +1,9 @@
 package Template::Flute::Iterator::Cache;
 
+use Template::Flute::Types qw/ArrayRef Bool Int Iterator/;
 use Moo;
-use Types::Standard qw/ArrayRef InstanceOf Int/;
+use namespace::clean;
+use MooX::StrictConstructor;
 
 use base 'Template::Flute::Iterator';
 
@@ -36,9 +38,9 @@ Whether cache is filled or not.
 =cut
 
 has iterator => (
-    isa => InstanceOf ['Template::Flute::Iterator'],
+    is       => 'ro',
+    isa      => Iterator,
     required => 1,
-    is => 'ro',
 );
 
 has index => (
@@ -54,7 +56,8 @@ has data => (
 );
 
 has filled => (
-    is => 'rwp',
+    is      => 'rwp',
+    isa     => Bool,
     default => 0,
 );
 
