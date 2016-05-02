@@ -21,6 +21,8 @@ lib/Template/Flute/Filter/Strip.pm
 lib/Template/Flute/Filter/Upper.pm
 lib/Template/Flute/Role/Component.pm
 lib/Template/Flute/Role/Core.pm
+lib/Template/Flute/Role/Element.pm
+lib/Template/Flute/Role/Iterator.pm
 lib/Template/Flute/Specification/Scoped.pm
 lib/Template/Flute/Specification/XML.pm
 lib/Template/Flute/Specification.pm
@@ -38,6 +40,8 @@ lib/Template/Flute/Paginator.pm
 lib/Template/Flute/HTML.pm
 lib/Template/Flute/Utils.pm
 lib/Template/Flute/Types.pm
+lib/Template/Flute/Param.pm
+lib/Template/Flute/Value.pm
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
