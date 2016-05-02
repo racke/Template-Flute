@@ -745,7 +745,7 @@ sub _sub_process {
             }
         }
 
-		my $list = $template->{lists}->{$spec_name};
+		my $list = $template->{_lists}->{$spec_name};
 		my $count = 1;
         my $iter_records;
 

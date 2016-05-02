@@ -12,9 +12,12 @@ use Template::Flute::Increment;
 use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
+use Template::Flute::Types qw/ArrayRef HashRef Maybe Str Twig URI/;
 use Template::Flute::UriAdjust;
 
 use Scalar::Util qw/blessed/;
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -37,18 +40,100 @@ Create a Template::Flute::HTML object.
 
 # constructor
 
-sub new {
-	my ($class, $self);
+has _containers => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
 
-	$class = shift;
+has file => (
+    is        => 'rw',
+    isa       => Str,
+    init_arg => undef,
+);
 
-    my %args = @_;
+has fields => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
 
-	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
-			 params => {}, values => {}, query => {}, file => undef};
-	
-	bless $self, $class;
-}
+has _forms => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has increments => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
+
+has _i18n_key_elts => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
+);
+
+has _lists => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has paging => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has paging_elements => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has params => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
+
+has query => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has separators => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
+
+has uri => (
+    is  => 'ro',
+    isa => Maybe[URI|Str],
+);
+
+has _values => (
+    is        => 'ro',
+    isa       => HashRef,
+    init_arg => undef,
+    default   => sub { +{} },
+);
+
+has xml => (
+    is  => 'rw',
+    isa => Twig,
+);
 
 =head1 METHODS
 
@@ -63,7 +148,7 @@ Returns list of L<Template::Flute::Container> objects for this template.
 sub containers {
 	my ($self) = @_;
 
-	return values %{$self->{containers}};
+	return values %{$self->_containers};
 }
 
 =head2 container NAME
@@ -75,8 +160,8 @@ Returns container object named NAME.
 sub container {
 	my ($self, $name) = @_;
 
-	if (exists $self->{containers}->{$name}) {
-		return $self->{containers}->{$name};
+	if (exists $self->_containers->{$name}) {
+		return $self->_containers->{$name};
 	}
 }
 
@@ -89,7 +174,7 @@ Returns list of L<Template::Flute::List> objects for this template.
 sub lists {
 	my ($self) = @_;
 
-	return values %{$self->{lists}};
+	return values %{$self->_lists};
 }
 
 =head2 list NAME
@@ -102,8 +187,8 @@ Returns list object named NAME.
 sub list {
 	my ($self, $name) = @_;
 
-	if (exists $self->{lists}->{$name}) {
-		return $self->{lists}->{$name};
+	if (exists $self->_lists->{$name}) {
+		return $self->_lists->{$name};
 	}
 }
 
@@ -116,7 +201,7 @@ Returns list of L<Template::Flute::Form> objects for this template.
 sub forms {
 	my ($self) = @_;
 
-	return values %{$self->{forms}};
+	return values %{$self->_forms};
 }
 
 =head2 form NAME
@@ -129,8 +214,8 @@ Returns form object named NAME.
 sub form {
 	my ($self, $name) = @_;
 
-	if (exists $self->{forms}->{$name}) {
-		return $self->{forms}->{$name};
+	if (exists $self->_forms->{$name}) {
+		return $self->_forms->{$name};
 	}
 }
 
@@ -143,7 +228,7 @@ Returns list of values for this template.
 sub values {
 	my ($self) = @_;
 
-	return values %{$self->{values}};
+	return values %{$self->_values};
 }
 
 =head2 iterators
@@ -157,7 +242,7 @@ sub iterators {
 	my ($self) = @_;
 	my (%iterators, $name, $object);
 
-	for my $list (CORE::values %{$self->{lists}}) {
+	for my $list (CORE::values %{$self->_lists}) {
 		$name = $list->iterator('name');
 		next unless $name;
 		$iterators{$name} = $list->iterator();
@@ -176,7 +261,7 @@ Returns root of HTML/XML tree.
 sub root {
 	my ($self) = @_;
 
-	return $self->{xml}->root();
+	return $self->xml->root();
 }
 
 =head2 translate I18NOBJECT
@@ -303,13 +388,9 @@ sub translate {
     }
 
 	# cleanup
-	if ($self->{_i18n_key_elts}) {
-	    for my $elt (@{$self->{_i18n_key_elts}}) {
-		$elt->del_att('i18n-key');
-	    }
-
-	    delete $self->{_i18n_key_elts};
-	}
+    while ( my $elt = shift @{ $self->_i18n_key_elts } ) {
+        $elt->del_att('i18n-key');
+    }
 
 	return;
 }
@@ -317,14 +398,6 @@ sub translate {
 =head2 file
 
 Returns name of template file.
-
-=cut
-
-sub file {
-	my $self = shift;
-	
-	return $self->{file};
-}
 
 =head2 parse [ STRING | SCALARREF ] SPECOBJECT
 
@@ -375,11 +448,11 @@ sub _parse_template {
 	$twig = new XML::Twig (%twig_args);
 
 	if (ref($template) eq 'SCALAR') {
-		$self->{file} = '';
+		$self->file('');
 		$html_content = decode_entities($$template);
 	}
 	else {
-		$self->{file} = $template;
+		$self->file($template);
 		$encoding = $spec_object->encoding();
 		$html_content = Path::Tiny::path($template)->slurp({binmode => ":encoding($encoding)"});
         my $first_char = substr($html_content, 0, 1);
@@ -402,7 +475,7 @@ sub _parse_template {
 	
         _fix_script_tags($xml);
 
-	$self->{xml} = $object->{xml} = $xml;
+	$self->xml($object->{xml} = $xml);
 
 	return $object;
 }
@@ -418,7 +491,7 @@ sub _parse_handler {
 	$id = $elt->id();
 	$elt_name = $elt->att('name');
 
-    if ($self->{uri}) {
+    if ($self->uri) {
         my %targets = (a => {link_att => 'href'},
                        base => {link_att => 'href'},
                        img => {link_att => 'src'},
@@ -434,7 +507,7 @@ sub _parse_handler {
 
 	    if (defined $link_value) {
 		$uri_adjust = Template::Flute::UriAdjust->new(uri => $link_value,
-							      adjust => $self->{uri},
+							      adjust => $self->uri,
 		    );
 
 		if (my $result = $uri_adjust->result) {
@@ -490,12 +563,12 @@ sub _parse_handler {
         my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
 	if ($sob->{type} eq 'container') {
-	    if (exists $self->{containers}->{$name}) {
-		push @{$self->{containers}->{$name}->{sob}->{elts}}, $elt;
+	    if (exists $self->_containers->{$name}) {
+		push @{$self->_containers->{$name}->{sob}->{elts}}, $elt;
 	    }
 	    else {
 		$sob->{elts} = [$elt];
-		$self->{containers}->{$name} = new Template::Flute::Container ($sob, $spec_object, $name);
+		$self->_containers->{$name} = Template::Flute::Container->new($sob, $spec_object, $name);
 	    }
 
 	    return $self;
@@ -504,11 +577,11 @@ sub _parse_handler {
 	if ($sob->{type} eq 'list') {
 		my $iter;
 		
-		if (exists $self->{lists}->{$name}) {
+		if (exists $self->_lists->{$name}) {
 		    # record static classes
 		    my ($list, $first_static, $first_classes);
 		    
-		    $list = $self->{lists}->{$name};
+		    $list = $self->_lists->{$name};
 
 		    if ($first_static = $list->static_class(0)) {
 			# remove static class from initial list element
@@ -527,7 +600,7 @@ sub _parse_handler {
 		$sob->{elts} = [$elt];
 
 		# weed out parameters which aren't descendants of list element
-		for my $p (@{$self->{params}->{$name}->{array}}) {
+		for my $p (@{$self->params->{$name}->{array}}) {
 			my @p_new;
 			
 			for my $p_elt (@{$p->{elts}}) {
@@ -542,31 +615,31 @@ sub _parse_handler {
 			$p->{elts} = \@p_new;
 		}
 		
-		$self->{lists}->{$name} = Template::Flute::List->new(
+		$self->_lists->{$name} = Template::Flute::List->new(
             sob => $sob,
             static => $static_classes,
             specification => $spec_object,
             name => $name,
-            params => $self->{params}->{$name}->{array},
-            paging => $self->{paging}->{$name} || {},
-            separators => $self->{separators}->{$name}->{array} || [],
-            increments => $self->{increments}->{$name}->{array} || [],
+            params => $self->params->{$name}->{array},
+            paging => $self->paging->{$name} || {},
+            separators => $self->separators->{$name}->{array} || [],
+            increments => $self->increments->{$name}->{array} || [],
         );
 
-#		$self->{lists}->{$name} = Template::Flute::List->new($sob, [join(' ', @$static_classes)], $spec_object, $name);
-#		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
-#        $self->{lists}->{$name}->paging_add($self->{paging}->{$name}) if $self->{paging}->{$name};
-#		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array}) if $self->{separators}->{$name};
-#		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array}) if $self->{increments}->{$name}->{array};
+#		$self->_lists->{$name} = Template::Flute::List->new($sob, [join(' ', @$static_classes)], $spec_object, $name);
+#		$self->_lists->{$name}->params_add($self->params->{$name}->{array});
+#        $self->_lists->{$name}->paging_add($self->paging->{$name}) if $self->paging->{$name};
+#		$self->_lists->{$name}->separators_add($self->separators->{$name}->{array}) if $self->separators->{$name};
+#		$self->_lists->{$name}->increments_add($self->increments->{$name}->{array}) if $self->increments->{$name}->{array};
 			
 		if (exists $sob->{iterator}) {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
-				$self->{lists}->{$name}->set_iterator($iter);
+				$self->_lists->{$name}->set_iterator($iter);
 			}
 		}
 
 		if (exists $sob->{filter}) {
-			$self->{lists}->{$name}->set_filter($sob->{filter});
+			$self->_lists->{$name}->set_filter($sob->{filter});
 		}
 		
 		return $self;
@@ -576,30 +649,30 @@ sub _parse_handler {
 		push (@{$sob->{elts}}, $elt);
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 
-		if (exists $self->{lists}->{$sob->{list}}) {
-		    $self->{lists}->{$sob->{list}}->separators_add([$sob]);
+		if (exists $self->_lists->{$sob->{list}}) {
+		    $self->_lists->{$sob->{list}}->separators_add([$sob]);
 		}
 		else {
-		    $self->{separators}->{$sob->{list}}->{hash}->{$name} = $sob;
-		    push(@{$self->{separators}->{$sob->{list}}->{array}}, $sob);
+		    $self->separators->{$sob->{list}}->{hash}->{$name} = $sob;
+		    push(@{$self->separators->{$sob->{list}}->{array}}, $sob);
 		}
 	}
     elsif ($sob->{type} eq 'paging') {
         # go through paging elements and record corresponding HTML elements
         for my $element_ref (CORE::values %{$sob->{elements}}) {
-            if (exists $self->{paging_elements}->{$name}->{$element_ref->{type}}) {
-                $element_ref->{elts} = $self->{paging_elements}->{$name}->{$element_ref->{type}}->{elts};
+            if (exists $self->paging_elements->{$name}->{$element_ref->{type}}) {
+                $element_ref->{elts} = $self->paging_elements->{$name}->{$element_ref->{type}}->{elts};
             }
         }
 
         push (@{$sob->{elts}}, $elt);
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 
-        if (exists $self->{lists}->{$sob->{list}}) {
-            $self->{lists}->{$sob->{list}}->paging_add($sob);
+        if (exists $self->_lists->{$sob->{list}}) {
+            $self->_lists->{$sob->{list}}->paging_add($sob);
         }
         else {
-		    $self->{paging}->{$sob->{list}} = $sob;
+		    $self->paging->{$sob->{list}} = $sob;
         }
     }
     
@@ -609,17 +682,17 @@ sub _parse_handler {
 
 		$sob->{elts} = [$elt];
 
-        $self->{forms}->{$name} = Template::Flute::Form->new(
+        $self->_forms->{$name} = Template::Flute::Form->new(
             sob    => $sob,
-            #fields => $self->{fields}->{$name}->{array},
-            #params => $self->{params}->{$name}->{array},
+            #fields => $self->fields->{$name}->{array},
+            #params => $self->params->{$name}->{array},
             #inputs => $spec_object->form_inputs($name),
         );
 
-        $self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
-        $self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
+        $self->_forms->{$name}->fields_add($self->fields->{$name}->{array});
+        $self->_forms->{$name}->params_add($self->params->{$name}->{array});
 			
-        $self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
+        $self->_forms->{$name}->inputs_add($spec_object->form_inputs($name));
 			
 		return $self;
 	}
@@ -634,21 +707,21 @@ sub _parse_handler {
 			my $inc = new Template::Flute::Increment (increment => $sob->{increment});
 			
 			$sob->{increment} = $inc;
-			push(@{$self->{increments}->{$sob->{list}}->{array}}, $inc);
+			push(@{$self->increments->{$sob->{list}}->{array}}, $inc);
 		}
 
-		$self->{params}->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
-		push(@{$self->{params}->{$sob->{list} || $sob->{form}}->{array}}, $sob);
+		$self->params->{$sob->{list} || $sob->{form}}->{hash}->{$name} = $sob;
+		push(@{$self->params->{$sob->{list} || $sob->{form}}->{array}}, $sob);
     } elsif ($sob->{type} eq 'element') {
         push (@{$sob->{elts}}, $elt);
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
-        $self->{paging_elements}->{$sob->{paging}}->{$sob->{element_type}} = $sob;
+        $self->paging_elements->{$sob->{paging}}->{$sob->{element_type}} = $sob;
 	} elsif ($sob->{type} eq 'value') {
 		push (@{$sob->{elts}}, $elt);
 
 		$self->_elt_indicate_replacements($sob, $elt, $gi, $name, $spec_object);
 		
-		$self->{values}->{$name} = $sob;
+		$self->_values->{$name} = $sob;
 	} elsif ($sob->{type} eq 'field') {
          # HTML <form> elements can't be tied to 'field'
         return $self if $elt->tag eq 'form';
@@ -669,11 +742,11 @@ sub _parse_handler {
 				$elt->{"flute_$name"}->{rep_sub} = \&_set_selected;
 			}
 		}
-		push(@{$self->{fields}->{$sob->{form}}->{array}}, $sob);
+		push(@{$self->fields->{$sob->{form}}->{array}}, $sob);
 	} elsif ($sob->{type} eq 'i18n') {
 
 		$elt->set_att('i18n-key', $sob->{'key'});
-		push(@{$self->{_i18n_key_elts}}, $elt);
+		push(@{$self->_i18n_key_elts}, $elt);
 	} else {
 		return $self;
 	}
