@@ -2,6 +2,10 @@ package Template::Flute::List;
 
 use strict;
 use warnings;
+use Template::Flute::Types qw/ArrayRef Elt HashRef Int Maybe Specification Str/;
+use Moo;
+with 'Template::Flute::Role::Component';
+use namespace::clean;
 
 =head1 NAME
 
@@ -15,135 +19,144 @@ Creates Template::Flute::List object.
 
 =cut
 
-# Constructor
-sub new {
-	my ($class, $sob, $static, $spec, $name) = @_;
-	my ($self, $lf);
-	
-	$static ||= [];
-	
-	$self = {sob => $sob, static => $static, valid_input => undef};
+=head1 ATTRIBUTES
 
-	if (exists $sob->{iterator}) {
-		$self->{iterator} = {name => $sob->{iterator}};
-	}
-    $self->{limit} = $sob->{limit} if defined $sob->{limit};
-	
-	bless $self, $class;
-	
-	if ($spec && $name) {
-		$self->inputs_add($spec->list_inputs($name));
-		$self->filters_add($spec->list_filters($name));
-		$self->sorts_add($spec->list_sorts($name));
-        
-        if ($lf = $spec->list_paging($name)) {
-            $self->paging_add($lf);
-        }
-	}
-	
-	return $self;
-}
+=head2 elt
+
+The L<XML::Twig::Elt> associated with this list.
+
+=cut
+
+has elt => (
+    is      => 'ro',
+    isa     => Elt,
+    lazy    => 1,
+    default => sub { $_[0]->sob->{elts}->[0] },
+);
+
+#=head2 filter
+#
+#Name of the global filter for the list.
+#
+#=cut
+#
+#has filter => (
+#    is     => 'ro',
+#    isa    => Str,
+#    writer => 'set_filter',
+#);
+
+=head2 filters
+
+=cut
+
+has filters => (
+    is      => 'ro',
+    isa     => HashRef,
+    lazy    => 1,
+    writer  => 'filters_add',
+    default => sub {
+        return $_[0]->specification
+          && $_[0]->name ? $_[0]->specification->list_filters( $_[0]->name ) : {};
+    },
+);
+
+=head2 increments
+
+=cut
+
+has increments => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    writer  => 'increments_add',
+    default => sub { [] },
+);
+
+# add lazy and default to inputs
+has '+inputs' => (
+    lazy    => 1,
+    default => sub {
+        return $_[0]->specification
+          && $_[0]->name ? $_[0]->specification->list_inputs( $_[0]->name ) : {};
+    },
+);
+
+has _iterator => (
+    is       => 'ro',
+    isa      => Maybe [HashRef],
+    lazy     => 1,
+    init_arg => undef,
+    default  => sub {
+        exists $_[0]->sob->{iterator}
+          ? +{ name => $_[0]->sob->{iterator} }
+          : undef;
+    },
+);
+
+=head2 limit
+
+=cut
+
+has limit => (
+    is      => 'ro',
+    isa     => Maybe [Int],
+    lazy    => 1,
+    default => sub { $_[0]->sob->{limit} },
+);
+
+=head2 limits
+
+=cut
+
+has limits => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { +{} },
+);
+
+=head2 paging
+
+=cut
+
+has paging => (
+    is     => 'ro',
+    isa    => HashRef,
+    writer => 'paging_add',
+    default => sub { +{} },
+);
+
+=head2 separators
+
+=cut
+
+has separators => (
+    is      => 'ro',
+    isa     => ArrayRef,
+    writer  => 'separators_add',
+    default => sub { [] },
+);
+
+=head1 sorts
+
+=cut
+
+has sorts => (
+    is      => 'ro',
+    isa     => HashRef,
+    lazy    => 1,
+    writer  => 'sorts_add',
+    default => sub {
+        return $_[0]->specification
+          && $_[0]->name ? $_[0]->specification->list_sorts( $_[0]->name ) : {};
+    },
+);
+
+has specification => (
+    is  => 'ro',
+    isa => Specification,
+);
 
 =head1 METHODS
-
-=head2 params_add PARAMS
-
-Add parameters from PARAMS to list.
-
-=cut
-	
-sub params_add {
-	my ($self, $params) = @_;
-
-	$self->{params} = $params || [];
-}
-
-=head2 separators_add SEPARATORS
-
-Add separators from SEPARATORS to list:
-
-=cut
-
-sub separators_add {
-    my ($self, $separators) = @_;
-
-    $self->{separators} = $separators || [];
-}
-
-=head2 inputs_add INPUTS
-
-Add inputs from INPUTS to list.
-
-=cut
-
-sub inputs_add {
-	my ($self, $inputs) = @_;
-
-	if (ref($inputs) eq 'HASH') {
-		$self->{inputs} = $inputs;
-		$self->{valid_input} = 0;
-	}
-}
-
-=head2 increments_add INCREMENTS
-
-Add increments from INCREMENTS to list.
-
-=cut
-
-sub increments_add {
-	my ($self, $increments) = @_;
-
-	$self->{increments} = $increments;
-}
-
-=head2 filters_add FILTERS
-
-Add filters from FILTERS to list.
-
-=cut
-
-sub filters_add {
-	my ($self, $filters) = @_;
-
-	$self->{filters} = $filters;
-}
-
-=head2 sorts_add SORT
-
-Add sort from SORT to list.
-
-=cut
-
-sub sorts_add {
-	my ($self, $sort) = @_;
-
-	$self->{sorts} = $sort;
-}
-
-=head2 paging_add PAGING
-
-Add paging from PAGING to list.
-
-=cut
-	
-sub paging_add {
-	my ($self, $paging) = @_;
-
-	$self->{paging} = $paging;
-}
-
-=head2 name
-
-Returns name of the list.
-
-=cut
-
-sub name {
-	my ($self) = @_;
-
-	return $self->{sob}->{name};
-}
 
 =head2 iterator [ARG]
 
@@ -156,10 +169,10 @@ sub iterator {
 	my ($self, $arg) = @_;
 
 	if (defined $arg && $arg eq 'name') {
-		return $self->{iterator}->{name};
+		return $self->_iterator->{name};
 	}
 	
-	return $self->{iterator}->{object};
+	return $self->_iterator->{object};
 }
 
 =head2 set_iterator ITERATOR
@@ -171,19 +184,7 @@ Sets list iterator object to ITERATOR.
 sub set_iterator {
 	my ($self, $iterator) = @_;
 	
-	$self->{iterator}->{object} = $iterator;
-}
-
-=head2 set_static_class CLASS
-
-Set static class for list to CLASS.
-
-=cut
-
-sub set_static_class {
-	my ($self, $class) = @_;
-
-	push(@{$self->{static}}, $class);
+	$self->_iterator->{object} = $iterator;
 }
 
 =head2 static_class ROW_POS
@@ -196,47 +197,11 @@ sub static_class {
 	my ($self, $row_pos) = @_;
 	my ($idx);
 
-	if (@{$self->{static}}) {
-		$idx = $row_pos % scalar(@{$self->{static}});
+	if (@{$self->static}) {
+		$idx = $row_pos % scalar(@{$self->static});
 		
-		return $self->{static}->[$idx];
+		return $self->static->[$idx];
 	}
-}
-
-=head2 elt
-
-Returns corresponding HTML template element of the list.
-
-=cut
-
-sub elt {
-	my ($self) = @_;
-
-	return $self->{sob}->{elts}->[0];
-}
-
-=head2 params
-
-Returns list parameters.
-
-=cut
-
-sub params {
-	my ($self) = @_;
-
-	return $self->{params};
-}
-
-=head2 separators
-
-Return list separators.
-
-=cut
-
-sub separators {
-    my ($self) = @_;
-
-    return $self->{separators};
 }
 
 =head2 input PARAMS
@@ -250,14 +215,14 @@ sub input {
 	my ($self, $params) = @_;
 	my ($error_count);
 
-	if ((! $params || ! (keys %$params)) && $self->{valid_input} == 1) {
+	if ((! $params || ! (keys %$params)) && $self->_valid_input ) {
 		return 1;
 	}
 	
 	$error_count = 0;
 	$params ||= {};
 	
-	for my $input (values %{$self->{inputs}}) {
+	for my $input (values %{$self->inputs}) {
 		if ($input->{optional} && (! defined $params->{$input->{name}}
 			|| $params->{$input->{name}} !~ /\S/)) {
 			# skip optional inputs without a value
@@ -277,7 +242,7 @@ sub input {
 		return 0;
 	}
 
-	$self->{valid_input} = 1;
+	$self->_set_valid_input(1);
 	return 1;
 }
 
@@ -291,19 +256,7 @@ Set list limit for type TYPE to LIMIT.
 sub set_limit {
 	my ($self, $type, $limit) = @_;
 
-	$self->{limits}->{$type} = $limit;
-}
-
-=head2 set_filter NAME
-
-Set global filter for list to NAME.
-
-=cut
-	
-sub set_filter {
-	my ($self, $name) = @_;
-
-	$self->{filter} = $name;
+	$self->limits->{$type} = $limit;
 }
 
 =head2 filter FLUTE ROW
@@ -316,11 +269,11 @@ sub filter {
 	my ($self, $flute, $row) = @_;
 	my ($new_row);
 	
-	if ($self->{filters}) {
-		if (ref($self->{filters}) eq 'HASH') {
+	if ($self->filters) {
+		if (ref($self->filters) eq 'HASH') {
 			$new_row = $row;
 			
-			for my $f (keys %{$self->{filters}}) {
+			for my $f (keys %{$self->filters}) {
 				$new_row = $flute->filter($f, $new_row);
 				return unless $new_row;
 			}
@@ -328,7 +281,7 @@ sub filter {
 			return $new_row;
 		}
 
-		return $flute->filter($self->{filters}, $row);
+		return $flute->filter($self->filters, $row);
 	}
 	
 	return $row;
@@ -343,7 +296,7 @@ Increment all increments of the list.
 sub increment {
 	my ($self) = @_;
 
-	for my $inc (@{$self->{increments}}) {
+	for my $inc (@{$self->increments}) {
 		$inc->increment();
 	}
 }

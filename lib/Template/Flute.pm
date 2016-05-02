@@ -762,7 +762,7 @@ sub _sub_process {
             $iter_records = Template::Flute::Iterator->new(@$records);
         }
 
-        if ($list->{paging}) {
+        if ($list->paging) {
             $iter_records->reset;
             # replace the iterator with the paginator
             $iter_records = $self->_paging($list, $iter_records);
@@ -782,11 +782,11 @@ sub _sub_process {
 
             $count_iterations++;
             last
-                if defined $list->{limit}
-                && $count_iterations > $list->{limit};
+                if defined $list->limit
+                && $count_iterations > $list->limit;
 
             # cut the separators away before copying
-            for my $sep (@{$list->{separators}}) {
+            for my $sep (@{$list->separators}) {
                 for my $elt (@{$sep->{elts}}) {
                     $elt->cut();
                 }
@@ -810,8 +810,8 @@ sub _sub_process {
        		}
 
 			# Add separator
-			if ($current && $list->{separators}) {
-			    for my $sep (@{$list->{separators}}) {
+			if ($current && $list->separators) {
+			    for my $sep (@{$list->separators}) {
 
                     if (my $every_x = $sep->{every}) {
                         unless ($count_iterations % $every_x == 0) {
@@ -1227,7 +1227,7 @@ sub _paging {
     my ($self, $list, $iterator) = @_;
 
     # turn iterator into paginator
-    my $page_size = $list->{paging}->{page_size} || 20;
+    my $page_size = $list->paging->{page_size} || 20;
 
     my ($iter, $pager);
 
@@ -1259,15 +1259,15 @@ sub _paging {
         my ($element_orig, $element_copy, %element_pos, $element_link,
             $paging_page, $paging_link, $slide_length, $element, $element_active, $paging_min, $paging_max);
 
-        $slide_length = $list->{paging}->{slide_length} || 0;
+        $slide_length = $list->paging->{slide_length} || 0;
 
-        if (exists $list->{paging}->{page_value} and
-            exists $self->values->{$list->{paging}->{page_value}}) {
-            $paging_page = $self->values->{$list->{paging}->{page_value}};
+        if (exists $list->paging->{page_value} and
+            exists $self->values->{$list->paging->{page_value}}) {
+            $paging_page = $self->values->{$list->paging->{page_value}};
         }
-        if (exists $list->{paging}->{link_value} and
-            exists $self->values->{$list->{paging}->{link_value}}) {
-            $paging_link = $self->values->{$list->{paging}->{link_value}};
+        if (exists $list->paging->{link_value} and
+            exists $self->values->{$list->paging->{link_value}}) {
+            $paging_link = $self->values->{$list->paging->{link_value}};
         }
         $paging_page ||= 1;
 
@@ -1291,7 +1291,7 @@ sub _paging {
         }
 
         for my $type (qw/first previous next last active standard/) {
-            if ($element = $list->{paging}->{elements}->{$type}) {
+            if ($element = $list->paging->{elements}->{$type}) {
                 $element_orig = shift @{$element->{elts}};
                 next unless $element_orig;
 
@@ -1390,7 +1390,7 @@ sub _paging {
         }
     } else {
         # remove paging area
-        for my $paging_elt (@{$list->{paging}->{elts}}) {
+        for my $paging_elt (@{$list->paging->{elts}}) {
             $paging_elt->cut;
         }
     }

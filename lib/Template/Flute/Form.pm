@@ -75,11 +75,13 @@ has method => (
 );
 
 # FIXME: (SysPete 29/4/16) Keep old api for now.
-sub BUILDARGS {
-    my ( $class, $sob, $static ) = @_;
-
-    return { sob => $sob, static => $static };
-}
+#sub BUILDARGS {
+#    my ( $class, $sob, $static ) = @_;
+#
+#    my $args = { sob => $sob };
+#    $args->{static} = $static if defined $static;;
+#    return $args;
+#}
 
 =head2 fields_add FIELDS
 

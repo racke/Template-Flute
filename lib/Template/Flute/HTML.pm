@@ -486,8 +486,8 @@ sub _parse_handler {
 	return $self;
 }
 
-sub _elt_handler {
-	my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
+    sub _elt_handler {
+        my ($self, $sob, $elt, $gi, $spec_object, $name, $static_classes) = @_;
 
 	if ($sob->{type} eq 'container') {
 	    if (exists $self->{containers}->{$name}) {
@@ -542,11 +542,22 @@ sub _elt_handler {
 			$p->{elts} = \@p_new;
 		}
 		
-		$self->{lists}->{$name} = new Template::Flute::List ($sob, [join(' ', @$static_classes)], $spec_object, $name);
-		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
-        $self->{lists}->{$name}->paging_add($self->{paging}->{$name});
-		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array});
-		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array});
+		$self->{lists}->{$name} = Template::Flute::List->new(
+            sob => $sob,
+            static => $static_classes,
+            specification => $spec_object,
+            name => $name,
+            params => $self->{params}->{$name}->{array},
+            paging => $self->{paging}->{$name} || {},
+            separators => $self->{separators}->{$name}->{array} || [],
+            increments => $self->{increments}->{$name}->{array} || [],
+        );
+
+#		$self->{lists}->{$name} = Template::Flute::List->new($sob, [join(' ', @$static_classes)], $spec_object, $name);
+#		$self->{lists}->{$name}->params_add($self->{params}->{$name}->{array});
+#        $self->{lists}->{$name}->paging_add($self->{paging}->{$name}) if $self->{paging}->{$name};
+#		$self->{lists}->{$name}->separators_add($self->{separators}->{$name}->{array}) if $self->{separators}->{$name};
+#		$self->{lists}->{$name}->increments_add($self->{increments}->{$name}->{array}) if $self->{increments}->{$name}->{array};
 			
 		if (exists $sob->{iterator}) {
 			if ($iter = $spec_object->iterator($sob->{iterator})) {
@@ -598,12 +609,17 @@ sub _elt_handler {
 
 		$sob->{elts} = [$elt];
 
-		$self->{forms}->{$name} = new Template::Flute::Form ($sob);
+        $self->{forms}->{$name} = Template::Flute::Form->new(
+            sob    => $sob,
+            #fields => $self->{fields}->{$name}->{array},
+            #params => $self->{params}->{$name}->{array},
+            #inputs => $spec_object->form_inputs($name),
+        );
 
-		$self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
-		$self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
+        $self->{forms}->{$name}->fields_add($self->{fields}->{$name}->{array});
+        $self->{forms}->{$name}->params_add($self->{params}->{$name}->{array});
 			
-		$self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
+        $self->{forms}->{$name}->inputs_add($spec_object->form_inputs($name));
 			
 		return $self;
 	}

@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use Carp;
-use Template::Flute::Types qw/ArrayRef Bool HashRef Str/;
+use Template::Flute::Types qw/ArrayRef Bool HashRef Maybe Str/;
 use Moo::Role;
 
 =head1 NAME
@@ -88,8 +88,9 @@ has sob => (
 =cut
 
 has static => (
-    is       => 'ro',
-    required => 1,
+    is      => 'ro',
+    isa     => ArrayRef,
+    default => sub { [] },
 );
 
 has _valid_input => (
@@ -99,5 +100,19 @@ has _valid_input => (
     init_arg => undef,
     writer   => '_set_valid_input',
 );
+
+=head1 METHODS
+
+=head2 set_static_class $class
+
+Add C<$class> to L</static>.
+
+=cut
+
+sub set_static_class {
+    my ( $self, $class ) = @_;
+
+    push( @{ $self->static }, $class );
+}
 
 1;
