@@ -3,8 +3,7 @@ package Template::Flute::Role::Component;
 use warnings;
 use strict;
 
-use Carp;
-use Template::Flute::Types qw/ArrayRef Bool HashRef Maybe Str/;
+use Template::Flute::Types qw/ArrayRef Bool HashRef Str/;
 use Moo::Role;
 
 =head1 NAME
