@@ -14,7 +14,8 @@ use Template::Flute::Iterator::Cache;
 use Template::Flute::Increment;
 use Template::Flute::Pager;
 use Template::Flute::Paginator;
-use Template::Flute::Types -types;
+use Template::Flute::Types qw/ArrayRef Bool HashRef HtmlParser InstanceOf
+                              Maybe ReadableFilePath Specification Str URI/;
 
 use Moo;
 with 'Template::Flute::Role::Core';
@@ -470,7 +471,7 @@ has translate_attributes => (
 # to accept URI objects?
 has uri => (
     is  => 'ro',
-    isa => Maybe [ InstanceOf ['URI'] | Str ],
+    isa => Maybe [ URI | Str ],
 );
 
 sub BUILDARGS {
