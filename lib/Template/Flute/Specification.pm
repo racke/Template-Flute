@@ -4,8 +4,9 @@ use strict;
 use warnings;
 
 use Template::Flute::Iterator;
-use Template::Flute::Value;
+use Template::Flute::Param;
 use Template::Flute::Types qw/HashRef Str/;
+use Template::Flute::Value;
 use Moo;
 use namespace::clean;
 
@@ -269,12 +270,10 @@ sub list_add {
 	}
 
 	# loop through params for this list
-	for my $param (@{$new_listref->{param}}) {
-		$class = $param->{class} || $param->{name};
-		unless ($class) {
-			die "Neither class nor name for param within list $list_name.\n";
-		}
-		push @{$self->classes->{$class}}, {%{$param}, type => 'param', list => $list_name};
+	for my $param_hash (@{$new_listref->{param}}) {
+        my $param =
+          Template::Flute::Param->new( %$param_hash, list => $list_name );
+		push @{$self->classes->{$param->class}}, $param;
 	}
 
 	# loop through paging for this list
