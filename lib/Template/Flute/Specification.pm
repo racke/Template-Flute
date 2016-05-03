@@ -5,7 +5,7 @@ use warnings;
 
 use Template::Flute::Iterator;
 use Template::Flute::Param;
-use Template::Flute::Types qw/HashRef Regexp Str Twig/;
+use Template::Flute::Types qw/HashRef Str Twig/;
 use Template::Flute::Value;
 use Moo;
 use namespace::clean;

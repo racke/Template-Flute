@@ -117,9 +117,9 @@ sub parse_file {
 	my ($self, $file) = @_;
 	my ($twig, $xml);
 
-	$self->spec->{xml} = $self->twig->safe_parsefile($file);
+    $self->spec->set_xml( $self->twig->safe_parsefile($file) );
 
-	unless ($self->spec->{xml}) {
+	unless ($self->spec->xml) {
 		$self->_add_error(file => $file, error => $@);
 		return;
 	}
