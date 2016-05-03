@@ -545,8 +545,8 @@ sub process {
 	}
 
 	my $html = $self->_sub_process(
-		$self->template->{xml},
-		$self->specification->{xml}->root,
+		$self->template->xml,
+		$self->specification->xml->root,
 		$self->values,
 		$self->specification,
 		$self->template,

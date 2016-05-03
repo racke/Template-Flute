@@ -5,7 +5,7 @@ use warnings;
 
 use Template::Flute::Iterator;
 use Template::Flute::Param;
-use Template::Flute::Types qw/HashRef Str/;
+use Template::Flute::Types qw/HashRef Regexp Str Twig/;
 use Template::Flute::Value;
 use Moo;
 use namespace::clean;
@@ -148,6 +148,12 @@ has values => (
     is       => 'ro',
     isa      => HashRef,
     default  => sub { +{} },
+);
+
+has xml => (
+    is     => 'ro',
+    isa    => Twig,
+    writer => 'set_xml',
 );
 
 sub _ids {

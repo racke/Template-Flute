@@ -29,7 +29,7 @@ WriteMakefile(
         'Moo' => 1.001000,
         'MooX::StrictConstructor' => 0,
         # InstanceOf using isa
-        'Type::Tiny' => 0,
+        'Type::Tiny' => '0.008',
         'Scalar::Util' => 0,
         'URI' => 0,
         'Module::Runtime' => 0,
