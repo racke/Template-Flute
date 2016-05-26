@@ -516,8 +516,9 @@ sub _cidify_html {
     }
 
     foreach my $img ($html->descendants('img')) {
+        my $source = $img->att('src');
 
-        if (my $source = $img->att('src')) {
+        if (defined $source && $source =~ /\S/ && $source !~ /^cid:/) {
             my $cid = $source;
             # to generate a cid, remove every character save for [a-zA-Z0-9]
             # and use that.
