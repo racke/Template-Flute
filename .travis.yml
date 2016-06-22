@@ -17,3 +17,7 @@ matrix:
       env: COVERAGE=1   # enables coverage+coveralls reporting
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto
+install:
+  - cpan-install --deps
+  - cpan-install Locales Test::Manifest
+  - cpan-install --coverage
