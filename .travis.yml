@@ -21,7 +21,7 @@ install:
   - cpan-install --deps
   - cpan-install Locales Test::CheckManifest
   - cpan-install Config::Scoped 
-  - cpan-install Currency # prereqs for Currency filter
+  - cpan-install Number::Format # prereqs for Currency filter
   - cpan-install DateTime DateTime::Format::ISO8601 # prereqs for Date filter
   - cpan-install JSON # prereqs for JsonVar filter 
   - cpan-install --coverage
