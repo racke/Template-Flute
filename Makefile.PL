@@ -21,6 +21,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Carp' => 0,
+        'Data::Page' => 0,
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,

@@ -5,6 +5,7 @@ use warnings;
 
 use Moo;
 use Sub::Quote;
+use Data::Page;
 
 =head1 NAME
 
@@ -41,7 +42,7 @@ Pager iterator.
 has iterator => (
     is => 'rw',
     lazy => 1,
-#    default => quote_sub q{return Data::Pager->new;},
+    default => quote_sub q{return Data::Page->new;},
 );
 
 =head2 page_size
