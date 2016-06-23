@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use Template::Flute;
 
-my (@tests, @tests_id, $html, $spec, $flute, $out);
+my (@tests, @tests_id, $html, $spec, $flute, $template, $container, $out);
 
 @tests = ([q{<container name="box" value="username"/>}, {}, 0],
 	  [q{<container name="box" value="username"/>}, 
@@ -58,8 +58,6 @@ my (@tests, @tests_id, $html, $spec, $flute, $out);
 	      {username => 'racke'}, 0],
     );
 
-plan tests => scalar @tests + @tests_id + 5;
-
 $html = q{<html><div class="box">USER</div></html>};
 
 my $i;
@@ -72,6 +70,12 @@ for my $t (@tests) {
 				  values => $t->[1]);
 
     $out = $flute->process();
+
+    $template = $flute->template;
+
+    $container = $template->container('box');
+
+    isa_ok($container, 'Template::Flute::Container');
 
     if ($t->[2]) {
 	ok($out =~ m%<html><head></head><body><div class="box">USER</div></body></html>%, "$i: $out");
@@ -167,3 +171,5 @@ $flute = Template::Flute->new(specification => $spec,
 $out = $flute->process();
 
 ok($out !~ m%<html><head></head><body><div id="message">.*</div></body></html>%, 'container shares value with value not present using HTML id attribute') || diag $out;
+
+done_testing;
