@@ -80,6 +80,7 @@ t/values/basic.t
 t/values/bom.t
 t/values/checkboxes.t
 t/values/hook-script.t
+t/values/img.t
 t/values/input.t
 t/values/js.t
 t/values/multiple.t
