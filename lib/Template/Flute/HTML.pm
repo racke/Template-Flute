@@ -674,19 +674,30 @@ sub _elt_indicate_replacements {
 			$elt->{"flute_$name"}->{rep_sub} = \&hook_html;
 			return;
 		}
-        elsif ($sob->{op} eq 'append' && ! $sob->{target}) {
+        elsif (($sob->{op} eq 'prepend' || $sob->{op} eq 'append') && ! $sob->{target}) {
             $elt->{"flute_$name"}->{rep_text_orig} = $elt->text_only;
             my $joiner = '';
             if (exists $sob->{joiner}) {
                 $joiner = $sob->{joiner};
             }
-            $elt->{"flute_$name"}->{rep_sub} = sub {
-                my ($elt, $str) = @_;
-				$str ||= '';
-                if (! $joiner || $str =~ /\S/) {
-                    $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
-                }
-            };
+            if ($sob->{op} eq 'append') {
+                $elt->{"flute_$name"}->{rep_sub} = sub {
+                    my ($elt, $str) = @_;
+                    $str ||= '';
+                    if (! $joiner || $str =~ /\S/) {
+                        $elt->set_text($elt->{"flute_$name"}->{rep_text_orig} . $joiner . $str);
+                    }
+                };
+            }
+            else {
+                $elt->{"flute_$name"}->{rep_sub} = sub {
+                    my ($elt, $str) = @_;
+                    $str ||= '';
+                    if (! $joiner || $str =~ /\S/) {
+                        $elt->set_text($str . $joiner . $elt->{"flute_$name"}->{rep_text_orig});
+                    }
+                };
+             };
         }
         elsif ($sob->{op} eq 'toggle' && exists $sob->{args}
                && $sob->{args} eq 'tree') {
@@ -703,7 +714,7 @@ sub _elt_indicate_replacements {
 	
 	if ($sob->{target}) {
 		if (exists $sob->{op}) {
-			if ($sob->{op} eq 'append') {
+			if ($sob->{op} eq 'append' || $sob->{op} eq 'prepend') {
 				# keep original values around. The target could be a
 				# wildcard.
 				foreach my $attribute (keys %{ $elt->atts }) {

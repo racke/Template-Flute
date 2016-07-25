@@ -1019,7 +1019,17 @@ sub _replace_within_elts {
 		} elsif ($zref->{rep_att}) {
 			# replace attribute instead of embedded text (e.g. for <input>)
             foreach my $replace_attr (_expand_elt_attributes($elt, $zref->{rep_att})) {
-                if (exists $param->{op} && $param->{op} eq 'append') {
+                if (exists $param->{op}) {
+                    if ($param->{op} eq 'toggle') {
+                        if ($rep_str) {
+                            $elt->set_att($replace_attr);
+                        }
+                        else {
+                            $elt->del_att($replace_attr);
+                        }
+                        next;
+                    }
+
                     my $original_attribute = '';
 
                     if (exists $zref->{rep_att_orig}->{$replace_attr}) {
@@ -1028,30 +1038,36 @@ sub _replace_within_elts {
 
                     if (exists $param->{joiner}) {
                         if ($rep_str) {
-                            $elt->set_att($replace_attr, $original_attribute . $param->{joiner} . $rep_str);
+                            if ($param->{op} eq 'append') {
+                                $elt->set_att($replace_attr, $original_attribute . $param->{joiner} . $rep_str);
+                            }
+                            elsif ($param->{op} eq 'prepend') {
+                                $elt->set_att($replace_attr, $rep_str . $param->{joiner} . $original_attribute);
+                            }
                         }
                     }
                     else {
-                        my $rep_str_appended = $rep_str ? ($original_attribute . $rep_str) : $original_attribute;
-                        $elt->set_att($replace_attr, $rep_str_appended);
-                    }
+                        my $rep_str_new;
 
-                } elsif (exists $param->{op} && $param->{op} eq 'toggle') {
-                    if ($rep_str) {
-                        $elt->set_att($replace_attr);
+                        if ($param->{op} eq 'append') {
+                            $rep_str_new = $rep_str ? ($original_attribute . $rep_str) : $original_attribute;
+                        }
+                        elsif ($param->{op} eq 'prepend') {
+                            $rep_str_new = $rep_str ? ($rep_str . $original_attribute) : $original_attribute;
+                        }
+
+                        $elt->set_att($replace_attr, $rep_str_new);
                     }
-                    else {
-                        $elt->del_att($replace_attr);
-                    }
-                } else {
-                    if (defined $rep_str) {
-                        $elt->set_att($replace_attr, $rep_str);
-                    }
-                    else {
-                        $elt->del_att($replace_attr);
-                    }
+                    next;
                 }
-            }
+
+                if (defined $rep_str) {
+                    $elt->set_att($replace_attr, $rep_str);
+                }
+                else {
+                    $elt->del_att($replace_attr);
+                }
+             }
 		} elsif ($zref->{rep_elt}) {
 			# use provided text element for replacement
 			$zref->{rep_elt}->set_text($rep_str);
@@ -1743,6 +1759,10 @@ The following operations are supported for param elements:
 
 Appends the param value to the text found in the HTML template.
 
+=item prepend
+
+Prepends the param value to the text found in the HTML template.
+
 =item target
 
 The attribute to operate on. See below C<target> for C<value> for details.
@@ -1792,6 +1812,10 @@ The following operations are supported for value elements:
 =item append
 
 Appends the value to the text found in the HTML template.
+
+=item prepend
+
+Prepends the value to the text found in the HTML template.
 
 =item hook
 
