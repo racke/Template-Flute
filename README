@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    Version 0.0192
+    Version 0.020
 
 SYNOPSIS
 
@@ -267,6 +267,10 @@ CONSTRUCTOR
 
 METHODS
 
+ BUILD
+
+    Force creation of template class as soon as object is instantiated.
+
  process [HASHREF]
 
     Processes HTML template, manipulates the HTML tree based on the
@@ -299,6 +303,12 @@ METHODS
 
     Returns specification object, see Template::Flute::Specification for
     details.
+
+ patterns
+
+    Returns all patterns found in the specification.
+
+ scopes
 
 SPECIFICATION
 
@@ -401,6 +411,10 @@ SPECIFICATION
 
 	Appends the param value to the text found in the HTML template.
 
+      prepend
+
+	Prepends the param value to the text found in the HTML template.
+
       target
 
 	The attribute to operate on. See below target for value for
@@ -443,6 +457,10 @@ SPECIFICATION
       append
 
 	Appends the value to the text found in the HTML template.
+
+      prepend
+
+	Prepends the value to the text found in the HTML template.
 
       hook
 

@@ -1,5 +1,28 @@
 Revision history for Template::Flute
 
+0.020  Mon Aug  1 12:24:45 2016 CEST
+
+    [ENHANCEMENTS]
+
+    * Add prepend operator (Stefan Hornburg/Racke).
+    * Use instance of Data::Page as default iterator for Pager class
+      (Stefan Hornburg/Racke).
+    * Migrate Flute.pm to Moo (Peter Mottram).
+
+    [BUG FIXES]
+
+    * Prevent bogus entry in email_cids hashref caused by parsing HTML twice
+      (Stefan Hornburg/Racke).
+
+    [TESTS]
+
+    * Use Travis helpers and coverage testing (Stefan Hornburg/Racke).
+    * Add test on replacing HTML src attribute for images if target isn't
+      specified (Stefan Hornburg/Racke).
+    * Add test for the list method of the template object (Stefan Hornburg/Racke).
+    * Add test for container object to basic container test script
+      (Stefan Hornburg/Racke).
+
 0.0192 Tue Feb  2 19:00:14 2016 CET
 
     [BUG FIXES]
