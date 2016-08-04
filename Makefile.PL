@@ -28,8 +28,8 @@ WriteMakefile(
         'HTML::TreeBuilder' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
-        # InstanceOf using isa
-        'Type::Tiny' => 0,
+        # minimum version which supports InstanceOf
+        'Type::Tiny' => 0.008,
         'Scalar::Util' => 0,
         'URI' => 0,
         'Module::Runtime' => 0,
