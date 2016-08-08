@@ -13,8 +13,11 @@ use Template::Flute::Container;
 use Template::Flute::List;
 use Template::Flute::Form;
 use Template::Flute::UriAdjust;
+use Template::Flute::Types -types;
 
 use Scalar::Util qw/blessed/;
+
+use Moo;
 
 =head1 NAME
 
@@ -27,28 +30,19 @@ Template::Flute::HTML - HTML Template Parser
     $html_object->parse('<div class="example">Hello world</div>');
     $html_object->parse_file($html_file, $spec);
 
-=head1 CONSTRUCTOR
 
-=head2 new
+=head1 ATTRIBUTES
 
-Create a Template::Flute::HTML object.
+=head2 uri
+
+URI value for adjusting the HTML to base URI.
 
 =cut
 
-# constructor
-
-sub new {
-	my ($class, $self);
-
-	$class = shift;
-
-    my %args = @_;
-
-	$self = {%args, containers => {}, lists => {}, pagings => {}, forms => {},
-			 params => {}, values => {}, query => {}, file => undef};
-	
-	bless $self, $class;
-}
+has uri => (
+    is  => 'ro',
+    isa => Maybe [ InstanceOf ['URI'] | Str ],
+);
 
 =head1 METHODS
 
@@ -418,7 +412,7 @@ sub _parse_handler {
 	$id = $elt->id();
 	$elt_name = $elt->att('name');
 
-    if ($self->{uri}) {
+    if ($self->uri) {
         my %targets = (a => {link_att => 'href'},
                        base => {link_att => 'href'},
                        img => {link_att => 'src'},
