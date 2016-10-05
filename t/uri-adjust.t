@@ -47,6 +47,18 @@ my @tests = (
      uri => URI->new('/t/', 'http'),
      match => qr{link href="/t/css/main.css"},
     },
+    {
+     html => q{<html><body><form action="/post">Log in</form></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new("https://test.org:5000/mount/"),
+     match => q{<form action="https://test.org:5000/post">Log in</form>},
+    },
+    {
+     html => q{<html><body><a href="mailto:racke@linuxia.de">Mail</a></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new("https://test.org:5000/mount/"),
+     match => q{<a href="mailto:racke@linuxia.de">},
+    },
 );
 
 plan tests => scalar @tests;
