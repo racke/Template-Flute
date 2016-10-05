@@ -75,6 +75,7 @@ sub result {
     if (! $uri->scheme) {
         $uri->scheme($self->scheme);
     }
+    return unless $uri->scheme =~ /\Ahttps?\z/;
 
     my $result = $uri->clone;
 
