@@ -51,13 +51,19 @@ my @tests = (
      html => q{<html><body><form action="/post">Log in</form></body></html>},
      spec => q{<specification></specification>},
      uri => URI->new("https://test.org:5000/mount/"),
-     match => q{<form action="https://test.org:5000/post">Log in</form>},
+     match => qr{<form action="https://test.org:5000/mount/post">Log in</form>},
+    },
+    {
+     html => q{<html><body><form action="https://test.org:3000/post">Log in</form></body></html>},
+     spec => q{<specification></specification>},
+     uri => URI->new("https://test.org:5000/mount/"),
+     match => qr{<form action="https://test.org:3000/post">Log in</form>},
     },
     {
      html => q{<html><body><a href="mailto:racke@linuxia.de">Mail</a></body></html>},
      spec => q{<specification></specification>},
      uri => URI->new("https://test.org:5000/mount/"),
-     match => q{<a href="mailto:racke@linuxia.de">},
+     match => qr{<a href="mailto:racke\@linuxia.de">},
     },
 );
 
@@ -72,8 +78,6 @@ for my $t (@tests) {
     #isa_ok($tf, 'Template::Flute');
     
     my $out = $tf->process;
-    
-    ok ($out =~ /$t->{match}/)
-        || diag "Out: $out.";
+    like $out, $t->{match};
 }
 
