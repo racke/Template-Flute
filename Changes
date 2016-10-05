@@ -1,5 +1,25 @@
 Revision history for Template::Flute
 
+0.021  Wed Oct  5 12:33:21 2016 CEST
+
+    [BUG FIXES]
+
+    * Fix crash on mailto hrefs when uri argument is provided
+      (Marco Pessotto, GH #159, #160).
+    * Apply uri adjustments to form actions (Marco Pessotto).
+    * Bump up Type::Tiny prerequisite to minimum version which supports
+      InstanceOf (Stefan Hornburg/Racke).
+
+    [ENHANCEMENTS]
+
+    * Fix indirect call on Template::Flute::Increment (Marco Pessotto).
+
+    [TESTS]
+
+    * Add (successful) test for GH #11 (Stefan Hornburg/Racke).
+    * Add test case for GH #131 (Stefan Hornburg/Racke).
+    * Add reverse tests for dotted container values (Stefan Hornburg/Racke).
+
 0.020  Mon Aug  1 12:24:45 2016 CEST
 
     [ENHANCEMENTS]
