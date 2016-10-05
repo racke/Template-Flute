@@ -960,7 +960,7 @@ sub _sub_process {
             }
 
 			# Increment count
-			$spec_class->{increment} = new Template::Flute::Increment(
+			$spec_class->{increment} = Template::Flute::Increment->new(
 				increment => $spec_class->{increment}->{increment},
 				start => $count
 			) if $spec_class->{increment};
