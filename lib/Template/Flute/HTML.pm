@@ -424,6 +424,7 @@ sub _parse_handler {
                        img => {link_att => 'src'},
                        link => {link_att => 'href'},
                        script => {link_att => 'src'},
+                       form => {link_att => 'action'},
                    );
 
         # adjust links to static files
