@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    Version 0.021
+    Version 0.022
 
 SYNOPSIS
 
@@ -966,6 +966,11 @@ FILTERS
 
       Replaces spaces with dashes (-) and makes lowercase. see
       Template::Flute::Filter::LowerDash.
+
+    markdown
+
+      Turns text in Markdown format into HTML. see
+      Template::Flute::Filter::Markdown.
 
     Filter classes are loaded at runtime for efficiency and to keep the
     number of dependencies for Template::Flute as small as possible.

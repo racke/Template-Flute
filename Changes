@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.022  Fri Oct 21 16:09:20 2016 CEST
+
+    [ENHANCEMENTS]
+
+    * Add markdown filter (Pattawan Kaewduangdee, GH #162).
+
 0.021  Wed Oct  5 12:33:21 2016 CEST
 
     [BUG FIXES]
