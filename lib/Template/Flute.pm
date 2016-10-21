@@ -2342,6 +2342,11 @@ Requires L<JSON> module.
 Replaces spaces with dashes (-) and makes lowercase.
 see L<Template::Flute::Filter::LowerDash>.
 
+=item markdown
+
+Turns text in Markdown format into HTML.
+see L<Template::Flute::Filter::Markdown>.
+
 =back
 
 Filter classes are loaded at runtime for efficiency and to keep the
