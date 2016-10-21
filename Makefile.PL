@@ -13,6 +13,7 @@ WriteMakefile(
     PL_FILES            => {},
     BUILD_REQUIRES => {
         'Class::Load' => 0,
+        'HTML::Entities' => 0,
         'Test::Deep' => 0,
         'Test::More' => 0,
         'Test::Warn' => 0,
@@ -26,9 +27,11 @@ WriteMakefile(
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
         'HTML::TreeBuilder' => 0,
+        'HTML::Scrubber' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
         # minimum version which supports InstanceOf
+        'Text::Markdown' => 0,
         'Type::Tiny' => 0.008,
         'Scalar::Util' => 0,
         'URI' => 0,
