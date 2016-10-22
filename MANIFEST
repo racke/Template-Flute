@@ -15,6 +15,7 @@ lib/Template/Flute/Filter/CountryName.pm
 lib/Template/Flute/Filter/JsonVar.pm
 lib/Template/Flute/Filter/LanguageName.pm
 lib/Template/Flute/Filter/LowerDash.pm
+lib/Template/Flute/Filter/Markdown.pm
 lib/Template/Flute/Filter/NobreakSingle.pm
 lib/Template/Flute/Filter/Replace.pm
 lib/Template/Flute/Filter/Strip.pm
@@ -69,6 +70,7 @@ t/filters/date.t
 t/filters/eol.t
 t/filters/json.t
 t/filters/lowerdash.t
+t/filters/markdown.t
 t/filters/multi.t
 t/filters/nobreak_single.t
 t/filters/strip.t
