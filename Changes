@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.024  Mon Oct 24 12:25:25 2016 CEST
+
+    [ENHANCEMENTS]
+
+    * Add support for multiple select in forms (Marco Pessotto, GH #163).
+
 0.023  Sat Oct 22 14:58:31 2016 CEST
 
     [BUG FIXES]
