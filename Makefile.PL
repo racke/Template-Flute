@@ -19,6 +19,7 @@ WriteMakefile(
         'Test::Warn' => 0,
         'Test::Warnings' => 0,
         'Test::Fatal' => 0,
+        'Hash::MultiValue' => 0,
     },
     PREREQ_PM => {
         'Carp' => 0,

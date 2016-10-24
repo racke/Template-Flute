@@ -831,9 +831,13 @@ sub _set_selected {
                 $text = $record_value;
             }
             if (defined $value and
-                defined $record_value and
-                $record_value eq $value) {
-                $att{selected} = 'selected';
+                defined $record_value) {
+                if (ref($value) eq 'ARRAY') {
+                    $att{selected} = 'selected' if grep { $record_value eq $_ } @$value;
+                }
+                elsif ($record_value eq $value) {
+                    $att{selected} = 'selected';
+                }
             }
 			
 			$elt->insert_new_elt('last_child', 'option',
