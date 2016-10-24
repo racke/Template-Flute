@@ -2,6 +2,7 @@ package Template::Flute::Form;
 
 use strict;
 use warnings;
+use Scalar::Util qw/blessed/;
 
 =head1 NAME
 
@@ -278,6 +279,9 @@ sub fill {
 	my ($self, $href) = @_;
 	my ($f, @elts, $value, $zref, $type);
     $self->_set_filled;
+    if (blessed($href) and $href->isa('Hash::MultiValue')) {
+        $href = $href->mixed;
+    }
 	for my $f (@{$self->fields()}) {
 		@elts = @{$f->{elts}};
 
