@@ -112,6 +112,7 @@ t/forms/basic.t
 t/forms/checkbox.t
 t/forms/container.t
 t/forms/duplicate-dropdowns.t
+t/forms/multiselect.t
 t/forms/fields.t
 t/iterators/00-load.t
 t/iterators/01-simple.t
