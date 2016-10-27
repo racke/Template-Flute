@@ -19,12 +19,26 @@ $spec = q{<specification>
 
 $html = q{<div class="test">FOO</div>};
 
+use XML::LibXML;
+
+my $libxml_parser = XML::LibXML->new;
+
+my $doc = $libxml_parser->load_html(string => $html);
+
+# find element with class "test"
+for my $node ($doc->findnodes('//*[contains(concat(" ", normalize-space(@class), " "), " test ")]')) {
+    # append text
+    $node->appendText('BAR');
+}
+
+$out = $doc->toStringHTML;
+
 $flute = Template::Flute->new(template => $html,
                               specification => $spec,
                               values => {test => 'BAR'},
                              );
 
-$out = $flute->process;
+#$out = $flute->process;
 
 like ($out, qr%<div class="test">FOOBAR</div>%,
     "value with op=append");
