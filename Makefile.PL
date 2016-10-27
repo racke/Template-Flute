@@ -27,6 +27,8 @@ WriteMakefile(
         'Data::Transpose' => 0.0009,
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
+        # new parser
+        'XML::LibXML' => 0,
         'HTML::TreeBuilder' => 0,
         'HTML::Scrubber' => 0,
         'Parse::RecDescent' => 0,
