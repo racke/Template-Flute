@@ -1822,6 +1822,11 @@ Prepends the value to the text found in the HTML template.
 Insert HTML residing in value as subtree of the corresponding HTML element.
 HTML will be parsed with L<XML::Twig>. See L</INSERT HTML> for an example.
 
+=item keep
+
+Preserves the text inside of the HTML element if value is false
+in the Perl sense.
+
 =item toggle
 
 Only shows corresponding HTML element if value is set.

@@ -85,6 +85,7 @@ t/values/hook-script.t
 t/values/img.t
 t/values/input.t
 t/values/js.t
+t/values/keep.t
 t/values/multiple.t
 t/values/nbsp.t
 t/values/object-and-structs.t

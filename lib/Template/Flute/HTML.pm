@@ -711,8 +711,11 @@ sub _elt_indicate_replacements {
                 return;
             };
         }
+        elsif ($sob->{op} eq 'keep') {
+            $elt->{"flute_$name"}->{rep_sub} = \&_keep;
+        }
 	}
-	
+
 	if ($sob->{target}) {
 		if (exists $sob->{op}) {
 			if ($sob->{op} eq 'append' || $sob->{op} eq 'prepend') {
@@ -915,6 +918,16 @@ sub hook_html {
 	}
 	
 	return;
+}
+
+sub _keep {
+    my ($elt, $value) = @_;
+
+    if ($value) {
+        $elt->set_text($value);
+    }
+
+    return;
 }
 
 sub _fix_script_tags {
