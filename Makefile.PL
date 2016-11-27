@@ -31,8 +31,8 @@ WriteMakefile(
         'HTML::Scrubber' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
-        # minimum version which supports InstanceOf
         'Text::Markdown' => 0,
+        # minimum version which supports InstanceOf
         'Type::Tiny' => 0.008,
         'Scalar::Util' => 0,
         'URI' => 0,
