@@ -1948,6 +1948,9 @@ element content, yielding such output:
   </li>
  </ul>
 
+Note: All matches of the pattern are subject to replacement, starting
+with version 0.025.
+
 =back
 
 =head1 SIMPLE OPERATORS
