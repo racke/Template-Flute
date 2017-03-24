@@ -1163,7 +1163,7 @@ sub _replace_record {
                         if (!defined($newtext)) {
                             $newtext = '';
                         }
-                        $newtext =~ s/$regexp/$string/;
+                        $newtext =~ s/$regexp/$string/g;
                         $elt->set_att($att, $newtext)
                     };
                 };
@@ -1178,7 +1178,7 @@ sub _replace_record {
                     if (!defined($newtext)) {
                         $newtext = '';
                     }
-                    $newtext =~ s/$regexp/$string/;
+                    $newtext =~ s/$regexp/$string/g;
                     $elt->set_text($newtext);
                 };
             }
