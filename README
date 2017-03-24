@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    Version 0.024
+    Version 0.025
 
 SYNOPSIS
 
@@ -468,6 +468,11 @@ SPECIFICATION
 	element. HTML will be parsed with XML::Twig. See "INSERT HTML" for
 	an example.
 
+      keep
+
+	Preserves the text inside of the HTML element if value is false in
+	the Perl sense.
+
       toggle
 
 	Only shows corresponding HTML element if value is set.
@@ -574,6 +579,9 @@ SPECIFICATION
          <span class="category">in category pizza</span>
         </li>
        </ul>
+
+      Note: All matches of the pattern are subject to replacement, starting
+      with version 0.025.
 
 SIMPLE OPERATORS
 

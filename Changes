@@ -1,5 +1,12 @@
 Revision history for Template::Flute
 
+0.025  Fri Mar 24 11:32:33 2017 CET
+
+    [ENHANCEMENTS]
+
+    * Replace all matches of a pattern instead of the first one (Stefan Hornburg/Racke).
+    * Add keep operator (Stefan Hornburg/Racke).
+
 0.024  Mon Oct 24 12:25:25 2016 CEST
 
     [ENHANCEMENTS]
