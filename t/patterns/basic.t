@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Template::Flute;
-use Test::More tests => 8;
+use Test::More;
 use Data::Dumper;
 
 my ($spec, $html, $flute, $out, $expected);
@@ -242,3 +242,5 @@ EXPECTED
 
 $expected =~ s/\n//g;
 like $out, qr/\Q$expected\E/, "Interpolation param by pattern";
+
+done_testing;
