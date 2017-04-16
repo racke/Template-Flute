@@ -44,6 +44,7 @@ Currency filter.
 sub filter {
     my ($self, $amount) = @_;
 
+    return undef unless defined $amount;
     return $self->{format}->format_price($amount);
 }
 
