@@ -20,10 +20,6 @@ Template::Flute::I18N - Localization class for Template::Flute
         return $german_map{$text};
     };
 
-    $i18n = Template::Flute::I18N->new(\&translate);
-
-    # OR:
-
     $i18n = Template::Flute::I18N->new(coderef => \&translate);
 
     # then:
@@ -43,21 +39,8 @@ Coderef used by L</localize> method for the text translation.
 has coderef => (
     is      => 'ro',
     isa     => CodeRef,
-    default => quote_sub q{},
+    required => 1,
 );
-
-sub BUILDARGS {
-	my ($class, @args) = @_;
-
-	if (ref($args[0]) eq 'CODE') {
-		# use first parameter as localization function
-        return { coderef => $args[0] };
-	}
-	else {
-		# noop translation
-        return {};
-	}
-}
 
 =head1 METHODS
 

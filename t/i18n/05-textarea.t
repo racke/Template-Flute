@@ -47,7 +47,7 @@ sub translate {
 
 
 {
-    my $i18n = Template::Flute::I18N->new(\&translate);
+    my $i18n = Template::Flute::I18N->new(coderef => \&translate);
     my $flute = new Template::Flute(
                                     specification => $xml,
                                     template => $html,

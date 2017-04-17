@@ -22,7 +22,7 @@ sub translate {
     return $lexicon{$text};
 };
 
-my $i18n = Template::Flute::I18N->new(\&translate);
+my $i18n = Template::Flute::I18N->new(coderef => \&translate);
 
 my $spec = '<specification></specification>';
 my $template =<<"HTML";

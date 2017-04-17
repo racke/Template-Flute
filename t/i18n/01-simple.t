@@ -20,7 +20,7 @@ sub translate {
 	return $german_map{$text};
 };
 
-$i18n = Template::Flute::I18N->new(\&translate);
+$i18n = Template::Flute::I18N->new(coderef => \&translate);
 
 $spec = '<specification></specification>';
 $template = '<html><div>Cart</div><div>Price</div></html>';
