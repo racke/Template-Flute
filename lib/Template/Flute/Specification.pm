@@ -47,6 +47,9 @@ sub new {
 	# lookup hash for elements by id
 	$self->{ids} = {};
 
+    # lookup hash for xpaths
+    $self->{xpaths} = {};
+
 	# lookup hash for elements by name attribute
 	$self->{names} = {};
 
@@ -68,6 +71,10 @@ sub _classes {
 
 sub _names {
     return keys %{shift->{names}};
+}
+
+sub _xpaths {
+    return keys %{shift->{xpaths}};
 }
 
 =head1 METHODS
@@ -326,7 +333,7 @@ Add value specified by hash reference VALUE.
 	
 sub value_add {
 	my ($self, $new_valueref) = @_;
-	my ($valueref, $value_name, $id, $class);
+	my ($valueref, $value_name, $id, $class, $xpath);
 
 	$value_name = $new_valueref->{value}->{name};
 
@@ -348,6 +355,9 @@ sub value_add {
 	if ($id = $new_valueref->{value}->{id}) {
 		push @{$self->{ids}->{$id}}, {%{$new_valueref->{value}}, type => 'value'};
 	}
+    elsif ($xpath = $new_valueref->{value}->{xpath}) {
+        push @{$self->{xpaths}->{$xpath}}, {%{$new_valueref->{value}}, type => 'value'}; 
+    }
 	else {
 		$class = $new_valueref->{value}->{class} || $value_name;
 

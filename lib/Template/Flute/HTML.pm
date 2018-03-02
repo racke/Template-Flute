@@ -362,11 +362,22 @@ sub parse_file {
 
 sub _parse_template {
 	my ($self, $template, $spec_object, $snippet) = @_;
-	my ($twig, %twig_args, $xml, $object, $list, $html_content, $encoding);
+	my ($twig, %twig_args, %twig_handlers, $xml, $object, $list, $html_content, $encoding);
 
 	$object = {specs => {}, lists => {}, forms => {}, params => {}};
-		
-	%twig_args = (twig_handlers => {_all_ => sub {$self->_parse_handler($_[1], $spec_object)}});
+
+    # Default handler
+    my $handler_sub = sub {$self->_parse_handler($_[1], $spec_object)};
+
+    # Add Xpath expressions to handlers
+    for my $xpath ($spec_object->_xpaths) {
+        $twig_handlers{$xpath} = sub {$self->_parse_handler($_[1], $spec_object, $spec_object->{xpaths}->{$xpath})};
+    }
+
+    # Add handler for all elements
+    $twig_handlers{_all_} = $handler_sub;
+
+	%twig_args = (twig_handlers => \%twig_handlers);
 
 	if ($XML::Twig::VERSION > 3.39) {
 	    $twig_args{output_html_doctype} = 1;
@@ -410,7 +421,7 @@ sub _parse_template {
 # parse_handler - Callback for HTML elements
 
 sub _parse_handler {
-	my ($self, $elt, $spec_object) = @_;
+	my ($self, $elt, $spec_object, $xpath_sobs) = @_;
 	my ($gi, @classes, @static_classes, $class_names, $id, $elt_name, $name, $sob, $sob_ref);
 
 	$gi = $elt->gi();
@@ -444,6 +455,15 @@ sub _parse_handler {
 	    }
         }
     }
+
+    if (defined $xpath_sobs) {
+        # we can process Xpath elements right away
+        for my $sob (@$xpath_sobs) {
+            $self->_elt_handler($sob, $elt, $gi, $spec_object, $sob->{name});
+        }
+        return;
+    }
+
 	# don't act on elements without class, id or name attribute
 	return unless $class_names || $id || $elt_name;
 	

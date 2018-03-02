@@ -914,13 +914,17 @@ sub _sub_process {
 		my $spec_id = $elt->{'att'}->{'id'};
 		my $spec_name = $elt->{'att'}->{'name'};
 		my $spec_class = $elt->{'att'}->{'class'} ? $elt->{'att'}->{'class'} : $spec_name;
-
+        my $spec_xpath = $elt->{'att'}->{'xpath'};
+        
 		# Use CLASS or ID if set
 		my $spec_clases = [];
 		if ($spec_id){
 			$spec_clases = $specification->{ids}->{$spec_id};
 		}
-		else {
+        elsif ($spec_xpath) {
+            $spec_clases = $specification->{xpaths}->{$spec_xpath};
+        }
+  		else {
 			$spec_clases = $classes->{$spec_class};
 		}
 
