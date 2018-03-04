@@ -168,7 +168,7 @@ sub list_add {
 
 	$class = $new_listref->{list}->{class} || $list_name;
 
-	$self->{classes}->{$class} = [{%{$new_listref->{list}}, type => 'list'}];
+    $self->_spec_element_add('list', $new_listref->{list});
 
 	if (exists $new_listref->{list}->{iterator}) {
 		$listref->{iterator} = $new_listref->{list}->{iterator};
@@ -419,7 +419,14 @@ sub patterns {
     return %{shift->{patterns}};
 }
 
+sub _spec_element_add {
+    my ($self, $type, $element) = @_;
 
+	my $name = $element->{name};
+	my $class = $element->{class} || $name;
+
+    $self->{classes}->{$class} = [{%$element, type => $type}];
+}
 
 =head2 list_iterator NAME
 
