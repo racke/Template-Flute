@@ -215,6 +215,18 @@ sub elt {
 	return $self->{sob}->{elts}->[0];
 }
 
+=head2 elts
+
+Returns corresponding HTML template elements of the list.
+
+=cut
+
+sub elts {
+	my ($self) = @_;
+
+	return $self->{sob}->{elts};
+}
+
 =head2 params
 
 Returns list parameters.
