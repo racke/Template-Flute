@@ -120,7 +120,7 @@ Add container specified by hash reference CONTAINER.
 
 sub container_add {
 	my ($self, $new_containerref) = @_;
-	my ($containerref, $container_name, $id, $class);
+	my ($containerref, $container_name, $id, $class, $xpath);
 
 	$container_name = $new_containerref->{container}->{name};
 
@@ -131,6 +131,9 @@ sub container_add {
 	if ($id = $new_containerref->{container}->{id}) {
 	    push @{$self->{ids}->{$id}}, {%{$new_containerref->{container}}, type => 'container'};
 	}
+    elsif ($xpath = $new_containerref->{container}->{xpath}) {
+        push @{$self->{xpaths}->{$xpath}}, {%{$new_containerref->{container}}, type => 'container'};
+    }
 	else {
 	    $self->{classes}->{$class} = [{%{$new_containerref->{container}}, type => 'container'}];
 	}
