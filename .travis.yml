@@ -26,4 +26,5 @@ install:
   - cpan-install Number::Format # prereqs for Currency filter
   - cpan-install DateTime DateTime::Format::ISO8601 # prereqs for Date filter
   - cpan-install JSON # prereqs for JsonVar filter 
+  - cpan-install HTML::Scrubber Text::Markdown # prereqs for Markdown filter
   - cpan-install --coverage
