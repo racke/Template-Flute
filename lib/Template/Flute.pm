@@ -2355,6 +2355,8 @@ see L<Template::Flute::Filter::LowerDash>.
 Turns text in Markdown format into HTML.
 see L<Template::Flute::Filter::Markdown>.
 
+Requires L<Text::Markdown> and L<HTML::Scrubber> modules.
+
 =back
 
 Filter classes are loaded at runtime for efficiency and to keep the

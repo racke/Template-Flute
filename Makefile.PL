@@ -28,10 +28,8 @@ WriteMakefile(
         'Path::Tiny' => 0,
         'XML::Twig' => 3.48,
         'HTML::TreeBuilder' => 0,
-        'HTML::Scrubber' => 0,
         'Parse::RecDescent' => 0,
         'Moo' => 1.001000,
-        'Text::Markdown' => 0,
         # minimum version which supports InstanceOf
         'Type::Tiny' => 0.008,
         'Scalar::Util' => 0,
