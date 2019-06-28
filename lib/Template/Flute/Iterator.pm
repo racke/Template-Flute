@@ -9,7 +9,7 @@ Template::Flute::Iterator - Generic iterator class for Template::Flute
 
 =head1 SYNOPSIS
 
-    $cart = [{isbn => '978-0-2016-1622-4',
+    $cart = [{isbn => '978-0-2019-1622-4',
               title => 'The Pragmatic Programmer',
               quantity => 1},
              {isbn => '978-1-4302-1833-3',
@@ -173,7 +173,7 @@ Stefan Hornburg (Racke), <racke@linuxia.de>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010-2016 Stefan Hornburg (Racke) <racke@linuxia.de>.
+Copyright 2010-2019 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
