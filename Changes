@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.026  Fri Jun 28 21:08:53 2019 CEST
+
+    [ENHANCEMENTS]
+
+    * Drop unnecessary prerequisites for markdown filter.
+
 0.025  Fri Mar 24 11:32:33 2017 CET
 
     [ENHANCEMENTS]
