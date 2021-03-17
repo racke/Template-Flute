@@ -42,10 +42,10 @@ my @tests = (
      match => qr{<a class="">\{\{link.name\}\}</a>},
     },
     # stylesheets
-    {html => q{<html><head><link href="/css/main.css" rel="stylesheet"></head></html>},
+    {html => q{<html><head><link href="/css/main.css?v=1" rel="stylesheet"></head></html>},
      spec => q{<specification></specification>},
      uri => URI->new('/t/', 'http'),
-     match => qr{link href="/t/css/main.css"},
+     match => qr{link href="/t/css/main.css\?v=1"},
     },
     {
      html => q{<html><body><form action="/post">Log in</form></body></html>},

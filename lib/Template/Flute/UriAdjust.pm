@@ -95,6 +95,10 @@ sub result {
         # unescape the resulting path
         $result = uri_unescape($result->path);
 
+        if ($uri->query) {
+            $result .= "?" . uri_unescape($uri->query);
+        }
+
         if ($uri->fragment) {
             $result .= "#" . uri_unescape($uri->fragment);
         }
