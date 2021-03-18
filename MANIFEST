@@ -124,6 +124,7 @@ t/lists/append.t
 t/lists/double-process.t
 t/lists/gh11.t
 t/lists/global-containers.t
+t/lists/hooks.t
 t/lists/increments.t
 t/lists/limit.t
 t/lists/nested.t
