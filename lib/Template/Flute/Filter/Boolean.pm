@@ -35,7 +35,7 @@ Grega Pompe <grega.pompe@informa.si>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013-2019 Grega Pompe <grega.pompe@informa.si>
+Copyright 2013-2021 Grega Pompe <grega.pompe@informa.si>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
