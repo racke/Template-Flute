@@ -1,5 +1,11 @@
 Revision history for Template::Flute
 
+0.027  Thu Mar 18 20:30:16 2021 CET
+
+    [BUG FIXES]
+
+    * Let UriAdjust module recognize query parameter (GH #165).
+
 0.026  Fri Jun 28 21:08:53 2019 CEST
 
     [ENHANCEMENTS]

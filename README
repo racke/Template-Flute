@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    Version 0.026
+    Version 0.027
 
 SYNOPSIS
 
@@ -1130,7 +1130,7 @@ HISTORY
 
 LICENSE AND COPYRIGHT
 
-    Copyright 2010-2019 Stefan Hornburg (Racke) <racke@linuxia.de>.
+    Copyright 2010-2021 Stefan Hornburg (Racke) <racke@linuxia.de>.
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of either: the GNU General Public License as published
