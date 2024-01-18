@@ -675,6 +675,7 @@ sub _sub_process {
 	}
 
     while (my ($name, $value) = each %iter_names) {
+        next if $name == '';
         next if $name =~ /\./;
 
         if (@$value > 1) {
